@@ -547,8 +547,8 @@ html[data-theme="light"][data-bg="signal"] .atmosphere .grid { opacity: 0.08; }
 }
 
 [data-theme="light"] .brand-main {
-  filter: drop-shadow(0 0 14px rgba(11, 143, 124, 0.22))
-    drop-shadow(0 0 28px rgba(11, 143, 124, 0.12));
+  filter: drop-shadow(0 0 12px rgba(10, 125, 110, 0.2))
+    drop-shadow(0 0 26px rgba(10, 125, 110, 0.1));
 }
 
 .particle-field {
