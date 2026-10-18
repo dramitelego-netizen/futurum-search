@@ -1263,13 +1263,13 @@ body.is-stage #q {
 }
 
 [data-theme="light"] .brand {
-  --brand-hi: #1a9a88;
-  --brand-mid: #0f7a6b;
-  --brand-deep: #0a5c50;
-  --brand-glow: rgba(15, 122, 107, 0.22);
-  --brand-glow-soft: rgba(10, 92, 80, 0.14);
-  --g1: #2a9a88;
-  --g2: #5ab8a8;
+  --brand-hi: #1aad98;
+  --brand-mid: #0d8a78;
+  --brand-deep: #0a6a5c;
+  --brand-glow: rgba(13, 138, 120, 0.24);
+  --brand-glow-soft: rgba(10, 106, 92, 0.14);
+  --g1: #2aad98;
+  --g2: #5ec4b0;
 }
 
 .brand-main {
