@@ -2579,7 +2579,8 @@ body.is-stage #q {
   }
 
   .result-tag,
-  .result-sale {
+  .result-sale,
+  .result-gone {
     font-size: 0.55rem;
   }
 
