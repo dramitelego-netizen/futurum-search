@@ -2364,15 +2364,21 @@ body.is-stage #q {
     justify-items: stretch;
   }
 
+  /* одна картинка — уже первая колонка, значок на всю высоту превью */
+  .preview-card:not(.has-look) {
+    grid-template-columns: 5.4rem minmax(0, 1fr);
+  }
+
   .preview-media {
     grid-column: 1;
     grid-row: 1;
-    width: 7.1rem;
+    width: 100%;
     height: 100%;
     gap: 0.28rem;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
     align-content: stretch;
+    justify-items: stretch;
   }
 
   .preview-card.has-look .preview-media {
@@ -2380,10 +2386,12 @@ body.is-stage #q {
   }
 
   .preview-thumb-frame,
-  .preview-look-frame {
+  .preview-look-frame,
+  .preview-card:not(.has-look) .preview-thumb-frame {
     width: 100%;
     height: 100%;
     min-height: 0;
+    max-height: none;
     border-radius: 8px;
   }
 
@@ -2414,10 +2422,6 @@ body.is-stage #q {
 
   .preview-look-empty {
     display: none !important;
-  }
-
-  .preview-card:not(.has-look) .preview-media {
-    width: 5.4rem;
   }
 
   .preview-body {

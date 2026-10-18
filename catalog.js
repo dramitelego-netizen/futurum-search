@@ -352,7 +352,7 @@ function showDetail(item) {
   els.catDetail.innerHTML = `
     <div class="cat-card${sale ? " is-sale" : ""}${gone ? " is-unavailable" : ""}">
       <div class="cat-card-top">
-        <div class="cat-card-media">
+        <div class="cat-card-media${look ? " has-look" : ""}">
           ${
             thumb
               ? `<span class="media-frame cat-card-thumb-frame is-loading"><img class="cat-card-thumb" src="${escapeHtml(proxyImage(thumb))}" alt="" decoding="async" /></span>`
@@ -411,6 +411,7 @@ function showDetail(item) {
       </div>
     </div>
   `;
+  els.catDetail.scrollTop = 0;
   wireMediaFrames(els.catDetail);
 }
 

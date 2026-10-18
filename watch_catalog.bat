@@ -4,6 +4,7 @@ cd /d "%~dp0"
 echo.
 echo  FUTURUM — постоянный мониторинг каталога
 echo  Новые предметы + цены пачками + заливка на GitHub
+echo  Подробный лог: data\watch_catalog.log
 echo  Остановка: Ctrl+C
 echo.
 REM Мягкий режим: 2 потока, маленькие пачки, пауза 3 мин

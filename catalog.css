@@ -191,7 +191,7 @@
 
 .cat-item {
   display: grid;
-  grid-template-columns: 3rem minmax(0, 1fr) auto;
+  grid-template-columns: 3rem minmax(0, 1fr);
   align-items: center;
   gap: 0.65rem;
   width: 100%;
@@ -382,6 +382,14 @@
   gap: 0.4rem;
 }
 
+.cat-card-media.has-look {
+  grid-template-columns: 1fr 1fr;
+}
+
+.cat-card-media:not(.has-look) .cat-card-thumb-frame {
+  height: 7rem;
+}
+
 .cat-card-thumb,
 .cat-card-look {
   width: 100%;
@@ -527,23 +535,174 @@
 }
 
 @media (max-width: 860px) {
-  .cat-stage {
-    grid-template-columns: 1fr;
-    min-height: 0;
+  /* весь каталог в высоту экрана — без «уезда» карточки вниз */
+  html:has(body.catalog-page) {
+    height: 100%;
+    overflow: hidden;
   }
 
-  .cat-list-panel {
-    max-height: min(48vh, 420px);
-  }
-
-  .cat-detail {
-    position: relative;
-    top: auto;
-    min-height: 0;
+  body.catalog-page {
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   .cat-top {
+    flex: 0 0 auto;
     grid-template-columns: auto 1fr auto;
+  }
+
+  .cat-shell {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: min(100% - 1rem, 1120px);
+    padding: 0.55rem 0 max(0.45rem, env(safe-area-inset-bottom));
+    gap: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .cat-controls {
+    flex: 0 0 auto;
+    padding: 0.6rem 0.7rem;
+    gap: 0.45rem;
+  }
+
+  .cat-search {
+    padding: 0.6rem 0.8rem;
+  }
+
+  .cat-stage {
+    flex: 1 1 auto;
+    min-height: 0;
+    grid-template-columns: 1fr;
+    /* превью сверху (название/цена всегда на экране), список снизу */
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+
+  .cat-detail {
+    order: 1;
+    position: relative;
+    top: auto;
+    min-height: 0;
+    max-height: min(34dvh, 260px);
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.7rem 0.75rem;
+  }
+
+  .cat-list-panel {
+    order: 2;
+    max-height: none;
+    min-height: 0;
+    height: 100%;
+  }
+
+  .cat-list {
+    padding: 0.2rem 0.2rem 0.45rem;
+  }
+
+  .cat-detail-empty {
+    min-height: 4.5rem;
+    height: auto;
+    padding: 0.65rem 0.5rem;
+    font-size: 0.86rem;
+  }
+
+  .cat-card {
+    gap: 0.65rem;
+  }
+
+  .cat-card-top {
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    gap: 0.65rem;
+    align-items: start;
+  }
+
+  .cat-card-media.has-look {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cat-card-thumb-frame,
+  .cat-card-look-frame,
+  .cat-card-media:not(.has-look) .cat-card-thumb-frame {
+    height: 4.5rem;
+  }
+
+  .cat-card-title {
+    font-size: 0.95rem;
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+
+  .cat-card-price {
+    font-size: 1.05rem;
+  }
+
+  .cat-card-old {
+    font-size: 0.82rem;
+  }
+
+  .cat-card-desc {
+    margin-top: 0.25rem;
+    font-size: 0.78rem;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .cat-card-actions {
+    margin-top: 0.4rem;
+    gap: 0.35rem;
+  }
+
+  .cat-link {
+    font-size: 0.8rem;
+  }
+
+  .cat-history h3 {
+    font-size: 0.66rem;
+  }
+
+  .cat-spark {
+    height: 88px;
+  }
+
+  .cat-history-table {
+    font-size: 0.76rem;
+  }
+
+  .cat-item {
+    gap: 0.5rem;
+    padding: 0.48rem 0.5rem;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+  }
+
+  .cat-item-thumb-frame,
+  .cat-item-thumb.empty {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .cat-item-name {
+    font-size: 0.88rem;
+  }
+
+  .cat-item-meta {
+    font-size: 0.74rem;
+  }
+
+  .cat-fav {
+    width: 2.1rem;
+    font-size: 0.95rem;
   }
 
   .cat-brand.brand {
