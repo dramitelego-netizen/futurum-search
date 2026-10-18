@@ -583,12 +583,12 @@ function previewCardHtml(item) {
     ? `<span class="media-frame preview-look-frame ${lookState}">
         <img class="preview-look" src="${lookSrc}" alt="Как выглядит" decoding="async" fetchpriority="high" />
       </span>`
-    : `<span class="preview-look preview-look-empty" aria-hidden="true"></span>`;
+    : "";
   const thumbHtml = thumbSrc
     ? `<span class="media-frame preview-thumb-frame ${thumbState}">
         <img class="preview-thumb" src="${thumbSrc}" alt="" decoding="async" fetchpriority="high" />
       </span>`
-    : `<span class="media-frame preview-thumb-frame is-ready" aria-hidden="true"></span>`;
+    : "";
 
   return `
     <div class="preview-card${sale ? " is-sale" : ""}${gone ? " is-unavailable" : ""}${desc ? " has-desc" : ""}${look ? " has-look" : ""}">
