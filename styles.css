@@ -1304,13 +1304,13 @@ body.is-stage #q {
 }
 
 [data-theme="light"] .brand {
-  --brand-hi: #1aad98;
-  --brand-mid: #0d8a78;
-  --brand-deep: #0a6a5c;
-  --brand-glow: rgba(13, 138, 120, 0.24);
-  --brand-glow-soft: rgba(10, 106, 92, 0.14);
-  --g1: #2aad98;
-  --g2: #5ec4b0;
+  --brand-hi: #14b89f;
+  --brand-mid: #0b8f7c;
+  --brand-deep: #087263;
+  --brand-glow: rgba(11, 143, 124, 0.26);
+  --brand-glow-soft: rgba(8, 114, 99, 0.14);
+  --g1: #2ab89f;
+  --g2: #5ecfba;
 }
 
 .brand-main {
