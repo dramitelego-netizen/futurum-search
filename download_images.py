@@ -256,8 +256,9 @@ def enrich_item(item: dict) -> dict:
             item["lookLocal"] = look
             item.pop("lookUnavailable", None)
         elif item.get("lookImage"):
-            # gyazo 503 / clip.mail / parapa 403 — помечаем, чтобы не висеть
+            # gyazo 503 / clip.mail / parapa 403 — не показываем битую look-заглушку
             item["lookUnavailable"] = True
+            item["lookImage"] = None
 
     return item
 

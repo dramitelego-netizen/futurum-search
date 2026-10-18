@@ -156,7 +156,10 @@ function itemThumb(item) {
 }
 
 function itemLook(item) {
-  return item.lookLocal || item.lookImage || "";
+  if (!item) return "";
+  if (item.lookLocal) return item.lookLocal;
+  if (item.lookUnavailable) return "";
+  return item.lookImage || "";
 }
 
 function itemOnSale(item) {
@@ -280,6 +283,13 @@ function warmItem(item) {
   warmImage(itemLook(item));
 }
 
+function hideBrokenLookFrame(root, frame) {
+  if (!frame) return;
+  if (!frame.classList.contains("cat-card-look-frame")) return;
+  frame.remove();
+  root.querySelector(".cat-card-media")?.classList.remove("has-look");
+}
+
 function wireMediaFrames(root) {
   if (!root) return;
   root.querySelectorAll(".media-frame img").forEach((img) => {
@@ -290,23 +300,34 @@ function wireMediaFrames(root) {
       frame.classList.add("is-ready");
       if (img.currentSrc || img.src) warmMap.set(img.currentSrc || img.src, "ready");
     };
-    if (img.complete && img.naturalWidth > 0) {
-      done();
+    const fail = () => {
+      frame.classList.remove("is-loading");
+      if (frame.classList.contains("cat-card-look-frame")) {
+        hideBrokenLookFrame(root, frame);
+        return;
+      }
+      frame.classList.add("is-ready");
+    };
+    if (img.complete) {
+      if (img.naturalWidth > 0) done();
+      else fail();
       return;
     }
     if (isWarmed(img.getAttribute("src") || "")) {
       requestAnimationFrame(() => {
-        if (img.complete) done();
-        else {
+        if (img.complete) {
+          if (img.naturalWidth > 0) done();
+          else fail();
+        } else {
           img.addEventListener("load", done, { once: true });
-          img.addEventListener("error", done, { once: true });
+          img.addEventListener("error", fail, { once: true });
         }
       });
       return;
     }
     frame.classList.add("is-loading");
     img.addEventListener("load", done, { once: true });
-    img.addEventListener("error", done, { once: true });
+    img.addEventListener("error", fail, { once: true });
   });
 }
 

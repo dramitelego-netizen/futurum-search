@@ -379,7 +379,11 @@ function itemThumb(item) {
 }
 
 function itemLook(item) {
-  return item.lookLocal || item.lookImage || "";
+  if (!item) return "";
+  // локальный файл — ок; remote только если скачивание не помечено как failed
+  if (item.lookLocal) return item.lookLocal;
+  if (item.lookUnavailable) return "";
+  return item.lookImage || "";
 }
 
 function escapeHtml(s) {
@@ -517,6 +521,17 @@ function warmAround(index, radius = 5) {
   for (let i = from; i <= to; i++) warmItem(state.list[i].item);
 }
 
+function hideBrokenLookFrame(root, frame) {
+  if (!frame) return;
+  const isLook =
+    frame.classList.contains("preview-look-frame") ||
+    frame.classList.contains("cat-card-look-frame");
+  if (!isLook) return;
+  frame.remove();
+  root.querySelector(".preview-card")?.classList.remove("has-look");
+  root.querySelector(".cat-card-media")?.classList.remove("has-look");
+}
+
 function wireMediaFrames(root) {
   if (!root) return;
   root.querySelectorAll(".media-frame img").forEach((img) => {
@@ -527,24 +542,38 @@ function wireMediaFrames(root) {
       frame.classList.add("is-ready");
       if (img.currentSrc || img.src) warmMap.set(img.currentSrc || img.src, "ready");
     };
-    if (img.complete && img.naturalWidth > 0) {
-      done();
+    const fail = () => {
+      frame.classList.remove("is-loading");
+      if (
+        frame.classList.contains("preview-look-frame") ||
+        frame.classList.contains("cat-card-look-frame")
+      ) {
+        hideBrokenLookFrame(root, frame);
+        return;
+      }
+      frame.classList.add("is-ready");
+    };
+    if (img.complete) {
+      if (img.naturalWidth > 0) done();
+      else fail();
       return;
     }
     if (isWarmed(img.getAttribute("src") || "")) {
       // уже в кэше — показываем сразу, без долгого скелетона
       requestAnimationFrame(() => {
-        if (img.complete) done();
-        else {
+        if (img.complete) {
+          if (img.naturalWidth > 0) done();
+          else fail();
+        } else {
           img.addEventListener("load", done, { once: true });
-          img.addEventListener("error", done, { once: true });
+          img.addEventListener("error", fail, { once: true });
         }
       });
       return;
     }
     frame.classList.add("is-loading");
     img.addEventListener("load", done, { once: true });
-    img.addEventListener("error", done, { once: true });
+    img.addEventListener("error", fail, { once: true });
   });
 }
 

@@ -147,20 +147,23 @@ def extract_description_block(html: str, after_pos: int) -> tuple[str, str]:
         return "", ""
 
     look = ""
-    # «как выглядит» — обычно /pictures/image/... или wiki; берём первое крупное
+    # «как выглядит»: реальные превью, не иконки /pictures/mall/ из описания подарка
     for img in re.finditer(r'<img[^>]+src=["\']([^"\']+)["\']', raw, re.I):
         src = abs_url(img.group(1))
         low = src.lower()
-        if any(x in low for x in ("1x1.gif", "spacer", "pixel", "blank")):
+        if any(x in low for x in ("1x1.gif", "spacer", "pixel", "blank", "redbox")):
             continue
-        if "/pictures/image/" in low or "/wiki/" in low or "/pictures/" in low:
-            # не иконка из mall thumb внутри description (редко)
+        if "/pictures/mall/" in low and "/pictures/image/" not in low:
+            continue
+        if (
+            "/pictures/image/" in low
+            or "/wiki/" in low
+            or "gyazo.com" in low
+            or "i.gyazo.com" in low
+            or "clip." in low
+        ):
             look = src
             break
-    if not look:
-        img_m = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', raw, re.I)
-        if img_m:
-            look = abs_url(img_m.group(1))
 
     text = unescape(re.sub(r"<[^>]+>", " ", raw))
     text = re.sub(r"&nbsp;", " ", text, flags=re.I)
