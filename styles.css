@@ -1894,14 +1894,17 @@ body.is-stage #q {
   height: 180px;
 }
 
+/* Значок с Parapa уже со своей рамкой — не режем углы повторно */
 .preview-thumb-frame {
   width: min(100%, 160px);
   height: 160px;
-  padding: 0.4rem;
-  border-radius: 10px;
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--ink) 3%, transparent);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+  contain: none;
 }
 
 .preview-thumb {
@@ -1911,16 +1914,19 @@ body.is-stage #q {
   max-height: 100%;
   object-fit: contain;
   object-position: center;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.4));
 }
 
 .preview-look-frame {
   width: min(100%, 220px);
   height: 160px;
-  padding: 0.3rem;
-  border-radius: 8px;
+  padding: 0.25rem;
+  border-radius: 10px;
   border: 1px solid var(--line);
   background: color-mix(in srgb, var(--ink) 3%, transparent);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
+  overflow: hidden;
+  contain: paint;
 }
 
 .preview-look {
@@ -2415,11 +2421,27 @@ body.is-stage #q {
     min-width: 0;
     min-height: 0;
     max-height: none;
-    padding: 0.2rem;
-    border-radius: 8px;
-    box-shadow: none;
-    overflow: hidden;
     box-sizing: border-box;
+    box-shadow: none;
+  }
+
+  .preview-thumb-frame,
+  .preview-card:not(.has-look) .preview-thumb-frame {
+    padding: 0.1rem;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    overflow: visible;
+    contain: none;
+  }
+
+  .preview-look-frame {
+    padding: 0.15rem;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--ink) 4%, transparent);
+    overflow: hidden;
+    contain: paint;
   }
 
   .preview-thumb,
@@ -2430,23 +2452,17 @@ body.is-stage #q {
     max-height: 100%;
     min-height: 0;
     border-radius: 0;
+    object-fit: contain;
+    object-position: center;
   }
 
   .preview-thumb {
-    object-fit: contain;
-    object-position: center;
-    background: color-mix(in srgb, var(--ink) 3%, transparent);
+    filter: none;
+    background: transparent;
   }
 
   .preview-look {
-    object-fit: contain;
-    object-position: center;
-    background: color-mix(in srgb, var(--ink) 4%, transparent);
-  }
-
-  .preview-look-frame {
-    border: 1px solid var(--line);
-    background: color-mix(in srgb, var(--ink) 4%, transparent);
+    background: transparent;
   }
 
   .preview-look-empty {
