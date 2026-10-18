@@ -1897,6 +1897,7 @@ body.is-stage #q {
 .preview-thumb-frame {
   width: min(100%, 160px);
   height: 160px;
+  padding: 0.4rem;
   border-radius: 10px;
   border: 1px solid var(--line);
   background: color-mix(in srgb, var(--ink) 3%, transparent);
@@ -1915,6 +1916,7 @@ body.is-stage #q {
 .preview-look-frame {
   width: min(100%, 220px);
   height: 160px;
+  padding: 0.3rem;
   border-radius: 8px;
   border: 1px solid var(--line);
   background: color-mix(in srgb, var(--ink) 3%, transparent);
@@ -1926,7 +1928,7 @@ body.is-stage #q {
   height: 100%;
   max-width: 100%;
   max-height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   border-radius: 0;
 }
@@ -2413,9 +2415,11 @@ body.is-stage #q {
     min-width: 0;
     min-height: 0;
     max-height: none;
+    padding: 0.2rem;
     border-radius: 8px;
     box-shadow: none;
     overflow: hidden;
+    box-sizing: border-box;
   }
 
   .preview-thumb,
@@ -2435,7 +2439,7 @@ body.is-stage #q {
   }
 
   .preview-look {
-    object-fit: cover;
+    object-fit: contain;
     object-position: center;
     background: color-mix(in srgb, var(--ink) 4%, transparent);
   }

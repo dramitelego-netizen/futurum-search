@@ -250,11 +250,13 @@
   width: 100%;
   min-width: 0;
   min-height: 0;
+  padding: 0.28rem;
   border-radius: 12px;
   border: 1px solid var(--line);
   background: color-mix(in srgb, var(--ink) 3%, transparent);
   overflow: hidden;
   contain: paint;
+  box-sizing: border-box;
 }
 
 .cat-card-thumb-frame {
@@ -418,7 +420,7 @@
 }
 
 .cat-card-look {
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .cat-card-title {
@@ -670,10 +672,6 @@
     max-height: 100%;
     object-fit: contain;
     object-position: center;
-  }
-
-  .cat-card-look {
-    object-fit: cover;
   }
 
   .cat-card-title {
