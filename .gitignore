@@ -17,6 +17,9 @@ data/debug_*.html
 data/_probe*.html
 data/scrape.log
 data/download_images.log
+data/update_and_push.log
+data/watch_catalog.log
+data/watch_state.json
 
 # OS / editor
 .DS_Store

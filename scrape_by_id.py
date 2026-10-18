@@ -328,12 +328,8 @@ def warmup() -> None:
     log("Cookie готов" if html else "Прогрев не удался, продолжаю")
 
 
-def main() -> None:
-    OUT.mkdir(parents=True, exist_ok=True)
-    LOG_FILE.write_text("", encoding="utf-8")
-
+def _prepare_found() -> dict[str, dict]:
     found = load_found()
-    # не перезаписываем чужой каталог из категорий — начинаем свой by_id
     if found and Path(ITEMS_FILE).exists():
         try:
             mode = json.loads(ITEMS_FILE.read_text(encoding="utf-8")).get("mode")
@@ -341,27 +337,36 @@ def main() -> None:
                 found = {}
         except Exception:
             found = {}
+    return found
 
+
+def scan_full() -> None:
+    """Полный обход START_ID…END_ID (долго)."""
+    OUT.mkdir(parents=True, exist_ok=True)
+    LOG_FILE.write_text("", encoding="utf-8")
+
+    found = _prepare_found()
     already = {int(k) for k in found}
     todo = [i for i in range(START_ID, END_ID + 1) if i not in already]
 
-    log("Перебор предметов по ID (без разделов)")
+    log("Перебор предметов по ID (полный)")
     log(f"Диапазон: {START_ID}…{END_ID}")
     log(f"Потоков: {WORKERS}")
     log(f"Уже есть: {len(found)}, осталось проверить: {len(todo)}")
     log(f"Файл: {ITEMS_FILE}")
     log("")
 
+    if not todo:
+        log("Нечего проверять — все id в диапазоне уже в каталоге")
+        return
+
     warmup()
 
     t_all = time.perf_counter()
     checked = 0
     empty = 0
-    # для ранней остановки: считаем пустые с конца, но проще — просто идём весь диапазон
-    # т.к. дырки бывают в середине (id 1 пустой, 62 есть)
 
     with ThreadPoolExecutor(max_workers=WORKERS) as pool:
-        # пачками, чтобы логи были читаемые и сохранение частое
         batch_size = WORKERS * 3
         for offset in range(0, len(todo), batch_size):
             batch = todo[offset : offset + batch_size]
@@ -394,6 +399,123 @@ def main() -> None:
     log(f"Проверено id: {checked}, пустых: {empty}")
     log(f"Файл: {ITEMS_FILE}")
     log("=" * 60)
+
+
+def scan_new(ahead: int = 120, empty_stop: int = 40, workers: int = 6) -> int:
+    """
+    Лёгкая проверка новых предметов: после максимального известного id
+    идём вперёд, пока не наберём empty_stop пустых подряд (но не дальше ahead id).
+    Возвращает число вновь найденных предметов.
+    """
+    OUT.mkdir(parents=True, exist_ok=True)
+    found = _prepare_found()
+    max_id = max((int(k) for k in found), default=0)
+    start = max_id + 1
+    end = start + max(1, ahead) - 1
+    empty_stop = max(5, empty_stop)
+    workers = max(1, min(workers, WORKERS))
+
+    log("=" * 60)
+    log("Проверка НОВЫХ предметов (лёгкий режим)")
+    log(f"В каталоге сейчас: {len(found)} шт., максимальный id: {max_id}")
+    log(f"Смотрим id: {start}…{end}")
+    log(f"Стоп после {empty_stop} пустых подряд")
+    log(f"Потоков: {workers}")
+    log("=" * 60)
+
+    if max_id <= 0 and not found:
+        log("Каталог пуст — для первого заполнения запусти полный обход: scrape_by_id.py")
+        return 0
+
+    warmup()
+    t_all = time.perf_counter()
+    new_items: list[dict] = []
+    checked = 0
+    empty_streak = 0
+    empty_total = 0
+    cursor = start
+
+    while cursor <= end and empty_streak < empty_stop:
+        batch_end = min(end, cursor + workers * 2 - 1)
+        batch = list(range(cursor, batch_end + 1))
+        # если уже почти упёрлись в empty_stop — не тянем лишнее
+        results: list[tuple[int, dict | None, float, str]] = []
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futs = {pool.submit(check_id, gid): gid for gid in batch}
+            for fut in as_completed(futs):
+                results.append(fut.result())
+        results.sort(key=lambda x: x[0])
+
+        stop_now = False
+        for gid, item, elapsed, status in results:
+            checked += 1
+            if item:
+                empty_streak = 0
+                with SAVE_LOCK:
+                    found[str(gid)] = item
+                new_items.append(item)
+                log(
+                    f"★ НОВЫЙ [{gid}] {item['name']} — {item['price']} монет ({elapsed:.1f}с)"
+                )
+            else:
+                empty_streak += 1
+                empty_total += 1
+                log(f"· [{gid}] нет ({status}, {elapsed:.1f}с) | пустых подряд: {empty_streak}/{empty_stop}")
+                if empty_streak >= empty_stop:
+                    stop_now = True
+                    break
+        with SAVE_LOCK:
+            save_found(found, batch[-1])
+        if stop_now:
+            log(f"Ранний стоп: {empty_stop} пустых подряд — новых id дальше, скорее всего, нет")
+            break
+        cursor = batch_end + 1
+
+    save_found(found, max(end, max_id))
+    log("")
+    log("=" * 60)
+    log(f"Проверка новых завершена за {time.perf_counter() - t_all:.0f}с")
+    log(f"Проверено id: {checked}, пустых: {empty_total}")
+    log(f"Новых предметов: {len(new_items)}")
+    if new_items:
+        for it in new_items[:20]:
+            log(f"  + [{it['id']}] {it['name']}")
+        if len(new_items) > 20:
+            log(f"  … и ещё {len(new_items) - 20}")
+    else:
+        log("Новых предметов не найдено")
+    log(f"Всего в каталоге: {len(found)} → {ITEMS_FILE}")
+    log("=" * 60)
+    return len(new_items)
+
+
+def main(argv: list[str] | None = None) -> None:
+    import argparse
+
+    ap = argparse.ArgumentParser(description="Сбор предметов Parapa mall по id")
+    ap.add_argument(
+        "--new",
+        action="store_true",
+        help="лёгкая проверка только новых id после максимального известного",
+    )
+    ap.add_argument(
+        "--ahead",
+        type=int,
+        default=120,
+        help="сколько id вперёд смотреть в режиме --new (по умолчанию 120)",
+    )
+    ap.add_argument(
+        "--empty-stop",
+        type=int,
+        default=40,
+        help="стоп после N пустых подряд в режиме --new (по умолчанию 40)",
+    )
+    args = ap.parse_args(argv)
+
+    if args.new:
+        scan_new(ahead=args.ahead, empty_stop=args.empty_stop)
+    else:
+        scan_full()
 
 
 if __name__ == "__main__":

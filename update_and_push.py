@@ -8,9 +8,10 @@
   • какие файлы уйдут в репозиторий
 
 Примеры:
-  py -3 update_and_push.py              # картинки + история цен + push
+  py -3 update_and_push.py              # новые id + картинки + история + push
   py -3 update_and_push.py --enrich     # ещё дозаполнить описания
-  py -3 update_and_push.py --scrape     # полный обход id (долго)
+  py -3 update_and_push.py --scrape     # полный обход всех id (долго)
+  py -3 update_and_push.py --skip-new   # без проверки новых предметов
   py -3 update_and_push.py --dry-run    # только отчёт, без commit/push
 """
 
@@ -348,6 +349,17 @@ def main() -> int:
         help="полный обход товаров по id (долго, может занять часы)",
     )
     ap.add_argument(
+        "--skip-new",
+        action="store_true",
+        help="не проверять новые id после максимального известного",
+    )
+    ap.add_argument(
+        "--ahead",
+        type=int,
+        default=120,
+        help="сколько id вперёд проверять на новые (по умолчанию 120)",
+    )
+    ap.add_argument(
         "--enrich",
         action="store_true",
         help="дозаполнить пустые описания",
@@ -374,6 +386,9 @@ def main() -> int:
     )
     args = ap.parse_args()
 
+    do_new = not args.skip_new and not args.scrape
+    # полный scrape уже покрывает новые id
+
     say(
         box=True,
         msg=(
@@ -382,7 +397,12 @@ def main() -> int:
         ),
     )
     say("План работы:")
-    say(f"  1) Скрап по id .............. {'ДА (--scrape)' if args.scrape else 'нет (пропуск)'}")
+    if args.scrape:
+        say("  1) Новые предметы ............ полный обход (--scrape)")
+    elif do_new:
+        say(f"  1) Новые предметы ............ ДА (после max id, +{args.ahead} вперёд)")
+    else:
+        say("  1) Новые предметы ............ нет (--skip-new)")
     say(f"  2) Описания .................. {'ДА (--enrich)' if args.enrich else 'нет (пропуск)'}")
     say(f"  3) Картинки .................. {'нет' if args.skip_images else 'ДА'}")
     say(f"  4) История цен ............... {'нет' if args.skip_history else 'ДА'}")
@@ -400,9 +420,22 @@ def main() -> int:
 
     if args.scrape:
         code = run_step(
-            "Сбор предметов по id",
-            "Обходит https://parapa.ru/mall/goods/{id}/ и пишет data/items.json",
+            "Полный сбор предметов по id",
+            "Обходит весь диапазон https://parapa.ru/mall/goods/{id}/ (долго)",
             py_cmd("scrape_by_id.py"),
+        )
+        failed += int(code != 0)
+    elif do_new:
+        code = run_step(
+            "Проверка новых предметов",
+            f"Смотрит id после максимального известного (вперёд {args.ahead}), "
+            "пишет новые в data/items.json",
+            py_cmd(
+                "scrape_by_id.py",
+                "--new",
+                "--ahead",
+                str(args.ahead),
+            ),
         )
         failed += int(code != 0)
 
