@@ -1097,6 +1097,24 @@ function bind() {
     }
     if (browseMode()) render();
   });
+
+  // ПК: доп. картинка увеличивается при наведении
+  els.preview.addEventListener("mouseover", (e) => {
+    if (isCoarsePointer()) return;
+    const frame = e.target.closest(".preview-look-frame");
+    if (!frame || !els.preview.contains(frame)) return;
+    els.preview.querySelectorAll(".preview-look-frame.is-open").forEach((f) => {
+      if (f !== frame) f.classList.remove("is-open");
+    });
+    frame.classList.add("is-open");
+  });
+  els.preview.addEventListener("mouseout", (e) => {
+    const frame = e.target.closest(".preview-look-frame");
+    if (!frame) return;
+    const next = e.relatedTarget?.closest?.(".preview-look-frame");
+    if (next === frame) return;
+    frame.classList.remove("is-open");
+  });
 }
 
 async function load(isRefresh = false) {
