@@ -1061,6 +1061,18 @@ body.is-stage #q {
 .brand-block {
   margin: 0 0 1.35rem;
   text-align: center;
+  animation: brand-enter 1.15s ease-out both;
+}
+
+@keyframes brand-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .brand-sub {
@@ -1123,31 +1135,29 @@ body.is-stage #q {
   text-shadow: none;
   filter: drop-shadow(0 0 18px var(--brand-glow))
     drop-shadow(0 0 42px var(--brand-glow-soft));
-  animation: brand-pulse 5s ease-in-out infinite;
+  /* спокойное свечение — без постоянного дрыга */
+  animation: brand-pulse 7s ease-in-out infinite;
+  animation-delay: 1.4s;
 }
 
 .brand.boot-glitch {
-  animation: boot-shake 0.5s steps(2, end);
+  animation: boot-shake 0.62s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
 .brand.boot-glitch::before {
-  animation:
-    slice-a 0.5s steps(3, end),
-    slice-boot-a 0.5s steps(2, end);
-  opacity: 1;
+  animation: slice-boot-a 0.62s steps(2, end) both;
+  opacity: 0.9;
 }
 
 .brand.boot-glitch::after {
-  animation:
-    slice-b 0.5s steps(3, end),
-    slice-boot-b 0.5s steps(2, end);
-  opacity: 1;
+  animation: slice-boot-b 0.62s steps(2, end) both;
+  opacity: 0.85;
 }
 
 .brand.boot-glitch .brand-main {
   animation: none;
   filter:
-    contrast(1.12) brightness(1.1)
+    contrast(1.1) brightness(1.08)
     drop-shadow(0 0 22px var(--brand-glow))
     drop-shadow(-1px 0 var(--g1))
     drop-shadow(1px 0 var(--g2));
@@ -1163,6 +1173,9 @@ body.is-stage #q {
   text-indent: 0.22em;
   pointer-events: none;
   mix-blend-mode: screen;
+  /* по умолчанию спокойно — слои включаются только в boot-glitch */
+  opacity: 0;
+  animation: none;
 }
 
 [data-theme="light"] .brand::before,
@@ -1170,12 +1183,9 @@ body.is-stage #q {
   mix-blend-mode: multiply;
 }
 
-/* тонкие «полосы сигнала», едут по слову */
 .brand::before {
   color: var(--g1);
   z-index: 2;
-  opacity: 0.55;
-  animation: slice-a 4.8s infinite steps(1, end);
   clip-path: inset(12% 0 72% 0);
   text-shadow: -1px 0 color-mix(in srgb, var(--g1) 70%, transparent);
 }
@@ -1183,8 +1193,6 @@ body.is-stage #q {
 .brand::after {
   color: var(--g2);
   z-index: 2;
-  opacity: 0.45;
-  animation: slice-b 3.7s infinite steps(1, end);
   clip-path: inset(58% 0 22% 0);
   text-shadow: 1px 0 color-mix(in srgb, var(--g2) 65%, transparent);
 }
@@ -2151,11 +2159,13 @@ body.is-stage #q {
 }
 
 @keyframes boot-shake {
-  0%, 100% { transform: translate(0); }
-  20% { transform: translate(-2px, 1px) skewX(-1deg); }
-  40% { transform: translate(3px, -1px); }
-  60% { transform: translate(-3px, 0) skewX(1deg); }
-  80% { transform: translate(2px, 1px); }
+  0%, 100% { transform: translate(0) skewX(0); }
+  12% { transform: translate(-2px, 1px) skewX(-0.8deg); }
+  24% { transform: translate(3px, -1px) skewX(0.6deg); }
+  38% { transform: translate(-3px, 0) skewX(1deg); }
+  52% { transform: translate(2px, 1px) skewX(-0.5deg); }
+  68% { transform: translate(-1px, -1px) skewX(0.4deg); }
+  82% { transform: translate(1px, 0) skewX(-0.2deg); }
 }
 
 
@@ -2665,6 +2675,7 @@ body.is-stage #q {
     animation: none !important;
   }
 
+  .brand-block,
   .brand::before,
   .brand::after,
   .brand-main,
@@ -2681,6 +2692,11 @@ body.is-stage #q {
   .media-frame.is-loading::after,
   .side-rail {
     animation: none !important;
+  }
+
+  .brand-block {
+    opacity: 1 !important;
+    transform: none !important;
   }
 
   .atm-flow,

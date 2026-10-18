@@ -178,17 +178,21 @@ function playBootGlitch() {
   if (bootPlayed) return;
   bootPlayed = true;
 
-  els.brand?.classList.add("boot-glitch");
-  setTimeout(() => els.brand?.classList.remove("boot-glitch"), 700);
+  // спокойно → короткий дрыг → снова спокойно
+  setTimeout(() => {
+    if (!els.brand) return;
+    els.brand.classList.add("boot-glitch");
+    setTimeout(() => els.brand?.classList.remove("boot-glitch"), 680);
+  }, 1500);
 
-  // редкие вспышки glitch после загрузки (только визуал)
+  // редкие мягкие вспышки позже
   const pulse = () => {
     if (!els.brand || document.hidden) return;
     els.brand.classList.add("boot-glitch");
-    setTimeout(() => els.brand?.classList.remove("boot-glitch"), 420);
-    setTimeout(pulse, 6000 + Math.random() * 8000);
+    setTimeout(() => els.brand?.classList.remove("boot-glitch"), 480);
+    setTimeout(pulse, 9000 + Math.random() * 10000);
   };
-  setTimeout(pulse, 4500 + Math.random() * 2500);
+  setTimeout(pulse, 9000 + Math.random() * 4000);
 }
 
 let displayedCount = 0;

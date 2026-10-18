@@ -594,16 +594,19 @@ function playBootGlitch() {
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (reduce) return;
 
-  brand.classList.add("boot-glitch");
-  setTimeout(() => brand.classList.remove("boot-glitch"), 700);
+  // спокойно → короткий дрыг → снова спокойно
+  setTimeout(() => {
+    brand.classList.add("boot-glitch");
+    setTimeout(() => brand.classList.remove("boot-glitch"), 680);
+  }, 1500);
 
   const pulse = () => {
     if (document.hidden) return;
     brand.classList.add("boot-glitch");
-    setTimeout(() => brand.classList.remove("boot-glitch"), 420);
-    setTimeout(pulse, 6000 + Math.random() * 8000);
+    setTimeout(() => brand.classList.remove("boot-glitch"), 480);
+    setTimeout(pulse, 9000 + Math.random() * 10000);
   };
-  setTimeout(pulse, 4500 + Math.random() * 2500);
+  setTimeout(pulse, 9000 + Math.random() * 4000);
 }
 
 setTheme(currentTheme());
