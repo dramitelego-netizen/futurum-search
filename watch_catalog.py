@@ -414,11 +414,11 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description="Плавный постоянный мониторинг каталога Parapa → GitHub"
     )
-    ap.add_argument("--batch", type=int, default=25, help="сколько известных предметов обновлять за круг (по умолчанию 25)")
-    ap.add_argument("--ahead", type=int, default=80, help="сколько id вперёд искать новые (по умолчанию 80)")
-    ap.add_argument("--empty-stop", type=int, default=30, help="стоп после N пустых подряд при поиске новых")
-    ap.add_argument("--sleep", type=int, default=120, help="пауза между кругами в секундах (по умолчанию 120)")
-    ap.add_argument("--workers", type=int, default=5, help="параллельных запросов")
+    ap.add_argument("--batch", type=int, default=10, help="сколько известных предметов обновлять за круг (по умолчанию 10)")
+    ap.add_argument("--ahead", type=int, default=40, help="сколько id вперёд искать новые (по умолчанию 40)")
+    ap.add_argument("--empty-stop", type=int, default=20, help="стоп после N пустых подряд при поиске новых")
+    ap.add_argument("--sleep", type=int, default=180, help="пауза между кругами в секундах (по умолчанию 180)")
+    ap.add_argument("--workers", type=int, default=2, help="параллельных запросов (по умолчанию 2, бережно к сайту)")
     ap.add_argument("--once", action="store_true", help="сделать один круг и выйти")
     ap.add_argument("--no-push", action="store_true", help="не заливать на GitHub")
     ap.add_argument("--no-images", action="store_true", help="не качать картинки для новых")
