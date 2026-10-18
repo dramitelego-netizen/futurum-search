@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Search decode — варианты</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07090d;
+      --panel: #12161e;
+      --ink: #e8eef7;
+      --mute: #7d8a9a;
+      --accent: #3dffe0;
+      --line: rgba(232, 238, 247, 0.1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Rajdhani", sans-serif;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, #101820, var(--bg));
+      color: var(--ink);
+      padding: 1.5rem clamp(1rem, 4vw, 2.5rem) 3rem;
+    }
+    h1 {
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin: 0 0 0.35rem;
+    }
+    .lead {
+      color: var(--mute);
+      margin: 0 0 1.5rem;
+      font-size: 1.05rem;
+    }
+    .grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+    .card {
+      background: color-mix(in srgb, var(--panel) 92%, black);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1.1rem 1.15rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+    .card-num {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+    }
+    .card-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+    .card-desc {
+      margin: 0;
+      color: var(--mute);
+      font-size: 0.95rem;
+      line-height: 1.35;
+    }
+    .stage {
+      min-height: 4.2rem;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--line);
+      padding: 0.9rem;
+    }
+    .brand-line {
+      text-align: center;
+    }
+    .brand-line .fut {
+      display: block;
+      font-family: "Orbitron", sans-serif;
+      font-weight: 900;
+      font-size: 1.35rem;
+      letter-spacing: 0.22em;
+      color: var(--accent);
+      text-indent: 0.22em;
+    }
+    .sample {
+      margin: 0.2rem 0 0;
+      font-family: "Orbitron", sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: 0.48em;
+      text-indent: 0.48em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--accent) 72%, var(--mute));
+      min-height: 1.3em;
+    }
+    .sample.is-decoding {
+      color: var(--accent);
+      text-shadow: 0 0 12px color-mix(in srgb, var(--accent) 45%, transparent);
+    }
+    .sample.v-ghost {
+      opacity: 0.55;
+      filter: blur(0.4px);
+    }
+    .sample.v-ghost.is-decoding {
+      opacity: 1;
+      filter: none;
+    }
+    .sample.v-flicker.is-decoding {
+      animation: flicker 0.12s steps(2) infinite;
+    }
+    @keyframes flicker {
+      50% { opacity: 0.55; }
+    }
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: auto;
+    }
+    button {
+      font: inherit;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(61, 255, 224, 0.08);
+      color: var(--ink);
+      padding: 0.45rem 0.95rem;
+      cursor: pointer;
+    }
+    button:hover {
+      border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+      background: rgba(61, 255, 224, 0.16);
+    }
+    button.pick {
+      background: color-mix(in srgb, var(--accent) 22%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+      color: #041410;
+    }
+    .picked {
+      margin-top: 1.5rem;
+      padding: 1rem 1.15rem;
+      border-radius: 12px;
+      border: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent);
+      color: var(--mute);
+      font-size: 1.05rem;
+    }
+    .picked strong {
+      color: var(--accent);
+      font-family: "Orbitron", sans-serif;
+      letter-spacing: 0.08em;
+    }
+    .bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 1.25rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Варианты эффекта Search</h1>
+  <p class="lead">Нажми «Ещё раз» у карточки. Когда выберешь — «Этот» и скажи номер в чате.</p>
+  <div class="bar">
+    <button type="button" id="playAll">Проиграть все</button>
+    <button type="button" id="clearPick">Сбросить выбор</button>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="picked" id="picked">Выбор: пока нет</div>
+
+  <script>
+    const WORD = "Search";
+    const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%*&<>/\\|";
+    const CYBER = "ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄ01<>|/\\#*";
+
+    const variants = [
+      {
+        id: 1,
+        title: "Классика слева направо",
+        desc: "Сначала хаос, потом буквы встают по одной слева → направо. Как сейчас на сайте.",
+        cls: "",
+        run: classicLTR,
+      },
+      {
+        id: 2,
+        title: "Справа налево",
+        desc: "То же, но буквы фиксируются с конца слова.",
+        cls: "",
+        run: classicRTL,
+      },
+      {
+        id: 3,
+        title: "Случайный порядок",
+        desc: "Буквы «лочатся» в случайном порядке — более хаотично.",
+        cls: "",
+        run: randomLock,
+      },
+      {
+        id: 4,
+        title: "Медленный decode",
+        desc: "Дольше крутит символы, спокойнее и читаемее.",
+        cls: "",
+        run: slowDecode,
+      },
+      {
+        id: 5,
+        title: "Быстрый glitch",
+        desc: "Короткий резкий перебор, почти мгновенно собирается слово.",
+        cls: "v-flicker",
+        run: fastGlitch,
+      },
+      {
+        id: 6,
+        title: "Кибер-катакана",
+        desc: "В переборе японские полуширинные + символы, потом SEARCH.",
+        cls: "",
+        run: cyberKatakana,
+      },
+      {
+        id: 7,
+        title: "Typewriter + шум",
+        desc: "Слово печатается слева направо, а справа ещё шумит.",
+        cls: "",
+        run: typewriterNoise,
+      },
+      {
+        id: 8,
+        title: "Wave (волна)",
+        desc: "Фиксация идёт волной: центр раньше краёв.",
+        cls: "",
+        run: waveCenter,
+      },
+      {
+        id: 9,
+        title: "Из blur/ghost",
+        desc: "Сначала бледный и чуть размытый шум, к финалу проявляется.",
+        cls: "v-ghost",
+        run: ghostReveal,
+      },
+      {
+        id: 10,
+        title: "Slot machine",
+        desc: "Каждая буква крутится как барабан и останавливается по очереди.",
+        cls: "",
+        run: slotMachine,
+      },
+    ];
+
+    const grid = document.getElementById("grid");
+    const pickedEl = document.getElementById("picked");
+    const timers = new Map();
+
+    function clearTimer(id) {
+      const t = timers.get(id);
+      if (!t) return;
+      if (t.raf) cancelAnimationFrame(t.raf);
+      if (t.timeouts) t.timeouts.forEach(clearTimeout);
+      timers.delete(id);
+    }
+
+    function track(id) {
+      clearTimer(id);
+      const bag = { timeouts: [], raf: 0 };
+      timers.set(id, bag);
+      return {
+        wait(ms) {
+          return new Promise((resolve) => {
+            const t = setTimeout(resolve, ms);
+            bag.timeouts.push(t);
+          });
+        },
+        frame() {
+          return new Promise((resolve) => {
+            bag.raf = requestAnimationFrame(resolve);
+          });
+        },
+      };
+    }
+
+    function randGlyph(pool = GLYPHS) {
+      return pool[(Math.random() * pool.length) | 0];
+    }
+
+    async function classicLTR(el, ctrl) {
+      const target = WORD.toUpperCase();
+      const settled = Array(target.length).fill(false);
+      let lockAt = 0;
+      el.classList.add("is-decoding");
+      for (let step = 0; lockAt < target.length; step += 1) {
+        if (step > 8 && (step - 8) % 3 === 0) {
+          settled[lockAt] = true;
+          lockAt += 1;
+        }
+        el.textContent = [...target]
+          .map((ch, i) => (settled[i] ? ch : randGlyph()))
+          .join("");
+        await ctrl.wait(32);
+      }
+      el.textContent = target;
+      el.classList.remove("is-decoding");
+    }
+
+    async function classicRTL(el, ctrl) {
+      const target = WORD.toUpperCase();
+      const settled = Array(target.length).fill(false);
+      let lockAt = target.length - 1;
+      el.classList.add("is-decoding");
+      for (let step = 0; lockAt >= 0; step += 1) {
+        if (step > 8 && (step - 8) % 3 === 0) {
+          settled[lockAt] = true;
+          lockAt -= 1;
+        }
+        el.textContent = [...target]
+          .map((ch, i) => (settled[i] ? ch : randGlyph()))
+          .join("");
+        await ctrl.wait(32);
+      }
+      el.textContent = target;
+      el.classList.remove("is-decoding");
+    }
+
+    async function randomLock(el, ctrl) {
+      const target = WORD.toUpperCase();
+      const order = [...target.keys()].sort(() => Math.random() - 0.5);
+      const settled = Array(target.length).fill(false);
+      el.classList.add("is-decoding");
+      for (let step = 0; step < 10; step += 1) {
+        el.textContent = [...target].map(() => randGlyph()).join("");
+        await ctrl.wait(28);
+      }
+      for (const idx of order) {
+        for (let k = 0; k < 3; k += 1) {
+          el.textContent = [...target]
+            .map((ch, i) => (settled[i] ? ch : randGlyph()))
+            .join("");
+          await ctrl.wait(30);
+        }
+        settled[idx] = true;
+        el.textContent = [...target]
+          .map((ch, i) => (settled[i] ? ch : randGlyph()))
+          .join("");
+        await ctrl.wait(40);
+      }
+      el.textContent = target;
+      el.classList.remove("is-decoding");
+    }
+
+    async function slowDecode(el, ctrl) {
+      const target = WORD.toUpperCase();
+      const settled = Array(target.length).fill(false);
+      let lockAt = 0;
+      el.classList.add("is-decoding");
+      for (let step = 0; lockAt < target.length; step += 1) {
+        if (step > 16 && (step - 16) % 5 === 0) {
+          settled[lockAt] = true;
+          lockAt += 1;
+        }
+        el.textContent = [...target]
+          .map((ch, i) => (settled[i] ? ch : randGlyph()))
+          .join("");
+        await ctrl.wait(55);
+      }
+      el.textContent = target;
+      el.classList.remove("is-decoding");
+    }
+
+    async function fastGlitch(el, ctrl) {
+      const target = WORD.toUpperCase();
+      el.classList.add("is-decoding");
+      for (let i = 0; i < 12; i += 1) {
+        el.textContent = [...target].map(() => randGlyph()).join("");
+        await ctrl.wait(28);
+      }
+      const settled = Array(target.length).fill(false);
+      for (let i = 0; i < target.length; i += 1) {
+        settled[i] = true;
+        el.textContent = [...target]
+          .map((ch, j) => (settled[j] ? ch : randGlyph()))
+          .join("");
+        await ctrl.wait(45);
+      }
+      el.textContent = target;
+      el.classList.remove("is-decoding");
+    }
+
+    async function cyberKatakana(el, ctrl) {
+      const target = WORD.toUpperCase();
+      const settled = Array(target.length).fill(false);
+      let lockAt = 0;
+      el.classList.add("is-decoding");
+      for (let step = 0; lockAt < target.length; step += 1) {
+        if (step > 10 && (step - 10) % 3 === 0) {
+          settled[lockAt] = true;
+          lockAt += 1;
+        }
+        el.textContent = [...target]
+          .map((ch, i) => (settled[i] ? ch : randGlyph(CYBER)))
+          .join("");
+        await ctrl.wait(34);
+      }
+      el.textContent = target;
+      el.classList.remove("is-decoding");
+    }
+
+    async function typewriterNoise(el, ctrl) {
+      const target = WORD.toUpperCase();
+      el.classList.add("is-decoding");
+      for (let n = 0; n <= target.length; n += 1) {
+        for (let k = 0; k < 4; k += 1) {
+          const head = target.slice(0, n);
+          const tail = Array.from({ length: target.length - n }, () => randGlyph()).join("");
+          el.textContent = head + tail;
+          await ctrl.wait(28);
+        }
+      }
+      el.textContent = target;
+      el.classList.remove("is-decoding");
+    }
+
+    async function waveCenter(el, ctrl) {
+      const target = WORD.toUpperCase();
+      const mid = (target.length - 1) / 2;
+      const order = [...target.keys()].sort(
+        (a, b) => Math.abs(a - mid) - Math.abs(b - mid) || a - b
+      );
+      const settled = Array(target.length).fill(false);
+      el.classList.add("is-decoding");
+      for (let step = 0; step < 12; step += 1) {
+        el.textContent = [...target].map(() => randGlyph()).join("");
+        await ctrl.wait(30);
+      }
+      for (const idx of order) {
+        for (let k = 0; k < 3; k += 1) {
+          el.textContent = [...target]
+            .map((ch, i) => (settled[i] ? ch : randGlyph()))
+            .join("");
+          await ctrl.wait(32);
+        }
+        settled[idx] = true;
+      }
+      el.textContent = target;
+      el.classList.remove("is-decoding");
+    }
+
+    async function ghostReveal(el, ctrl) {
+      const target = WORD.toUpperCase();
+      const settled = Array(target.length).fill(false);
+      let lockAt = 0;
+      el.classList.add("is-decoding");
+      for (let step = 0; lockAt < target.length; step += 1) {
+        if (step > 10 && (step - 10) % 3 === 0) {
+          settled[lockAt] = true;
+          lockAt += 1;
+        }
+        el.textContent = [...target]
+          .map((ch, i) => (settled[i] ? ch : randGlyph()))
+          .join("");
+        await ctrl.wait(36);
+      }
+      el.textContent = target;
+      el.classList.remove("is-decoding");
+    }
+
+    async function slotMachine(el, ctrl) {
+      const target = WORD.toUpperCase();
+      const pos = Array(target.length).fill(0);
+      el.classList.add("is-decoding");
+      // все крутятся
+      for (let t = 0; t < 18; t += 1) {
+        el.textContent = [...target].map(() => randGlyph()).join("");
+        await ctrl.wait(30);
+      }
+      for (let i = 0; i < target.length; i += 1) {
+        for (let spin = 0; spin < 6 + i * 2; spin += 1) {
+          el.textContent = [...target]
+            .map((ch, j) => (j < i ? ch : randGlyph()))
+            .join("");
+          await ctrl.wait(28);
+        }
+        pos[i] = 1;
+        el.textContent = [...target]
+          .map((ch, j) => (j <= i ? ch : randGlyph()))
+          .join("");
+        await ctrl.wait(80);
+      }
+      el.textContent = target;
+      el.classList.remove("is-decoding");
+    }
+
+    function render() {
+      grid.innerHTML = variants
+        .map(
+          (v) => `
+        <article class="card" data-id="${v.id}">
+          <div class="card-head">
+            <span class="card-num">#${v.id}</span>
+            <span class="card-title">${v.title}</span>
+          </div>
+          <p class="card-desc">${v.desc}</p>
+          <div class="stage">
+            <div class="brand-line">
+              <span class="fut">FUTURUM</span>
+              <p class="sample ${v.cls}" data-sample="${v.id}">${WORD.toUpperCase()}</p>
+            </div>
+          </div>
+          <div class="actions">
+            <button type="button" data-replay="${v.id}">Ещё раз</button>
+            <button type="button" class="pick" data-pick="${v.id}">Этот</button>
+          </div>
+        </article>`
+        )
+        .join("");
+    }
+
+    async function play(id) {
+      const v = variants.find((x) => x.id === id);
+      const el = document.querySelector(`[data-sample="${id}"]`);
+      if (!v || !el) return;
+      const ctrl = track(id);
+      el.className = `sample ${v.cls}`.trim();
+      await v.run(el, ctrl);
+    }
+
+    render();
+
+    grid.addEventListener("click", (e) => {
+      const replay = e.target.closest("[data-replay]");
+      const pick = e.target.closest("[data-pick]");
+      if (replay) play(Number(replay.dataset.replay));
+      if (pick) {
+        const id = Number(pick.dataset.pick);
+        const v = variants.find((x) => x.id === id);
+        pickedEl.innerHTML = `Выбор: <strong>#${id} — ${v.title}</strong>. Напиши в чат: «возьми ${id}»`;
+        localStorage.setItem("futurum_decode_pick", String(id));
+      }
+    });
+
+    document.getElementById("playAll").addEventListener("click", async () => {
+      for (const v of variants) {
+        await play(v.id);
+        await new Promise((r) => setTimeout(r, 250));
+      }
+    });
+
+    document.getElementById("clearPick").addEventListener("click", () => {
+      localStorage.removeItem("futurum_decode_pick");
+      pickedEl.textContent = "Выбор: пока нет";
+    });
+
+    const saved = Number(localStorage.getItem("futurum_decode_pick") || 0);
+    if (saved) {
+      const v = variants.find((x) => x.id === saved);
+      if (v) {
+        pickedEl.innerHTML = `Выбор: <strong>#${saved} — ${v.title}</strong>. Напиши в чат: «возьми ${saved}»`;
+      }
+    }
+
+    // автопроигрыш всех по очереди при открытии — мягко, с паузой
+    (async () => {
+      await new Promise((r) => setTimeout(r, 400));
+      for (const v of variants) {
+        await play(v.id);
+        await new Promise((r) => setTimeout(r, 200));
+      }
+    })();
+  </script>
+</body>
+</html>

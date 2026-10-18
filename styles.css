@@ -42,6 +42,27 @@
   --scan: 0.01;
 }
 
+[data-theme="gray"] {
+  /* тёмный графит — между чёрным и светлым */
+  --bg: #5c616a;
+  --ink: #eef0f3;
+  --mute: #b0b5be;
+  --line: rgba(238, 240, 243, 0.14);
+  --panel: rgba(72, 76, 84, 0.92);
+  --panel-solid: #4a4e56;
+  --accent: #3dffe0;
+  --accent-2: #ff4d6d;
+  --accent-dim: rgba(61, 255, 224, 0.14);
+  --shadow: rgba(0, 0, 0, 0.35);
+  --glow-a: rgba(61, 255, 224, 0.16);
+  --glow-b: rgba(255, 77, 109, 0.1);
+  --atm-1: rgba(61, 255, 224, 0.14);
+  --atm-2: rgba(140, 150, 170, 0.16);
+  --atm-grad: linear-gradient(180deg, #676c76 0%, #575b64 50%, #4a4e56 100%);
+  --grid-line: rgba(238, 240, 243, 0.05);
+  --scan: 0.045;
+}
+
 * { box-sizing: border-box; }
 
 html {
@@ -194,6 +215,50 @@ body {
 [data-theme="light"] .glow-a { opacity: 0.55; }
 [data-theme="light"] .glow-b { opacity: 0.35; }
 
+/* серая база: явный графит, не чёрный */
+[data-theme="gray"] .atm-wash {
+  background: linear-gradient(165deg, #7a808a 0%, #646a74 45%, #545962 100%);
+  background-size: 100% 100%;
+  animation: none;
+  opacity: 1;
+}
+
+[data-theme="gray"] .atm-flow {
+  background:
+    radial-gradient(ellipse 70% 55% at 18% 12%, rgba(61, 255, 224, 0.22), transparent 60%),
+    radial-gradient(ellipse 55% 48% at 86% 78%, rgba(120, 140, 180, 0.2), transparent 65%);
+  opacity: 1;
+  filter: blur(22px);
+  mix-blend-mode: normal;
+}
+
+[data-theme="gray"] .atm-flow-b {
+  opacity: 0.85;
+  mix-blend-mode: normal;
+  background:
+    radial-gradient(ellipse 80% 45% at 50% 110%, rgba(90, 100, 120, 0.55), transparent 68%);
+  filter: blur(24px);
+}
+
+[data-theme="gray"] .atm-flow-c {
+  opacity: 0.65;
+  mix-blend-mode: normal;
+  background:
+    radial-gradient(circle 42% at 70% 30%, rgba(140, 160, 190, 0.22), transparent 68%);
+  filter: blur(26px);
+}
+
+[data-theme="gray"] .scanlines {
+  opacity: 0.04;
+}
+
+[data-theme="gray"] .atmosphere .grid {
+  opacity: 0.12;
+}
+
+[data-theme="gray"] .glow-a { opacity: 0.4; }
+[data-theme="gray"] .glow-b { opacity: 0.22; }
+
 /* —— пресеты фона (data-bg): заметно разные —— */
 html[data-bg="vitrine"] .atm-wash {
   background:
@@ -269,6 +334,42 @@ html[data-theme="light"][data-bg="vitrine"] .atm-flow-c {
 html[data-theme="light"][data-bg="vitrine"] .glow-a { opacity: 0.7; }
 html[data-theme="light"][data-bg="vitrine"] .glow-b { opacity: 0.35; }
 html[data-theme="light"][data-bg="vitrine"] .atmosphere .grid { opacity: 0.12; }
+
+/* Витрина · серый */
+html[data-theme="gray"][data-bg="vitrine"] .atm-wash {
+  background: linear-gradient(185deg, #7e848e 0%, #686e78 45%, #555b64 100%);
+  background-size: 100% 100%;
+  animation: none;
+}
+
+html[data-theme="gray"][data-bg="vitrine"] .atm-flow {
+  background:
+    radial-gradient(ellipse 95% 75% at 5% -5%, rgba(61, 255, 224, 0.28), transparent 52%),
+    radial-gradient(ellipse 50% 45% at 92% 88%, rgba(100, 130, 170, 0.22), transparent 60%);
+  filter: blur(20px);
+  mix-blend-mode: normal;
+  opacity: 1;
+}
+
+html[data-theme="gray"][data-bg="vitrine"] .atm-flow-b {
+  background:
+    radial-gradient(ellipse 110% 55% at 50% 115%, rgba(70, 80, 95, 0.6), transparent 65%);
+  mix-blend-mode: normal;
+  filter: blur(22px);
+  opacity: 0.95;
+}
+
+html[data-theme="gray"][data-bg="vitrine"] .atm-flow-c {
+  background:
+    radial-gradient(circle 55% at 30% 26%, rgba(61, 255, 224, 0.18), transparent 62%);
+  opacity: 0.75;
+  mix-blend-mode: normal;
+  filter: blur(24px);
+}
+
+html[data-theme="gray"][data-bg="vitrine"] .glow-a { opacity: 0.5; }
+html[data-theme="gray"][data-bg="vitrine"] .glow-b { opacity: 0.2; }
+html[data-theme="gray"][data-bg="vitrine"] .atmosphere .grid { opacity: 0.14; }
 
 /* Аврора — цветные пятна */
 html[data-bg="aurora"] .atm-wash {
@@ -372,6 +473,53 @@ html[data-theme="light"][data-bg="aurora"] .glow-a { opacity: 0.65; }
 html[data-theme="light"][data-bg="aurora"] .glow-b { opacity: 0.55; }
 html[data-theme="light"][data-bg="aurora"] .atmosphere .grid { opacity: 0.1; }
 
+/* Аврора · серый */
+html[data-theme="gray"][data-bg="aurora"] .atm-wash {
+  background:
+    linear-gradient(
+      125deg,
+      #6e7480 0%,
+      #5a6270 32%,
+      #64606c 68%,
+      #525860 100%
+    );
+  background-size: 220% 220%;
+  animation: atm-wash-drift 36s ease-in-out infinite alternate;
+}
+
+html[data-theme="gray"][data-bg="aurora"] .atm-flow {
+  background:
+    radial-gradient(ellipse 58% 52% at 12% 20%, rgba(61, 255, 224, 0.32), transparent 58%),
+    radial-gradient(ellipse 52% 48% at 88% 14%, rgba(100, 140, 220, 0.28), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 55% 90%, rgba(255, 100, 140, 0.22), transparent 62%);
+  filter: blur(18px);
+  opacity: 1;
+  mix-blend-mode: normal;
+}
+
+html[data-theme="gray"][data-bg="aurora"] .atm-flow-b {
+  opacity: 0.95;
+  mix-blend-mode: normal;
+  background:
+    radial-gradient(ellipse 50% 42% at 72% 52%, rgba(61, 255, 224, 0.22), transparent 60%),
+    radial-gradient(ellipse 46% 40% at 22% 72%, rgba(255, 100, 140, 0.18), transparent 62%),
+    radial-gradient(ellipse 40% 36% at 90% 78%, rgba(130, 120, 210, 0.16), transparent 60%);
+  filter: blur(20px);
+}
+
+html[data-theme="gray"][data-bg="aurora"] .atm-flow-c {
+  opacity: 0.8;
+  mix-blend-mode: normal;
+  background:
+    radial-gradient(circle 48% at 38% 40%, rgba(61, 255, 224, 0.2), transparent 65%),
+    radial-gradient(circle 42% at 70% 60%, rgba(120, 150, 220, 0.18), transparent 66%);
+  filter: blur(22px);
+}
+
+html[data-theme="gray"][data-bg="aurora"] .glow-a { opacity: 0.45; }
+html[data-theme="gray"][data-bg="aurora"] .glow-b { opacity: 0.35; }
+html[data-theme="gray"][data-bg="aurora"] .atmosphere .grid { opacity: 0.14; }
+
 /* Минимал */
 html[data-bg="minimal"] .atm-wash {
   background: linear-gradient(180deg, #080a0d 0%, #05070a 55%, #040506 100%);
@@ -439,6 +587,41 @@ html[data-theme="light"][data-bg="minimal"] .glow-b { opacity: 0.12; }
 html[data-theme="light"][data-bg="minimal"] .atmosphere .grid {
   opacity: 0.08;
 }
+
+/* Минимал · серый */
+html[data-theme="gray"][data-bg="minimal"] .atm-wash {
+  background: linear-gradient(180deg, #727884 0%, #5e646e 55%, #50555e 100%);
+  background-size: 100% 100%;
+  animation: none;
+}
+
+html[data-theme="gray"][data-bg="minimal"] .atm-flow {
+  background:
+    radial-gradient(ellipse 75% 48% at 50% -8%, rgba(61, 255, 224, 0.14), transparent 65%);
+  filter: blur(32px);
+  opacity: 0.85;
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html[data-theme="gray"][data-bg="minimal"] .atm-flow-b {
+  display: block;
+  opacity: 0.5;
+  background:
+    radial-gradient(ellipse 90% 40% at 50% 110%, rgba(80, 90, 105, 0.45), transparent 70%);
+  filter: blur(28px);
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html[data-theme="gray"][data-bg="minimal"] .atm-flow-c {
+  display: none;
+  opacity: 0;
+}
+
+html[data-theme="gray"][data-bg="minimal"] .glow-a { opacity: 0.18; }
+html[data-theme="gray"][data-bg="minimal"] .glow-b { opacity: 0.08; }
+html[data-theme="gray"][data-bg="minimal"] .atmosphere .grid { opacity: 0.1; }
 
 /* Сигнал — сильный бирюзовый */
 html[data-bg="signal"] .atm-wash {
@@ -521,6 +704,46 @@ html[data-theme="light"][data-bg="signal"] .atm-flow-c {
 html[data-theme="light"][data-bg="signal"] .glow-a { opacity: 0.8; }
 html[data-theme="light"][data-bg="signal"] .glow-b { opacity: 0.15; }
 html[data-theme="light"][data-bg="signal"] .atmosphere .grid { opacity: 0.14; }
+
+/* Сигнал · серый */
+html[data-theme="gray"][data-bg="signal"] .atm-wash {
+  background:
+    linear-gradient(160deg, #4a6868 0%, #556870 35%, #5a646c 65%, #525860 100%);
+  background-size: 180% 180%;
+  animation: atm-wash-drift 30s ease-in-out infinite alternate;
+}
+
+html[data-theme="gray"][data-bg="signal"] .atm-flow {
+  background:
+    radial-gradient(ellipse 72% 58% at 14% 14%, rgba(61, 255, 224, 0.4), transparent 55%),
+    radial-gradient(ellipse 50% 44% at 86% 10%, rgba(100, 230, 210, 0.22), transparent 58%),
+    radial-gradient(ellipse 55% 50% at 68% 92%, rgba(40, 120, 125, 0.35), transparent 62%);
+  filter: blur(16px);
+  opacity: 1;
+  mix-blend-mode: normal;
+}
+
+html[data-theme="gray"][data-bg="signal"] .atm-flow-b {
+  background:
+    radial-gradient(ellipse 58% 50% at 90% 50%, rgba(61, 255, 224, 0.28), transparent 58%),
+    radial-gradient(ellipse 45% 40% at 10% 90%, rgba(61, 255, 224, 0.18), transparent 60%);
+  mix-blend-mode: normal;
+  opacity: 1;
+  filter: blur(18px);
+}
+
+html[data-theme="gray"][data-bg="signal"] .atm-flow-c {
+  display: block;
+  background:
+    radial-gradient(circle 50% at 40% 36%, rgba(61, 255, 224, 0.24), transparent 62%);
+  opacity: 0.85;
+  mix-blend-mode: normal;
+  filter: blur(20px);
+}
+
+html[data-theme="gray"][data-bg="signal"] .glow-a { opacity: 0.55; }
+html[data-theme="gray"][data-bg="signal"] .glow-b { opacity: 0.12; }
+html[data-theme="gray"][data-bg="signal"] .atmosphere .grid { opacity: 0.18; }
 
 /* —— светлая тема: панели и UI на белом фоне —— */
 [data-theme="light"] .side-menu {
@@ -1061,7 +1284,7 @@ body.menu-open .side-rail {
 .theme-switch-track {
   position: relative;
   display: block;
-  width: 72px;
+  width: 96px;
   height: 38px;
   border-radius: 999px;
   border: 1px solid var(--line);
@@ -1083,20 +1306,27 @@ body.menu-open .side-rail {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   line-height: 1;
-  opacity: 0.35;
+  opacity: 0.3;
   transition: opacity 0.25s ease, color 0.25s ease;
   pointer-events: none;
 }
 
 .theme-icon-moon {
-  left: 10px;
+  left: 9px;
   color: var(--ink);
 }
 
+.theme-icon-gray {
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #6b7280;
+  font-size: 0.55rem;
+}
+
 .theme-icon-sun {
-  right: 10px;
+  right: 9px;
   color: #d4a017;
 }
 
@@ -1115,7 +1345,7 @@ body.menu-open .side-rail {
   z-index: 2;
 }
 
-/* тёмная: ползунок слева, подсвечена луна */
+/* тёмная: слева */
 [data-theme="dark"] .theme-switch-knob {
   transform: translateX(0);
   background: linear-gradient(145deg, #3dffe0, #1aa892);
@@ -1129,13 +1359,14 @@ body.menu-open .side-rail {
   color: var(--accent);
 }
 
-[data-theme="dark"] .theme-icon-sun {
+[data-theme="dark"] .theme-icon-sun,
+[data-theme="dark"] .theme-icon-gray {
   opacity: 0.28;
 }
 
-/* светлая: ползунок справа, подсвечено солнце */
+/* светлая: справа */
 [data-theme="light"] .theme-switch-knob {
-  transform: translateX(34px);
+  transform: translateX(58px);
   background: linear-gradient(145deg, #ffe08a, #f0b429);
   box-shadow:
     0 4px 14px rgba(240, 180, 41, 0.4),
@@ -1146,7 +1377,27 @@ body.menu-open .side-rail {
   opacity: 0.95;
 }
 
-[data-theme="light"] .theme-icon-moon {
+[data-theme="light"] .theme-icon-moon,
+[data-theme="light"] .theme-icon-gray {
+  opacity: 0.28;
+}
+
+/* серая: по центру */
+[data-theme="gray"] .theme-switch-knob {
+  transform: translateX(29px);
+  background: linear-gradient(145deg, #9aa3b0, #6b7480);
+  box-shadow:
+    0 4px 14px rgba(60, 70, 85, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+[data-theme="gray"] .theme-icon-gray {
+  opacity: 0.95;
+  color: #3d4654;
+}
+
+[data-theme="gray"] .theme-icon-moon,
+[data-theme="gray"] .theme-icon-sun {
   opacity: 0.28;
 }
 
@@ -1283,6 +1534,41 @@ body.is-stage #q {
   text-transform: uppercase;
   color: color-mix(in srgb, var(--accent) 72%, var(--mute));
   opacity: 0.88;
+  min-height: 1.2em;
+  transition: color 0.25s ease, opacity 0.45s ease, transform 0.45s ease, filter 0.45s ease;
+}
+
+.brand-sub.is-pending {
+  opacity: 0;
+  transform: translateY(6px);
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+.brand-sub.is-appear {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+.brand-sub.is-decoding {
+  color: var(--accent);
+  opacity: 1;
+  text-shadow: 0 0 12px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.brand-sub.is-decoding-fast {
+  animation: search-flicker 0.12s steps(2) infinite;
+}
+
+.brand-sub.is-flicker {
+  color: var(--accent);
+  opacity: 0.95;
+  text-shadow: 0 0 8px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+@keyframes search-flicker {
+  50% { opacity: 0.55; }
 }
 
 /* —— FUTURUM signal-slice glitch (бирюза) —— */
@@ -2419,7 +2705,7 @@ body.is-stage #q {
   }
 
   .theme-switch-track {
-    width: 52px;
+    width: 72px;
     height: 30px;
   }
 
@@ -2430,11 +2716,16 @@ body.is-stage #q {
     left: 4px;
   }
 
-  .theme-icon-moon { left: 7px; font-size: 0.7rem; }
-  .theme-icon-sun { right: 7px; font-size: 0.7rem; }
+  .theme-icon-moon { left: 7px; font-size: 0.65rem; }
+  .theme-icon-gray { font-size: 0.45rem; }
+  .theme-icon-sun { right: 7px; font-size: 0.65rem; }
 
   [data-theme="light"] .theme-switch-knob {
-    transform: translateX(22px);
+    transform: translateX(42px);
+  }
+
+  [data-theme="gray"] .theme-switch-knob {
+    transform: translateX(21px);
   }
 
   .theme-switch:active .theme-switch-knob {

@@ -7,9 +7,9 @@
   <script>
     (() => {
       try {
+        const themes = ["dark", "light", "gray"];
         const t = localStorage.getItem("futurum_theme");
-        if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
-        else document.documentElement.setAttribute("data-theme", "dark");
+        document.documentElement.setAttribute("data-theme", themes.includes(t) ? t : "dark");
         const bgs = ["vitrine", "aurora", "minimal", "signal"];
         const b = localStorage.getItem("futurum_bg");
         document.documentElement.setAttribute("data-bg", bgs.includes(b) ? b : "vitrine");
@@ -22,12 +22,13 @@
   <style>
     html { background: #05070a; }
     html[data-theme="light"] { background: #f3f6f8; }
+    html[data-theme="gray"] { background: #5c616a; }
     body { background: transparent; }
   </style>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=78" />
+  <link rel="stylesheet" href="styles.css?v=87" />
 </head>
 <body>
   <div class="atmosphere" aria-hidden="true">
@@ -70,9 +71,10 @@
 
       <div class="side-menu-block">
         <span class="side-menu-label">Тема</span>
-        <button type="button" class="theme-switch" id="themeToggle" role="switch" aria-checked="true" aria-label="Сменить тему" title="Тема">
+        <button type="button" class="theme-switch" id="themeToggle" role="switch" aria-checked="true" aria-label="Сменить тему" title="Тёмная → серая → светлая">
           <span class="theme-switch-track" aria-hidden="true">
             <span class="theme-switch-icon theme-icon-moon">☾</span>
+            <span class="theme-switch-icon theme-icon-gray">●</span>
             <span class="theme-switch-icon theme-icon-sun">☀</span>
             <span class="theme-switch-knob"></span>
           </span>
@@ -135,7 +137,7 @@
           <span class="catalog-stat-value" id="catalogCount">0</span>
           <span class="catalog-stat-unit">предметов</span>
         </aside>
-        <a class="side-nav-btn" href="./catalog.html?v=78">
+        <a class="side-nav-btn" href="./catalog.html?v=87">
           <span class="side-nav-btn-title">Все предметы</span>
           <span class="side-nav-btn-desc">Список, сортировка и история цен</span>
         </a>
@@ -149,7 +151,7 @@
         <h1 class="brand" data-text="FUTURUM" aria-label="FUTURUM">
           <span class="brand-main">FUTURUM</span>
         </h1>
-        <p class="brand-sub" aria-hidden="true">Search</p>
+        <p class="brand-sub is-pending" id="brandSub" data-text="Search" aria-hidden="true"></p>
       </div>
       <div class="search-wrap">
         <input
@@ -186,8 +188,8 @@
     </section>
   </main>
 
-  <script src="fav-store.js?v=78"></script>
-  <script src="particles.js?v=78"></script>
-  <script src="app.js?v=78"></script>
+  <script src="fav-store.js?v=87"></script>
+  <script src="particles.js?v=87"></script>
+  <script src="app.js?v=87"></script>
 </body>
 </html>

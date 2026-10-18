@@ -1,4 +1,5 @@
 const THEME_KEY = "futurum_theme";
+const THEME_MODES = ["dark", "gray", "light"];
 const SORT_KEY = "futurum_catalog_sort";
 const SORT_MODES = ["name", "price-asc", "price-desc", "discount"];
 
@@ -72,13 +73,17 @@ async function syncFavs() {
 }
 
 function currentTheme() {
-  return document.documentElement.getAttribute("data-theme") === "light"
-    ? "light"
-    : "dark";
+  const t = document.documentElement.getAttribute("data-theme");
+  return THEME_MODES.includes(t) ? t : "dark";
+}
+
+function nextTheme(theme) {
+  const i = THEME_MODES.indexOf(theme);
+  return THEME_MODES[(i < 0 ? 0 : i + 1) % THEME_MODES.length];
 }
 
 function setTheme(theme) {
-  const next = theme === "light" ? "light" : "dark";
+  const next = THEME_MODES.includes(theme) ? theme : "dark";
   document.documentElement.setAttribute("data-theme", next);
   try {
     localStorage.setItem(THEME_KEY, next);
@@ -86,12 +91,14 @@ function setTheme(theme) {
     /* ignore */
   }
   if (els.themeToggle) {
-    const isDark = next === "dark";
-    els.themeToggle.setAttribute(
-      "aria-label",
-      isDark ? "Включить светлую тему" : "Включить тёмную тему"
-    );
-    els.themeToggle.setAttribute("aria-checked", isDark ? "true" : "false");
+    const labels = {
+      dark: "Тема: тёмная. Дальше — серая",
+      gray: "Тема: серая. Дальше — светлая",
+      light: "Тема: светлая. Дальше — тёмная",
+    };
+    els.themeToggle.setAttribute("aria-label", labels[next] || "Сменить тему");
+    els.themeToggle.setAttribute("aria-checked", next === "dark" ? "true" : "false");
+    els.themeToggle.title = "Тёмная → серая → светлая";
   }
 }
 
@@ -516,7 +523,7 @@ function render() {
 
 function bind() {
   els.themeToggle?.addEventListener("click", () => {
-    setTheme(currentTheme() === "dark" ? "light" : "dark");
+    setTheme(nextTheme(currentTheme()));
   });
 
   els.saleToggle?.addEventListener("click", () => {

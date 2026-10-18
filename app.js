@@ -1,4 +1,5 @@
 const THEME_KEY = "futurum_theme";
+const THEME_MODES = ["dark", "gray", "light"];
 const BG_KEY = "futurum_bg";
 const BG_MODES = ["vitrine", "aurora", "minimal", "signal"];
 const SORT_KEY = "futurum_sort";
@@ -49,6 +50,7 @@ const els = {
   sortPills: document.getElementById("sortPills"),
   resultsCount: document.getElementById("resultsCount"),
   brand: document.querySelector(".brand"),
+  brandSub: document.getElementById("brandSub"),
   menuOpen: document.getElementById("menuOpen"),
   menuClose: document.getElementById("menuClose"),
   menuBackdrop: document.getElementById("menuBackdrop"),
@@ -122,13 +124,17 @@ function updateFiltersUi() {
 }
 
 function currentTheme() {
-  return document.documentElement.getAttribute("data-theme") === "light"
-    ? "light"
-    : "dark";
+  const t = document.documentElement.getAttribute("data-theme");
+  return THEME_MODES.includes(t) ? t : "dark";
+}
+
+function nextTheme(theme) {
+  const i = THEME_MODES.indexOf(theme);
+  return THEME_MODES[(i < 0 ? 0 : i + 1) % THEME_MODES.length];
 }
 
 function setTheme(theme) {
-  const next = theme === "light" ? "light" : "dark";
+  const next = THEME_MODES.includes(theme) ? theme : "dark";
   document.documentElement.setAttribute("data-theme", next);
   try {
     localStorage.setItem(THEME_KEY, next);
@@ -136,13 +142,19 @@ function setTheme(theme) {
     /* ignore */
   }
   if (els.themeToggle) {
-    const isDark = next === "dark";
-    els.themeToggle.title = isDark ? "Светлая тема" : "Тёмная тема";
-    els.themeToggle.setAttribute(
-      "aria-label",
-      isDark ? "Включить светлую тему" : "Включить тёмную тему"
-    );
-    els.themeToggle.setAttribute("aria-checked", isDark ? "true" : "false");
+    const labels = {
+      dark: "Тема: тёмная. Дальше — серая",
+      gray: "Тема: серая. Дальше — светлая",
+      light: "Тема: светлая. Дальше — тёмная",
+    };
+    const titles = {
+      dark: "Тёмная → серая → светлая",
+      gray: "Серая → светлая → тёмная",
+      light: "Светлая → тёмная → серая",
+    };
+    els.themeToggle.title = titles[next] || "Тема";
+    els.themeToggle.setAttribute("aria-label", labels[next] || "Сменить тему");
+    els.themeToggle.setAttribute("aria-checked", next === "dark" ? "true" : "false");
   }
 }
 
@@ -169,14 +181,142 @@ function setBg(mode) {
 }
 
 let bootPlayed = false;
+let searchIdleTimer = 0;
+let searchBusy = false;
+
+const SEARCH_GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%*&<>/\\|";
+
+function searchTarget() {
+  return String(els.brandSub?.dataset.text || "Search").toUpperCase();
+}
+
+function randSearchGlyph() {
+  return SEARCH_GLYPHS[(Math.random() * SEARCH_GLYPHS.length) | 0];
+}
+
+/** Вариант #5 — быстрый glitch decode */
+function playSearchDecode() {
+  const el = els.brandSub;
+  if (!el || searchBusy) return Promise.resolve();
+  const reduce =
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const target = searchTarget();
+  if (reduce) {
+    el.textContent = target;
+    return Promise.resolve();
+  }
+
+  searchBusy = true;
+  el.classList.add("is-decoding", "is-decoding-fast");
+
+  return new Promise((resolve) => {
+    let i = 0;
+    const scramble = () => {
+      if (i < 12) {
+        el.textContent = [...target].map(() => randSearchGlyph()).join("");
+        i += 1;
+        setTimeout(scramble, 28);
+        return;
+      }
+      const settled = Array(target.length).fill(false);
+      let lock = 0;
+      const lockNext = () => {
+        if (lock < target.length) {
+          settled[lock] = true;
+          lock += 1;
+          el.textContent = [...target]
+            .map((ch, j) => (settled[j] ? ch : randSearchGlyph()))
+            .join("");
+          setTimeout(lockNext, 45);
+          return;
+        }
+        el.textContent = target;
+        el.classList.remove("is-decoding", "is-decoding-fast");
+        searchBusy = false;
+        resolve();
+      };
+      lockNext();
+    };
+    scramble();
+  });
+}
+
+/** Редкий тихий сбой: 1–2 буквы мигают и возвращаются */
+function playSearchFlicker() {
+  const el = els.brandSub;
+  if (!el || searchBusy || document.hidden) return;
+  const reduce =
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce) return;
+
+  const target = searchTarget();
+  const count = Math.random() < 0.55 ? 1 : 2;
+  const idxs = new Set();
+  while (idxs.size < count) {
+    idxs.add((Math.random() * target.length) | 0);
+  }
+
+  searchBusy = true;
+  el.classList.add("is-flicker");
+  const chars = [...target];
+  idxs.forEach((i) => {
+    chars[i] = randSearchGlyph();
+  });
+  el.textContent = chars.join("");
+
+  setTimeout(() => {
+    if (!els.brandSub) return;
+    els.brandSub.textContent = target;
+    els.brandSub.classList.remove("is-flicker");
+    searchBusy = false;
+  }, 90 + Math.random() * 70);
+}
+
+function scheduleSearchFlickers() {
+  const loop = () => {
+    clearTimeout(searchIdleTimer);
+    searchIdleTimer = setTimeout(() => {
+      playSearchFlicker();
+      loop();
+    }, 7000 + Math.random() * 9000);
+  };
+  loop();
+}
+
+function revealSearchStatic() {
+  const el = els.brandSub;
+  if (!el) return;
+  el.classList.remove("is-pending");
+  el.classList.add("is-appear");
+  el.textContent = searchTarget();
+}
 
 function playBootGlitch() {
   const reduce =
     window.matchMedia &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduce) return;
   if (bootPlayed) return;
   bootPlayed = true;
+
+  if (reduce) {
+    revealSearchStatic();
+    return;
+  }
+
+  // сразу появляется и decode
+  const el = els.brandSub;
+  if (el) {
+    el.classList.remove("is-pending");
+    el.classList.add("is-appear");
+    el.textContent = [...searchTarget()].map(() => randSearchGlyph()).join("");
+  }
+  setTimeout(() => {
+    playSearchDecode().then(() => {
+      scheduleSearchFlickers();
+    });
+  }, 180);
 
   // спокойно → короткий дрыг → снова спокойно
   setTimeout(() => {
@@ -851,7 +991,7 @@ function bind() {
   );
 
   els.themeToggle?.addEventListener("click", () => {
-    setTheme(currentTheme() === "dark" ? "light" : "dark");
+    setTheme(nextTheme(currentTheme()));
   });
 
   els.bgPicks?.addEventListener("click", (e) => {

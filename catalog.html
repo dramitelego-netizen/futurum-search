@@ -7,9 +7,9 @@
   <script>
     (() => {
       try {
+        const themes = ["dark", "light", "gray"];
         const t = localStorage.getItem("futurum_theme");
-        if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
-        else document.documentElement.setAttribute("data-theme", "dark");
+        document.documentElement.setAttribute("data-theme", themes.includes(t) ? t : "dark");
         const bgs = ["vitrine", "aurora", "minimal", "signal"];
         const b = localStorage.getItem("futurum_bg");
         document.documentElement.setAttribute("data-bg", bgs.includes(b) ? b : "vitrine");
@@ -22,13 +22,14 @@
   <style>
     html { background: #05070a; }
     html[data-theme="light"] { background: #f3f6f8; }
+    html[data-theme="gray"] { background: #5c616a; }
     body { background: transparent; }
   </style>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=78" />
-  <link rel="stylesheet" href="catalog.css?v=78" />
+  <link rel="stylesheet" href="styles.css?v=87" />
+  <link rel="stylesheet" href="catalog.css?v=87" />
 </head>
 <body class="catalog-page">
   <div class="atmosphere" aria-hidden="true">
@@ -41,16 +42,17 @@
   </div>
 
   <header class="cat-top">
-    <a class="cat-back" href="./index.html?v=78" title="К поиску">← Поиск</a>
+    <a class="cat-back" href="./index.html?v=87" title="К поиску">← Поиск</a>
     <div class="cat-top-main">
       <h1 class="brand cat-brand" data-text="CATALOG" aria-label="CATALOG">
         <span class="brand-main">CATALOG</span>
       </h1>
       <span class="cat-total" id="catTotal">0</span>
     </div>
-    <button type="button" class="theme-switch" id="themeToggle" role="switch" aria-checked="true" aria-label="Сменить тему" title="Тема">
+    <button type="button" class="theme-switch" id="themeToggle" role="switch" aria-checked="true" aria-label="Сменить тему" title="Тёмная → серая → светлая">
       <span class="theme-switch-track" aria-hidden="true">
         <span class="theme-switch-icon theme-icon-moon">☾</span>
+        <span class="theme-switch-icon theme-icon-gray">●</span>
         <span class="theme-switch-icon theme-icon-sun">☀</span>
         <span class="theme-switch-knob"></span>
       </span>
@@ -98,7 +100,7 @@
     </section>
   </main>
 
-  <script src="fav-store.js?v=78"></script>
-  <script src="catalog.js?v=78"></script>
+  <script src="fav-store.js?v=87"></script>
+  <script src="catalog.js?v=87"></script>
 </body>
 </html>
