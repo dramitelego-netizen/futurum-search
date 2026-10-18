@@ -2104,11 +2104,13 @@ body.is-stage #q {
   }
 
   .shell {
-    width: min(100% - 0.9rem, 940px);
+    width: min(100% - 2.4rem, 940px);
     height: 100%;
     height: 100dvh;
     min-height: 0;
     overflow: hidden;
+    padding-left: max(1.35rem, env(safe-area-inset-left));
+    padding-right: max(1.35rem, env(safe-area-inset-right));
   }
 
   body:not(.is-stage) .shell {
@@ -2229,16 +2231,19 @@ body.is-stage #q {
   }
 
   .search-wrap {
-    max-width: none;
+    max-width: min(100%, 22rem);
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   #q {
     font-size: 16px; /* без автозума iOS */
-    padding: 0.85rem 1.1rem;
+    padding: 0.78rem 1rem;
   }
 
   body.is-stage #q {
-    padding: 0.62rem 0.9rem;
+    padding: 0.58rem 0.85rem;
   }
 
   .chip-toggle {
