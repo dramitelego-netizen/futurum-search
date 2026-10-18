@@ -306,6 +306,32 @@
   padding: 0.12rem 0.35rem;
 }
 
+.cat-tag-gone {
+  color: color-mix(in srgb, var(--mute) 90%, #c4a574);
+  border-color: color-mix(in srgb, var(--mute) 45%, transparent);
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+}
+
+.cat-item.is-unavailable .cat-item-name {
+  opacity: 0.72;
+}
+
+.cat-item.is-unavailable .cat-item-price {
+  text-decoration: line-through;
+  opacity: 0.55;
+}
+
+.cat-card.is-unavailable {
+  opacity: 0.95;
+}
+
+.cat-gone-note {
+  margin: 0.35rem 0 0;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--mute) 85%, #c4a574);
+}
+
 .cat-fav {
   border: 0;
   border-radius: 10px;

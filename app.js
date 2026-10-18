@@ -558,8 +558,13 @@ function previewEmptyHtml() {
     </div>`;
 }
 
+function itemUnavailable(item) {
+  return Boolean(item && item.unavailable);
+}
+
 function previewCardHtml(item) {
   const sale = itemOnSale(item);
+  const gone = itemUnavailable(item);
   const old =
     item.priceOld && item.priceOld > item.price
       ? `<span class="preview-old">${escapeHtml(formatPrice(item.priceOld))}</span>`
@@ -586,7 +591,7 @@ function previewCardHtml(item) {
     : `<span class="media-frame preview-thumb-frame is-ready" aria-hidden="true"></span>`;
 
   return `
-    <div class="preview-card${sale ? " is-sale" : ""}${desc ? " has-desc" : ""}${look ? " has-look" : ""}">
+    <div class="preview-card${sale ? " is-sale" : ""}${gone ? " is-unavailable" : ""}${desc ? " has-desc" : ""}${look ? " has-look" : ""}">
       <button
         type="button"
         class="fav-btn${fav ? " on" : ""}"
@@ -595,7 +600,8 @@ function previewCardHtml(item) {
         aria-label="${fav ? "Убрать из избранного" : "В избранное"}"
         title="${fav ? "Убрать из избранного" : "В избранное"}"
       >★</button>
-      ${sale ? `<span class="sale-badge">скидка</span>` : ""}
+      ${gone ? `<span class="gone-badge">нет в продаже</span>` : ""}
+      ${!gone && sale ? `<span class="sale-badge">скидка</span>` : ""}
       <div class="preview-media">
         ${thumbHtml}
         ${lookHtml}
@@ -606,6 +612,7 @@ function previewCardHtml(item) {
           <span class="preview-price">${escapeHtml(formatPrice(item.price))}</span>
           ${old}
         </div>
+        ${gone ? `<p class="preview-gone-note">Сейчас этого товара нет в продаже на сайте</p>` : ""}
         <a class="preview-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">Открыть на сайте</a>
       </div>
     </div>`;
@@ -720,21 +727,23 @@ function render() {
   els.results.innerHTML = ranked
     .map(({ item, fuzzy }) => {
       const sale = itemOnSale(item);
+      const gone = itemUnavailable(item);
       const fav = isFav(item.id);
       return `
       <li>
         <div class="result-row">
           <button
             type="button"
-            class="result${state.activeId === item.id ? " active" : ""}${sale ? " is-sale" : ""}"
+            class="result${state.activeId === item.id ? " active" : ""}${sale ? " is-sale" : ""}${gone ? " is-unavailable" : ""}"
             data-id="${item.id}"
           >
             <span class="result-main">
               <span class="result-name">${escapeHtml(item.name)}</span>
-              <span class="result-price${sale ? " is-sale" : ""}">${escapeHtml(formatPriceShort(item.price))}</span>
+              <span class="result-price${sale ? " is-sale" : ""}${gone ? " is-unavailable" : ""}">${escapeHtml(formatPriceShort(item.price))}</span>
             </span>
             <span class="result-meta">
-              ${sale ? `<span class="result-sale">скидка</span>` : ""}
+              ${gone ? `<span class="result-gone">нет в продаже</span>` : ""}
+              ${!gone && sale ? `<span class="result-sale">скидка</span>` : ""}
               ${fuzzy ? `<span class="result-tag">похоже</span>` : ""}
             </span>
           </button>

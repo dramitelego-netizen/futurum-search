@@ -165,6 +165,10 @@ function itemOnSale(item) {
   );
 }
 
+function itemUnavailable(item) {
+  return Boolean(item && item.unavailable);
+}
+
 function discountAmount(item) {
   if (item.priceOld == null || item.priceOld <= item.price) return 0;
   return item.priceOld - item.price;
@@ -314,6 +318,7 @@ function showDetail(item) {
     return;
   }
   const sale = itemOnSale(item);
+  const gone = itemUnavailable(item);
   const thumb = itemThumb(item);
   const look = itemLook(item);
   const series = historyFor(item.id);
@@ -345,7 +350,7 @@ function showDetail(item) {
     .join("");
 
   els.catDetail.innerHTML = `
-    <div class="cat-card${sale ? " is-sale" : ""}">
+    <div class="cat-card${sale ? " is-sale" : ""}${gone ? " is-unavailable" : ""}">
       <div class="cat-card-top">
         <div class="cat-card-media">
           ${
@@ -368,8 +373,10 @@ function showDetail(item) {
                 ? `<span class="cat-card-old">${escapeHtml(formatPrice(item.priceOld))}</span>`
                 : ""
             }
-            ${sale ? `<span class="cat-tag">скидка</span>` : ""}
+            ${gone ? `<span class="cat-tag cat-tag-gone">нет в продаже</span>` : ""}
+            ${!gone && sale ? `<span class="cat-tag">скидка</span>` : ""}
           </div>
+          ${gone ? `<p class="cat-gone-note">Сейчас этого товара нет в продаже на сайте</p>` : ""}
           ${
             item.description
               ? `<p class="cat-card-desc">${escapeHtml(item.description)}</p>`
@@ -428,6 +435,7 @@ function renderList() {
   els.catList.innerHTML = list
     .map((item, index) => {
       const sale = itemOnSale(item);
+      const gone = itemUnavailable(item);
       const fav = isFav(item.id);
       const thumb = itemThumb(item);
       const src = thumb ? proxyImage(thumb) : "";
@@ -438,7 +446,7 @@ function renderList() {
       return `
       <li>
         <div class="cat-row">
-          <button type="button" class="cat-item${state.activeId === item.id ? " active" : ""}${sale ? " is-sale" : ""}" data-id="${item.id}">
+          <button type="button" class="cat-item${state.activeId === item.id ? " active" : ""}${sale ? " is-sale" : ""}${gone ? " is-unavailable" : ""}" data-id="${item.id}">
             ${img}
             <span class="cat-item-main">
               <span class="cat-item-name">${escapeHtml(item.name)}</span>
@@ -449,7 +457,8 @@ function renderList() {
                     ? `<span class="cat-item-old">${escapeHtml(formatPriceShort(item.priceOld))}</span>`
                     : ""
                 }
-                ${sale ? `<span class="cat-tag">скидка</span>` : ""}
+                ${gone ? `<span class="cat-tag cat-tag-gone">нет в продаже</span>` : ""}
+                ${!gone && sale ? `<span class="cat-tag">скидка</span>` : ""}
               </span>
             </span>
           </button>

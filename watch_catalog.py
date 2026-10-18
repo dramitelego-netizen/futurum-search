@@ -179,7 +179,21 @@ def merge_item(old: dict | None, new: dict) -> dict:
             merged["imageLocal"] = old["imageLocal"]
         if old.get("lookLocal"):
             merged["lookLocal"] = old["lookLocal"]
+    # товар снова на сайте — снимаем пометку
+    merged["unavailable"] = False
+    merged.pop("unavailableSince", None)
+    merged["missStreak"] = 0
     return merged
+
+
+def mark_unavailable(old: dict) -> dict:
+    item = dict(old)
+    already = bool(item.get("unavailable"))
+    item["unavailable"] = True
+    if not already:
+        item["unavailableSince"] = int(time.time())
+    item["missStreak"] = 0
+    return item
 
 
 def diff_item(old: dict, new: dict) -> list[str]:
@@ -190,6 +204,11 @@ def diff_item(old: dict, new: dict) -> list[str]:
         changes.append(f"старая {old.get('priceOld')} → {new.get('priceOld')}")
     if bool(old.get("onSale")) != bool(new.get("onSale")):
         changes.append(f"скидка {bool(old.get('onSale'))} → {bool(new.get('onSale'))}")
+    if bool(old.get("unavailable")) != bool(new.get("unavailable")):
+        if new.get("unavailable"):
+            changes.append("снят с продажи")
+        else:
+            changes.append("снова в продаже")
     if (old.get("name") or "") != (new.get("name") or ""):
         changes.append("название")
     old_desc = (old.get("description") or "").strip()
@@ -220,7 +239,37 @@ def refresh_batch(ids: list[int], found: dict[str, dict], workers: int) -> tuple
         key = str(gid)
         old = found.get(key)
         if not item:
-            say(f"  · [{gid}] не ответил ({status}, {elapsed:.1f}с) — оставляю как было")
+            if not old:
+                continue
+            # «пусто» = карточки нет на сайте → помечаем «нет в продаже»
+            # «нет ответа» = сеть/сайт лежит → не трогаем сразу, копим промахи
+            if status == "пусто":
+                was = bool(old.get("unavailable"))
+                found[key] = mark_unavailable(old)
+                if not was:
+                    changed += 1
+                    msg = f"[{gid}] {old.get('name')}: нет в продаже"
+                    notes.append(msg)
+                    say(f"  ✕ {msg} ({elapsed:.1f}с)")
+                else:
+                    say(f"  · [{gid}] по-прежнему нет в продаже ({elapsed:.1f}с)")
+            else:
+                streak = int(old.get("missStreak") or 0) + 1
+                old = dict(old)
+                old["missStreak"] = streak
+                # после 3 сетевых промахов подряд тоже помечаем
+                if streak >= 3 and not old.get("unavailable"):
+                    found[key] = mark_unavailable(old)
+                    changed += 1
+                    msg = f"[{gid}] {old.get('name')}: нет в продаже (нет ответа ×{streak})"
+                    notes.append(msg)
+                    say(f"  ✕ {msg}")
+                else:
+                    found[key] = old
+                    say(
+                        f"  · [{gid}] не ответил ({status}, {elapsed:.1f}с) "
+                        f"— промах {streak}/3, оставляю"
+                    )
             continue
         if not old:
             found[key] = merge_item(None, item)
@@ -228,8 +277,8 @@ def refresh_batch(ids: list[int], found: dict[str, dict], workers: int) -> tuple
             notes.append(f"[{gid}] появился в каталоге: {item.get('name')}")
             say(f"  ★ [{gid}] новый при обновлении: {item.get('name')}")
             continue
-        changes = diff_item(old, item)
         merged = merge_item(old, item)
+        changes = diff_item(old, merged)
         found[key] = merged
         if changes:
             changed += 1
