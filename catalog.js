@@ -390,10 +390,10 @@ function showDetail(item) {
           </div>
         </div>
       </div>
-      <div class="cat-history${series.length > 1 ? "" : " is-thin"}">
+      <div class="cat-history">
         <h3>История цены</h3>
         ${
-          series.length > 1
+          series.length
             ? `
           <div class="cat-history-stats">
             <span>мин. <b>${escapeHtml(formatPriceShort(minP))}</b></span>
@@ -405,7 +405,12 @@ function showDetail(item) {
           <table class="cat-history-table">
             <thead><tr><th>Когда</th><th>Цена</th><th>Было</th></tr></thead>
             <tbody>${rows}</tbody>
-          </table>`
+          </table>
+          ${
+            series.length < 2
+              ? `<p class="cat-history-empty">Пока одна точка — дополнится при обновлении каталога</p>`
+              : ""
+          }`
             : `<p class="cat-history-empty">История цены начнёт копиться при обновлении каталога</p>`
         }
       </div>

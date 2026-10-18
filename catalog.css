@@ -688,16 +688,15 @@
   }
 
   .cat-history {
-    padding-top: 0.35rem;
+    padding-top: 0.4rem;
     gap: 0.22rem;
   }
 
-  .cat-history.is-thin {
-    display: none;
-  }
-
   .cat-history h3 {
-    display: none;
+    display: block;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    margin: 0;
   }
 
   .cat-history-stats {
@@ -714,9 +713,15 @@
     border-radius: 8px;
   }
 
-  /* таблица — только на ПК; на мобиле мин/макс + мини-график */
-  .cat-history-table,
   .cat-history-empty {
+    display: block;
+    margin: 0;
+    font-size: 0.72rem;
+    line-height: 1.25;
+  }
+
+  /* полная таблица — на ПК; на мобиле заголовок + мин/макс + график */
+  .cat-history-table {
     display: none;
   }
 
