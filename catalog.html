@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>CATALOG — FUTURUM</title>
+  <script>
+    (() => {
+      try {
+        const t = localStorage.getItem("futurum_theme");
+        if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+        else document.documentElement.setAttribute("data-theme", "dark");
+        const bgs = ["vitrine", "aurora", "minimal", "signal"];
+        const b = localStorage.getItem("futurum_bg");
+        document.documentElement.setAttribute("data-bg", bgs.includes(b) ? b : "vitrine");
+      } catch {
+        document.documentElement.setAttribute("data-theme", "dark");
+        document.documentElement.setAttribute("data-bg", "vitrine");
+      }
+    })();
+  </script>
+  <style>
+    html { background: #05070a; }
+    html[data-theme="light"] { background: #eef1f0; }
+    body { background: transparent; }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=59" />
+  <link rel="stylesheet" href="catalog.css?v=59" />
+</head>
+<body class="catalog-page">
+  <div class="atmosphere" aria-hidden="true">
+    <div class="atm-wash"></div>
+    <div class="atm-flow"></div>
+    <div class="atm-flow atm-flow-b"></div>
+    <div class="atm-flow atm-flow-c"></div>
+    <div class="grid"></div>
+    <div class="scanlines"></div>
+  </div>
+
+  <header class="cat-top">
+    <a class="cat-back" href="./index.html?v=59" title="К поиску">← Поиск</a>
+    <div class="cat-top-main">
+      <h1 class="brand cat-brand" data-text="CATALOG" aria-label="CATALOG">
+        <span class="brand-main">CATALOG</span>
+      </h1>
+      <span class="cat-total" id="catTotal">0</span>
+    </div>
+    <button type="button" class="theme-switch" id="themeToggle" role="switch" aria-checked="true" aria-label="Сменить тему" title="Тема">
+      <span class="theme-switch-track" aria-hidden="true">
+        <span class="theme-switch-icon theme-icon-moon">☾</span>
+        <span class="theme-switch-icon theme-icon-sun">☀</span>
+        <span class="theme-switch-knob"></span>
+      </span>
+    </button>
+  </header>
+
+  <main class="cat-shell">
+    <section class="cat-controls">
+      <input
+        id="catQ"
+        class="cat-search"
+        type="search"
+        placeholder="Фильтр по названию…"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <div class="filters cat-filters">
+        <button type="button" class="chip-toggle" id="saleToggle" aria-pressed="false">Скидки</button>
+        <button type="button" class="chip-toggle favs-toggle" id="favsToggle" aria-pressed="false">
+          <span class="favs-toggle-icon" aria-hidden="true">★</span>
+          <span>Избранное</span>
+          <span class="favs-toggle-count" id="favsCount">0</span>
+        </button>
+      </div>
+      <div class="sort-pills cat-sort" id="sortPills" role="group" aria-label="Сортировка">
+        <button type="button" class="sort-pill" data-sort="name">А–Я</button>
+        <button type="button" class="sort-pill" data-sort="price-asc">цена ↑</button>
+        <button type="button" class="sort-pill" data-sort="price-desc">цена ↓</button>
+        <button type="button" class="sort-pill" data-sort="discount">скидка</button>
+      </div>
+    </section>
+
+    <section class="cat-stage">
+      <div class="cat-list-panel">
+        <div class="cat-list-head">
+          <span>найдено</span>
+          <strong id="catFound">0</strong>
+        </div>
+        <ul class="cat-list" id="catList" role="listbox" aria-label="Предметы"></ul>
+      </div>
+
+      <aside class="cat-detail" id="catDetail" aria-live="polite">
+        <div class="cat-detail-empty">Выберите предмет — увидите цену и историю</div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="fav-store.js?v=59"></script>
+  <script src="catalog.js?v=59"></script>
+</body>
+</html>

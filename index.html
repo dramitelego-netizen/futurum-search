@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>FUTURUM</title>
+  <script>
+    (() => {
+      try {
+        const t = localStorage.getItem("futurum_theme");
+        if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+        else document.documentElement.setAttribute("data-theme", "dark");
+        const bgs = ["vitrine", "aurora", "minimal", "signal"];
+        const b = localStorage.getItem("futurum_bg");
+        document.documentElement.setAttribute("data-bg", bgs.includes(b) ? b : "vitrine");
+      } catch {
+        document.documentElement.setAttribute("data-theme", "dark");
+        document.documentElement.setAttribute("data-bg", "vitrine");
+      }
+    })();
+  </script>
+  <style>
+    html { background: #05070a; }
+    html[data-theme="light"] { background: #eef1f0; }
+    body { background: transparent; }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=59" />
+</head>
+<body>
+  <div class="atmosphere" aria-hidden="true">
+    <div class="atm-wash"></div>
+    <div class="atm-flow"></div>
+    <div class="atm-flow atm-flow-b"></div>
+    <div class="atm-flow atm-flow-c"></div>
+    <div class="grid"></div>
+    <div class="glow glow-a"></div>
+    <div class="glow glow-b"></div>
+    <canvas class="particle-field" id="particleField"></canvas>
+    <div class="scanlines"></div>
+  </div>
+
+  <div class="chrome" id="chrome">
+    <button
+      type="button"
+      class="side-rail"
+      id="menuOpen"
+      aria-label="Открыть меню"
+      aria-expanded="false"
+      aria-controls="sideMenu"
+      title="Меню"
+    >
+      <span class="side-rail-inner" aria-hidden="true">
+        <span class="side-rail-bars">
+          <i></i><i></i><i></i>
+        </span>
+        <span class="side-rail-label">меню</span>
+      </span>
+    </button>
+
+    <div class="side-backdrop" id="menuBackdrop" hidden></div>
+
+    <aside class="side-menu" id="sideMenu" aria-hidden="true" aria-label="Меню">
+      <header class="side-menu-head">
+        <span class="side-menu-brand">FUTURUM</span>
+        <button type="button" class="side-menu-close" id="menuClose" aria-label="Закрыть меню">✕</button>
+      </header>
+
+      <div class="side-menu-block">
+        <span class="side-menu-label">Тема</span>
+        <button type="button" class="theme-switch" id="themeToggle" role="switch" aria-checked="true" aria-label="Сменить тему" title="Тема">
+          <span class="theme-switch-track" aria-hidden="true">
+            <span class="theme-switch-icon theme-icon-moon">☾</span>
+            <span class="theme-switch-icon theme-icon-sun">☀</span>
+            <span class="theme-switch-knob"></span>
+          </span>
+        </button>
+      </div>
+
+      <div class="side-menu-block">
+        <span class="side-menu-label">Фон</span>
+        <div class="bg-picks" id="bgPicks" role="radiogroup" aria-label="Фон">
+          <button type="button" class="bg-pick" data-bg="vitrine" aria-pressed="false">
+            <span class="bg-pick-swatch bg-swatch-vitrine" aria-hidden="true"></span>
+            <span class="bg-pick-text">
+              <span class="bg-pick-title">Витрина</span>
+              <span class="bg-pick-desc">глубина и мягкий свет</span>
+            </span>
+          </button>
+          <button type="button" class="bg-pick" data-bg="aurora" aria-pressed="false">
+            <span class="bg-pick-swatch bg-swatch-aurora" aria-hidden="true"></span>
+            <span class="bg-pick-text">
+              <span class="bg-pick-title">Аврора</span>
+              <span class="bg-pick-desc">живые цветные пятна</span>
+            </span>
+          </button>
+          <button type="button" class="bg-pick" data-bg="minimal" aria-pressed="false">
+            <span class="bg-pick-swatch bg-swatch-minimal" aria-hidden="true"></span>
+            <span class="bg-pick-text">
+              <span class="bg-pick-title">Минимал</span>
+              <span class="bg-pick-desc">почти чистый тёмный</span>
+            </span>
+          </button>
+          <button type="button" class="bg-pick" data-bg="signal" aria-pressed="false">
+            <span class="bg-pick-swatch bg-swatch-signal" aria-hidden="true"></span>
+            <span class="bg-pick-text">
+              <span class="bg-pick-title">Сигнал</span>
+              <span class="bg-pick-desc">сильный бирюзовый акцент</span>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div class="side-menu-block">
+        <span class="side-menu-label">Фильтры поиска</span>
+        <div class="filters side-filters">
+          <button type="button" class="chip-toggle" id="saleToggle" aria-pressed="false" title="Только со скидкой">
+            <span class="chip-toggle-label">Скидки</span>
+          </button>
+          <button type="button" class="chip-toggle favs-toggle" id="favsToggle" aria-pressed="false" title="Избранное">
+            <span class="favs-toggle-icon" aria-hidden="true">★</span>
+            <span class="favs-toggle-label">Избранное</span>
+            <span class="favs-toggle-count" id="favsCount">0</span>
+          </button>
+        </div>
+        <p class="side-menu-note">Избранное личное: сохраняется у каждого в своём браузере</p>
+      </div>
+
+      <div class="side-menu-block">
+        <span class="side-menu-label">Разделы</span>
+        <aside class="catalog-stat" id="catalogStat" aria-live="polite">
+          <span class="catalog-stat-label">в каталоге</span>
+          <span class="catalog-stat-value" id="catalogCount">0</span>
+          <span class="catalog-stat-unit">предметов</span>
+        </aside>
+        <a class="side-nav-btn" href="./catalog.html?v=59">
+          <span class="side-nav-btn-title">Все предметы</span>
+          <span class="side-nav-btn-desc">Список, сортировка и история цен</span>
+        </a>
+      </div>
+    </aside>
+  </div>
+
+  <main class="shell">
+    <header class="hero">
+      <div class="brand-block">
+        <h1 class="brand" data-text="FUTURUM" aria-label="FUTURUM">
+          <span class="brand-main">FUTURUM</span>
+        </h1>
+        <p class="brand-sub" aria-hidden="true">Search</p>
+      </div>
+      <div class="search-wrap">
+        <input
+          id="q"
+          type="search"
+          placeholder="Название предмета…"
+          autocomplete="off"
+          autofocus
+          spellcheck="false"
+          enterkeyhint="search"
+        />
+      </div>
+      <p class="hint" id="hint">Начните вводить название</p>
+    </header>
+
+    <section class="stage" id="stage" hidden>
+      <aside class="preview" id="preview" aria-live="polite"></aside>
+      <div class="results-panel">
+        <div class="results-toolbar">
+          <div class="results-heading">
+            <span class="results-heading-label">найдено</span>
+            <span class="results-count" id="resultsCount">0</span>
+          </div>
+          <div class="sort-pills" id="sortPills" role="group" aria-label="Сортировка">
+            <button type="button" class="sort-pill" data-sort="relevance" title="По совпадению">совпад.</button>
+            <button type="button" class="sort-pill" data-sort="price-asc" title="Сначала дешёвые">цена ↑</button>
+            <button type="button" class="sort-pill" data-sort="price-desc" title="Сначала дорогие">цена ↓</button>
+            <button type="button" class="sort-pill" data-sort="discount" title="По размеру скидки">скидка</button>
+            <button type="button" class="sort-pill" data-sort="name" title="По названию">А–Я</button>
+          </div>
+        </div>
+        <ul class="results" id="results" role="listbox" aria-label="Результаты"></ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="fav-store.js?v=59"></script>
+  <script src="particles.js?v=59"></script>
+  <script src="app.js?v=59"></script>
+</body>
+</html>
