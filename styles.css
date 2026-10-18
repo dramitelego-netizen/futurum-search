@@ -1811,13 +1811,17 @@ body.is-stage #q {
   text-align: center;
 }
 
-/* скелетон картинок */
+/* скелетон картинок — картинка всегда внутри рамки */
 .media-frame {
   position: relative;
   display: grid;
   place-items: center;
   overflow: hidden;
   border-radius: 10px;
+  contain: paint;
+  isolation: isolate;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .media-frame.is-loading::after {
@@ -1838,6 +1842,14 @@ body.is-stage #q {
 }
 
 .media-frame img {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
   opacity: 0;
   transition: opacity 0.35s ease;
 }
@@ -1885,13 +1897,19 @@ body.is-stage #q {
 .preview-thumb-frame {
   width: min(100%, 160px);
   height: 160px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--ink) 3%, transparent);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
 }
 
 .preview-thumb {
   width: 100%;
   height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.55));
+  object-position: center;
 }
 
 .preview-look-frame {
@@ -1900,15 +1918,17 @@ body.is-stage #q {
   border-radius: 8px;
   border: 1px solid var(--line);
   background: color-mix(in srgb, var(--ink) 3%, transparent);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
 }
 
 .preview-look {
   width: 100%;
   height: 100%;
-  max-height: none;
-  object-fit: contain;
-  border-radius: 8px;
-  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.4));
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 0;
 }
 
 .preview-look-empty {
@@ -2390,28 +2410,33 @@ body.is-stage #q {
   .preview-card:not(.has-look) .preview-thumb-frame {
     width: 100%;
     height: 100%;
+    min-width: 0;
     min-height: 0;
     max-height: none;
     border-radius: 8px;
+    box-shadow: none;
+    overflow: hidden;
   }
 
   .preview-thumb,
   .preview-look {
     width: 100%;
     height: 100%;
-    max-height: none;
+    max-width: 100%;
+    max-height: 100%;
     min-height: 0;
-    border-radius: 8px;
-    filter: none;
+    border-radius: 0;
   }
 
   .preview-thumb {
     object-fit: contain;
+    object-position: center;
     background: color-mix(in srgb, var(--ink) 3%, transparent);
   }
 
   .preview-look {
     object-fit: cover;
+    object-position: center;
     background: color-mix(in srgb, var(--ink) 4%, transparent);
   }
 
