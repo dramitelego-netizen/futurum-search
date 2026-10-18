@@ -22,23 +22,23 @@
 }
 
 [data-theme="light"] {
-  --bg: #eef1f0;
-  --ink: #152028;
-  --mute: #667484;
-  --line: rgba(21, 32, 40, 0.1);
-  --panel: rgba(255, 255, 255, 0.72);
-  --panel-solid: rgba(255, 255, 255, 0.94);
-  --accent: #0f7a6b;
+  --bg: #f4f7f8;
+  --ink: #142028;
+  --mute: #5f6f7c;
+  --line: rgba(20, 32, 40, 0.1);
+  --panel: rgba(255, 255, 255, 0.78);
+  --panel-solid: rgba(255, 255, 255, 0.96);
+  --accent: #0d8a78;
   --accent-2: #c23a55;
-  --accent-dim: rgba(15, 122, 107, 0.14);
-  --shadow: rgba(21, 32, 40, 0.12);
-  --glow-a: rgba(15, 122, 107, 0.14);
-  --glow-b: rgba(194, 58, 85, 0.1);
-  --atm-1: rgba(15, 122, 107, 0.14);
-  --atm-2: rgba(194, 58, 85, 0.08);
-  --atm-grad: linear-gradient(165deg, #f4f7f5 0%, #e8eeec 45%, #e4eaf0 100%);
-  --grid-line: rgba(21, 32, 40, 0.05);
-  --scan: 0.03;
+  --accent-dim: rgba(13, 138, 120, 0.12);
+  --shadow: rgba(20, 40, 48, 0.1);
+  --glow-a: rgba(45, 180, 160, 0.22);
+  --glow-b: rgba(90, 140, 190, 0.14);
+  --atm-1: rgba(45, 180, 160, 0.16);
+  --atm-2: rgba(90, 140, 190, 0.1);
+  --atm-grad: linear-gradient(165deg, #f7fafb 0%, #eef5f4 48%, #eef2f6 100%);
+  --grid-line: rgba(20, 32, 40, 0.045);
+  --scan: 0.02;
 }
 
 * { box-sizing: border-box; }
@@ -143,43 +143,60 @@ body {
   filter: blur(40px);
 }
 
+/* светлая атмосфера: воздух, мягкий свет, без «грязного» серо-зелёного */
 [data-theme="light"] .atm-wash {
   background:
     linear-gradient(
-      130deg,
-      #e8eeec 0%,
-      #dceae6 28%,
-      #e2e8f0 52%,
-      #ebe6ea 76%,
-      #eef1f0 100%
+      145deg,
+      #f8fbfc 0%,
+      #eef7f5 32%,
+      #f1f5f9 58%,
+      #f6f8fa 100%
     );
-  background-size: 240% 240%;
+  background-size: 220% 220%;
   opacity: 1;
 }
 
 [data-theme="light"] .atm-flow {
   background:
-    radial-gradient(ellipse 58% 48% at 20% 28%, rgba(15, 122, 107, 0.16), transparent 68%),
-    radial-gradient(ellipse 52% 44% at 80% 20%, rgba(70, 110, 150, 0.12), transparent 70%),
-    radial-gradient(ellipse 62% 52% at 58% 85%, rgba(194, 58, 85, 0.1), transparent 72%);
+    radial-gradient(ellipse 62% 52% at 18% 22%, rgba(56, 190, 170, 0.22), transparent 68%),
+    radial-gradient(ellipse 54% 46% at 82% 18%, rgba(110, 160, 210, 0.16), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 55% 88%, rgba(80, 170, 160, 0.12), transparent 72%);
   opacity: 0.95;
+  filter: blur(26px);
+  mix-blend-mode: normal;
 }
 
 [data-theme="light"] .atm-flow-b {
-  opacity: 0.75;
-  mix-blend-mode: multiply;
+  opacity: 0.7;
+  mix-blend-mode: soft-light;
   background:
-    radial-gradient(ellipse 50% 42% at 70% 52%, rgba(15, 122, 107, 0.1), transparent 65%),
-    radial-gradient(ellipse 46% 40% at 28% 72%, rgba(194, 58, 85, 0.08), transparent 68%),
-    radial-gradient(ellipse 40% 36% at 88% 78%, rgba(90, 80, 140, 0.07), transparent 62%);
+    radial-gradient(ellipse 52% 44% at 72% 48%, rgba(56, 190, 170, 0.2), transparent 66%),
+    radial-gradient(ellipse 48% 42% at 24% 74%, rgba(120, 160, 210, 0.14), transparent 68%),
+    radial-gradient(ellipse 40% 36% at 90% 80%, rgba(180, 140, 200, 0.08), transparent 64%);
+  filter: blur(36px);
 }
 
 [data-theme="light"] .atm-flow-c {
-  opacity: 0.6;
-  mix-blend-mode: multiply;
+  opacity: 0.55;
+  mix-blend-mode: soft-light;
   background:
-    radial-gradient(circle 45% at 38% 42%, rgba(15, 122, 107, 0.1), transparent 70%),
-    radial-gradient(circle 40% at 72% 62%, rgba(90, 120, 160, 0.08), transparent 72%);
+    radial-gradient(circle 48% at 40% 40%, rgba(70, 200, 180, 0.16), transparent 72%),
+    radial-gradient(circle 42% at 70% 60%, rgba(130, 170, 220, 0.12), transparent 74%);
+  filter: blur(42px);
+}
+
+[data-theme="light"] .scanlines {
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    rgba(20, 32, 40, 0.035) 3px
+  );
+}
+
+[data-theme="light"] .atmosphere .grid {
+  opacity: 0.1;
 }
 
 /* —— пресеты фона (data-bg): заметно разные —— */
@@ -220,16 +237,40 @@ html[data-bg="vitrine"] .glow-a { opacity: 0.55; }
 html[data-bg="vitrine"] .glow-b { opacity: 0.18; }
 html[data-bg="vitrine"] .atmosphere .grid { opacity: 0.14; }
 
+/* Витрина · свет: фарфор + мягкий верхний блик */
 html[data-theme="light"][data-bg="vitrine"] .atm-wash {
-  background: linear-gradient(180deg, #eef6f3 0%, #e4ece9 45%, #dde6ea 100%);
+  background: linear-gradient(180deg, #f9fcfb 0%, #f1f7f6 42%, #eef3f6 100%);
   background-size: 100% 100%;
+  animation: none;
 }
 
 html[data-theme="light"][data-bg="vitrine"] .atm-flow {
   background:
-    radial-gradient(ellipse 75% 60% at 15% 10%, rgba(15, 122, 107, 0.28), transparent 58%),
-    radial-gradient(ellipse 50% 45% at 90% 75%, rgba(90, 120, 150, 0.14), transparent 65%);
+    radial-gradient(ellipse 80% 58% at 14% 8%, rgba(64, 196, 176, 0.28), transparent 58%),
+    radial-gradient(ellipse 55% 48% at 92% 78%, rgba(120, 155, 190, 0.14), transparent 66%);
+  filter: blur(30px);
+  mix-blend-mode: normal;
+  opacity: 1;
 }
+
+html[data-theme="light"][data-bg="vitrine"] .atm-flow-b {
+  background:
+    radial-gradient(ellipse 95% 50% at 50% 110%, rgba(170, 200, 210, 0.35), transparent 70%);
+  mix-blend-mode: normal;
+  filter: blur(28px);
+  opacity: 0.75;
+}
+
+html[data-theme="light"][data-bg="vitrine"] .atm-flow-c {
+  background:
+    radial-gradient(circle 50% at 30% 36%, rgba(80, 200, 180, 0.12), transparent 70%);
+  opacity: 0.55;
+  mix-blend-mode: soft-light;
+}
+
+html[data-theme="light"][data-bg="vitrine"] .glow-a { opacity: 0.45; }
+html[data-theme="light"][data-bg="vitrine"] .glow-b { opacity: 0.2; }
+html[data-theme="light"][data-bg="vitrine"] .atmosphere .grid { opacity: 0.08; }
 
 /* Аврора — цветные пятна */
 html[data-bg="aurora"] .atm-wash {
@@ -282,18 +323,53 @@ html[data-bg="aurora"] .glow-a { opacity: 0.5; }
 html[data-bg="aurora"] .glow-b { opacity: 0.4; }
 html[data-bg="aurora"] .atmosphere .grid { opacity: 0.2; }
 
+/* Аврора · свет: воздушные цветные пятна */
 html[data-theme="light"][data-bg="aurora"] .atm-wash {
   background:
-    linear-gradient(130deg, #e8eeec 0%, #dceae6 28%, #e2e8f0 52%, #ebe6ea 76%, #eef1f0 100%);
+    linear-gradient(
+      135deg,
+      #f7fbfa 0%,
+      #eaf6f3 26%,
+      #eef3f9 52%,
+      #f6f0f4 78%,
+      #f8fafb 100%
+    );
   background-size: 240% 240%;
+  animation: atm-wash-drift 40s ease-in-out infinite alternate;
 }
 
 html[data-theme="light"][data-bg="aurora"] .atm-flow {
   background:
-    radial-gradient(ellipse 58% 48% at 20% 28%, rgba(15, 122, 107, 0.32), transparent 65%),
-    radial-gradient(ellipse 52% 44% at 80% 18%, rgba(70, 110, 150, 0.22), transparent 68%),
-    radial-gradient(ellipse 62% 52% at 58% 88%, rgba(194, 58, 85, 0.2), transparent 70%);
+    radial-gradient(ellipse 58% 48% at 18% 26%, rgba(56, 190, 170, 0.32), transparent 66%),
+    radial-gradient(ellipse 52% 44% at 82% 16%, rgba(100, 150, 220, 0.24), transparent 68%),
+    radial-gradient(ellipse 60% 50% at 58% 90%, rgba(220, 120, 150, 0.16), transparent 70%);
+  filter: blur(20px);
+  opacity: 1;
+  mix-blend-mode: normal;
 }
+
+html[data-theme="light"][data-bg="aurora"] .atm-flow-b {
+  opacity: 0.85;
+  mix-blend-mode: soft-light;
+  background:
+    radial-gradient(ellipse 50% 42% at 70% 50%, rgba(70, 200, 180, 0.22), transparent 65%),
+    radial-gradient(ellipse 46% 40% at 28% 72%, rgba(220, 130, 160, 0.14), transparent 68%),
+    radial-gradient(ellipse 40% 36% at 88% 78%, rgba(140, 130, 220, 0.12), transparent 62%);
+  filter: blur(28px);
+}
+
+html[data-theme="light"][data-bg="aurora"] .atm-flow-c {
+  display: block;
+  opacity: 0.7;
+  mix-blend-mode: soft-light;
+  background:
+    radial-gradient(circle 45% at 38% 42%, rgba(80, 200, 185, 0.18), transparent 70%),
+    radial-gradient(circle 40% at 72% 62%, rgba(150, 175, 240, 0.14), transparent 72%);
+}
+
+html[data-theme="light"][data-bg="aurora"] .glow-a { opacity: 0.4; }
+html[data-theme="light"][data-bg="aurora"] .glow-b { opacity: 0.32; }
+html[data-theme="light"][data-bg="aurora"] .atmosphere .grid { opacity: 0.09; }
 
 /* Минимал */
 html[data-bg="minimal"] .atm-wash {
@@ -326,14 +402,35 @@ html[data-bg="minimal"] .atmosphere .grid {
   opacity: 0.06;
 }
 
+/* Минимал · свет: почти чистый воздух */
 html[data-theme="light"][data-bg="minimal"] .atm-wash {
-  background: linear-gradient(180deg, #f2f4f3 0%, #eef1f0 100%);
+  background: linear-gradient(180deg, #fbfcfc 0%, #f5f7f8 55%, #f2f4f5 100%);
   background-size: 100% 100%;
+  animation: none;
 }
 
 html[data-theme="light"][data-bg="minimal"] .atm-flow {
   background:
-    radial-gradient(ellipse 55% 35% at 50% -5%, rgba(15, 122, 107, 0.08), transparent 72%);
+    radial-gradient(ellipse 60% 38% at 50% -8%, rgba(90, 190, 175, 0.12), transparent 74%);
+  filter: blur(48px);
+  opacity: 0.8;
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html[data-theme="light"][data-bg="minimal"] .atm-flow-b,
+html[data-theme="light"][data-bg="minimal"] .atm-flow-c {
+  display: none;
+  opacity: 0;
+}
+
+html[data-theme="light"][data-bg="minimal"] .glow-a,
+html[data-theme="light"][data-bg="minimal"] .glow-b {
+  opacity: 0.08;
+}
+
+html[data-theme="light"][data-bg="minimal"] .atmosphere .grid {
+  opacity: 0.05;
 }
 
 /* Сигнал — сильный бирюзовый */
@@ -376,17 +473,45 @@ html[data-bg="signal"] .glow-a { opacity: 0.7; }
 html[data-bg="signal"] .glow-b { opacity: 0.12; }
 html[data-bg="signal"] .atmosphere .grid { opacity: 0.28; }
 
+/* Сигнал · свет: свежая мята / сильный бирюзовый акцент */
 html[data-theme="light"][data-bg="signal"] .atm-wash {
   background:
-    linear-gradient(160deg, #c8ebe4 0%, #dcefeb 40%, #e8f0ee 70%, #eef1f0 100%);
+    linear-gradient(155deg, #e6f7f3 0%, #eef9f6 34%, #f3f8f7 62%, #f6faf9 100%);
   background-size: 200% 200%;
+  animation: atm-wash-drift 34s ease-in-out infinite alternate;
 }
 
 html[data-theme="light"][data-bg="signal"] .atm-flow {
   background:
-    radial-gradient(ellipse 70% 55% at 22% 22%, rgba(15, 122, 107, 0.38), transparent 60%),
-    radial-gradient(ellipse 50% 42% at 78% 12%, rgba(40, 140, 125, 0.2), transparent 65%);
+    radial-gradient(ellipse 70% 55% at 20% 20%, rgba(40, 190, 170, 0.42), transparent 60%),
+    radial-gradient(ellipse 52% 44% at 80% 12%, rgba(90, 210, 195, 0.22), transparent 65%),
+    radial-gradient(ellipse 55% 48% at 65% 92%, rgba(60, 160, 150, 0.18), transparent 68%);
+  filter: blur(18px);
+  opacity: 1;
+  mix-blend-mode: normal;
 }
+
+html[data-theme="light"][data-bg="signal"] .atm-flow-b {
+  background:
+    radial-gradient(ellipse 58% 48% at 84% 56%, rgba(50, 190, 170, 0.28), transparent 62%),
+    radial-gradient(ellipse 44% 40% at 16% 84%, rgba(70, 180, 165, 0.16), transparent 65%);
+  mix-blend-mode: soft-light;
+  opacity: 0.9;
+  filter: blur(24px);
+}
+
+html[data-theme="light"][data-bg="signal"] .atm-flow-c {
+  display: block;
+  background:
+    radial-gradient(circle 48% at 44% 40%, rgba(60, 200, 180, 0.22), transparent 68%);
+  opacity: 0.75;
+  mix-blend-mode: soft-light;
+  filter: blur(30px);
+}
+
+html[data-theme="light"][data-bg="signal"] .glow-a { opacity: 0.55; }
+html[data-theme="light"][data-bg="signal"] .glow-b { opacity: 0.12; }
+html[data-theme="light"][data-bg="signal"] .atmosphere .grid { opacity: 0.12; }
 
 .particle-field {
   position: absolute;
@@ -813,6 +938,34 @@ body.is-stage .shell {
   background:
     radial-gradient(circle at 30% 30%, rgba(61, 255, 224, 0.65), transparent 50%),
     linear-gradient(160deg, #031014, #05070a);
+}
+
+[data-theme="light"] .bg-swatch-vitrine {
+  background:
+    radial-gradient(ellipse 70% 60% at 20% 15%, rgba(64, 196, 176, 0.45), transparent 55%),
+    linear-gradient(180deg, #f4faf8, #eef3f6);
+  box-shadow: inset 0 0 10px rgba(20, 40, 48, 0.06);
+}
+
+[data-theme="light"] .bg-swatch-aurora {
+  background:
+    radial-gradient(circle at 25% 30%, rgba(56, 190, 170, 0.45), transparent 40%),
+    radial-gradient(circle at 75% 25%, rgba(100, 150, 220, 0.35), transparent 42%),
+    radial-gradient(circle at 60% 80%, rgba(220, 120, 150, 0.28), transparent 45%),
+    #f5f8fa;
+  box-shadow: inset 0 0 10px rgba(20, 40, 48, 0.05);
+}
+
+[data-theme="light"] .bg-swatch-minimal {
+  background: linear-gradient(180deg, #fbfcfc, #f2f4f5 70%);
+  box-shadow: inset 0 0 10px rgba(20, 40, 48, 0.04);
+}
+
+[data-theme="light"] .bg-swatch-signal {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(40, 190, 170, 0.55), transparent 50%),
+    linear-gradient(160deg, #e6f7f3, #f3f8f7);
+  box-shadow: inset 0 0 10px rgba(20, 40, 48, 0.05);
 }
 
 .bg-pick-text {
