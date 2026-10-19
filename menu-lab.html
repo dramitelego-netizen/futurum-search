@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Меню — варианты кнопки</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07090d;
+      --panel: #12161e;
+      --ink: #e8eef7;
+      --mute: #7d8a9a;
+      --accent: #3dffe0;
+      --line: rgba(232, 238, 247, 0.12);
+      --shadow: rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Rajdhani", sans-serif;
+      background: radial-gradient(ellipse 70% 45% at 20% 0%, #0f1a1c, var(--bg));
+      color: var(--ink);
+      padding: 1.35rem clamp(1rem, 3vw, 2rem) 3rem;
+    }
+    h1 {
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin: 0 0 0.35rem;
+    }
+    .lead { color: var(--mute); margin: 0 0 1.2rem; }
+    .grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+    .card {
+      background: color-mix(in srgb, var(--panel) 94%, black);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0.95rem 1rem 1.05rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+    .card-num {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+    }
+    .card-title { font-weight: 700; font-size: 1.05rem; }
+    .card-desc { margin: 0; color: var(--mute); font-size: 0.9rem; line-height: 1.35; }
+    .stage {
+      position: relative;
+      height: 7.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(ellipse 60% 50% at 70% 30%, rgba(61,255,224,0.08), transparent 60%),
+        #0a0e14;
+      overflow: hidden;
+    }
+    .stage-fake {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-content: center;
+      opacity: 0.35;
+      font-family: "Orbitron", sans-serif;
+      letter-spacing: 0.2em;
+      font-size: 0.85rem;
+      color: var(--accent);
+      pointer-events: none;
+    }
+    .actions { display: flex; gap: 0.5rem; margin-top: auto; }
+    button.pick, button.replay {
+      font: inherit;
+      font-weight: 700;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(61,255,224,0.08);
+      color: var(--ink);
+      padding: 0.4rem 0.9rem;
+      cursor: pointer;
+    }
+    button.pick {
+      background: color-mix(in srgb, var(--accent) 22%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+      color: #041410;
+    }
+    .picked {
+      margin-top: 1.2rem;
+      padding: 0.9rem 1rem;
+      border-radius: 12px;
+      border: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent);
+      color: var(--mute);
+    }
+    .picked strong {
+      color: var(--accent);
+      font-family: "Orbitron", sans-serif;
+      letter-spacing: 0.06em;
+    }
+
+    /* общая позиция: левый верх */
+    .demo-btn {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      z-index: 2;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      border: 0;
+      font: inherit;
+      color: var(--ink);
+    }
+
+    /* 1. Классический бургер в круге */
+    .m1 {
+      width: 2.6rem;
+      height: 2.6rem;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--panel) 90%, transparent);
+      border: 1px solid var(--line);
+      display: grid;
+      place-items: center;
+      gap: 0.28rem;
+      box-shadow: 0 10px 24px var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .m1 i {
+      display: block;
+      width: 1rem;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--accent);
+    }
+
+    /* 2. Квадрат с бургером */
+    .m2 {
+      width: 2.55rem;
+      height: 2.55rem;
+      border-radius: 10px;
+      background: rgba(61,255,224,0.08);
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+      display: grid;
+      place-items: center;
+      gap: 0.26rem;
+    }
+    .m2 i {
+      display: block;
+      width: 1.05rem;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--ink);
+    }
+    .m2:hover { background: rgba(61,255,224,0.16); }
+
+    /* 3. Бургер + подпись MENU */
+    .m3 {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.4rem 0.65rem 0.4rem 0.5rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 22px var(--shadow);
+    }
+    .m3 .bars { display: grid; gap: 0.22rem; }
+    .m3 .bars i {
+      display: block; width: 0.95rem; height: 2px; border-radius: 2px; background: var(--accent);
+    }
+    .m3 .txt {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.16em;
+      color: var(--mute);
+    }
+
+    /* 4. Минимал — только три линии без фона */
+    .m4 {
+      width: 2.4rem;
+      height: 2.4rem;
+      background: transparent;
+      display: grid;
+      place-content: center;
+      gap: 0.32rem;
+    }
+    .m4 i {
+      display: block;
+      width: 1.25rem;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--ink);
+      box-shadow: 0 0 10px rgba(61,255,224,0.25);
+    }
+    .m4 i:nth-child(2) { width: 0.9rem; }
+
+    /* 5. Неоновый уголок */
+    .m5 {
+      width: 2.7rem;
+      height: 2.7rem;
+      border-radius: 12px 4px 12px 4px;
+      background: #0a1214;
+      border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+      box-shadow:
+        0 0 0 1px rgba(61,255,224,0.08),
+        0 0 18px rgba(61,255,224,0.18);
+      display: grid;
+      place-items: center;
+      gap: 0.26rem;
+    }
+    .m5 i {
+      display: block; width: 1rem; height: 2px; border-radius: 2px;
+      background: var(--accent);
+      box-shadow: 0 0 8px rgba(61,255,224,0.55);
+    }
+
+    /* 6. Иконка сетки 2×2 */
+    .m6 {
+      width: 2.55rem;
+      height: 2.55rem;
+      border-radius: 11px;
+      background: color-mix(in srgb, var(--panel) 90%, transparent);
+      border: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.28rem;
+      padding: 0.55rem;
+      box-shadow: 0 10px 22px var(--shadow);
+    }
+    .m6 i {
+      display: block;
+      border-radius: 3px;
+      background: var(--accent);
+      opacity: 0.85;
+    }
+
+    /* 7. Стеклянная капсула с символом ≡ */
+    .m7 {
+      min-width: 2.6rem;
+      height: 2.5rem;
+      padding: 0 0.7rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+      font-size: 1.25rem;
+      line-height: 1;
+      color: var(--accent);
+      letter-spacing: -0.04em;
+      box-shadow: 0 10px 24px var(--shadow);
+    }
+
+    /* 8. Уголок-закладка */
+    .m8 {
+      width: 0;
+      height: 0;
+      padding: 0;
+      border-style: solid;
+      border-width: 2.8rem 2.8rem 0 0;
+      border-color: color-mix(in srgb, var(--accent) 22%, #0d1518) transparent transparent transparent;
+      background: transparent;
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-radius: 0;
+    }
+    .m8 span {
+      position: absolute;
+      top: -2.35rem;
+      left: 0.35rem;
+      font-size: 0.95rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* 9. Пилюля «меню» текстом */
+    .m9 {
+      padding: 0.45rem 0.75rem;
+      border-radius: 999px;
+      background: transparent;
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+      color: var(--accent);
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .m9:hover {
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+
+    /* 10. Soft FAB */
+    .m10 {
+      width: 2.85rem;
+      height: 2.85rem;
+      border-radius: 1rem;
+      background: linear-gradient(145deg, #152028, #0b1016);
+      border: 1px solid var(--line);
+      box-shadow:
+        0 12px 28px rgba(0,0,0,0.45),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      display: grid;
+      place-items: center;
+      gap: 0.28rem;
+    }
+    .m10 i {
+      display: block;
+      width: 1.05rem;
+      height: 2px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--accent), #7dfff0);
+    }
+    .m10 i:nth-child(2) { width: 0.75rem; opacity: 0.85; }
+  </style>
+</head>
+<body>
+  <h1>Кнопка меню</h1>
+  <p class="lead">Все варианты в левом верхнем углу превью. Нажми «Этот» и напиши номер в чат.</p>
+  <div class="grid" id="grid"></div>
+  <div class="picked" id="picked">Выбор: пока нет</div>
+
+  <script>
+    const variants = [
+      {
+        id: 1,
+        title: "Круглый бургер",
+        desc: "Классика: круглая кнопка с тремя линиями и лёгкой тенью.",
+        html: `<button type="button" class="demo-btn m1" aria-label="Меню"><i></i><i></i><i></i></button>`,
+      },
+      {
+        id: 2,
+        title: "Квадрат teal",
+        desc: "Плотный квадрат с бирюзовой обводкой — заметно, но компактно.",
+        html: `<button type="button" class="demo-btn m2" aria-label="Меню"><i></i><i></i><i></i></button>`,
+      },
+      {
+        id: 3,
+        title: "Бургер + MENU",
+        desc: "Пилюля: иконка и короткая подпись — сразу понятно, что это меню.",
+        html: `<button type="button" class="demo-btn m3" aria-label="Меню"><span class="bars"><i></i><i></i><i></i></span><span class="txt">MENU</span></button>`,
+      },
+      {
+        id: 4,
+        title: "Минимал линии",
+        desc: "Почти без фона — только линии. Самый лёгкий вид.",
+        html: `<button type="button" class="demo-btn m4" aria-label="Меню"><i></i><i></i><i></i></button>`,
+      },
+      {
+        id: 5,
+        title: "Неоновый уголок",
+        desc: "Скошенный квадрат со свечением — в стиле FUTURUM.",
+        html: `<button type="button" class="demo-btn m5" aria-label="Меню"><i></i><i></i><i></i></button>`,
+      },
+      {
+        id: 6,
+        title: "Сетка 2×2",
+        desc: "Четыре точки/квадрата вместо бургера — современный вид apps.",
+        html: `<button type="button" class="demo-btn m6" aria-label="Меню"><i></i><i></i><i></i><i></i></button>`,
+      },
+      {
+        id: 7,
+        title: "Стеклянная ≡",
+        desc: "Капсула blur со знаком меню — просто и аккуратно.",
+        html: `<button type="button" class="demo-btn m7" aria-label="Меню">≡</button>`,
+      },
+      {
+        id: 8,
+        title: "Уголок-закладка",
+        desc: "Треугольник в самом углу экрана — занимает мало места.",
+        html: `<button type="button" class="demo-btn m8" aria-label="Меню"><span>≡</span></button>`,
+      },
+      {
+        id: 9,
+        title: "Текст MENU",
+        desc: "Только слово, без иконки — чисто и в духе бренд-типографики.",
+        html: `<button type="button" class="demo-btn m9" aria-label="Меню">меню</button>`,
+      },
+      {
+        id: 10,
+        title: "Soft FAB",
+        desc: "Мягкая «плавающая» кнопка с градиентом и короткими линиями.",
+        html: `<button type="button" class="demo-btn m10" aria-label="Меню"><i></i><i></i><i></i></button>`,
+      },
+    ];
+
+    const grid = document.getElementById("grid");
+    const picked = document.getElementById("picked");
+
+    grid.innerHTML = variants.map((v) => `
+      <article class="card">
+        <div>
+          <div class="card-num">#${v.id}</div>
+          <div class="card-title">${v.title}</div>
+        </div>
+        <p class="card-desc">${v.desc}</p>
+        <div class="stage">
+          <div class="stage-fake">FUTURUM</div>
+          ${v.html}
+        </div>
+        <div class="actions">
+          <button type="button" class="pick" data-pick="${v.id}">Этот</button>
+        </div>
+      </article>
+    `).join("");
+
+    grid.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-pick]");
+      if (!btn) return;
+      const id = Number(btn.dataset.pick);
+      const v = variants.find((x) => x.id === id);
+      localStorage.setItem("futurum_menu_pick", String(id));
+      picked.innerHTML = `Выбор: <strong>#${id} — ${v.title}</strong>. Напиши в чат: «меню ${id}»`;
+    });
+
+    const saved = Number(localStorage.getItem("futurum_menu_pick") || 0);
+    if (saved) {
+      const v = variants.find((x) => x.id === saved);
+      if (v) picked.innerHTML = `Выбор: <strong>#${saved} — ${v.title}</strong>. Напиши в чат: «меню ${saved}»`;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Меню — эффекты кнопки</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07090d;
+      --panel: #12161e;
+      --ink: #e8eef7;
+      --mute: #7d8a9a;
+      --accent: #3dffe0;
+      --line: rgba(232, 238, 247, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Rajdhani", sans-serif;
+      background: radial-gradient(ellipse 70% 45% at 15% 0%, #0f1a1c, var(--bg));
+      color: var(--ink);
+      padding: 1.35rem clamp(1rem, 3vw, 2rem) 3rem;
+    }
+    h1 {
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin: 0 0 0.35rem;
+    }
+    .lead { color: var(--mute); margin: 0 0 1.2rem; }
+    .grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+    .card {
+      background: color-mix(in srgb, var(--panel) 94%, black);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0.95rem 1rem 1.05rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+    .card-num {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+    }
+    .card-title { font-weight: 700; font-size: 1.05rem; }
+    .card-desc { margin: 0; color: var(--mute); font-size: 0.9rem; line-height: 1.35; }
+    .stage {
+      position: relative;
+      height: 8rem;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(ellipse 60% 50% at 70% 30%, rgba(61,255,224,0.07), transparent 60%),
+        #0a0e14;
+      overflow: hidden;
+    }
+    .stage-fake {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-content: center;
+      opacity: 0.28;
+      font-family: "Orbitron", sans-serif;
+      letter-spacing: 0.2em;
+      font-size: 0.85rem;
+      color: var(--accent);
+      pointer-events: none;
+    }
+    .actions { display: flex; gap: 0.5rem; margin-top: auto; }
+    button.pick {
+      font: inherit;
+      font-weight: 700;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+      background: color-mix(in srgb, var(--accent) 22%, transparent);
+      color: #041410;
+      padding: 0.4rem 0.9rem;
+      cursor: pointer;
+    }
+    .picked {
+      margin-top: 1.2rem;
+      padding: 0.9rem 1rem;
+      border-radius: 12px;
+      border: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent);
+      color: var(--mute);
+    }
+    .picked strong {
+      color: var(--accent);
+      font-family: "Orbitron", sans-serif;
+      letter-spacing: 0.06em;
+    }
+
+    .demo {
+      position: absolute;
+      top: 0.85rem;
+      left: 0.85rem;
+      width: 3.15rem;
+      height: 3.15rem;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      color: var(--ink);
+    }
+    .bars {
+      display: grid;
+      gap: 0.4rem;
+      width: 1.55rem;
+      justify-items: start;
+    }
+    .bars i {
+      display: block;
+      width: 1.55rem;
+      height: 2.5px;
+      border-radius: 2px;
+      background: var(--ink);
+      box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 28%, transparent);
+    }
+    .bars i:nth-child(2) { width: 1.15rem; }
+
+    /* 1. Мягкое дыхание */
+    .fx1 { animation: fx1-breathe 2.8s ease-in-out infinite; }
+    .fx1 .bars i { transition: background 0.2s; }
+    .fx1:hover .bars i { background: var(--accent); }
+    @keyframes fx1-breathe {
+      0%, 100% { opacity: 0.72; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.04); }
+    }
+
+    /* 2. Поочерёдное свечение линий */
+    .fx2 .bars i { animation: fx2-line 1.8s ease-in-out infinite; }
+    .fx2 .bars i:nth-child(2) { animation-delay: 0.2s; }
+    .fx2 .bars i:nth-child(3) { animation-delay: 0.4s; }
+    .fx2:hover .bars i { animation-duration: 0.9s; background: var(--accent); }
+    @keyframes fx2-line {
+      0%, 100% { opacity: 0.35; box-shadow: none; }
+      50% { opacity: 1; box-shadow: 0 0 12px rgba(61,255,224,0.55); background: var(--accent); }
+    }
+
+    /* 3. Hover → X */
+    .fx3 .bars i { transition: transform 0.28s cubic-bezier(0.22,1,0.36,1), opacity 0.2s, background 0.2s; transform-origin: center; }
+    .fx3:hover .bars i:nth-child(1) { transform: translateY(0.52rem) rotate(45deg); background: var(--accent); width: 1.55rem; }
+    .fx3:hover .bars i:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .fx3:hover .bars i:nth-child(3) { transform: translateY(-0.52rem) rotate(-45deg); background: var(--accent); width: 1.55rem; }
+
+    /* 4. Пульс кольца */
+    .fx4::after {
+      content: "";
+      position: absolute;
+      inset: 0.15rem;
+      border-radius: 12px;
+      border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+      animation: fx4-ring 2.4s ease-out infinite;
+      pointer-events: none;
+    }
+    .fx4:hover .bars i { background: var(--accent); }
+    @keyframes fx4-ring {
+      0% { transform: scale(0.85); opacity: 0.7; }
+      100% { transform: scale(1.35); opacity: 0; }
+    }
+
+    /* 5. Скан-линия */
+    .fx5 { overflow: hidden; }
+    .fx5::before {
+      content: "";
+      position: absolute;
+      left: 18%;
+      right: 18%;
+      height: 2px;
+      top: 20%;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      animation: fx5-scan 2.2s linear infinite;
+      pointer-events: none;
+      opacity: 0.85;
+    }
+    .fx5:hover .bars i { background: var(--accent); }
+    @keyframes fx5-scan {
+      0% { top: 22%; opacity: 0; }
+      15% { opacity: 0.9; }
+      85% { opacity: 0.9; }
+      100% { top: 72%; opacity: 0; }
+    }
+
+    /* 6. Glitch дёрганье */
+    .fx6 { animation: fx6-idle 4s steps(1) infinite; }
+    .fx6:hover { animation: fx6-hover 0.45s steps(2) infinite; }
+    .fx6:hover .bars i { background: var(--accent); }
+    @keyframes fx6-idle {
+      0%, 92%, 100% { transform: none; filter: none; }
+      93% { transform: translate(1px, 0); }
+      94% { transform: translate(-1px, 1px); filter: hue-rotate(40deg); }
+      95% { transform: none; filter: none; }
+    }
+    @keyframes fx6-hover {
+      0% { transform: translate(0,0); }
+      33% { transform: translate(2px, -1px); }
+      66% { transform: translate(-2px, 1px); }
+      100% { transform: translate(0,0); }
+    }
+
+    /* 7. Магнит / подъём */
+    .fx7 { transition: transform 0.28s cubic-bezier(0.22,1,0.36,1), background 0.2s; }
+    .fx7 .bars i { transition: transform 0.28s cubic-bezier(0.22,1,0.36,1), background 0.2s, width 0.2s; }
+    .fx7:hover {
+      transform: translateY(-3px) scale(1.06);
+      background: color-mix(in srgb, var(--ink) 6%, transparent);
+    }
+    .fx7:hover .bars i { background: var(--accent); }
+    .fx7:hover .bars i:nth-child(2) { width: 1.55rem; }
+
+    /* 8. Волна длин линий */
+    .fx8 .bars i { animation: fx8-wave 1.6s ease-in-out infinite; transform-origin: left center; }
+    .fx8 .bars i:nth-child(2) { animation-delay: 0.15s; }
+    .fx8 .bars i:nth-child(3) { animation-delay: 0.3s; }
+    .fx8:hover .bars i { background: var(--accent); animation-duration: 0.8s; }
+    @keyframes fx8-wave {
+      0%, 100% { width: 1.15rem; }
+      50% { width: 1.55rem; }
+    }
+    .fx8 .bars i:nth-child(1) { width: 1.55rem; }
+    .fx8 .bars i:nth-child(3) { width: 1.35rem; }
+
+    /* 9. Мягкий glow idle */
+    .fx9 .bars i {
+      animation: fx9-glow 2.6s ease-in-out infinite;
+      background: var(--ink);
+    }
+    .fx9 .bars i:nth-child(2) { animation-delay: 0.25s; }
+    .fx9 .bars i:nth-child(3) { animation-delay: 0.5s; }
+    .fx9:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+    @keyframes fx9-glow {
+      0%, 100% { box-shadow: 0 0 0 transparent; color: var(--ink); }
+      50% { box-shadow: 0 0 14px rgba(61,255,224,0.65); background: var(--accent); }
+    }
+
+    /* 10. Rotate hint на hover */
+    .fx10 { transition: transform 0.35s cubic-bezier(0.22,1,0.36,1); }
+    .fx10 .bars { transition: transform 0.35s cubic-bezier(0.22,1,0.36,1); }
+    .fx10:hover { transform: rotate(-8deg); }
+    .fx10:hover .bars { transform: scale(1.08); }
+    .fx10:hover .bars i { background: var(--accent); box-shadow: 0 0 12px rgba(61,255,224,0.5); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo, .demo::after, .demo::before, .bars i { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Эффекты кнопки меню</h1>
+  <p class="lead">Наведи на кнопку в превью. Нажми «Этот» и напиши номер в чат, например: «эффект 3».</p>
+  <div class="grid" id="grid"></div>
+  <div class="picked" id="picked">Выбор: пока нет</div>
+
+  <script>
+    const variants = [
+      { id: 1, title: "Дыхание", desc: "Кнопка чуть пульсирует по размеру и прозрачности — спокойно, постоянно.", cls: "fx1" },
+      { id: 2, title: "Линии по очереди", desc: "Каждая полоска вспыхивает бирюзой одна за другой.", cls: "fx2" },
+      { id: 3, title: "Hover → крестик", desc: "При наведении линии складываются в ✕, как «сейчас открою/закрою».", cls: "fx3" },
+      { id: 4, title: "Пульс кольца", desc: "Вокруг кнопки расходится тонкое кольцо — как маячок.", cls: "fx4" },
+      { id: 5, title: "Скан-линия", desc: "Тонкая линия пробегает сверху вниз — лёгкий tech-вайб.", cls: "fx5" },
+      { id: 6, title: "Редкий glitch", desc: "Почти стоит, иногда короткий дёрганый сбой. На hover — активнее.", cls: "fx6" },
+      { id: 7, title: "Магнит", desc: "На hover приподнимается и чуть увеличивается, средняя линия выравнивается.", cls: "fx7" },
+      { id: 8, title: "Волна длины", desc: "Линии ритмично удлиняются/укорачиваются, как эквалайзер.", cls: "fx8" },
+      { id: 9, title: "Мягкий glow", desc: "Полоски по очереди мягко загораются свечением.", cls: "fx9" },
+      { id: 10, title: "Лёгкий поворот", desc: "На hover кнопка чуть наклоняется — живая, но без шума.", cls: "fx10" },
+    ];
+
+    const grid = document.getElementById("grid");
+    const picked = document.getElementById("picked");
+
+    grid.innerHTML = variants.map((v) => `
+      <article class="card">
+        <div>
+          <div class="card-num">#${v.id}</div>
+          <div class="card-title">${v.title}</div>
+        </div>
+        <p class="card-desc">${v.desc}</p>
+        <div class="stage">
+          <div class="stage-fake">FUTURUM</div>
+          <button type="button" class="demo ${v.cls}" aria-label="Меню">
+            <span class="bars"><i></i><i></i><i></i></span>
+          </button>
+        </div>
+        <div class="actions">
+          <button type="button" class="pick" data-pick="${v.id}">Этот</button>
+        </div>
+      </article>
+    `).join("");
+
+    grid.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-pick]");
+      if (!btn) return;
+      const id = Number(btn.dataset.pick);
+      const v = variants.find((x) => x.id === id);
+      localStorage.setItem("futurum_menu_fx", String(id));
+      picked.innerHTML = `Выбор: <strong>#${id} — ${v.title}</strong>. Напиши в чат: «эффект ${id}»`;
+    });
+
+    const saved = Number(localStorage.getItem("futurum_menu_fx") || 0);
+    if (saved) {
+      const v = variants.find((x) => x.id === saved);
+      if (v) picked.innerHTML = `Выбор: <strong>#${saved} — ${v.title}</strong>. Напиши в чат: «эффект ${saved}»`;
+    }
+  </script>
+</body>
+</html>
