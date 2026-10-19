@@ -28,7 +28,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=94" />
+  <link rel="stylesheet" href="styles.css?v=102" />
 </head>
 <body>
   <div class="atmosphere" aria-hidden="true">
@@ -137,7 +137,7 @@
           <span class="catalog-stat-value" id="catalogCount">0</span>
           <span class="catalog-stat-unit">предметов</span>
         </aside>
-        <a class="side-nav-btn" href="./catalog.html?v=94">
+        <a class="side-nav-btn" href="./catalog.html?v=102">
           <span class="side-nav-btn-title">Все предметы</span>
           <span class="side-nav-btn-desc">Список, сортировка и история цен</span>
         </a>
@@ -164,6 +164,19 @@
           enterkeyhint="search"
         />
       </div>
+      <div class="changes-bar" id="changesBar">
+        <button
+          type="button"
+          class="changes-btn"
+          id="changesBtn"
+          aria-expanded="false"
+          aria-controls="changesPanel"
+          aria-label="Изменения каталога"
+        >
+          <span class="changes-btn-dot" id="changesDot" hidden aria-hidden="true"></span>
+          <span class="changes-btn-label">Изменения</span>
+        </button>
+      </div>
       <p class="hint" id="hint">Начните вводить название</p>
     </header>
 
@@ -188,8 +201,25 @@
     </section>
   </main>
 
-  <script src="fav-store.js?v=94"></script>
-  <script src="particles.js?v=94"></script>
-  <script src="app.js?v=94"></script>
+  <div class="changes-screen" id="changesPanel" hidden role="dialog" aria-modal="true" aria-labelledby="changesScreenTitle">
+    <div class="changes-screen-inner">
+      <header class="changes-screen-head">
+        <div class="changes-screen-head-text">
+          <h2 class="changes-screen-title" id="changesScreenTitle">Изменения</h2>
+          <p class="changes-screen-sub" id="changesSub">Что нового в каталоге</p>
+        </div>
+        <button type="button" class="changes-screen-close" id="changesClose" aria-label="Закрыть">✕</button>
+      </header>
+      <ul class="changes-list" id="changesList"></ul>
+      <footer class="changes-screen-foot">
+        <button type="button" class="changes-mark" id="changesMarkRead">Прочитал всё</button>
+      </footer>
+    </div>
+  </div>
+
+  <script src="fav-store.js?v=102"></script>
+  <script src="particles.js?v=102"></script>
+  <script src="changes.js?v=102"></script>
+  <script src="app.js?v=102"></script>
 </body>
 </html>

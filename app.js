@@ -1132,6 +1132,9 @@ async function load(isRefresh = false) {
         : "Каталог пока пуст — идёт сбор";
     }
     if (isRefresh && (tokenize(state.query).length || browseMode())) render();
+    if (window.FuturumChanges) {
+      FuturumChanges.refresh(state.items);
+    }
   } catch {
     if (!isRefresh) {
       els.hint.textContent = "Не удалось загрузить каталог";
@@ -1140,10 +1143,26 @@ async function load(isRefresh = false) {
   }
 }
 
+function openChangeItem(id) {
+  const idx = state.items.findIndex((it) => it.id === id);
+  if (idx < 0) return;
+  const item = state.items[idx];
+  if (els.q) {
+    els.q.value = item.name || "";
+    state.query = els.q.value;
+  }
+  render();
+  const listIdx = state.list.findIndex((row) => row.item.id === id);
+  if (listIdx >= 0) selectByIndex(listIdx, true);
+}
+
+window.__futurumOpenChangeItem = openChangeItem;
+
 setTheme(currentTheme());
 setBg(currentBg());
 updateFiltersUi();
 bind();
+if (window.FuturumChanges) FuturumChanges.init();
 syncFavs().finally(() => load(false));
 setInterval(() => load(true), 15000);
 
