@@ -46,7 +46,8 @@
 
   function formatPriceNum(n) {
     if (n == null || Number.isNaN(Number(n))) return "—";
-    return Number(n).toLocaleString("ru-RU");
+    // без пробелов — на узком экране тикер не разъезжается
+    return String(Math.round(Number(n)));
   }
 
   function proxyImage(url) {
