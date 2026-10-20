@@ -240,18 +240,18 @@
       n > 0 ? `Изменения каталога, новых: ${n}` : "Изменения каталога"
     );
     if (els.dot) els.dot.hidden = n === 0;
-    if (els.label) {
-      els.label.textContent = n > 0 ? "Изменения" : "Изменений нет";
-    }
-    if (els.title) {
-      els.title.textContent = "Изменения";
-    }
+    // подпись кнопки и заголовок всегда «Изменения»;
+    // «Изменений нет» — только в пустом списке панели
+    if (els.label) els.label.textContent = "Изменения";
+    if (els.title) els.title.textContent = "Изменения";
     if (els.sub) {
-      els.sub.textContent =
-        n > 0
-          ? `${n} ${plural(n, "новое изменение", "новых изменения", "новых изменений")}`
-          : "";
-      els.sub.hidden = n === 0;
+      if (n > 0) {
+        els.sub.hidden = false;
+        els.sub.textContent = `${n} ${plural(n, "новое изменение", "новых изменения", "новых изменений")}`;
+      } else {
+        els.sub.textContent = "";
+        els.sub.hidden = true;
+      }
     }
   }
 
