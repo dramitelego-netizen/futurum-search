@@ -247,7 +247,7 @@
       els.sub.textContent =
         n > 0
           ? `${n} ${plural(n, "новое изменение", "новых изменения", "новых изменений")}`
-          : "Изменений нет — всё уже прочитано";
+          : "Изменений нет";
     }
     if (els.title) {
       els.title.textContent = n > 0 ? "Изменения" : "Изменений нет";
@@ -399,7 +399,6 @@
       els.list.innerHTML = `
         <li class="changes-empty">
           <p>Изменений нет</p>
-          <span>Ты уже всё прочитал. Новое появится, когда обновится каталог</span>
         </li>`;
       if (els.markBtn) els.markBtn.hidden = true;
       return;
