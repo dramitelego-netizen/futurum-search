@@ -899,16 +899,6 @@ body.is-stage .shell {
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
-.side-rail::after {
-  content: "";
-  position: absolute;
-  inset: 0.2rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  animation: side-rail-ring 2.4s ease-out infinite;
-  pointer-events: none;
-}
-
 .side-rail:hover,
 .side-rail:focus-visible {
   outline: none;
@@ -936,6 +926,7 @@ body.is-stage .shell {
   background: #ffffff;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.35);
   transition: background 0.2s ease, width 0.2s ease, box-shadow 0.2s ease;
+  animation: side-rail-neon-flick 3.2s steps(2, end) infinite;
 }
 
 .side-rail-bars i:nth-child(2) {
@@ -948,19 +939,26 @@ body.is-stage .shell {
   box-shadow: 0 0 14px rgba(255, 255, 255, 0.5);
 }
 
-@keyframes side-rail-ring {
-  0% {
-    transform: scale(0.88);
-    opacity: 0.75;
-  }
+@keyframes side-rail-neon-flick {
+  0%,
+  88%,
   100% {
-    transform: scale(1.4);
-    opacity: 0;
+    opacity: 1;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
   }
-}
-
-[data-theme="light"] .side-rail::after {
-  border-color: rgba(16, 24, 32, 0.45);
+  90% {
+    opacity: 0.35;
+    box-shadow: none;
+  }
+  92% {
+    opacity: 1;
+  }
+  94% {
+    opacity: 0.5;
+  }
+  96% {
+    opacity: 1;
+  }
 }
 
 [data-theme="light"] .side-rail:hover,
@@ -971,12 +969,35 @@ body.is-stage .shell {
 [data-theme="light"] .side-rail-bars i {
   background: #101820;
   box-shadow: 0 0 8px rgba(16, 24, 32, 0.2);
+  animation-name: side-rail-neon-flick-light;
 }
 
 [data-theme="light"] .side-rail:hover .side-rail-bars i,
 [data-theme="light"] .side-rail:focus-visible .side-rail-bars i {
   background: #101820;
   box-shadow: 0 0 10px rgba(16, 24, 32, 0.28);
+}
+
+@keyframes side-rail-neon-flick-light {
+  0%,
+  88%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(16, 24, 32, 0.25);
+  }
+  90% {
+    opacity: 0.35;
+    box-shadow: none;
+  }
+  92% {
+    opacity: 1;
+  }
+  94% {
+    opacity: 0.5;
+  }
+  96% {
+    opacity: 1;
+  }
 }
 
 .side-backdrop {
@@ -3794,14 +3815,8 @@ body.changes-open {
   .preview-empty-dot,
   .media-frame.is-loading::after,
   .side-rail,
-  .side-rail::after,
   .side-rail-bars i {
     animation: none !important;
-  }
-
-  .side-rail::after {
-    opacity: 0.45;
-    transform: none;
   }
 
   .side-rail-bars i {
