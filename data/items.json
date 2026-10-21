@@ -5,7 +5,7 @@
   "range": {
     "start": 1,
     "end": 1500,
-    "scanned_upto_hint": 672
+    "scanned_upto_hint": 685
   },
   "items": [
     {
@@ -5455,10 +5455,11 @@
       "imageLocal": "data/img/673/icon.png",
       "lookLocal": "data/img/673/look.png",
       "lookImage": "https://parapa.ru/wiki/images/1/12/23-03-48_f51b3a68.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626514
     },
     {
       "id": 674,
@@ -5477,10 +5478,11 @@
       "imageLocal": "data/img/674/icon.png",
       "lookLocal": "data/img/674/look.png",
       "lookImage": "https://parapa.ru/wiki/images/5/5c/22-58-20_7e58f95a.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626519
     },
     {
       "id": 675,
@@ -5499,10 +5501,11 @@
       "imageLocal": "data/img/675/icon.png",
       "lookLocal": "data/img/675/look.png",
       "lookImage": "https://parapa.ru/wiki/images/2/20/1MOITORT378f8.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626526
     },
     {
       "id": 676,
@@ -5521,10 +5524,11 @@
       "imageLocal": "data/img/676/icon.png",
       "lookLocal": "data/img/676/look.png",
       "lookImage": "https://parapa.ru/wiki/images/d/da/INU4aaa4.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626528
     },
     {
       "id": 677,
@@ -5543,10 +5547,11 @@
       "imageLocal": "data/img/677/icon.png",
       "lookLocal": "data/img/677/look.png",
       "lookImage": "https://parapa.ru/wiki/images/6/63/2VMESTE5f03e.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626539
     },
     {
       "id": 678,
@@ -5565,10 +5570,11 @@
       "imageLocal": "data/img/678/icon.png",
       "lookLocal": "data/img/678/look.png",
       "lookImage": "https://parapa.ru/wiki/images/6/61/77bae6e62f02831e54516.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626539
     },
     {
       "id": 679,
@@ -5587,10 +5593,11 @@
       "imageLocal": "data/img/679/icon.png",
       "lookLocal": "data/img/679/look.png",
       "lookImage": "https://parapa.ru/pictures/image/news/q2018/33e841abfd.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": "m",
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626548
     },
     {
       "id": 680,
@@ -5601,11 +5608,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/iconn/455614.png",
       "url": "https://parapa.ru/mall/goods/680/",
-      "category": "packs",
-      "categoryTitle": "Наборы",
-      "categories": [
-        "packs"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/680/icon.png",
       "lookImage": null,
       "unavailable": false,
@@ -5622,11 +5627,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/mall/show/3606056.png",
       "url": "https://parapa.ru/mall/goods/684/",
-      "category": "wings",
-      "categoryTitle": "Крылья",
-      "categories": [
-        "wings"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/684/icon.png",
       "lookLocal": "data/img/684/look.png",
       "lookImage": "https://parapa.ru/wiki/images/6/64/1278BD3.png",
@@ -5644,11 +5647,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/mall/show/3606056.png",
       "url": "https://parapa.ru/mall/goods/685/",
-      "category": "wings",
-      "categoryTitle": "Крылья",
-      "categories": [
-        "wings"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/685/icon.png",
       "lookLocal": "data/img/685/look.png",
       "lookImage": "https://parapa.ru/wiki/images/6/6e/1278BD4.png",
