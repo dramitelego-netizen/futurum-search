@@ -878,7 +878,7 @@ body.is-stage .shell {
   padding-bottom: 1.5rem;
 }
 
-/* —— кнопка меню: минимал линии, левый верх (#4) —— */
+/* —— кнопка меню: бирюзовый люминесцент (#5) —— */
 .side-rail {
   position: absolute;
   top: max(0.7rem, env(safe-area-inset-top));
@@ -899,6 +899,16 @@ body.is-stage .shell {
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
+.side-rail::after {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  border-radius: 18px;
+  background: radial-gradient(circle, rgba(61, 255, 224, 0.22), transparent 68%);
+  pointer-events: none;
+  animation: side-rail-fluo-halo 8s ease-in-out infinite;
+}
+
 .side-rail:hover,
 .side-rail:focus-visible {
   outline: none;
@@ -916,6 +926,8 @@ body.is-stage .shell {
   gap: 0.45rem;
   width: 1.75rem;
   justify-items: start;
+  position: relative;
+  z-index: 1;
 }
 
 .side-rail-bars i {
@@ -924,9 +936,9 @@ body.is-stage .shell {
   height: 3px;
   border-radius: 2px;
   background: #ffffff;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 10px rgba(61, 255, 224, 0.35);
   transition: background 0.2s ease, width 0.2s ease, box-shadow 0.2s ease;
-  animation: side-rail-neon-flick 3.2s steps(2, end) infinite;
+  animation: side-rail-fluo 8s ease-in-out infinite;
 }
 
 .side-rail-bars i:nth-child(2) {
@@ -936,29 +948,70 @@ body.is-stage .shell {
 .side-rail:hover .side-rail-bars i,
 .side-rail:focus-visible .side-rail-bars i {
   background: #ffffff;
-  box-shadow: 0 0 14px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 14px rgba(61, 255, 224, 0.55);
 }
 
-@keyframes side-rail-neon-flick {
+@keyframes side-rail-fluo {
   0%,
-  88%,
   100% {
-    opacity: 1;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    opacity: 0.9;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(61, 255, 224, 0.35);
+    filter: brightness(1);
   }
-  90% {
-    opacity: 0.35;
+  22% {
+    opacity: 1;
+    box-shadow: 0 0 16px rgba(61, 255, 224, 0.55);
+    filter: brightness(1.08);
+  }
+  48% {
+    opacity: 0.72;
+    filter: brightness(0.88);
+    box-shadow: 0 0 6px rgba(61, 255, 224, 0.2);
+  }
+  60% {
+    opacity: 0.45;
     box-shadow: none;
   }
-  92% {
+  64% {
     opacity: 1;
+    background: #d8fff8;
+    filter: brightness(1.15);
+    box-shadow: 0 0 20px rgba(61, 255, 224, 0.7);
   }
-  94% {
+  68% {
+    opacity: 0.65;
+    background: #fff;
+  }
+  74% {
+    opacity: 1;
+    filter: brightness(1.1);
+    box-shadow: 0 0 16px rgba(61, 255, 224, 0.55);
+  }
+}
+
+@keyframes side-rail-fluo-halo {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  22% {
+    opacity: 0.4;
+  }
+  48% {
+    opacity: 0.12;
+  }
+  60% {
+    opacity: 0.04;
+  }
+  74% {
     opacity: 0.5;
   }
-  96% {
-    opacity: 1;
-  }
+}
+
+[data-theme="light"] .side-rail::after {
+  background: radial-gradient(circle, rgba(16, 140, 120, 0.2), transparent 68%);
+  animation-name: side-rail-fluo-halo-light;
 }
 
 [data-theme="light"] .side-rail:hover,
@@ -968,35 +1021,69 @@ body.is-stage .shell {
 
 [data-theme="light"] .side-rail-bars i {
   background: #101820;
-  box-shadow: 0 0 8px rgba(16, 24, 32, 0.2);
-  animation-name: side-rail-neon-flick-light;
+  box-shadow: 0 0 8px rgba(16, 120, 100, 0.25);
+  animation-name: side-rail-fluo-light;
 }
 
 [data-theme="light"] .side-rail:hover .side-rail-bars i,
 [data-theme="light"] .side-rail:focus-visible .side-rail-bars i {
   background: #101820;
-  box-shadow: 0 0 10px rgba(16, 24, 32, 0.28);
+  box-shadow: 0 0 10px rgba(16, 120, 100, 0.35);
 }
 
-@keyframes side-rail-neon-flick-light {
+@keyframes side-rail-fluo-light {
   0%,
-  88%,
   100% {
-    opacity: 1;
-    box-shadow: 0 0 8px rgba(16, 24, 32, 0.25);
+    opacity: 0.9;
+    background: #101820;
+    box-shadow: 0 0 8px rgba(16, 120, 100, 0.25);
+    filter: brightness(1);
   }
-  90% {
-    opacity: 0.35;
+  22% {
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(16, 120, 100, 0.4);
+    filter: brightness(1.05);
+  }
+  48% {
+    opacity: 0.72;
+    filter: brightness(0.9);
+    box-shadow: 0 0 5px rgba(16, 120, 100, 0.15);
+  }
+  60% {
+    opacity: 0.45;
     box-shadow: none;
   }
-  92% {
+  64% {
     opacity: 1;
+    filter: brightness(1.1);
+    box-shadow: 0 0 14px rgba(16, 120, 100, 0.45);
   }
-  94% {
-    opacity: 0.5;
+  68% {
+    opacity: 0.65;
   }
-  96% {
+  74% {
     opacity: 1;
+    filter: brightness(1.05);
+    box-shadow: 0 0 10px rgba(16, 120, 100, 0.35);
+  }
+}
+
+@keyframes side-rail-fluo-halo-light {
+  0%,
+  100% {
+    opacity: 0.18;
+  }
+  22% {
+    opacity: 0.35;
+  }
+  48% {
+    opacity: 0.1;
+  }
+  60% {
+    opacity: 0.03;
+  }
+  74% {
+    opacity: 0.4;
   }
 }
 
@@ -3815,12 +3902,18 @@ body.changes-open {
   .preview-empty-dot,
   .media-frame.is-loading::after,
   .side-rail,
+  .side-rail::after,
   .side-rail-bars i {
     animation: none !important;
   }
 
+  .side-rail::after {
+    opacity: 0.22;
+  }
+
   .side-rail-bars i {
     opacity: 1 !important;
+    filter: none !important;
   }
 
   .brand-block {
