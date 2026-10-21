@@ -5,7 +5,7 @@
   "range": {
     "start": 1,
     "end": 1500,
-    "scanned_upto_hint": 654
+    "scanned_upto_hint": 672
   },
   "items": [
     {
@@ -5228,10 +5228,11 @@
       "imageLocal": "data/img/660/icon.png",
       "lookLocal": "data/img/660/look.png",
       "lookImage": "https://parapa.ru/pictures/image/news/q2018/8195056a01.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626272
     },
     {
       "id": 661,
@@ -5250,10 +5251,11 @@
       "imageLocal": "data/img/661/icon.png",
       "lookLocal": "data/img/661/look.png",
       "lookImage": "https://parapa.ru/pictures/image/news/q2018/c36b247afa.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626272
     },
     {
       "id": 662,
@@ -5272,10 +5274,11 @@
       "imageLocal": "data/img/662/icon.png",
       "lookLocal": "data/img/662/look.png",
       "lookImage": "https://parapa.ru/pictures/image/news/q2018/b9df57fb58.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626281
     },
     {
       "id": 663,
@@ -5294,10 +5297,11 @@
       "imageLocal": "data/img/663/icon.png",
       "lookLocal": "data/img/663/look.png",
       "lookImage": "https://parapa.ru/pictures/image/news/q2018/1826e06b7d.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626285
     },
     {
       "id": 664,
@@ -5316,10 +5320,11 @@
       "imageLocal": "data/img/664/icon.png",
       "lookLocal": "data/img/664/look.png",
       "lookImage": "https://parapa.ru/pictures/image/news/q2018/b96c12a4a5.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626291
     },
     {
       "id": 665,
@@ -5338,10 +5343,11 @@
       "imageLocal": "data/img/665/icon.png",
       "lookLocal": "data/img/665/look.png",
       "lookImage": "https://parapa.ru/pictures/image/news/q2018/c30d10ea2a.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626294
     },
     {
       "id": 666,
@@ -5360,10 +5366,11 @@
       "imageLocal": "data/img/666/icon.png",
       "lookLocal": "data/img/666/look.png",
       "lookImage": "https://parapa.ru/pictures/image/news/q2018/6dd9ae2800.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626299
     },
     {
       "id": 667,
@@ -5382,10 +5389,11 @@
       "imageLocal": "data/img/667/icon.png",
       "lookLocal": "data/img/667/look.png",
       "lookImage": "https://parapa.ru/pictures/image/news/q2018/bd7828a52c.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626303
     },
     {
       "id": 668,
@@ -5396,11 +5404,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/iconn/480123.png",
       "url": "https://parapa.ru/mall/goods/668/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/668/icon.png",
       "lookLocal": "data/img/668/look.png",
       "lookImage": "https://parapa.ru/pictures/image/news/q2018/7ec76dabb6.png",
@@ -5426,10 +5432,11 @@
       "imageLocal": "data/img/672/icon.png",
       "lookLocal": "data/img/672/look.png",
       "lookImage": "https://parapa.ru/wiki/images/7/71/22-55-58_44427f2e.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626313
     },
     {
       "id": 673,
