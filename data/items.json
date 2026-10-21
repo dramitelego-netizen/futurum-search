@@ -5,7 +5,7 @@
   "range": {
     "start": 1,
     "end": 1500,
-    "scanned_upto_hint": 63
+    "scanned_upto_hint": 185
   },
   "items": [
     {
@@ -231,11 +231,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/31169_091229_3101064_dds.png",
       "url": "https://parapa.ru/mall/goods/64/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/mall/show/8ad6f9c0c2.png",
       "imageLocal": "data/img/64/icon.png",
       "lookLocal": "data/img/64/look.png",
@@ -253,11 +251,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/4601009_dds.png",
       "url": "https://parapa.ru/mall/goods/66/",
-      "category": "wings",
-      "categoryTitle": "Крылья",
-      "categories": [
-        "wings"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/5185bf5cc92546e48baf462768bd3ff4.png",
       "imageLocal": "data/img/66/icon.png",
       "lookLocal": "data/img/66/look.png",
@@ -333,11 +329,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/450038_dds.png",
       "url": "https://parapa.ru/mall/goods/74/",
-      "category": "items",
-      "categoryTitle": "Предметы",
-      "categories": [
-        "items"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/74/icon.png",
       "lookImage": null,
       "unavailable": false,
@@ -354,11 +348,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/2401157_dds.png",
       "url": "https://parapa.ru/mall/goods/76/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/oh_so_hot_feather_dress.jpg",
       "imageLocal": "data/img/76/icon.png",
       "lookLocal": "data/img/76/look.jpg",
@@ -414,11 +406,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/2401415.jpg",
       "url": "https://parapa.ru/mall/goods/79/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/79/icon.jpg",
       "lookImage": null,
       "unavailable": false,
@@ -435,11 +425,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/Avatar_M.jpg",
       "url": "https://parapa.ru/mall/goods/80/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/avatar1М.jpg",
       "imageLocal": "data/img/80/icon.jpg",
       "lookLocal": "data/img/80/look.jpg",
@@ -457,11 +445,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/Avatar_W.jpg",
       "url": "https://parapa.ru/mall/goods/81/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/avatar1W.jpg",
       "imageLocal": "data/img/81/icon.jpg",
       "lookLocal": "data/img/81/look.jpg",
@@ -479,11 +465,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/Arrows.jpg",
       "url": "https://parapa.ru/mall/goods/82/",
-      "category": "packs",
-      "categoryTitle": "Наборы",
-      "categories": [
-        "packs"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/b51010f60277c4651cd51afc10be6ca5.png",
       "imageLocal": "data/img/82/icon.jpg",
       "lookLocal": "data/img/82/look.png",
@@ -501,11 +485,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/rose.png",
       "url": "https://parapa.ru/mall/goods/85/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/wiki/images/2/23/1278BD63.png",
       "imageLocal": "data/img/85/icon.png",
       "lookLocal": "data/img/85/look.png",
@@ -523,11 +505,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/2601184_dds.png",
       "url": "https://parapa.ru/mall/goods/86/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/little_mermaid.jpg",
       "imageLocal": "data/img/86/icon.png",
       "lookLocal": "data/img/86/look.jpg",
@@ -565,11 +545,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/Sea%20Wave.jpg",
       "url": "https://parapa.ru/mall/goods/94/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/seawave.png",
       "imageLocal": "data/img/94/icon.jpg",
       "lookLocal": "data/img/94/look.png",
@@ -647,11 +625,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/%D0%BA%D1%80%D0%B0%D1%81%D0%BE%D1%82%D0%B0%20%D0%B8%20%D1%85%D0%B0%D1%80%D0%B0%D0%BA%D1%82%D0%B5%D1%80.png",
       "url": "https://parapa.ru/mall/goods/101/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/bandch.png",
       "imageLocal": "data/img/101/icon.png",
       "lookLocal": "data/img/101/look.png",
@@ -669,11 +645,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/SkullMoto_sm(1).png",
       "url": "https://parapa.ru/mall/goods/102/",
-      "category": "items",
-      "categoryTitle": "Предметы",
-      "categories": [
-        "items"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/df12fa844ec86bc8c780bf69b378b11e.png",
       "imageLocal": "data/img/102/icon.png",
       "lookLocal": "data/img/102/look.png",
@@ -691,11 +665,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/%D0%96%D0%B8%D0%BB%D0%B5%D1%82.jpg",
       "url": "https://parapa.ru/mall/goods/105/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/blueshirt.png",
       "imageLocal": "data/img/105/icon.jpg",
       "lookLocal": "data/img/105/look.png",
@@ -713,11 +685,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/volt.png",
       "url": "https://parapa.ru/mall/goods/107/",
-      "category": "pets",
-      "categoryTitle": "Питомцы",
-      "categories": [
-        "pets"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/fas.png",
       "imageLocal": "data/img/107/icon.png",
       "lookLocal": "data/img/107/look.png",
@@ -735,11 +705,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/barbos.png",
       "url": "https://parapa.ru/mall/goods/109/",
-      "category": "pets",
-      "categoryTitle": "Питомцы",
-      "categories": [
-        "pets"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/2010-06-16_165802_m.png",
       "imageLocal": "data/img/109/icon.png",
       "lookLocal": "data/img/109/look.png",
@@ -816,11 +784,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/2001105.jpg",
       "url": "https://parapa.ru/mall/goods/115/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/115/icon.jpg",
       "lookImage": null,
       "unavailable": false,
@@ -837,11 +803,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/fc99a736cecf7eb53acaef7701e2be78.png",
       "url": "https://parapa.ru/mall/goods/121/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/121/icon.png",
       "lookImage": null,
       "unavailable": false,
@@ -858,11 +822,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/1001088.jpg",
       "url": "https://parapa.ru/mall/goods/122/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/ec26f8e5d6f2f6565577f93e4f8e628c.png",
       "imageLocal": "data/img/122/icon.jpg",
       "lookLocal": "data/img/122/look.png",
@@ -880,11 +842,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/metla.png",
       "url": "https://parapa.ru/mall/goods/125/",
-      "category": "tricks",
-      "categoryTitle": "Транспорт",
-      "categories": [
-        "tricks"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/wiki/images/7/74/1278BD5.png",
       "imageLocal": "data/img/125/icon.png",
       "lookLocal": "data/img/125/look.png",
@@ -902,11 +862,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/fey.jpg",
       "url": "https://parapa.ru/mall/goods/126/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/126/icon.jpg",
       "lookImage": null,
       "unavailable": false,
@@ -923,11 +881,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/fey.jpg",
       "url": "https://parapa.ru/mall/goods/127/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "http://clip.corp.mail.ru/clip/m733/1424101198-clip-192kb-YpGqAOP1LfTQ.jpg",
       "imageLocal": "data/img/127/icon.jpg",
       "lookUnavailable": true,
@@ -1104,11 +1060,9 @@
       "onSale": true,
       "image": "https://parapa.ru/pictures/mall/3610001.png",
       "url": "https://parapa.ru/mall/goods/140/",
-      "category": "wings",
-      "categoryTitle": "Крылья",
-      "categories": [
-        "wings"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/140/icon.png",
       "lookImage": null,
       "unavailable": false,
@@ -1125,11 +1079,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/3601014.png",
       "url": "https://parapa.ru/mall/goods/141/",
-      "category": "wings",
-      "categoryTitle": "Крылья",
-      "categories": [
-        "wings"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/2585926b118c3376ba708f5a0bf8471d.png",
       "imageLocal": "data/img/141/icon.png",
       "lookLocal": "data/img/141/look.png",
@@ -1147,11 +1099,9 @@
       "onSale": true,
       "image": "https://parapa.ru/pictures/mall/3601001.png",
       "url": "https://parapa.ru/mall/goods/143/",
-      "category": "wings",
-      "categoryTitle": "Крылья",
-      "categories": [
-        "wings"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/143/icon.png",
       "lookImage": null,
       "unavailable": false,
@@ -1168,11 +1118,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/4606001.png",
       "url": "https://parapa.ru/mall/goods/146/",
-      "category": "wings",
-      "categoryTitle": "Крылья",
-      "categories": [
-        "wings"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/146/icon.png",
       "lookImage": null,
       "unavailable": false,
@@ -1189,11 +1137,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/4607001.png",
       "url": "https://parapa.ru/mall/goods/147/",
-      "category": "wings",
-      "categoryTitle": "Крылья",
-      "categories": [
-        "wings"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/147/icon.png",
       "lookImage": null,
       "unavailable": false,
@@ -1210,11 +1156,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/4603001.png",
       "url": "https://parapa.ru/mall/goods/148/",
-      "category": "wings",
-      "categoryTitle": "Крылья",
-      "categories": [
-        "wings"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/148/icon.png",
       "lookImage": null,
       "unavailable": false,
@@ -1251,11 +1195,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/2101243.png",
       "url": "https://parapa.ru/mall/goods/154/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/wiki/images/c/c8/1278BD48.png",
       "imageLocal": "data/img/154/icon.png",
       "lookLocal": "data/img/154/look.png",
@@ -1273,11 +1215,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/2101219.png",
       "url": "https://parapa.ru/mall/goods/157/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/wiki/images/a/a0/1278BD49.png",
       "imageLocal": "data/img/157/icon.png",
       "lookLocal": "data/img/157/look.png",
@@ -1295,11 +1235,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/2601091.png",
       "url": "https://parapa.ru/mall/goods/158/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/wiki/images/1/13/1278BD50.png",
       "imageLocal": "data/img/158/icon.png",
       "lookLocal": "data/img/158/look.png",
@@ -1317,11 +1255,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/bearlegs.png",
       "url": "https://parapa.ru/mall/goods/160/",
-      "category": "pets",
-      "categoryTitle": "Питомцы",
-      "categories": [
-        "pets"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/wiki/images/5/56/1278BD47.png",
       "imageLocal": "data/img/160/icon.png",
       "lookLocal": "data/img/160/look.png",
@@ -1339,11 +1275,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/2101244.png",
       "url": "https://parapa.ru/mall/goods/162/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/giant_butterfly.jpg",
       "imageLocal": "data/img/162/icon.png",
       "lookLocal": "data/img/162/look.jpg",
@@ -1361,11 +1295,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/1701133.png",
       "url": "https://parapa.ru/mall/goods/163/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/mall/show/3280d7858f.png",
       "imageLocal": "data/img/163/icon.png",
       "lookLocal": "data/img/163/look.png",
@@ -1383,11 +1315,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/mall/2601167.png",
       "url": "https://parapa.ru/mall/goods/167/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/mall/show/195e46808c.png",
       "imageLocal": "data/img/167/icon.png",
       "lookLocal": "data/img/167/look.png",
@@ -1425,11 +1355,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/2401046_dds.png",
       "url": "https://parapa.ru/mall/goods/169/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/rosy_memory.jpg",
       "imageLocal": "data/img/169/icon.png",
       "lookLocal": "data/img/169/look.jpg",
@@ -1447,11 +1375,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/1503219.png",
       "url": "https://parapa.ru/mall/goods/170/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/hoodies.jpg",
       "imageLocal": "data/img/170/icon.png",
       "lookLocal": "data/img/170/look.jpg",
@@ -1469,11 +1395,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/1501086_dds.png",
       "url": "https://parapa.ru/mall/goods/171/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/eagle_in_cage.jpg",
       "imageLocal": "data/img/171/icon.png",
       "lookLocal": "data/img/171/look.jpg",
@@ -1499,10 +1423,11 @@
       "lookImage": "https://parapa.ru/pictures/image/ScreenSnapShot_0022.jpg",
       "imageLocal": "data/img/172/icon.png",
       "lookLocal": "data/img/172/look.jpg",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": "m",
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792621960
     },
     {
       "id": 173,
@@ -1521,10 +1446,11 @@
       "lookImage": "https://parapa.ru/pictures/image/sk8t.jpg",
       "imageLocal": "data/img/173/icon.png",
       "lookLocal": "data/img/173/look.jpg",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": "m",
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792621963
     },
     {
       "id": 174,
@@ -1543,10 +1469,11 @@
       "lookImage": "https://parapa.ru/pictures/image/ScreenSnapShot_0033.jpg",
       "imageLocal": "data/img/174/icon.png",
       "lookLocal": "data/img/174/look.jpg",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": "f",
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792622009
     },
     {
       "id": 176,
@@ -1565,10 +1492,11 @@
       "lookImage": "https://parapa.ru/pictures/image/sk8(fem).jpg",
       "imageLocal": "data/img/176/icon.png",
       "lookLocal": "data/img/176/look.jpg",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": "f",
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792621972
     },
     {
       "id": 178,
@@ -1599,11 +1527,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/2401171_dds.png",
       "url": "https://parapa.ru/mall/goods/179/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/white_hot_deep_v_top.jpg",
       "imageLocal": "data/img/179/icon.png",
       "lookLocal": "data/img/179/look.jpg",
@@ -1641,11 +1567,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/black_hot_pants.jpg",
       "url": "https://parapa.ru/mall/goods/182/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/black_hot_pants.jpg",
       "imageLocal": "data/img/182/icon.jpg",
       "lookLocal": "data/img/182/look.jpg",
@@ -1663,11 +1587,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/imprint_of_wilderness(i).jpg",
       "url": "https://parapa.ru/mall/goods/183/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/mall/show/dbaa1752f5.png",
       "imageLocal": "data/img/183/icon.jpg",
       "lookLocal": "data/img/183/look.png",
@@ -1685,11 +1607,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/2601193_dds.png",
       "url": "https://parapa.ru/mall/goods/185/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "lookImage": "https://parapa.ru/pictures/image/2601193.jpg",
       "imageLocal": "data/img/185/icon.png",
       "lookLocal": "data/img/185/look.jpg",
@@ -9422,30 +9342,5 @@
       "gender": "f",
       "badge": "temp"
     }
-  ],
-  "categories": {
-    "packs": "Наборы",
-    "wings": "Крылья",
-    "pets": "Питомцы",
-    "tricks": "Транспорт",
-    "items": "Предметы",
-    "clothes": "Внешность",
-    "child_goods": "Детям"
-  },
-  "filterMeta": {
-    "mode": "local_heuristics",
-    "withCategory": 325,
-    "withGender": 149,
-    "withBadge": 122,
-    "byCategory": {
-      "packs": 17,
-      "wings": 40,
-      "pets": 13,
-      "tricks": 9,
-      "items": 100,
-      "clothes": 132,
-      "child_goods": 14
-    },
-    "total": 443
-  }
+  ]
 }
