@@ -28,8 +28,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=115" />
-  <link rel="stylesheet" href="catalog.css?v=115" />
+  <link rel="stylesheet" href="styles.css?v=126" />
+  <link rel="stylesheet" href="catalog.css?v=126" />
 </head>
 <body class="catalog-page">
   <div class="atmosphere" aria-hidden="true">
@@ -42,7 +42,7 @@
   </div>
 
   <header class="cat-top">
-    <a class="cat-back" href="./index.html?v=115" title="К поиску">← Поиск</a>
+    <a class="cat-back" href="./index.html?v=126" title="К поиску">← Поиск</a>
     <div class="cat-top-main">
       <h1 class="brand cat-brand" data-text="CATALOG" aria-label="CATALOG">
         <span class="brand-main">CATALOG</span>
@@ -77,6 +77,26 @@
           <span class="favs-toggle-count" id="favsCount">0</span>
         </button>
       </div>
+      <div class="filter-pills cat-filter-pills" id="categoryPills" role="group" aria-label="Раздел">
+        <button type="button" class="filter-pill on" data-category="" aria-pressed="true">Все</button>
+        <button type="button" class="filter-pill" data-category="packs" aria-pressed="false">Наборы</button>
+        <button type="button" class="filter-pill" data-category="wings" aria-pressed="false">Крылья</button>
+        <button type="button" class="filter-pill" data-category="pets" aria-pressed="false">Питомцы</button>
+        <button type="button" class="filter-pill" data-category="tricks" aria-pressed="false">Транспорт</button>
+        <button type="button" class="filter-pill" data-category="items" aria-pressed="false">Предметы</button>
+        <button type="button" class="filter-pill" data-category="clothes" aria-pressed="false">Внешность</button>
+        <button type="button" class="filter-pill" data-category="child_goods" aria-pressed="false">Детям</button>
+      </div>
+      <div class="filter-pills cat-filter-pills" id="genderPills" role="group" aria-label="Пол">
+        <button type="button" class="filter-pill on" data-gender="" aria-pressed="true">Все</button>
+        <button type="button" class="filter-pill" data-gender="m" aria-pressed="false">М</button>
+        <button type="button" class="filter-pill" data-gender="f" aria-pressed="false">Ж</button>
+      </div>
+      <div class="filter-pills cat-filter-pills" id="badgePills" role="group" aria-label="Метки">
+        <button type="button" class="filter-pill on" data-badge="" aria-pressed="true">Все</button>
+        <button type="button" class="filter-pill" data-badge="temp" aria-pressed="false">★ врем.</button>
+        <button type="button" class="filter-pill" data-badge="event" aria-pressed="false">☆ ивент</button>
+      </div>
       <div class="sort-pills cat-sort" id="sortPills" role="group" aria-label="Сортировка">
         <button type="button" class="sort-pill" data-sort="name">А–Я</button>
         <button type="button" class="sort-pill" data-sort="price-asc">цена ↑</button>
@@ -100,7 +120,7 @@
     </section>
   </main>
 
-  <script src="fav-store.js?v=115"></script>
-  <script src="catalog.js?v=115"></script>
+  <script src="fav-store.js?v=126"></script>
+  <script src="catalog.js?v=126"></script>
 </body>
 </html>

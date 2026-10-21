@@ -24,6 +24,19 @@ const SYNONYM_GROUPS = [
   ["суперфон", "superfon"],
 ];
 
+const CATEGORY_SLUGS = [
+  "",
+  "packs",
+  "wings",
+  "pets",
+  "tricks",
+  "items",
+  "clothes",
+  "child_goods",
+];
+const GENDER_SLUGS = ["", "m", "f"];
+const BADGE_SLUGS = ["", "temp", "event"];
+
 const state = {
   items: [],
   query: "",
@@ -32,6 +45,9 @@ const state = {
   favs: (window.FavStore && FavStore.loadLocal()) || new Set(),
   showFavs: false,
   showSale: false,
+  category: "",
+  gender: "",
+  badge: "",
   sort: loadSort(),
 };
 
@@ -47,6 +63,10 @@ const els = {
   saleToggle: document.getElementById("saleToggle"),
   favsToggle: document.getElementById("favsToggle"),
   favsCount: document.getElementById("favsCount"),
+  categoryPills: document.getElementById("categoryPills"),
+  genderPills: document.getElementById("genderPills"),
+  badgePills: document.getElementById("badgePills"),
+  filtersRail: document.getElementById("filtersRail"),
   sortPills: document.getElementById("sortPills"),
   resultsCount: document.getElementById("resultsCount"),
   brand: document.querySelector(".brand"),
@@ -114,6 +134,9 @@ function updateFiltersUi() {
     els.saleToggle.classList.toggle("on", state.showSale);
     els.saleToggle.setAttribute("aria-pressed", state.showSale ? "true" : "false");
   }
+  syncFilterPills(els.categoryPills, "category", state.category);
+  syncFilterPills(els.genderPills, "gender", state.gender);
+  syncFilterPills(els.badgePills, "badge", state.badge);
   if (els.sortPills) {
     els.sortPills.querySelectorAll("[data-sort]").forEach((btn) => {
       const on = btn.dataset.sort === state.sort;
@@ -547,14 +570,46 @@ function briefDesc(text, max = 140) {
   return `${s.slice(0, max - 1).trim()}…`;
 }
 
+function syncFilterPills(root, attr, value) {
+  if (!root) return;
+  root.querySelectorAll(`[data-${attr}]`).forEach((btn) => {
+    const on = (btn.dataset[attr] || "") === value;
+    btn.classList.toggle("on", on);
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+  });
+}
+
+function itemMatchesGender(item, gender) {
+  if (!gender) return true;
+  const g = item.gender || null;
+  if (g === gender) return true;
+  if (g === "unisex") return true;
+  return false;
+}
+
 function passesFilters(item) {
   if (state.showFavs && !isFav(item.id)) return false;
   if (state.showSale && !itemOnSale(item)) return false;
+  if (state.category) {
+    const cats = item.categories || [];
+    const hit =
+      item.category === state.category ||
+      (Array.isArray(cats) && cats.includes(state.category));
+    if (!hit) return false;
+  }
+  if (!itemMatchesGender(item, state.gender)) return false;
+  if (state.badge && item.badge !== state.badge) return false;
   return true;
 }
 
 function browseMode() {
-  return state.showFavs || state.showSale;
+  return (
+    state.showFavs ||
+    state.showSale ||
+    Boolean(state.category) ||
+    Boolean(state.gender) ||
+    Boolean(state.badge)
+  );
 }
 
 function discountAmount(item) {
@@ -863,21 +918,31 @@ function emptyMessage(hasQuery) {
   }
   if (!hasQuery && state.showFavs) return "В избранном пока пусто";
   if (!hasQuery && state.showSale) return "Скидок пока нет в каталоге";
+  if (!hasQuery && browseMode()) return "По фильтрам ничего нет";
   if (state.showFavs && state.showSale) return "Ничего не найдено среди избранных скидок";
   if (state.showFavs) return "В избранном ничего не найдено";
   if (state.showSale) return "Среди скидок ничего не найдено";
+  if (browseMode()) return "По фильтрам ничего не найдено";
   return "Ничего не найдено";
 }
 
 function render() {
+  const hasQuery = Boolean(tokenize(state.query).length);
+  // пол и метки — только во время поиска
+  if (!hasQuery && (state.gender || state.badge)) {
+    state.gender = "";
+    state.badge = "";
+  }
+
   const ranked = filtered();
   state.list = ranked;
-  const hasQuery = Boolean(tokenize(state.query).length);
   const showStage = hasQuery || browseMode();
 
   els.hint.hidden = showStage;
   els.stage.hidden = !showStage;
   document.body.classList.toggle("is-stage", showStage);
+  document.body.classList.toggle("has-query", hasQuery);
+  if (els.filtersRail) els.filtersRail.hidden = !hasQuery;
   updateFiltersUi();
   if (els.resultsCount) {
     els.resultsCount.textContent = String(ranked.length);
@@ -1007,6 +1072,36 @@ function bind() {
 
   els.saleToggle?.addEventListener("click", () => {
     state.showSale = !state.showSale;
+    render();
+  });
+
+  els.categoryPills?.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-category]");
+    if (!btn) return;
+    const next = btn.dataset.category || "";
+    if (!CATEGORY_SLUGS.includes(next) || next === state.category) return;
+    state.category = next;
+    state.activeId = null;
+    render();
+  });
+
+  els.genderPills?.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-gender]");
+    if (!btn) return;
+    const next = btn.dataset.gender || "";
+    if (!GENDER_SLUGS.includes(next) || next === state.gender) return;
+    state.gender = next;
+    state.activeId = null;
+    render();
+  });
+
+  els.badgePills?.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-badge]");
+    if (!btn) return;
+    const next = btn.dataset.badge || "";
+    if (!BADGE_SLUGS.includes(next) || next === state.badge) return;
+    state.badge = next;
+    state.activeId = null;
     render();
   });
 

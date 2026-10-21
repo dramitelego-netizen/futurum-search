@@ -28,7 +28,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=115" />
+  <link rel="stylesheet" href="styles.css?v=126" />
 </head>
 <body>
   <div class="atmosphere" aria-hidden="true">
@@ -124,6 +124,7 @@
             <span class="favs-toggle-count" id="favsCount">0</span>
           </button>
         </div>
+
         <p class="side-menu-note">Избранное личное: сохраняется у каждого в своём браузере</p>
       </div>
 
@@ -134,7 +135,7 @@
           <span class="catalog-stat-value" id="catalogCount">0</span>
           <span class="catalog-stat-unit">предметов</span>
         </aside>
-        <a class="side-nav-btn" href="./catalog.html?v=115">
+        <a class="side-nav-btn" href="./catalog.html?v=126">
           <span class="side-nav-btn-title">Все предметы</span>
           <span class="side-nav-btn-desc">Список, сортировка и история цен</span>
         </a>
@@ -178,7 +179,37 @@
     </header>
 
     <section class="stage" id="stage" hidden>
-      <aside class="preview" id="preview" aria-live="polite"></aside>
+      <aside class="filters-rail" id="filtersRail" hidden aria-label="Фильтры">
+        <div class="filters-rail-block">
+          <span class="filters-rail-label">Пол</span>
+          <div class="filter-pills filters-rail-pills" id="genderPills" role="group" aria-label="Пол">
+            <button type="button" class="filter-pill on" data-gender="" aria-pressed="true">Все</button>
+            <button type="button" class="filter-pill" data-gender="m" aria-pressed="false">М</button>
+            <button type="button" class="filter-pill" data-gender="f" aria-pressed="false">Ж</button>
+          </div>
+        </div>
+        <div class="filters-rail-block">
+          <span class="filters-rail-label">Метки</span>
+          <div class="filter-pills filters-rail-pills" id="badgePills" role="group" aria-label="Метки">
+            <button type="button" class="filter-pill on" data-badge="" aria-pressed="true">Все</button>
+            <button type="button" class="filter-pill" data-badge="temp" aria-pressed="false" title="Временный ассортимент">★</button>
+            <button type="button" class="filter-pill" data-badge="event" aria-pressed="false" title="Ивент">☆</button>
+          </div>
+        </div>
+        <div class="filters-rail-block filters-rail-cats">
+          <span class="filters-rail-label">Раздел</span>
+          <div class="filter-pills filters-rail-pills filters-rail-cats-pills" id="categoryPills" role="group" aria-label="Раздел магазина">
+            <button type="button" class="filter-pill on" data-category="" aria-pressed="true">Все</button>
+            <button type="button" class="filter-pill" data-category="packs" aria-pressed="false"><span class="pill-full">Наборы</span><span class="pill-short">Наб.</span></button>
+            <button type="button" class="filter-pill" data-category="wings" aria-pressed="false"><span class="pill-full">Крылья</span><span class="pill-short">Крыл.</span></button>
+            <button type="button" class="filter-pill" data-category="pets" aria-pressed="false"><span class="pill-full">Питомцы</span><span class="pill-short">Пит.</span></button>
+            <button type="button" class="filter-pill" data-category="tricks" aria-pressed="false"><span class="pill-full">Транспорт</span><span class="pill-short">Тран.</span></button>
+            <button type="button" class="filter-pill" data-category="items" aria-pressed="false"><span class="pill-full">Предметы</span><span class="pill-short">Пред.</span></button>
+            <button type="button" class="filter-pill" data-category="clothes" aria-pressed="false"><span class="pill-full">Внешность</span><span class="pill-short">Внеш.</span></button>
+            <button type="button" class="filter-pill" data-category="child_goods" aria-pressed="false">Детям</button>
+          </div>
+        </div>
+      </aside>
       <div class="results-panel">
         <div class="results-toolbar">
           <div class="results-heading">
@@ -195,6 +226,7 @@
         </div>
         <ul class="results" id="results" role="listbox" aria-label="Результаты"></ul>
       </div>
+      <aside class="preview" id="preview" aria-live="polite"></aside>
     </section>
   </main>
 
@@ -214,9 +246,9 @@
     </div>
   </div>
 
-  <script src="fav-store.js?v=115"></script>
-  <script src="particles.js?v=115"></script>
-  <script src="changes.js?v=115"></script>
-  <script src="app.js?v=115"></script>
+  <script src="fav-store.js?v=126"></script>
+  <script src="particles.js?v=126"></script>
+  <script src="changes.js?v=126"></script>
+  <script src="app.js?v=126"></script>
 </body>
 </html>

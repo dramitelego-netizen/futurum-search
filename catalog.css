@@ -124,6 +124,10 @@
   justify-content: flex-start;
 }
 
+.cat-filter-pills {
+  width: 100%;
+}
+
 .cat-sort {
   width: 100%;
   justify-content: flex-start;
