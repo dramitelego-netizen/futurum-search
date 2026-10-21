@@ -5,7 +5,7 @@
   "range": {
     "start": 1,
     "end": 1500,
-    "scanned_upto_hint": 685
+    "scanned_upto_hint": 720
   },
   "items": [
     {
@@ -5675,10 +5675,11 @@
       "imageLocal": "data/img/697/icon.png",
       "lookLocal": "data/img/697/look.png",
       "lookImage": "https://parapa.ru/pictures/image/iconn/6af155d158.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": "m",
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626716
     },
     {
       "id": 698,
@@ -5697,10 +5698,11 @@
       "imageLocal": "data/img/698/icon.png",
       "lookLocal": "data/img/698/look.png",
       "lookImage": "https://parapa.ru/pictures/image/iconn/895cb8f00b.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": "f",
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626713
     },
     {
       "id": 699,
@@ -5711,11 +5713,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/iconn/455614.png",
       "url": "https://parapa.ru/mall/goods/699/",
-      "category": "items",
-      "categoryTitle": "Предметы",
-      "categories": [
-        "items"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/699/icon.png",
       "lookLocal": "data/img/699/look.png",
       "lookImage": "https://parapa.ru/wiki/images/b/b1/1278BD67.png",
@@ -5733,11 +5733,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/iconn/455614.png",
       "url": "https://parapa.ru/mall/goods/700/",
-      "category": "items",
-      "categoryTitle": "Предметы",
-      "categories": [
-        "items"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/700/icon.png",
       "lookLocal": "data/img/700/look.png",
       "lookImage": "https://parapa.ru/wiki/images/d/d4/1278BD68.png",
@@ -5755,11 +5753,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/iconn/455614.png",
       "url": "https://parapa.ru/mall/goods/701/",
-      "category": "items",
-      "categoryTitle": "Предметы",
-      "categories": [
-        "items"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/701/icon.png",
       "lookLocal": "data/img/701/look.png",
       "lookImage": "https://parapa.ru/wiki/images/d/d6/1278BD69.png",
@@ -5777,11 +5773,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/iconn/455614.png",
       "url": "https://parapa.ru/mall/goods/702/",
-      "category": "items",
-      "categoryTitle": "Предметы",
-      "categories": [
-        "items"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/702/icon.png",
       "lookLocal": "data/img/702/look.png",
       "lookImage": "https://parapa.ru/wiki/images/e/e4/1278BD70.png",
@@ -5799,11 +5793,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/iconn/455614.png",
       "url": "https://parapa.ru/mall/goods/703/",
-      "category": "items",
-      "categoryTitle": "Предметы",
-      "categories": [
-        "items"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/703/icon.png",
       "lookLocal": "data/img/703/look.png",
       "lookImage": "https://parapa.ru/wiki/images/0/0e/1278BD71.png",
@@ -5821,11 +5813,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/iconn/455614.png",
       "url": "https://parapa.ru/mall/goods/704/",
-      "category": "items",
-      "categoryTitle": "Предметы",
-      "categories": [
-        "items"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/704/icon.png",
       "lookLocal": "data/img/704/look.png",
       "lookImage": "https://parapa.ru/wiki/images/7/72/1278BD72.png",
@@ -5851,10 +5841,11 @@
       "imageLocal": "data/img/719/icon.png",
       "lookLocal": "data/img/719/look.png",
       "lookImage": "https://parapa.ru/pictures/image/mall/show/lavol_red_two.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626754
     },
     {
       "id": 720,
@@ -5873,10 +5864,11 @@
       "imageLocal": "data/img/720/icon.png",
       "lookLocal": "data/img/720/look.png",
       "lookImage": "https://parapa.ru/pictures/image/2019/1cd3a0010c.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792626765
     },
     {
       "id": 721,
