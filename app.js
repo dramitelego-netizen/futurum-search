@@ -660,7 +660,7 @@ function filtered() {
         .filter(passesFilters)
         .map((item) => ({ item, score: 1, fuzzy: false })),
       false
-    ).slice(0, 80);
+    ).slice(0, 250);
   }
 
   return sortRanked(
@@ -671,7 +671,7 @@ function filtered() {
       })
       .filter((x) => x.score >= 0 && passesFilters(x.item)),
     true
-  ).slice(0, 40);
+  ).slice(0, 80);
 }
 
 function isCoarsePointer() {
@@ -928,12 +928,6 @@ function emptyMessage(hasQuery) {
 
 function render() {
   const hasQuery = Boolean(tokenize(state.query).length);
-  // пол и метки — только во время поиска
-  if (!hasQuery && (state.gender || state.badge)) {
-    state.gender = "";
-    state.badge = "";
-  }
-
   const ranked = filtered();
   state.list = ranked;
   const showStage = hasQuery || browseMode();
@@ -942,7 +936,7 @@ function render() {
   els.stage.hidden = !showStage;
   document.body.classList.toggle("is-stage", showStage);
   document.body.classList.toggle("has-query", hasQuery);
-  if (els.filtersRail) els.filtersRail.hidden = !hasQuery;
+  document.body.classList.toggle("has-filters", browseMode());
   updateFiltersUi();
   if (els.resultsCount) {
     els.resultsCount.textContent = String(ranked.length);
@@ -1089,8 +1083,8 @@ function bind() {
     const btn = e.target.closest("[data-gender]");
     if (!btn) return;
     const next = btn.dataset.gender || "";
-    if (!GENDER_SLUGS.includes(next) || next === state.gender) return;
-    state.gender = next;
+    if (!GENDER_SLUGS.includes(next)) return;
+    state.gender = state.gender === next ? "" : next;
     state.activeId = null;
     render();
   });
@@ -1099,8 +1093,8 @@ function bind() {
     const btn = e.target.closest("[data-badge]");
     if (!btn) return;
     const next = btn.dataset.badge || "";
-    if (!BADGE_SLUGS.includes(next) || next === state.badge) return;
-    state.badge = next;
+    if (!BADGE_SLUGS.includes(next)) return;
+    state.badge = state.badge === next ? "" : next;
     state.activeId = null;
     render();
   });
@@ -1223,7 +1217,7 @@ async function load(isRefresh = false) {
     setCatalogCount(next.length, isRefresh || prevLen > 0);
     if (!isRefresh) {
       els.hint.textContent = next.length
-        ? "Начните вводить название"
+        ? "Введите название или выберите фильтр"
         : "Каталог пока пуст — идёт сбор";
     }
     if (isRefresh && (tokenize(state.query).length || browseMode())) render();
