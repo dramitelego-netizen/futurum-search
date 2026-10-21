@@ -5,7 +5,7 @@
   "range": {
     "start": 1,
     "end": 1500,
-    "scanned_upto_hint": 578
+    "scanned_upto_hint": 602
   },
   "items": [
     {
@@ -4618,11 +4618,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/58940.jpg",
       "url": "https://parapa.ru/mall/goods/586/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/586/icon.jpg",
       "lookImage": null,
       "unavailable": false,
@@ -4639,11 +4637,9 @@
       "onSale": true,
       "image": "https://parapa.ru/pictures/mall/451394.jpg",
       "url": "https://parapa.ru/mall/goods/587/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/587/icon.jpg",
       "lookImage": null,
       "unavailable": false,
@@ -4679,11 +4675,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/mall/454190.png",
       "url": "https://parapa.ru/mall/goods/596/",
-      "category": "packs",
-      "categoryTitle": "Наборы",
-      "categories": [
-        "packs"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/596/icon.png",
       "lookImage": null,
       "unavailable": false,
@@ -4700,13 +4694,11 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/mall/454915.png",
       "url": "https://parapa.ru/mall/goods/597/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/597/icon.png",
-      "lookImage": "https://parapa.ru/pictures/mall/5400011(2).png",
+      "lookImage": null,
       "lookUnavailable": true,
       "unavailable": false,
       "missStreak": 0,
@@ -4722,13 +4714,11 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/mall/454310.png",
       "url": "https://parapa.ru/mall/goods/598/",
-      "category": "child_goods",
-      "categoryTitle": "Детям",
-      "categories": [
-        "child_goods"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/598/icon.png",
-      "lookImage": "https://parapa.ru/pictures/mall/454308(1).png",
+      "lookImage": null,
       "lookUnavailable": true,
       "unavailable": false,
       "missStreak": 0,
@@ -4744,11 +4734,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/mall/454151.png",
       "url": "https://parapa.ru/mall/goods/599/",
-      "category": "items",
-      "categoryTitle": "Предметы",
-      "categories": [
-        "items"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/599/icon.png",
       "lookImage": null,
       "unavailable": false,
@@ -4760,16 +4748,14 @@
       "id": 600,
       "name": "Карта смены имени малыша",
       "description": "Карта смены имени малыша — очень полезная вещь, если имя не понравилось или он решил отправиться в бега, или сменить пол, или... В любом случае, попробовать начать все с чистого листа, пожалуй, стоит!",
-      "price": 200,
-      "priceOld": 500,
-      "onSale": true,
+      "price": 500,
+      "priceOld": null,
+      "onSale": false,
       "image": "https://parapa.ru/pictures/image/mall/454152.png",
       "url": "https://parapa.ru/mall/goods/600/",
-      "category": "items",
-      "categoryTitle": "Предметы",
-      "categories": [
-        "items"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/600/icon.png",
       "lookImage": null,
       "unavailable": false,
@@ -4786,11 +4772,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/mall/454310.png",
       "url": "https://parapa.ru/mall/goods/601/",
-      "category": "packs",
-      "categoryTitle": "Наборы",
-      "categories": [
-        "packs"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/601/icon.png",
       "lookImage": null,
       "unavailable": false,
@@ -4807,11 +4791,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/mall/455076.png",
       "url": "https://parapa.ru/mall/goods/602/",
-      "category": "child_goods",
-      "categoryTitle": "Детям",
-      "categories": [
-        "child_goods"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/602/icon.png",
       "lookLocal": "data/img/602/look.png",
       "lookImage": "https://parapa.ru/pictures/image/mall/show/aefda6d75b.png",
