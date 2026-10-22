@@ -39,6 +39,7 @@ const BADGE_SLUGS = ["", "temp", "event"];
 
 const state = {
   items: [],
+  history: {},
   query: "",
   activeId: null,
   list: [],
@@ -526,6 +527,71 @@ function formatPriceShort(n) {
   return Number(n).toLocaleString("ru-RU");
 }
 
+function historyFor(id) {
+  const series = state.history[String(id)] || [];
+  return Array.isArray(series) ? series : [];
+}
+
+function sparkSvg(series) {
+  if (!series.length) return "";
+  const prices = series.map((p) => Number(p.price)).filter((n) => Number.isFinite(n));
+  if (!prices.length) return "";
+  const w = 280;
+  const h = 72;
+  const pad = 8;
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  const span = Math.max(1, max - min);
+  const pts = prices.map((price, i) => {
+    const x = pad + (i * (w - pad * 2)) / Math.max(1, prices.length - 1);
+    const y = h - pad - ((price - min) / span) * (h - pad * 2);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  const fill = `${pad},${h - pad} ${pts.join(" ")} ${w - pad},${h - pad}`;
+  const accent =
+    getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#3dffe0";
+  return `
+    <svg class="preview-spark" viewBox="0 0 ${w} ${h}" role="img" aria-label="График цены">
+      <polyline points="${fill}" fill="${accent}22" stroke="none" />
+      <polyline points="${pts.join(" ")}" fill="none" stroke="${accent}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" />
+      ${prices.length === 1 ? `<circle cx="${pad}" cy="${h / 2}" r="3.5" fill="${accent}" />` : ""}
+    </svg>`;
+}
+
+function previewHistoryHtml(item) {
+  const series = historyFor(item.id);
+  const prices = series.map((p) => Number(p.price)).filter((n) => Number.isFinite(n));
+  if (!prices.length) {
+    return `
+      <div class="preview-history">
+        <p class="preview-history-label">История цены</p>
+        <p class="preview-history-empty">Появится после обновлений каталога</p>
+      </div>`;
+  }
+  const minP = Math.min(...prices);
+  const maxP = Math.max(...prices);
+  const last = series[series.length - 1];
+  const prev = series.length > 1 ? series[series.length - 2] : null;
+  let delta = "";
+  if (prev && last && Number.isFinite(last.price) && Number.isFinite(prev.price)) {
+    const d = last.price - prev.price;
+    if (d !== 0) {
+      const sign = d > 0 ? "+" : "";
+      delta = `<span>изм. <b>${sign}${d.toLocaleString("ru-RU")}</b></span>`;
+    }
+  }
+  return `
+    <div class="preview-history">
+      <p class="preview-history-label">История цены</p>
+      <div class="preview-history-stats">
+        <span>мин. <b>${escapeHtml(formatPriceShort(minP))}</b></span>
+        <span>макс. <b>${escapeHtml(formatPriceShort(maxP))}</b></span>
+        ${delta}
+      </div>
+      ${sparkSvg(series)}
+    </div>`;
+}
+
 function proxyImage(url) {
   if (!url) return "";
   if (url.startsWith("data/") || url.startsWith("./data/") || url.startsWith("/data/")) {
@@ -843,7 +909,8 @@ function previewCardHtml(item) {
         ${gone ? `<p class="preview-gone-note">Сейчас этого товара нет в продаже на сайте</p>` : ""}
         <a class="preview-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">Открыть на сайте</a>
       </div>
-    </div>`;
+    </div>
+    ${previewHistoryHtml(item)}`;
 }
 
 let previewFadeTimer = null;
@@ -1187,28 +1254,25 @@ function bind() {
     if (browseMode()) render();
   });
 
-  // ПК: доп. картинка увеличивается при наведении
-  els.preview.addEventListener("mouseover", (e) => {
-    if (isCoarsePointer()) return;
-    const frame = e.target.closest(".preview-look-frame");
-    if (!frame || !els.preview.contains(frame)) return;
-    els.preview.querySelectorAll(".preview-look-frame.is-open").forEach((f) => {
-      if (f !== frame) f.classList.remove("is-open");
-    });
-    frame.classList.add("is-open");
-  });
-  els.preview.addEventListener("mouseout", (e) => {
-    const frame = e.target.closest(".preview-look-frame");
-    if (!frame) return;
-    const next = e.relatedTarget?.closest?.(".preview-look-frame");
-    if (next === frame) return;
-    frame.classList.remove("is-open");
-  });
+}
+
+async function loadHistory() {
+  try {
+    const res = await fetch("./data/price_history.json", { cache: "no-store" });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data && typeof data === "object") state.history = data;
+  } catch {
+    /* история необязательна */
+  }
 }
 
 async function load(isRefresh = false) {
   try {
-    const res = await fetch("./data/items.json", { cache: "no-store" });
+    const [res] = await Promise.all([
+      fetch("./data/items.json", { cache: "no-store" }),
+      loadHistory(),
+    ]);
     if (!res.ok) throw new Error(String(res.status));
     const data = await res.json();
     const next = data.items || [];
@@ -1221,6 +1285,10 @@ async function load(isRefresh = false) {
         : "Каталог пока пуст — идёт сбор";
     }
     if (isRefresh && (tokenize(state.query).length || browseMode())) render();
+    else if (!isRefresh && state.activeId) {
+      const cur = state.items.find((it) => it.id === state.activeId);
+      if (cur) showPreview(cur);
+    }
     if (window.FuturumChanges) {
       FuturumChanges.refresh(state.items);
     }
