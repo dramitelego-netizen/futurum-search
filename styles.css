@@ -3330,6 +3330,67 @@ body.changes-open {
   .preview-spark {
     height: 56px;
   }
+
+  /* зум: большая картинка поверх всей панели превью */
+  .preview-look-frame {
+    cursor: zoom-in;
+  }
+
+  .preview-zoom {
+    position: absolute;
+    inset: 0;
+    z-index: 90;
+    display: grid;
+    place-items: center;
+    padding: 0.85rem;
+    box-sizing: border-box;
+    background: color-mix(in srgb, var(--panel-solid) 78%, transparent);
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.22s ease, visibility 0.22s ease;
+  }
+
+  .preview-zoom.is-on {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .preview-zoom-card {
+    width: min(90%, 300px);
+    aspect-ratio: 1;
+    max-height: min(78%, 300px);
+    display: grid;
+    place-items: center;
+    padding: 0.55rem;
+    box-sizing: border-box;
+    border-radius: 16px;
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+    background: var(--panel-solid);
+    box-shadow:
+      0 22px 50px rgba(0, 0, 0, 0.5),
+      0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent),
+      0 0 28px color-mix(in srgb, var(--accent) 14%, transparent);
+    transform: scale(0.92);
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .preview-zoom.is-on .preview-zoom-card {
+    transform: scale(1);
+  }
+
+  .preview-zoom-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: center;
+    border-radius: 10px;
+  }
 }
 
 /* узкий ПК: превью чуть уже, фильтры короче */
@@ -3644,6 +3705,10 @@ body.changes-open {
 
 
 @media (max-width: 760px) {
+  .preview-zoom {
+    display: none !important;
+  }
+
   .changes-screen {
     padding: max(0.5rem, env(safe-area-inset-top)) max(0.5rem, env(safe-area-inset-right)) max(0.5rem, env(safe-area-inset-bottom)) max(0.5rem, env(safe-area-inset-left));
   }

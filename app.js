@@ -915,8 +915,39 @@ function previewCardHtml(item) {
 
 let previewFadeTimer = null;
 
+function hidePreviewZoom() {
+  const zoom = els.preview?.querySelector(":scope > .preview-zoom");
+  if (zoom) zoom.classList.remove("is-on");
+}
+
+function ensurePreviewZoom() {
+  if (!els.preview) return null;
+  let zoom = els.preview.querySelector(":scope > .preview-zoom");
+  if (!zoom) {
+    zoom = document.createElement("div");
+    zoom.className = "preview-zoom";
+    zoom.setAttribute("aria-hidden", "true");
+    zoom.innerHTML =
+      '<div class="preview-zoom-card"><img class="preview-zoom-img" alt="Как выглядит" decoding="async" /></div>';
+    els.preview.appendChild(zoom);
+  } else {
+    els.preview.appendChild(zoom);
+  }
+  return zoom;
+}
+
+function showPreviewZoom(src) {
+  if (!src || isCoarsePointer() || !els.preview) return;
+  const zoom = ensurePreviewZoom();
+  if (!zoom) return;
+  const img = zoom.querySelector(".preview-zoom-img");
+  if (img && img.src !== src) img.src = src;
+  zoom.classList.add("is-on");
+}
+
 function showPreview(item) {
   if (!els.preview) return;
+  hidePreviewZoom();
   if (item) {
     state.activeId = item.id;
     warmItem(item);
@@ -935,6 +966,7 @@ function showPreview(item) {
   if (reduce || !layers.length || bothReady) {
     els.preview.innerHTML = `<div class="preview-layer is-in">${html}</div>`;
     wireMediaFrames(els.preview);
+    ensurePreviewZoom();
     return;
   }
 
@@ -948,10 +980,12 @@ function showPreview(item) {
   next.innerHTML = html;
   els.preview.appendChild(next);
   wireMediaFrames(next);
+  ensurePreviewZoom();
 
   clearTimeout(previewFadeTimer);
   previewFadeTimer = setTimeout(() => {
     layers.forEach((layer) => layer.remove());
+    ensurePreviewZoom();
   }, 220);
 }
 
@@ -1233,6 +1267,10 @@ function bind() {
   });
 
   els.preview.addEventListener("click", (e) => {
+    if (e.target.closest(".preview-zoom")) {
+      hidePreviewZoom();
+      return;
+    }
     const favBtn = e.target.closest("[data-fav]");
     if (!favBtn) return;
     e.preventDefault();
@@ -1254,6 +1292,18 @@ function bind() {
     if (browseMode()) render();
   });
 
+  // ПК: картинка «как выглядит» — крупно поверх всей панели превью
+  els.preview.addEventListener("mouseover", (e) => {
+    if (isCoarsePointer()) return;
+    const frame = e.target.closest(".preview-look-frame");
+    if (!frame || !els.preview.contains(frame)) return;
+    const img = frame.querySelector("img.preview-look");
+    const src = img?.currentSrc || img?.src;
+    if (src) showPreviewZoom(src);
+  });
+  els.preview.addEventListener("mouseleave", () => {
+    hidePreviewZoom();
+  });
 }
 
 async function loadHistory() {
