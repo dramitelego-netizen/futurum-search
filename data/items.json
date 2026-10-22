@@ -5,7 +5,7 @@
   "range": {
     "start": 1,
     "end": 1500,
-    "scanned_upto_hint": 913
+    "scanned_upto_hint": 924
   },
   "items": [
     {
@@ -8873,10 +8873,11 @@
       "imageLocal": "data/img/914/icon.png",
       "lookLocal": "data/img/914/look.png",
       "lookImage": "https://parapa.ru/wiki/images/6/6f/1502092602027.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": "m",
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792630295
     },
     {
       "id": 916,
@@ -8887,11 +8888,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/480660.png",
       "url": "https://parapa.ru/mall/goods/916/",
-      "category": "packs",
-      "categoryTitle": "Наборы",
-      "categories": [
-        "packs"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/916/icon.png",
       "lookLocal": "data/img/916/look.png",
       "lookImage": "https://parapa.ru/wiki/images/b/b0/Muz.png",
@@ -8909,11 +8908,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/480660.png",
       "url": "https://parapa.ru/mall/goods/917/",
-      "category": "packs",
-      "categoryTitle": "Наборы",
-      "categories": [
-        "packs"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/917/icon.png",
       "lookLocal": "data/img/917/look.png",
       "lookImage": "https://parapa.ru/wiki/images/f/fc/Dux.png",
@@ -8979,10 +8976,11 @@
       "imageLocal": "data/img/920/icon.png",
       "lookLocal": "data/img/920/look.png",
       "lookImage": "https://parapa.ru/wiki/images/9/95/9gu.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": "f",
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792630315
     },
     {
       "id": 921,
@@ -9001,10 +8999,11 @@
       "imageLocal": "data/img/921/icon.png",
       "lookLocal": "data/img/921/look.png",
       "lookImage": "https://parapa.ru/wiki/images/8/83/9gb.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": "f",
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792630323
     },
     {
       "id": 922,
@@ -9023,10 +9022,11 @@
       "imageLocal": "data/img/922/icon.png",
       "lookLocal": "data/img/922/look.png",
       "lookImage": "https://parapa.ru/wiki/images/b/b5/9gs.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": "f",
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792630329
     },
     {
       "id": 923,
@@ -9045,10 +9045,11 @@
       "imageLocal": "data/img/923/icon.png",
       "lookLocal": "data/img/923/look.png",
       "lookImage": "https://parapa.ru/wiki/images/c/c5/12ede5b008.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792630332
     },
     {
       "id": 924,
@@ -9067,10 +9068,11 @@
       "imageLocal": "data/img/924/icon.png",
       "lookLocal": "data/img/924/look.png",
       "lookImage": "https://parapa.ru/wiki/images/f/fe/Bd4ac6329f.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792630337
     },
     {
       "id": 925,
