@@ -5,7 +5,7 @@
   "range": {
     "start": 1,
     "end": 1500,
-    "scanned_upto_hint": 870
+    "scanned_upto_hint": 882
   },
   "items": [
     {
@@ -8043,11 +8043,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/iconn/59354.png",
       "url": "https://parapa.ru/mall/goods/873/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/873/icon.png",
       "lookLocal": "data/img/873/look.png",
       "lookImage": "https://parapa.ru/wiki/images/4/4a/B0786a5b20.png",
@@ -8065,11 +8063,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/iconn/59354.png",
       "url": "https://parapa.ru/mall/goods/874/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/874/icon.png",
       "lookLocal": "data/img/874/look.png",
       "lookImage": "https://parapa.ru/wiki/images/c/c9/Cd270c7f3d.png",
@@ -8135,10 +8131,11 @@
       "imageLocal": "data/img/877/icon.png",
       "lookLocal": "data/img/877/look.png",
       "lookImage": "https://parapa.ru/pictures/image/2026/evr1.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": "m",
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792629302
     },
     {
       "id": 878,
@@ -8157,10 +8154,11 @@
       "imageLocal": "data/img/878/icon.png",
       "lookLocal": "data/img/878/look.png",
       "lookImage": "https://parapa.ru/pictures/image/2026/evr2.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": "f",
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792629314
     },
     {
       "id": 879,
@@ -8179,10 +8177,11 @@
       "imageLocal": "data/img/879/icon.png",
       "lookLocal": "data/img/879/look.png",
       "lookImage": "https://parapa.ru/pictures/image/2026/vech1.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": "m",
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792629334
     },
     {
       "id": 880,
@@ -8201,10 +8200,11 @@
       "imageLocal": "data/img/880/icon.png",
       "lookLocal": "data/img/880/look.png",
       "lookImage": "https://parapa.ru/pictures/image/2026/vech5.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": "f",
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792629330
     },
     {
       "id": 882,
@@ -8215,11 +8215,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/1103359.png",
       "url": "https://parapa.ru/mall/goods/882/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/882/icon.png",
       "lookLocal": "data/img/882/look.png",
       "lookImage": "https://parapa.ru/wiki/images/1/1e/%D0%9F%D1%80%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0_%D0%9B%D1%83%D0%BD%D0%BD%D1%8B%D0%B5_%D1%83%D0%B7%D1%8B_%D0%9C_%D1%87%D0%B5%D1%80%D0%BD.png",
