@@ -5,7 +5,7 @@
   "range": {
     "start": 1,
     "end": 1500,
-    "scanned_upto_hint": 882
+    "scanned_upto_hint": 892
   },
   "items": [
     {
@@ -8235,11 +8235,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/1104359.png",
       "url": "https://parapa.ru/mall/goods/883/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/883/icon.png",
       "lookLocal": "data/img/883/look.png",
       "lookImage": "https://parapa.ru/wiki/images/f/f9/%D0%9F%D1%80%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0_%D0%9B%D1%83%D0%BD%D0%BD%D1%8B%D0%B5_%D1%83%D0%B7%D1%8B_%D0%9C_%D0%B1%D0%B5%D0%BB.png",
@@ -8257,11 +8255,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/1102359.png",
       "url": "https://parapa.ru/mall/goods/884/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/884/icon.png",
       "lookLocal": "data/img/884/look.png",
       "lookImage": "https://parapa.ru/wiki/images/4/4c/%D0%9F%D1%80%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0_%D0%9B%D1%83%D0%BD%D0%BD%D1%8B%D0%B5_%D1%83%D0%B7%D1%8B_%D0%9C_%D1%80%D0%BE%D0%B7.png",
@@ -8279,11 +8275,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/1101359.png",
       "url": "https://parapa.ru/mall/goods/885/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/885/icon.png",
       "lookLocal": "data/img/885/look.png",
       "lookImage": "https://parapa.ru/wiki/images/6/65/%D0%9F%D1%80%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0_%D0%9B%D1%83%D0%BD%D0%BD%D1%8B%D0%B5_%D1%83%D0%B7%D1%8B_%D0%9C_%D0%B6%D0%B5%D0%BB%D1%82.png",
@@ -8301,11 +8295,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/2104473.png",
       "url": "https://parapa.ru/mall/goods/886/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/886/icon.png",
       "lookLocal": "data/img/886/look.png",
       "lookImage": "https://parapa.ru/wiki/images/b/b4/%D0%9F%D1%80%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0_%D0%9B%D1%83%D0%BD%D0%BD%D1%8B%D0%B5_%D1%83%D0%B7%D1%8B_%D0%B6_%D0%B1%D0%B5%D0%BB.png",
@@ -8323,11 +8315,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/2103473.png",
       "url": "https://parapa.ru/mall/goods/887/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/887/icon.png",
       "lookLocal": "data/img/887/look.png",
       "lookImage": "https://parapa.ru/wiki/images/1/10/%D0%9F%D1%80%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0_%D0%9B%D1%83%D0%BD%D0%BD%D1%8B%D0%B5_%D1%83%D0%B7%D1%8B_%D0%B6_%D1%87%D0%B5%D1%80%D0%BD.png",
@@ -8345,11 +8335,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/2102473.png",
       "url": "https://parapa.ru/mall/goods/888/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/888/icon.png",
       "lookLocal": "data/img/888/look.png",
       "lookImage": "https://parapa.ru/wiki/images/4/45/%D0%9F%D1%80%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0_%D0%9B%D1%83%D0%BD%D0%BD%D1%8B%D0%B5_%D1%83%D0%B7%D1%8B_%D0%B6_%D1%80%D0%BE%D0%B7.png",
@@ -8367,11 +8355,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/mall/2101473.png",
       "url": "https://parapa.ru/mall/goods/889/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/889/icon.png",
       "lookLocal": "data/img/889/look.png",
       "lookImage": "https://parapa.ru/wiki/images/7/7e/%D0%9F%D1%80%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0_%D0%9B%D1%83%D0%BD%D0%BD%D1%8B%D0%B5_%D1%83%D0%B7%D1%8B_%D0%B6_%D0%B6%D0%B5%D0%BB%D1%82.png",
@@ -8397,10 +8383,11 @@
       "imageLocal": "data/img/890/icon.png",
       "lookLocal": "data/img/890/look.png",
       "lookImage": "https://parapa.ru/wiki/images/5/5f/%D0%96%D0%B5%D0%BB%D1%82%D1%8B%D0%B9_%D0%BF%D0%B0%D1%80%D0%B8%D0%BA_%D0%9D%D0%BE%D1%80%D0%B4%D0%BA%D0%B0%D0%BF.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792629551
     },
     {
       "id": 891,
@@ -8419,10 +8406,11 @@
       "imageLocal": "data/img/891/icon.png",
       "lookLocal": "data/img/891/look.png",
       "lookImage": "https://parapa.ru/wiki/images/3/33/%D0%A7%D0%B5%D1%80%D0%BD%D1%8B%D0%B9_%D0%BF%D0%B0%D1%80%D0%B8%D0%BA_%D0%9D%D0%BE%D1%80%D0%B4%D0%BA%D0%B0%D0%BF.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792629630
     },
     {
       "id": 892,
@@ -8441,10 +8429,11 @@
       "imageLocal": "data/img/892/icon.png",
       "lookLocal": "data/img/892/look.png",
       "lookImage": "https://parapa.ru/wiki/images/2/25/%D0%A0%D0%BE%D0%B7%D0%BE%D0%B2%D1%8B%D0%B9_%D0%BF%D0%B0%D1%80%D0%B8%D0%BA_%D0%9D%D0%BE%D1%80%D0%B4%D0%BA%D0%B0%D0%BF.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792629593
     },
     {
       "id": 893,
