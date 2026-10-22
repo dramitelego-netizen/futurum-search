@@ -5,7 +5,7 @@
   "range": {
     "start": 1,
     "end": 1500,
-    "scanned_upto_hint": 834
+    "scanned_upto_hint": 845
   },
   "items": [
     {
@@ -7384,11 +7384,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/2021/icon/1401657.png",
       "url": "https://parapa.ru/mall/goods/836/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/836/icon.png",
       "lookLocal": "data/img/836/look.png",
       "lookImage": "https://parapa.ru/pictures/image/2021/14102021_3.png",
@@ -7406,11 +7404,9 @@
       "onSale": false,
       "image": "https://parapa.ru/pictures/image/2021/icon/2501408.png",
       "url": "https://parapa.ru/mall/goods/837/",
-      "category": "clothes",
-      "categoryTitle": "Внешность",
-      "categories": [
-        "clothes"
-      ],
+      "category": null,
+      "categoryTitle": null,
+      "categories": [],
       "imageLocal": "data/img/837/icon.png",
       "lookLocal": "data/img/837/look.png",
       "lookImage": "https://parapa.ru/pictures/image/2021/14102021_2.png",
@@ -7436,10 +7432,11 @@
       "imageLocal": "data/img/838/icon.png",
       "lookLocal": "data/img/838/look.png",
       "lookImage": "https://parapa.ru/pictures/image/2021/14102021_1.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": "unisex",
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792628542
     },
     {
       "id": 839,
@@ -7458,10 +7455,11 @@
       "imageLocal": "data/img/839/icon.png",
       "lookLocal": "data/img/839/look.png",
       "lookImage": "https://parapa.ru/pictures/image/2021/14102021_1.png",
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": "unisex",
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792628550
     },
     {
       "id": 840,
@@ -7479,10 +7477,11 @@
       ],
       "imageLocal": "data/img/840/icon.png",
       "lookImage": null,
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792628551
     },
     {
       "id": 841,
@@ -7500,10 +7499,11 @@
       ],
       "imageLocal": "data/img/841/icon.png",
       "lookImage": null,
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792628564
     },
     {
       "id": 842,
@@ -7521,10 +7521,11 @@
       ],
       "imageLocal": "data/img/842/icon.png",
       "lookImage": null,
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792628560
     },
     {
       "id": 843,
@@ -7542,10 +7543,11 @@
       ],
       "imageLocal": "data/img/843/icon.png",
       "lookImage": null,
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792628569
     },
     {
       "id": 844,
@@ -7563,10 +7565,11 @@
       ],
       "imageLocal": "data/img/844/icon.png",
       "lookImage": null,
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792628573
     },
     {
       "id": 845,
@@ -7584,10 +7587,11 @@
       ],
       "imageLocal": "data/img/845/icon.png",
       "lookImage": null,
-      "unavailable": false,
+      "unavailable": true,
       "missStreak": 0,
       "gender": null,
-      "badge": "temp"
+      "badge": "temp",
+      "unavailableSince": 1792628578
     },
     {
       "id": 846,
