@@ -206,6 +206,31 @@
       });
     }
 
+    // Новинки с сервера (firstSeen) — одинаковые на всех устройствах ~30 дней
+    const NEW_TTL = 30 * 24 * 3600;
+    const nowSec = Math.floor(Date.now() / 1000);
+    const seenNewIds = new Set();
+    for (const it of items || []) {
+      const fs = Number(it.firstSeen) || 0;
+      if (!fs || nowSec - fs > NEW_TTL) continue;
+      seenNewIds.add(String(it.id));
+      out.push({
+        key: `${it.id}:new:${fs}`,
+        id: it.id,
+        name: it.name || `#${it.id}`,
+        type: "new",
+        title: shortTag("new"),
+        t: fs,
+        from: null,
+        to: it.price ?? null,
+        delta: null,
+        detail:
+          it.price != null
+            ? `Появился в каталоге по цене ${formatPrice(it.price)}`
+            : "Появился в каталоге",
+      });
+    }
+
     let known;
     try {
       const raw = JSON.parse(localStorage.getItem(KNOWN_KEY) || "[]");
@@ -225,13 +250,12 @@
         /* ignore */
       }
     } else {
-      const now = Math.floor(Date.now() / 1000);
       for (const it of items || []) {
         const sid = String(it.id);
-        if (known.has(sid) || logged.has(sid)) continue;
+        if (known.has(sid) || logged.has(sid) || seenNewIds.has(sid)) continue;
         newLog.push({
           id: it.id,
-          t: now,
+          t: nowSec,
           price: it.price ?? null,
           name: it.name || `#${it.id}`,
         });
@@ -249,6 +273,7 @@
     }
 
     for (const entry of newLog) {
+      if (seenNewIds.has(String(entry.id))) continue;
       const it = itemsById.get(Number(entry.id));
       out.push({
         key: `${entry.id}:new:${entry.t || 0}`,

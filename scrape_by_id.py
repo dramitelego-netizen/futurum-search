@@ -395,7 +395,17 @@ def replace_file(tmp: Path, target: Path, attempts: int = 12, delay: float = 0.3
 def _preserve_local_meta(found: dict[str, dict]) -> None:
     """Не теряем category/gender/badge при перезаписи items.json."""
     prev = load_found()
-    meta_keys = ("category", "categoryTitle", "categories", "gender", "badge")
+    meta_keys = (
+        "category",
+        "categoryTitle",
+        "categories",
+        "gender",
+        "badge",
+        "firstSeen",
+        "imageLocal",
+        "lookLocal",
+        "lookUnavailable",
+    )
     for key, item in found.items():
         old = prev.get(str(key)) or prev.get(key)
         if not old:

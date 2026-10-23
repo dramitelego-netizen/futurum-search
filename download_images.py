@@ -279,6 +279,16 @@ def save_all(data: dict, by_id: dict) -> None:
 
 
 def main() -> None:
+    import argparse
+
+    ap = argparse.ArgumentParser(description="Скачать иконки/look для каталога")
+    ap.add_argument(
+        "--ids",
+        default="",
+        help="только эти id через запятую (например 758,900)",
+    )
+    args = ap.parse_args()
+
     if not ITEMS_FILE.exists():
         blog("нет items.json")
         return
@@ -288,10 +298,25 @@ def main() -> None:
     items = data.get("items") or []
     by_id = {str(i["id"]): i for i in items}
 
-    pending = [it for it in items if not item_done(it)]
+    only_ids: set[str] | None = None
+    if args.ids.strip():
+        only_ids = {x.strip() for x in args.ids.split(",") if x.strip()}
+        items_scope = [it for it in items if str(it["id"]) in only_ids]
+        missing = sorted(only_ids - {str(it["id"]) for it in items_scope})
+        if missing:
+            blog(f"⚠ id нет в items.json: {missing[:20]}")
+    else:
+        items_scope = items
+
+    pending = [it for it in items_scope if not item_done(it)]
     blog("=" * 56)
     blog(f"Скачивание картинок → {IMG_ROOT}")
-    blog(f"Всего: {len(items)}, уже готово: {len(items) - len(pending)}, осталось: {len(pending)}")
+    if only_ids is not None:
+        blog(f"Режим: только id {sorted(only_ids, key=lambda x: int(x))[:30]}")
+    blog(
+        f"В области: {len(items_scope)}, уже готово: {len(items_scope) - len(pending)}, "
+        f"осталось: {len(pending)}"
+    )
     blog("При обрыве — автоповтор и переподключение cookie")
     blog("=" * 56)
 

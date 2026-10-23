@@ -4,9 +4,10 @@
 
 Не долбит весь сайт разом. Каждый круг:
   1) проверяет хвост id на НОВЫЕ предметы
+     → если нашёл: картинки → категории → сразу push на GitHub → потом дальше
   2) обновляет пачку УЖЕ известных (цены / скидки / названия)
   3) пишет историю цен
-  4) при изменениях может залить на GitHub
+  4) при изменениях цен может залить на GitHub
 
 Так за несколько кругов плавно перебирается весь каталог снова и снова.
 
@@ -199,20 +200,21 @@ def ensure_git_identity() -> None:
     os.environ.setdefault("GIT_COMMITTER_EMAIL", os.environ["GIT_AUTHOR_EMAIL"])
 
 
-def push_if_needed(changed: bool, do_push: bool) -> None:
+def push_if_needed(changed: bool, do_push: bool, *, commit_msg: str | None = None) -> bool:
+    """True, если был успешный push (или нечего пушить при наличии изменений в статусе нет)."""
     if not changed:
         say("  GitHub: изменений нет — push не нужен")
-        return
+        return False
     if not do_push:
         say("  GitHub: есть изменения, но --no-push")
-        return
+        return False
 
     ensure_git_identity()
     st = git("status", "--porcelain", "--", *PUSH_PATHS)
     lines = [ln for ln in (st.stdout or "").splitlines() if ln.strip()]
     if not lines:
         say("  GitHub: файлы данных не отличаются от git")
-        return
+        return False
 
     say("── Заливка на GitHub ──")
     for ln in lines[:40]:
@@ -221,15 +223,15 @@ def push_if_needed(changed: bool, do_push: bool) -> None:
         say(f"  … ещё {len(lines) - 40}")
 
     git("add", "--", *PUSH_PATHS)
-    msg = f"Watch update {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+    msg = commit_msg or f"Watch update {datetime.now().strftime('%Y-%m-%d %H:%M')}"
     commit = git("commit", "-m", msg)
     out = (commit.stdout or "") + (commit.stderr or "")
     if commit.returncode != 0 and "nothing to commit" in out.lower():
         say("  Нечего коммитить")
-        return
+        return False
     if commit.returncode != 0:
         say(f"  ✗ commit: {out.strip()}")
-        return
+        return False
 
     branch = (git("rev-parse", "--abbrev-ref", "HEAD").stdout or "main").strip()
     push = git("push", "origin", branch)
@@ -239,8 +241,9 @@ def push_if_needed(changed: bool, do_push: bool) -> None:
             say(f"  {line}")
     if push.returncode == 0:
         say("  ✓ залито → https://dramitelego-netizen.github.io/futurum-search/")
-    else:
-        say("  ✗ push не удался")
+        return True
+    say("  ✗ push не удался")
+    return False
 
 
 def merge_item(old: dict | None, new: dict) -> dict:
@@ -457,17 +460,108 @@ def refresh_batch(ids: list[int], found: dict[str, dict], workers: int) -> tuple
 def download_for_new(new_ids: list[int]) -> None:
     if not new_ids:
         return
-    say(f"  Качаю картинки для новых id ({len(new_ids)}): {new_ids[:12]}{'…' if len(new_ids) > 12 else ''}")
+    say(
+        f"  Качаю картинки для новых id ({len(new_ids)}): "
+        f"{new_ids[:12]}{'…' if len(new_ids) > 12 else ''}"
+    )
     t0 = time.perf_counter()
-    # полный download_images сам найдёт недостающее — это проще и надёжнее
+    ids_arg = ",".join(str(i) for i in new_ids)
     proc = subprocess.run(
-        [sys.executable, "-u", "download_images.py"],
+        [sys.executable, "-u", "download_images.py", "--ids", ids_arg],
         cwd=str(ROOT),
     )
     say(
         f"  Картинки: код выхода {proc.returncode}, "
         f"заняло {fmt_duration(time.perf_counter() - t0)}"
     )
+
+
+def stamp_first_seen(found: dict[str, dict], new_ids: list[int]) -> None:
+    """Помечаем новинки временем появления — одинаково для всех посетителей сайта."""
+    from scrape_by_id import save_found
+
+    now = int(time.time())
+    changed = False
+    for nid in new_ids:
+        it = found.get(str(nid))
+        if not it:
+            continue
+        if not it.get("firstSeen"):
+            it["firstSeen"] = now
+            changed = True
+    if changed:
+        max_id = max((int(k) for k in found), default=0)
+        save_found(found, max_id)
+        say(f"  firstSeen проставлен для {len(new_ids)} новинок")
+
+
+def publish_new_items_now(
+    new_ids: list[int],
+    *,
+    do_images: bool,
+    do_push: bool,
+) -> bool:
+    """
+    Новый товар: дописать → картинки → категории/история → сразу на GitHub.
+    Дальше круг идёт только после этого.
+    """
+    from scrape_by_id import load_found
+    from price_history import record_items
+
+    if not new_ids:
+        return False
+
+    say(
+        box=True,
+        msg=(
+            f"НОВЫЕ ТОВАРЫ — срочная публикация\n"
+            f"id: {', '.join(str(i) for i in new_ids[:20])}"
+            f"{'…' if len(new_ids) > 20 else ''}\n"
+            f"Сначала на сайт, потом продолжаем мониторинг"
+        ),
+    )
+
+    found = load_found()
+    stamp_first_seen(found, new_ids)
+
+    if do_images:
+        download_for_new(new_ids)
+    else:
+        say("  Картинки: пропущено (--no-images)")
+
+    # категории ещё раз после картинок/описаний
+    say("  Обновляю категории для новинок…")
+    try:
+        subprocess.run(
+            [sys.executable, "-u", "enrich_filters.py"],
+            cwd=str(ROOT),
+            check=False,
+        )
+    except Exception as e:
+        say(f"  ⚠ enrich_filters: {e}")
+
+    found = load_found()
+    try:
+        record_items(sorted(found.values(), key=lambda x: x["id"]))
+        say("  История цен: новинки записаны")
+    except Exception as e:
+        say(f"  ⚠ история: {e}")
+
+    names = []
+    for nid in new_ids[:8]:
+        it = found.get(str(nid)) or {}
+        names.append(str(it.get("name") or nid)[:40])
+    msg = (
+        f"Add {len(new_ids)} new mall item(s): "
+        + ", ".join(names)
+        + ("…" if len(new_ids) > 8 else "")
+    )
+    ok = push_if_needed(True, do_push, commit_msg=msg)
+    if ok:
+        say("  ✓ Новинки на сайте. Продолжаем круг мониторинга.")
+    elif do_push:
+        say("  ⚠ Новинки обработаны локально, но push не прошёл — будут в конце круга")
+    return ok
 
 
 def one_round(
@@ -545,6 +639,7 @@ def one_round(
     found = load_found()
     after_ids = set(found.keys())
     brand_new = sorted(int(x) for x in (after_ids - before_ids))
+    published_new = False
     if brand_new:
         changed_total += len(brand_new)
         say(f"  ★ Найдено новых всего: {len(brand_new)}")
@@ -553,10 +648,11 @@ def one_round(
             say(f"    + [{nid}] {it.get('name')} — {_price_label(it)} монет")
         if len(brand_new) > 30:
             say(f"    … и ещё {len(brand_new) - 30}")
-        if do_images:
-            download_for_new(brand_new)
-        else:
-            say("  Картинки: пропущено (--no-images)")
+        # Сразу: картинки → сайт → и только потом цены остальных
+        published_new = publish_new_items_now(
+            brand_new, do_images=do_images, do_push=do_push
+        )
+        found = load_found()
     else:
         say("  Новых предметов нет")
 
