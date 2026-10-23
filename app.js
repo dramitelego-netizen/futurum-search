@@ -489,8 +489,16 @@ function normalize(s) {
     .trim();
 }
 
+/** Убрать название игры из запроса: «пара па крылья» → «крылья» */
+function stripGameName(q) {
+  return String(q || "")
+    .replace(/\bпара\s*[-–—]?\s*па\b/gi, " ")
+    .replace(/\bпарапа\b/gi, " ")
+    .replace(/\bparapa\b/gi, " ");
+}
+
 function tokenize(q) {
-  return normalize(q).split(" ").filter(Boolean);
+  return normalize(stripGameName(q)).split(" ").filter(Boolean);
 }
 
 /** Достаёт id из ссылки или если в поле ОДНО число (весь запрос = 758) */
