@@ -16,6 +16,7 @@
 Запуск:
   py -3 ЗАПУСК_мониторинг_каталога.py
   py -3 ЗАПУСК_мониторинг_каталога.py --batch 30 --sleep 90
+  py -3 ЗАПУСК_мониторинг_каталога.py --full-sleep 1800
   py -3 ЗАПУСК_мониторинг_каталога.py --no-push
   py -3 ЗАПУСК_мониторинг_каталога.py --once
 
@@ -136,11 +137,17 @@ def catalog_stats(found: dict[str, dict]) -> dict:
     }
 
 
-def sleep_with_ticks(seconds: int) -> None:
+def sleep_with_ticks(seconds: int, *, label: str | None = None) -> None:
     """Пауза с тиками в лог, чтобы было видно что процесс жив."""
     total = max(5, int(seconds))
-    say(f"Пауза {fmt_duration(total)} до следующего круга…")
-    tick = 30 if total >= 60 else max(5, total // 3)
+    say(label or f"Пауза {fmt_duration(total)} до следующего круга…")
+    # для длинных передышек тикаем реже
+    if total >= 1800:
+        tick = 300
+    elif total >= 60:
+        tick = 30
+    else:
+        tick = max(5, total // 3)
     left = total
     while left > 0:
         step = min(tick, left)
@@ -515,6 +522,7 @@ def one_round(
 
     changed_total = 0
     new_count = 0
+    full_pass_done = False
 
     # 1) новые id — сначала дыры 1…1000, потом хвост после max
     say("── 1/3 Новые предметы (дыры 1…1000 + хвост) ──")
@@ -572,6 +580,7 @@ def one_round(
         cursor = end
         if cursor >= total:
             cursor = 0
+            full_pass_done = True
             state["last_full_pass"] = datetime.now().isoformat(timespec="seconds")
             say("  ✓ полный круг по известным предметам завершён — начинаю сначала")
         pct = 100.0 * (cursor if cursor else total) / max(total, 1)
@@ -655,6 +664,7 @@ def one_round(
         "changed": changed_total,
         "total": len(items),
         "cursor": cursor,
+        "full_pass": full_pass_done,
     }
 
 
@@ -672,6 +682,12 @@ def main() -> int:
     ap.add_argument("--ahead", type=int, default=40, help="сколько id вперёд искать новые (по умолчанию 40)")
     ap.add_argument("--empty-stop", type=int, default=20, help="стоп после N пустых подряд при поиске новых")
     ap.add_argument("--sleep", type=int, default=0, help="пауза между кругами в секундах (0 = без передышки)")
+    ap.add_argument(
+        "--full-sleep",
+        type=int,
+        default=1800,
+        help="передышка после полной проверки всех известных предметов, сек (по умолчанию 1800 = 30 мин)",
+    )
     ap.add_argument("--workers", type=int, default=2, help="параллельных запросов (по умолчанию 2, бережно к сайту)")
     ap.add_argument("--once", action="store_true", help="сделать один круг и выйти")
     ap.add_argument("--no-push", action="store_true", help="не заливать на GitHub")
@@ -694,6 +710,10 @@ def main() -> int:
     say(f"  Стоп пустых подряд:    {args.empty_stop}")
     say(f"  Потоков:               {args.workers}")
     say(f"  Пауза между кругами:   {fmt_duration(args.sleep)}")
+    say(
+        f"  После полного обхода:  "
+        f"{fmt_duration(args.full_sleep) if args.full_sleep > 0 else 'без передышки'}"
+    )
     say(f"  GitHub push:           {'нет' if args.no_push else 'да, если есть изменения'}")
     say(f"  Картинки новых:        {'нет' if args.no_images else 'да'}")
     say(f"  Режим:                 {'один круг' if args.once else 'постоянно'}")
@@ -703,6 +723,7 @@ def main() -> int:
     say("  • Не сканирует весь сайт каждый раз")
     say("  • Каждый круг: хвост новых id + следующая пачка известных")
     say("  • За несколько кругов проходит ВСЕ предметы и начинает сначала")
+    say("  • После полного обхода — передышка 30 мин (по умолчанию)")
     say("  • Так ловятся и новинки, и смены цен")
     say("  • В логе видно каждый id: цена, изменения, «нет в продаже»")
 
@@ -729,7 +750,7 @@ def main() -> int:
 
     try:
         while True:
-            one_round(
+            result = one_round(
                 batch=max(1, args.batch),
                 ahead=max(10, args.ahead),
                 empty_stop=max(5, args.empty_stop),
@@ -739,7 +760,16 @@ def main() -> int:
             )
             if args.once:
                 break
-            if args.sleep > 0:
+            if result.get("full_pass") and args.full_sleep > 0:
+                say(
+                    box=True,
+                    msg=(
+                        "Полная проверка каталога завершена\n"
+                        f"Передышка {fmt_duration(args.full_sleep)} перед новым обходом"
+                    ),
+                )
+                sleep_with_ticks(args.full_sleep)
+            elif args.sleep > 0:
                 sleep_with_ticks(args.sleep)
             else:
                 say("Паузы нет — сразу следующий круг")

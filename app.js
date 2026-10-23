@@ -1221,7 +1221,19 @@ function bind() {
     render();
   });
 
+  const searchWrap = els.q?.closest(".search-wrap");
+  let typingPulseTimer = null;
+  function markSearchTyping() {
+    if (!searchWrap) return;
+    searchWrap.classList.add("is-typing");
+    clearTimeout(typingPulseTimer);
+    typingPulseTimer = setTimeout(() => {
+      searchWrap.classList.remove("is-typing");
+    }, 800);
+  }
+
   els.q.addEventListener("input", () => {
+    markSearchTyping();
     clearTimeout(inputTimer);
     inputTimer = setTimeout(() => {
       state.query = els.q.value;
