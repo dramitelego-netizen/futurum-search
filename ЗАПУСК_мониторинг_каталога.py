@@ -237,7 +237,7 @@ def push_if_needed(changed: bool, do_push: bool) -> None:
 
 
 def merge_item(old: dict | None, new: dict) -> dict:
-    """Новые данные с сайта + сохраняем локальные пути картинок."""
+    """Новые данные с сайта + сохраняем локальные пути картинок и категории."""
     merged = dict(old or {})
     for key in (
         "id",
@@ -249,12 +249,29 @@ def merge_item(old: dict | None, new: dict) -> dict:
         "image",
         "lookImage",
         "url",
-        "category",
-        "categoryTitle",
-        "categories",
     ):
         if key in new:
             merged[key] = new[key]
+    # категорию с сайта берём только если она реально есть;
+    # иначе не затираем локальное обогащение (иначе в разделах остаются одни ★)
+    new_cat = new.get("category")
+    new_cats = new.get("categories") or []
+    if new_cat or (isinstance(new_cats, list) and any(new_cats)):
+        merged["category"] = new_cat
+        merged["categoryTitle"] = new.get("categoryTitle")
+        merged["categories"] = list(new_cats) if isinstance(new_cats, list) else []
+    elif old:
+        if old.get("category"):
+            merged["category"] = old["category"]
+        if old.get("categoryTitle"):
+            merged["categoryTitle"] = old["categoryTitle"]
+        if old.get("categories"):
+            merged["categories"] = old["categories"]
+    for meta in ("gender", "badge"):
+        if old and old.get(meta) and not new.get(meta):
+            merged[meta] = old[meta]
+        elif new.get(meta):
+            merged[meta] = new[meta]
     # локальные файлы не затираем
     if old:
         if old.get("imageLocal"):
@@ -564,6 +581,33 @@ def one_round(
         )
     except Exception as e:
         say(f"  ⚠ история: {e}")
+
+    # категории / пол / ★☆ — локальные эвристики (не затираются merge_item)
+    say("── Категории ──")
+    t4 = time.perf_counter()
+    try:
+        proc = subprocess.run(
+            [sys.executable, "-u", "enrich_filters.py"],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        out = (proc.stdout or "").strip()
+        if out:
+            for line in out.splitlines()[-3:]:
+                say(f"  {line}")
+        if proc.returncode != 0:
+            err = (proc.stderr or "").strip()
+            say(f"  ⚠ enrich_filters код {proc.returncode}: {err[:200]}")
+        else:
+            say(f"  Категории обновлены за {fmt_duration(time.perf_counter() - t4)}")
+            # перечитать после enrich
+            found = load_found()
+            items = sorted(found.values(), key=lambda x: x["id"])
+    except Exception as e:
+        say(f"  ⚠ категории: {e}")
 
     state["cursor"] = cursor
     state["rounds"] = round_no

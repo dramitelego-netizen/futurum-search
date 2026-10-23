@@ -37,8 +37,9 @@ CAT_RULES: list[tuple[str, re.Pattern[str]]] = [
     (
         "pets",
         re.compile(
-            r"питомец|щенок|кот[её]?н|кот\b|собак|лисиц|медвеж|зайц|хомяк|"
-            r"попуга|дракончик|самоед|мегалодон|гробик",
+            r"питомец|щенок|кот[её]?н|\bкот\b|кошка|собак|лисиц|медвеж|зайц|хомяк|"
+            r"попуга|дракончик|самоед|мегалодон|гробик|единорог|буренк|далматин|"
+            r"бультерьер|лемур|бэйбэй|мишка|игрушка|эльф",
             re.I,
         ),
     ),
@@ -46,21 +47,29 @@ CAT_RULES: list[tuple[str, re.Pattern[str]]] = [
         "tricks",
         re.compile(
             r"скейт|велосипед|самокат|транспорт|скутер|борд|машинк|"
-            r"мопед|снегоход|экраноплан",
+            r"мопед|снегоход|экраноплан|мотоцикл|ролики|джип|круизер|классик|"
+            r"молния\b|облако\b|парный трюк|трюк\)",
             re.I,
         ),
     ),
     (
         "packs",
-        re.compile(r"^★?\s*набор\b|набор «|подарок «|сундук с|связка из", re.I),
+        re.compile(
+            r"^★?\s*набор\b|набор «|подарок «|сундук|шкатулк|связка из|"
+            r"конверт с|набор из|\d+\s*шт\.?",
+            re.I,
+        ),
     ),
     (
         "clothes",
         re.compile(
-            r"костюм|парик|туфл|сапог|ботин|платье|штаны|юбка|рубаш|"
-            r"куртк|пальто|жилет|перчат|очк[аи]|маска|шляп|кепк|"
+            r"костюм|парик|туфл|сапог|ботин|платье|штаны|юбка|рубаш|одежд|"
+            r"куртк|пальто|жилет|перчат|очк[аи]|маска|шляп|кепк|шапк|"
             r"бант|ободок|серьг|кулон|украшен|облик|наряд|причёс|причес|"
-            r"макияж|губы|ресниц|тату",
+            r"макияж|губы|ресниц|тату|топ\b|форма\b|брюч|купальник|бикини|"
+            r"китель|ментик|футболка|трусик|плащ|наплечник|нимб|корон|"
+            r"рожки|образ|рюкзак|корсет|эполет|бутсы|бра\b|цветок с|"
+            r"гардероб|комплект «",
             re.I,
         ),
     ),
@@ -69,7 +78,9 @@ CAT_RULES: list[tuple[str, re.Pattern[str]]] = [
         re.compile(
             r"карт[аы]|билет|лотере|красител|краска|фон\b|рамка|стикер|"
             r"интерактив|торт|роз[аы]|молот|стрел|лили|сертификат|"
-            r"премиум|визитк|облачк|трон|зонт",
+            r"премиум|визитк|облачк|трон|зонт|леденец|жвачк|пистолет|"
+            r"пугало|снег\b|чеками|вертушка|домик|камень-ножницы|"
+            r"снеговик|голос|глас\b",
             re.I,
         ),
     ),
@@ -103,6 +114,9 @@ def detect_category(name: str, description: str = "") -> tuple[str | None, str |
     for slug, rx in CAT_RULES:
         if rx.search(text):
             return slug, CATEGORIES[slug]
+    # пол в названии чаще всего = внешность
+    if detect_gender(name, description) in ("m", "f", "unisex"):
+        return "clothes", CATEGORIES["clothes"]
     return None, None
 
 
@@ -114,7 +128,7 @@ def main() -> int:
     data = json.loads(ITEMS_FILE.read_text(encoding="utf-8"))
     items = data.get("items") or []
 
-    cat_hit = gender_hit = badge_hit = 0
+    cat_hit = gender_hit = badge_hit = defaulted = 0
     by_cat: dict[str, int] = {k: 0 for k in CATEGORIES}
 
     for it in items:
@@ -122,12 +136,15 @@ def main() -> int:
         desc = str(it.get("description") or "")
 
         slug, title = detect_category(name, desc)
+        if not slug:
+            # всё раскладываем: остаток → «Предметы»
+            slug, title = "items", CATEGORIES["items"]
+            defaulted += 1
         it["category"] = slug
         it["categoryTitle"] = title
-        it["categories"] = [slug] if slug else []
-        if slug:
-            cat_hit += 1
-            by_cat[slug] += 1
+        it["categories"] = [slug]
+        cat_hit += 1
+        by_cat[slug] += 1
 
         gender = detect_gender(name, desc)
         it["gender"] = gender
@@ -147,16 +164,23 @@ def main() -> int:
         "withCategory": cat_hit,
         "withGender": gender_hit,
         "withBadge": badge_hit,
+        "defaultedToItems": defaulted,
         "byCategory": by_cat,
         "total": len(items),
     }
 
     tmp = ITEMS_FILE.with_suffix(".tmp")
     tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-    tmp.replace(ITEMS_FILE)
+    try:
+        from scrape_by_id import replace_file
+
+        replace_file(tmp, ITEMS_FILE)
+    except Exception:
+        tmp.replace(ITEMS_FILE)
 
     print(
-        f"готово: category={cat_hit}/{len(items)}, gender={gender_hit}, badge={badge_hit}",
+        f"готово: category={cat_hit}/{len(items)} (из них по умолчанию «Предметы»: {defaulted}), "
+        f"gender={gender_hit}, badge={badge_hit}",
         flush=True,
     )
     print("по разделам:", by_cat, flush=True)

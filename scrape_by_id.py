@@ -260,9 +260,7 @@ def parse_goods(html: str, expected_id: int) -> dict | None:
         "image": image,
         "lookImage": look_image or None,
         "url": f"{BASE}/mall/goods/{expected_id}/",
-        "category": None,
-        "categoryTitle": None,
-        "categories": [],
+        # категорию страница товара не даёт — не пишем null, чтобы не стереть enrich
     }
 
 
