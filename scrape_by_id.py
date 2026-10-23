@@ -296,6 +296,37 @@ def load_found() -> dict[str, dict]:
     return {}
 
 
+def replace_file(tmp: Path, target: Path, attempts: int = 12, delay: float = 0.35) -> None:
+    """Windows часто держит items.json (браузер/антивирус) — replace с повторами."""
+    last: OSError | None = None
+    for i in range(attempts):
+        try:
+            tmp.replace(target)
+            return
+        except PermissionError as e:
+            last = e
+            time.sleep(delay * (1.0 + i * 0.15))
+        except OSError as e:
+            # WinError 5 / 32 — файл занят
+            if getattr(e, "winerror", None) not in (5, 32) and e.errno not in (13, 11):
+                raise
+            last = e
+            time.sleep(delay * (1.0 + i * 0.15))
+    # запасной путь: копируем поверх, потом удаляем tmp
+    try:
+        data = tmp.read_bytes()
+        target.write_bytes(data)
+        try:
+            tmp.unlink(missing_ok=True)
+        except OSError:
+            pass
+        log(f"⚠ {target.name}: replace был занят, записал напрямую")
+        return
+    except OSError:
+        pass
+    raise last or PermissionError(f"не удалось заменить {target}")
+
+
 def save_found(found: dict[str, dict], next_hint: int) -> None:
     items = sorted(found.values(), key=lambda x: x["id"])
     payload = {
@@ -308,7 +339,7 @@ def save_found(found: dict[str, dict], next_hint: int) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     tmp = ITEMS_FILE.with_suffix(".tmp")
     tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    tmp.replace(ITEMS_FILE)
+    replace_file(tmp, ITEMS_FILE)
     try:
         from price_history import record_items
 
