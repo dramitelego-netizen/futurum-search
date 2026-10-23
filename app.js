@@ -466,9 +466,10 @@ function significantNameTokens(name) {
 }
 
 /**
- * Если в строке ссылка Parapa — подставляем название товара из каталога
- * и запоминаем id, чтобы он был первым в выдаче.
- * @returns {boolean} true, если ссылка распознана
+ * Если в строке ссылка/id Parapa — запоминаем id (первый в выдаче + превью).
+ * Полную ссылку mall/goods/… меняем на название; голое число (66) оставляем —
+ * иначе нельзя дописать 666.
+ * @returns {boolean} true, если ссылка/id распознаны
  */
 function resolveParapaLinkInQuery(raw) {
   const id = parseParapaGoodsId(raw);
@@ -478,13 +479,15 @@ function resolveParapaLinkInQuery(raw) {
   }
   const item = state.items.find((it) => Number(it.id) === id);
   state.linkItemId = id;
+  const bareDigits = /^\d{1,6}$/.test(String(raw || "").trim());
   if (item && item.name) {
-    if (els.q && els.q.value.trim() !== item.name) {
+    if (!bareDigits && els.q && els.q.value.trim() !== item.name) {
       els.q.value = item.name;
     }
+    // для выдачи «похожих» нужен текст названия; в поле при id оставляем цифры
     state.query = item.name;
   } else {
-    // ещё нет в нашем каталоге — оставляем ссылку, покажем понятное пустое
+    // ещё нет в нашем каталоге — оставляем как ввели
     state.query = String(raw || "").trim();
   }
   return true;
