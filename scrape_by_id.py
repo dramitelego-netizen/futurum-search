@@ -325,7 +325,23 @@ def replace_file(tmp: Path, target: Path, attempts: int = 12, delay: float = 0.3
     raise last or PermissionError(f"не удалось заменить {target}")
 
 
+def _preserve_local_meta(found: dict[str, dict]) -> None:
+    """Не теряем category/gender/badge при перезаписи items.json."""
+    prev = load_found()
+    meta_keys = ("category", "categoryTitle", "categories", "gender", "badge")
+    for key, item in found.items():
+        old = prev.get(str(key)) or prev.get(key)
+        if not old:
+            continue
+        for mk in meta_keys:
+            cur = item.get(mk)
+            empty = cur is None or cur == "" or cur == []
+            if empty and old.get(mk) not in (None, "", []):
+                item[mk] = old[mk]
+
+
 def save_found(found: dict[str, dict], next_hint: int) -> None:
+    _preserve_local_meta(found)
     items = sorted(found.values(), key=lambda x: x["id"])
     payload = {
         "source": "https://parapa.ru/mall/goods/{id}/",
@@ -344,6 +360,13 @@ def save_found(found: dict[str, dict], next_hint: int) -> None:
         record_items(items)
     except Exception:
         pass
+    # категории заново по имени/описанию — страховка от затирания
+    try:
+        import enrich_filters
+
+        enrich_filters.main()
+    except Exception as e:
+        log(f"⚠ enrich_filters: {e}")
     STATE_FILE.write_text(
         json.dumps(
             {"found": len(items), "hint": next_hint, "updated": ts()},
