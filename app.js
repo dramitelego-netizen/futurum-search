@@ -1448,6 +1448,19 @@ setTheme(currentTheme());
 setBg(currentBg());
 updateFiltersUi();
 bind();
+
+// SEO SearchAction: /?q=запрос
+try {
+  const qParam = new URLSearchParams(window.location.search).get("q");
+  if (qParam && els.q) {
+    els.q.value = qParam;
+    state.query = qParam;
+    els.q.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+} catch {
+  /* ignore */
+}
+
 if (window.FuturumChanges) FuturumChanges.init();
 syncFavs().finally(() => load(false));
 setInterval(() => load(true), 15000);
