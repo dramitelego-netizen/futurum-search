@@ -6678,7 +6678,10 @@
       "badge": "event",
       "gender": null,
       "unavailable": false,
-      "missStreak": 0
+      "missStreak": 0,
+      "imageLocal": "data/img/758/icon.png",
+      "lookLocal": "data/img/758/look.png",
+      "firstSeen": 1792751343
     },
     {
       "id": 759,
