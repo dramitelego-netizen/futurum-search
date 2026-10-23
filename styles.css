@@ -2832,7 +2832,7 @@ body.changes-open {
 }
 
 .seo-intro {
-  margin: 0.85rem auto 0;
+  margin: 0.35rem auto 0.95rem;
   max-width: 34rem;
   text-align: center;
   color: color-mix(in srgb, var(--mute) 88%, transparent);
