@@ -1414,8 +1414,11 @@ async function load(isRefresh = false) {
         ? "Введите название или выберите фильтр"
         : "Каталог пока пуст — идёт сбор";
     }
-    if (isRefresh && (tokenize(state.query).length || browseMode())) render();
-    else if (!isRefresh && state.activeId) {
+    // После загрузки каталога обязательно пересчитать выдачу
+    // (иначе ?q= из ссылки срабатывает на пустом списке и зависает на 0)
+    if (tokenize(state.query).length || browseMode()) {
+      render();
+    } else if (!isRefresh && state.activeId) {
       const cur = state.items.find((it) => it.id === state.activeId);
       if (cur) showPreview(cur);
     }
