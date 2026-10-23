@@ -531,85 +531,158 @@ function editDistance(a, b, limit = 2) {
   return prev[lb];
 }
 
+/** Лёгкая основа слова: лилия/лилий/лилии → «лил», лиловая → «лилов» */
+function lightStem(word) {
+  let s = String(word || "");
+  if (s.length < 4) return s;
+  const endings = [
+    "ями",
+    "ами",
+    "иями",
+    "ией",
+    "ью",
+    "ием",
+    "иям",
+    "иях",
+    "ов",
+    "ев",
+    "ей",
+    "ом",
+    "ем",
+    "ах",
+    "ях",
+    "ам",
+    "ям",
+    "ая",
+    "яя",
+    "ое",
+    "ее",
+    "ые",
+    "ие",
+    "ый",
+    "ий",
+    "ой",
+    "ия",
+    "ии",
+    "ию",
+    "ы",
+    "и",
+    "а",
+    "я",
+    "у",
+    "ю",
+    "е",
+    "о",
+  ];
+  for (const end of endings) {
+    if (s.length - end.length >= 3 && s.endsWith(end)) {
+      return s.slice(0, -end.length);
+    }
+  }
+  return s;
+}
+
+/**
+ * Оценка одного токена по названию.
+ * tier: 0 точное слово, 1 та же основа (лилия≈лилий), 2 префикс,
+ *       3 вхождение, 4 опечатка, 5 слабо/описание
+ */
 function fuzzyTokenScore(token, hay) {
-  if (!token || !hay) return -1;
-  if (hay === token) return 100;
+  if (!token || !hay) return { score: -1, tier: 9 };
+  if (hay === token) return { score: 100, tier: 0 };
 
   const words = hay.split(" ").filter(Boolean);
-  let best = -1;
+  const tokenStem = lightStem(token);
+  let best = { score: -1, tier: 9 };
 
-  // 1) сначала целые слова — «лилий» в «25 лилий» важнее, чем «лиловая»
+  const take = (score, tier) => {
+    if (score > best.score || (score === best.score && tier < best.tier)) {
+      best = { score, tier };
+    }
+  };
+
   for (const w of words) {
-    if (w === token) best = Math.max(best, 100);
-    else if (w.startsWith(token)) best = Math.max(best, 90);
-    else if (token.length >= 3 && w.includes(token)) best = Math.max(best, 58);
+    if (w === token) take(100, 0);
+    else if (tokenStem.length >= 3 && lightStem(w) === tokenStem) take(96, 1);
+    else if (w.startsWith(token)) take(88, 2);
+    else if (token.length >= 3 && w.includes(token)) take(60, 3);
   }
-  if (best >= 58) return best;
 
-  if (hay.startsWith(token)) return 78;
-  if (hay.includes(` ${token} `) || hay.endsWith(` ${token}`) || hay.startsWith(`${token} `)) {
-    return 95;
+  if (best.tier <= 1) return best;
+
+  if (hay.startsWith(token)) take(80, 2);
+  if (
+    hay.includes(` ${token} `) ||
+    hay.endsWith(` ${token}`) ||
+    hay.startsWith(`${token} `)
+  ) {
+    take(98, 0);
   }
-  if (hay.includes(token)) best = Math.max(best, 50);
+  if (hay.includes(token)) take(52, 3);
 
-  // 2) опечатки — только к словам похожей длины (не «лилий»≈«лиловая»)
+  // опечатки — только к словам почти той же длины
   if (token.length >= 4) {
     for (const w of words) {
       if (Math.abs(w.length - token.length) > 1) continue;
+      if (tokenStem.length >= 3 && lightStem(w) === tokenStem) continue;
       const maxDist = token.length <= 5 ? 1 : 2;
       const d = editDistance(token, w, maxDist);
-      if (d <= maxDist) best = Math.max(best, 34 - d * 8);
+      if (d <= maxDist) take(36 - d * 8, 4);
     }
   }
   return best;
 }
 
 function scoreAgainst(hay, forms) {
-  let best = -1;
+  let best = { score: -1, tier: 9 };
   let viaSynonym = false;
-  let exactWord = false;
   for (const f of forms) {
     const part = fuzzyTokenScore(f, hay);
-    if (part > best) {
+    if (
+      part.score > best.score ||
+      (part.score === best.score && part.tier < best.tier)
+    ) {
       best = part;
       viaSynonym = f !== forms[0];
-      exactWord = part >= 90 && f === forms[0];
     }
   }
-  return { best, viaSynonym, exactWord };
+  return { ...best, viaSynonym };
 }
 
 function scoreItem(item, tokens) {
-  if (!tokens.length) return { score: -1, fuzzy: false };
+  if (!tokens.length) return { score: -1, fuzzy: false, tier: 9 };
   const name = normalize(item.name);
   const desc = normalize(item.description);
   let score = 0;
   let fuzzy = false;
-  let exactWords = 0;
+  let tier = 0;
 
   for (const t of tokens) {
     const forms = expandToken(t);
-    let { best: part, viaSynonym, exactWord } = scoreAgainst(name, forms);
-    if (part < 0 && desc) {
+    let hit = scoreAgainst(name, forms);
+    let fromDesc = false;
+    if (hit.score < 0 && desc) {
       const d = scoreAgainst(desc, forms);
-      if (d.best > 0) {
-        part = d.best * 0.35;
-        viaSynonym = viaSynonym || d.viaSynonym;
-        exactWord = false;
+      if (d.score > 0) {
+        hit = { score: d.score * 0.35, tier: 5, viaSynonym: d.viaSynonym };
+        fromDesc = true;
       }
     }
-    if (part < 0) return { score: -1, fuzzy: false };
-    if (exactWord) exactWords += 1;
-    // «похоже» только для слабых/синонимных совпадений
-    if (part < 58 || viaSynonym) fuzzy = true;
-    score += part;
+    if (hit.score < 0) return { score: -1, fuzzy: false, tier: 9 };
+    score += hit.score;
+    tier = Math.max(tier, hit.tier);
+    // «похоже» — не точное слово и не та же основа
+    if (hit.tier >= 2 || hit.viaSynonym || fromDesc) fuzzy = true;
   }
 
-  // бонус за точные слова в названии
-  score += exactWords * 28;
-  // лёгкий бонус короткому названию, но слабее точного слова
-  score += Math.max(0, 10 - name.length * 0.08);
-  return { score, fuzzy };
+  // сильнее поднимаем лучшие попадания
+  if (tier === 0) score += 40;
+  else if (tier === 1) score += 32;
+  else if (tier === 2) score += 12;
+
+  // чуть выше короткие названия при равном качестве
+  score += Math.max(0, 6 - name.length * 0.05);
+  return { score, fuzzy, tier };
 }
 
 function formatPrice(n) {
@@ -805,10 +878,11 @@ function sortRanked(list, hasQuery) {
       case "relevance":
       default:
         if (hasQuery) {
-          // сначала точные попадания, потом «похоже», внутри — по score
-          if (Boolean(a.fuzzy) !== Boolean(b.fuzzy)) {
-            return a.fuzzy ? 1 : -1;
-          }
+          // 1) лучше качество совпадения (tier)  2) выше score  3) имя
+          const ta = a.tier != null ? a.tier : a.fuzzy ? 4 : 0;
+          const tb = b.tier != null ? b.tier : b.fuzzy ? 4 : 0;
+          if (ta !== tb) return ta - tb;
+          if (Boolean(a.fuzzy) !== Boolean(b.fuzzy)) return a.fuzzy ? 1 : -1;
           return b.score - a.score || byName(a, b);
         }
         if (state.showSale) {
@@ -864,8 +938,8 @@ function filtered() {
   return sortRanked(
     state.items
       .map((item) => {
-        const { score, fuzzy } = scoreItem(item, tokens);
-        return { item, score, fuzzy };
+        const { score, fuzzy, tier } = scoreItem(item, tokens);
+        return { item, score, fuzzy, tier };
       })
       .filter((x) => x.score >= 0 && passesFilters(x.item)),
     true
