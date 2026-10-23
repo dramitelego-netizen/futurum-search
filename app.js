@@ -466,9 +466,10 @@ function significantNameTokens(name) {
   return tokenize(name).filter((t) => t.length >= 2).slice(0, 6);
 }
 
-/** Подсказка под строкой: id 66 → название, поле не трогаем */
+/** Подсказка под строкой (вариант Z): крошечная метка, имя в title, поле не трогаем */
 function syncIdHint(raw) {
   const hint = els.searchIdHint;
+  const wrap = els.q?.closest(".search-wrap");
   if (!hint) return;
   const s = String(raw ?? els.q?.value ?? "").trim();
   const bareDigits = /^\d{1,6}$/.test(s);
@@ -477,15 +478,32 @@ function syncIdHint(raw) {
     bareDigits && state.items.length
       ? state.items.find((it) => Number(it.id) === id)
       : null;
+
+  wrap?.classList.remove("has-id-hit", "has-id-miss");
+
   if (item && item.name) {
     hint.hidden = false;
-    hint.innerHTML = `<span class="search-id-hint-id">#${escapeHtml(String(item.id))}</span><span class="search-id-hint-name">${escapeHtml(item.name)}</span>`;
+    hint.classList.remove("is-miss");
+    hint.textContent = item.name;
+    hint.title = item.name;
+    wrap?.classList.add("has-id-hit");
   } else if (bareDigits && state.linkItemId != null && !item) {
+    const near = nearestItemsById(state.linkItemId, 1)[0];
     hint.hidden = false;
-    hint.innerHTML = `<span class="search-id-hint-id">#${escapeHtml(String(state.linkItemId))}</span><span class="search-id-hint-name is-miss">пока нет в каталоге</span>`;
+    hint.classList.add("is-miss");
+    if (near?.item?.name) {
+      hint.textContent = `ближайший #${near.item.id} · ${near.item.name}`;
+      hint.title = `Нет #${state.linkItemId} — ближайший #${near.item.id}`;
+    } else {
+      hint.textContent = "нет в каталоге";
+      hint.title = `Товар #${state.linkItemId} пока нет в каталоге`;
+    }
+    wrap?.classList.add("has-id-miss");
   } else {
     hint.hidden = true;
+    hint.classList.remove("is-miss");
     hint.textContent = "";
+    hint.removeAttribute("title");
   }
 }
 
@@ -925,8 +943,30 @@ function sortRanked(list, hasQuery) {
   return list;
 }
 
+/** Ближайшие товары по числовому id (когда точного совпадения нет) */
+function nearestItemsById(wantId, limit = 12) {
+  const want = Number(wantId);
+  if (!Number.isFinite(want) || !state.items.length) return [];
+  return state.items
+    .map((item) => {
+      const id = Number(item.id);
+      const dist = Math.abs(id - want);
+      return { item, dist, id };
+    })
+    .filter((x) => Number.isFinite(x.dist) && x.dist > 0)
+    .sort((a, b) => a.dist - b.dist || a.id - b.id)
+    .slice(0, limit)
+    .map((x, i) => ({
+      item: x.item,
+      score: 1e5 - x.dist * 10 - i,
+      fuzzy: true,
+      nearId: true,
+      idDist: x.dist,
+    }));
+}
+
 function filtered() {
-  // Режим «по ссылке»: точный товар сверху + похожие по названию
+  // Режим «по ссылке» / id: точный товар сверху + похожие по названию
   if (state.linkItemId != null && state.items.length) {
     const target = state.items.find((it) => Number(it.id) === state.linkItemId);
     if (target) {
@@ -946,8 +986,8 @@ function filtered() {
       const head = [{ item: target, score: 1e6, fuzzy: false, fromLink: true }];
       return head.concat(similar);
     }
-    // id из ссылки есть, но товара нет в items.json
-    return [];
+    // точного id нет — ближайшие номера в каталоге
+    return nearestItemsById(state.linkItemId, 12);
   }
 
   const tokens = tokenize(state.query);
@@ -1248,7 +1288,7 @@ function selectByIndex(index, scroll = true, { forcePreview = false } = {}) {
 
 function emptyMessage(hasQuery) {
   if (state.linkItemId != null) {
-    return `Товар #${state.linkItemId} пока нет в нашем каталоге — мониторинг ещё не подхватил`;
+    return `Нет товара #${state.linkItemId} и рядом в каталоге тоже пусто`;
   }
   if (!hasQuery && state.showFavs && state.showSale) {
     return "В избранном нет скидок";
@@ -1298,8 +1338,16 @@ function render() {
   updateFiltersUi();
   const label = document.querySelector(".results-heading-label");
   if (label) {
-    label.textContent =
-      state.linkItemId != null ? "по ссылке и похожие" : "найдено";
+    if (state.linkItemId != null) {
+      const exact = state.items.some(
+        (it) => Number(it.id) === Number(state.linkItemId)
+      );
+      label.textContent = exact
+        ? "по ссылке и похожие"
+        : `ближайшие к #${state.linkItemId}`;
+    } else {
+      label.textContent = "найдено";
+    }
   }
   if (els.resultsCount) {
     els.resultsCount.textContent = String(ranked.length);
@@ -1327,7 +1375,7 @@ function render() {
   }
 
   els.results.innerHTML = ranked
-    .map(({ item, fuzzy, fromLink }) => {
+    .map(({ item, fuzzy, fromLink, nearId }) => {
       const sale = itemOnSale(item);
       const gone = itemUnavailable(item);
       const fav = isFav(item.id);
@@ -1336,7 +1384,7 @@ function render() {
         <div class="result-row">
           <button
             type="button"
-            class="result${state.activeId === item.id ? " active" : ""}${sale ? " is-sale" : ""}${gone ? " is-unavailable" : ""}${fromLink ? " is-link-hit" : ""}"
+            class="result${state.activeId === item.id ? " active" : ""}${sale ? " is-sale" : ""}${gone ? " is-unavailable" : ""}${fromLink ? " is-link-hit" : ""}${nearId ? " is-near-id" : ""}"
             data-id="${item.id}"
           >
             <span class="result-main">
@@ -1345,9 +1393,10 @@ function render() {
             </span>
             <span class="result-meta">
               ${fromLink ? `<span class="result-tag is-link">по ссылке</span>` : ""}
+              ${nearId ? `<span class="result-tag is-near">#${escapeHtml(String(item.id))}</span>` : ""}
               ${gone ? `<span class="result-gone">нет в продаже</span>` : ""}
               ${!gone && sale ? `<span class="result-sale">скидка</span>` : ""}
-              ${!fromLink && fuzzy ? `<span class="result-tag">похоже</span>` : ""}
+              ${!fromLink && !nearId && fuzzy ? `<span class="result-tag">похоже</span>` : ""}
             </span>
           </button>
           <button
