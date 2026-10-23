@@ -88,27 +88,34 @@ const LINK_STOPWORDS = new Set([
   "мужскую",
 ]);
 
-/** Убрать пометку пола из названия: «Спиннинг (женский)» → «Спиннинг» */
+/** Граница слова для кириллицы (\b в JS — только ASCII) */
+const UW = "(?<![\\p{L}\\p{N}_])";
+const UE = "(?![\\p{L}\\p{N}_])";
+
+/** Убрать пометку пола: «Спиннинг (женский)», «Мужское крыло…» */
 function stripGenderFromName(name) {
+  const wordRe = new RegExp(
+    `${UW}(?:жен(?:ск(?:ий|ое|ая|ие|ую|ого|ой)?|\\.?)|муж(?:ск(?:ий|ое|ая|ие|ую|ого|ой)?|\\.?))${UE}`,
+    "giu"
+  );
   return String(name || "")
     .replace(
       /\s*\((?:жен(?:ск(?:ий|ая|ие|ую|ого)?|\.?|ский)?|муж(?:ск(?:ий|ая|ие|ую|ого)?|\.?|ской)?|ж|м)\)\s*/gi,
       " "
     )
-    .replace(
-      /\b(?:жен(?:ск(?:ий|ая|ие|ую|ого)?|\.?)|муж(?:ск(?:ий|ая|ие|ую|ого)?|\.?))\b/gi,
-      " "
-    )
+    .replace(wordRe, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
 
-/** Цвета в названии: «(черн.)», «(розов.)», «Белый мегалодон» */
+/** Цвет / оттенок в скобках и словами */
 const COLOR_PAREN_RE =
-  /\s*\((?:тёмно-|темно-|светло-)?(?:черн|чёрн|бел|розов|красн|син|зелён|зелен|жёлт|желт|сер|золот|серебр|коричн|оранж|голуб|бирюз|бордов|бежев|кремов|фиолет|малин|изумруд|салат|бронз|перлам|радуж)[а-яёa-z.]{0,10}\)\s*/gi;
+  /\s*\((?:ярко-|тёмно-|темно-|светло-)?(?:черн|чёрн|бел|розов|красн|син|зелён|зелен|жёлт|желт|сер|золот|серебр|коричн|оранж|голуб|бирюз|бордов|бежев|кремов|фиолет|малин|изумруд|салат|бронз|перлам|радуж|сияющ|пурпур)[а-яёa-z.\s-]{0,16}\)\s*/gi;
 
-const COLOR_WORD_RE =
-  /\b(?:тёмно-|темно-|светло-)?(?:белый|белая|белое|белые|чёрный|черный|чёрная|черная|чёрное|черное|чёрные|черные|красный|красная|красное|красные|синий|синяя|синее|синие|зелёный|зеленый|зелёная|зеленая|зелёное|зеленое|зелёные|зеленые|жёлтый|желтый|жёлтая|желтая|жёлтое|желтое|жёлтые|желтые|розовый|розовая|розовое|розовые|серый|серая|серое|серые|золотой|золотая|золотое|золотые|серебряный|серебряная|серебряное|серебристый|фиолетовый|фиолетовая|коричневый|коричневая|оранжевый|оранжевая|голубой|голубая|бирюзовый|бордовый|бежевый|кремовый|белый|бел\w*|чёрн\w*|черн\w*|красн\w*|син\w*|зелён\w*|зелен\w*|жёлт\w*|желт\w*|розов\w*|фиолет\w*|золот\w*|серебр\w*|коричн\w*|оранж\w*|голуб\w*|бирюз\w*|бордов\w*|бежев\w*|кремов\w*)\b/gi;
+const COLOR_WORD_RE = new RegExp(
+  `${UW}(?:ярко-|тёмно-|темно-|светло-)?(?:белый|белая|белое|белые|чёрный|черный|чёрная|черная|чёрное|черное|чёрные|черные|красный|красная|красное|красные|синий|синяя|синее|синие|зелёный|зеленый|зелёная|зеленая|зелёное|зеленое|зелёные|зеленые|жёлтый|желтый|жёлтая|желтая|жёлтое|желтое|жёлтые|желтые|розовый|розовая|розовое|розовые|серый|серая|серое|серые|золотой|золотая|золотое|золотые|серебряный|серебряная|серебряное|серебристый|фиолетовый|фиолетовая|коричневый|коричневая|оранжевый|оранжевая|голубой|голубая|бирюзовый|бордовый|бежевый|кремовый|сияющий|сияющая|сияющее|пурпурный|пурпурная|бел[а-яё]*|чёрн[а-яё]*|черн[а-яё]*|красн[а-яё]*|син[а-яё]*|зелён[а-яё]*|зелен[а-яё]*|жёлт[а-яё]*|желт[а-яё]*|розов[а-яё]*|фиолет[а-яё]*|золот[а-яё]*|серебр[а-яё]*|коричн[а-яё]*|оранж[а-яё]*|голуб[а-яё]*|бирюз[а-яё]*|бордов[а-яё]*|бежев[а-яё]*|кремов[а-яё]*|сияющ[а-яё]*|пурпур[а-яё]*)${UE}`,
+  "giu"
+);
 
 function stripColorFromName(name) {
   return String(name || "")
@@ -118,13 +125,28 @@ function stripColorFromName(name) {
     .trim();
 }
 
-/** База названия без пола и цвета — для поиска вариантов */
+/** Стиль / детские / упаковка / интерактив в скобках */
+const META_PAREN_RE =
+  /\s*\((?:круизер|классик|соло|парн(?:ый|\.)?|парный трюк|\d+\s*чел\.?|\d+\s*шт\.?|\d+шт\.?|\d+\s*карт(?:ы|а)?|\d+\s*дней?|детск?\.?|дет\.?|для детей|для малыша|дет\.\s*,\s*[мж]\.?|[мж]\.\s*,\s*[а-яё.]+|[мж],\s*[а-яё.]+)\)\s*/gi;
+
+const META_QTY_RE = new RegExp(`${UW}\\d+\\s*шт\\.?${UE}`, "giu");
+
+function stripMetaParens(name) {
+  return String(name || "")
+    .replace(META_PAREN_RE, " ")
+    .replace(META_QTY_RE, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** База названия без пола, цвета, стиля и упаковки */
 function variantBaseKey(name) {
   let s = String(name || "").replace(/[★☆]/g, " ");
   s = stripGenderFromName(s);
   s = stripColorFromName(s);
-  // короткие пометки в скобках, которые ещё остались: (парн.), (м.), …
-  s = s.replace(/\s*\([^)]{1,18}\)\s*/g, " ");
+  s = stripMetaParens(s);
+  // остаток коротких скобок: (ж, черн.), (м.) …
+  s = s.replace(/\s*\([^)]{1,22}\)\s*/g, " ");
   return normalize(s);
 }
 
@@ -132,48 +154,101 @@ function genderBaseKey(name) {
   return variantBaseKey(name);
 }
 
-/** Подпись варианта: цвет из скобок или пол */
+/** Подпись варианта для бейджа в выдаче */
 function variantTagLabel(item) {
   const name = String(item?.name || "");
+  const bits = [];
+  if (new RegExp(`${UW}мужск`, "iu").test(name) || item.gender === "m") bits.push("муж.");
+  else if (new RegExp(`${UW}женск`, "iu").test(name) || item.gender === "f") bits.push("жен.");
+
   const paren = name.match(/\(([^)]+)\)\s*$/);
   if (paren) {
-    const raw = paren[1].replace(/\.$/, "").trim();
+    const raw = paren[1].replace(/\.$/, "").trim().replace(/\s+/g, " ");
+    if (/^[мж]/i.test(raw) && /,/.test(raw)) return raw;
     if (/^(?:ж|м|жен|муж)/i.test(raw)) {
       return item.gender === "m" || /^м/i.test(raw) ? "мужской" : "женский";
     }
-    return raw;
+    bits.push(raw);
+    return bits.join(" ") || raw;
   }
-  if (item.gender === "m") return "мужской";
-  if (item.gender === "f") return "женский";
+
+  COLOR_WORD_RE.lastIndex = 0;
   const colorWord = name.match(COLOR_WORD_RE);
-  if (colorWord) return colorWord[0];
+  if (colorWord) {
+    bits.push(colorWord[0]);
+    return bits.join(" ");
+  }
+  if (bits.length) return bits[0] === "муж." ? "мужской" : "женский";
   return "вариант";
 }
 
+const SET_PART_RE =
+  /^(?:[★☆]\s*)?(верх|низ|обувь|штаны|куртка|головной убор|прическа|причёска|парик)(?:\s+от\s+костюма)?(?![\p{L}\p{N}])/iu;
+const SET_TITLE_RE = /[«"]([^»"]+)[»"]/;
+
+function setTitleKey(name) {
+  const m = String(name || "").match(SET_TITLE_RE);
+  return m ? normalize(m[1]) : "";
+}
+
+function setPartLabel(name) {
+  const m = String(name || "").match(SET_PART_RE);
+  return m ? m[1].toLowerCase() : "часть набора";
+}
+
+/** Части одного костюма (верх/низ/обувь с одним названием в кавычках) */
+function findSetPartVariants(target) {
+  if (!target || !SET_PART_RE.test(target.name || "")) return [];
+  const title = setTitleKey(target.name);
+  if (!title || title.length < 2) return [];
+  return state.items
+    .filter((it) => {
+      if (Number(it.id) === Number(target.id)) return false;
+      if (!SET_PART_RE.test(it.name || "")) return false;
+      return setTitleKey(it.name) === title;
+    })
+    .map((item) => ({
+      item,
+      score: 8.5e5,
+      fuzzy: false,
+      genderTwin: true,
+      variantLabel: setPartLabel(item.name),
+    }));
+}
+
 /**
- * Варианты того же предмета: другой пол и/или цвет
- * (918 черн. ↔ 919 розов., белый/синий мегалодон, муж/жен спиннинг)
+ * Варианты: пол, цвет, стиль, детские, упаковка (шт./дни), соло/парный
+ * + части костюма с тем же названием в «ёлочках»
  */
 function findGenderVariants(target) {
   if (!target) return [];
   const base = variantBaseKey(target.name);
-  if (!base || base.length < 2) return [];
   const targetNorm = normalize(target.name);
-  return state.items
-    .filter((it) => {
-      if (Number(it.id) === Number(target.id)) return false;
-      if (normalize(it.name) === targetNorm) return false;
-      const b = variantBaseKey(it.name);
-      return Boolean(b) && b === base;
-    })
-    .map((item) => ({
-      item,
-      score: 9e5,
-      fuzzy: false,
-      genderTwin: true,
-      variantLabel: variantTagLabel(item),
-    }));
+  const byId = new Map();
+
+  if (base && base.length >= 2) {
+    for (const it of state.items) {
+      if (Number(it.id) === Number(target.id)) continue;
+      if (normalize(it.name) === targetNorm) continue;
+      if (variantBaseKey(it.name) !== base) continue;
+      byId.set(Number(it.id), {
+        item: it,
+        score: 9e5,
+        fuzzy: false,
+        genderTwin: true,
+        variantLabel: variantTagLabel(it),
+      });
+    }
+  }
+
+  for (const row of findSetPartVariants(target)) {
+    const id = Number(row.item.id);
+    if (!byId.has(id)) byId.set(id, row);
+  }
+
+  return [...byId.values()];
 }
+
 
 const els = {
   q: document.getElementById("q"),
