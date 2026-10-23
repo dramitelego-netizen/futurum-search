@@ -2284,13 +2284,14 @@ body.is-stage .search-filters .filter-pill {
 .changes-item {
   display: grid;
   gap: 0.35rem;
-  padding: 0.4rem 0.5rem;
+  padding: 0.45rem 0.55rem;
   border-radius: 10px;
   border: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
   background: color-mix(in srgb, var(--ink) 2%, transparent);
   border-left: 3px solid transparent;
   transition: opacity 0.15s, background 0.15s;
-  overflow: hidden;
+  /* не ставить overflow:hidden — иначе кнопка внутри схлопывается в полоску */
+  overflow: visible;
   min-width: 0;
   box-sizing: border-box;
 }
@@ -2346,9 +2347,13 @@ body.is-stage .search-filters .filter-pill {
 }
 
 .changes-item-main {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   width: 100%;
   max-width: 100%;
+  height: auto;
+  min-height: 2.4rem;
   padding: 0;
   border: 0;
   background: transparent;
@@ -2358,7 +2363,9 @@ body.is-stage .search-filters .filter-pill {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 .changes-item-row {
