@@ -1250,17 +1250,33 @@ function bind() {
 
   const searchWrap = els.q?.closest(".search-wrap");
   let typingPulseTimer = null;
-  function markSearchTyping() {
-    if (!searchWrap) return;
+  function syncSearchLine() {
+    if (!searchWrap || !els.q) return;
+    const empty = !els.q.value.trim();
+    if (empty) {
+      clearTimeout(typingPulseTimer);
+      searchWrap.classList.add("is-idle");
+      searchWrap.classList.remove("is-typing", "is-rest");
+      return;
+    }
+    searchWrap.classList.remove("is-idle");
     searchWrap.classList.add("is-typing");
+    searchWrap.classList.remove("is-rest");
     clearTimeout(typingPulseTimer);
     typingPulseTimer = setTimeout(() => {
+      if (!els.q.value.trim()) {
+        searchWrap.classList.add("is-idle");
+        searchWrap.classList.remove("is-typing", "is-rest");
+        return;
+      }
       searchWrap.classList.remove("is-typing");
+      searchWrap.classList.add("is-rest");
     }, 800);
   }
+  syncSearchLine();
 
   els.q.addEventListener("input", () => {
-    markSearchTyping();
+    syncSearchLine();
     clearTimeout(inputTimer);
     inputTimer = setTimeout(() => {
       state.query = els.q.value;
@@ -1419,6 +1435,7 @@ function openChangeItem(id) {
   if (els.q) {
     els.q.value = item.name || "";
     state.query = els.q.value;
+    els.q.dispatchEvent(new Event("input", { bubbles: true }));
   }
   render();
   const listIdx = state.list.findIndex((row) => row.item.id === id);

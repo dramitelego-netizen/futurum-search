@@ -760,18 +760,14 @@ html[data-theme="gray"][data-bg="signal"] .atmosphere .grid { opacity: 0.18; }
   border-color: rgba(18, 28, 36, 0.08);
 }
 
-[data-theme="light"] .search-wrap::before {
+[data-theme="light"] .search-wrap::before,
+[data-theme="light"] .search-wrap::after {
   background: linear-gradient(
     90deg,
     transparent,
     color-mix(in srgb, var(--accent) 85%, #0a7d6e),
     transparent
   );
-  opacity: 0.45;
-}
-
-[data-theme="light"] .search-wrap:focus-within::before {
-  opacity: 0.95;
 }
 
 [data-theme="light"] #q {
@@ -2637,34 +2633,65 @@ body.changes-open {
   box-shadow: 0 0 18px color-mix(in srgb, var(--accent-2) 16%, transparent);
 }
 
-/* вариант 20: scan-линия + при вводе эффект 14 (pulse + sweep) */
-.search-wrap::before {
+/* scan-линия: idle (::before) ↔ typing (::after), плавный кроссфейд */
+.search-wrap::before,
+.search-wrap::after {
   content: "";
   position: absolute;
-  left: 10%;
-  right: 10%;
   bottom: 0;
   height: 2px;
   border-radius: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  background-size: 100% 100%;
-  opacity: 0.4;
   z-index: 2;
   pointer-events: none;
-  filter: none;
-  animation: none;
-  transition: opacity 0.2s ease, left 0.25s ease, right 0.25s ease;
   box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 35%, transparent);
+  transition:
+    opacity 0.45s ease,
+    left 0.45s ease,
+    right 0.45s ease,
+    filter 0.45s ease;
 }
 
-.search-wrap:focus-within::before,
-.search-wrap.is-typing::before {
-  opacity: 1;
+/* слой ожидания — вариант 1 breathe */
+.search-wrap::before {
+  left: 14%;
+  right: 14%;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0;
+  animation: search-idle-breathe 2.4s ease-in-out infinite;
+  animation-play-state: paused;
+}
+
+.search-wrap.is-idle::before {
+  opacity: 0.85;
+  animation-play-state: running;
+}
+
+.search-wrap.is-typing::before,
+.search-wrap.is-rest::before {
+  opacity: 0;
+  animation-play-state: paused;
+}
+
+@keyframes search-idle-breathe {
+  0%,
+  100% {
+    left: 14%;
+    right: 14%;
+    filter: brightness(0.75);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+  50% {
+    left: 8%;
+    right: 8%;
+    filter: brightness(1.2);
+    box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+}
+
+/* слой ввода — вариант 14 pulse + sweep */
+.search-wrap::after {
   left: 4%;
   right: 4%;
-}
-
-.search-wrap.is-typing::before {
   background: linear-gradient(
     90deg,
     transparent 0%,
@@ -2674,19 +2701,40 @@ body.changes-open {
     transparent 100%
   );
   background-size: 200% 100%;
+  opacity: 0;
   animation:
     search-scan-pulse 1.1s ease-in-out infinite,
     search-scan-sweep 2.4s linear infinite;
+  animation-play-state: paused;
+}
+
+.search-wrap.is-typing::after {
+  opacity: 1;
+  animation-play-state: running;
+}
+
+/* есть текст, но не печатаем — спокойная линия */
+.search-wrap.is-rest::after {
+  opacity: 0.85;
+  animation: none;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  background-size: 100% 100%;
+  filter: none;
+}
+
+.search-wrap:focus-within.is-idle::before {
+  /* чуть ярче в фокусе, но всё ещё idle */
+  opacity: 1;
 }
 
 @keyframes search-scan-pulse {
   0%,
   100% {
-    opacity: 0.55;
+    filter: brightness(0.85);
     box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 25%, transparent);
   }
   50% {
-    opacity: 1;
+    filter: brightness(1.35);
     box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 55%, transparent);
   }
 }
@@ -4488,7 +4536,9 @@ body.changes-open {
   .atm-flow-b,
   .atm-flow-c,
   .search-wrap::before,
-  .search-wrap.is-typing::before,
+  .search-wrap::after,
+  .search-wrap.is-idle::before,
+  .search-wrap.is-typing::after,
   .preview-empty-dot,
   .media-frame.is-loading::after,
   .side-rail,
