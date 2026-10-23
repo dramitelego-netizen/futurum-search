@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://dramitelego-netizen.github.io/futurum-search/sitemap.xml
+Sitemap: https://dramitelego-netizen.github.io/futurum-search/sitemap.txt
