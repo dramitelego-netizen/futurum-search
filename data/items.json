@@ -1,11 +1,11 @@
 {
   "source": "https://parapa.ru/mall/goods/{id}/",
-  "count": 443,
+  "count": 444,
   "mode": "by_id",
   "range": {
     "start": 1,
     "end": 1500,
-    "scanned_upto_hint": 55
+    "scanned_upto_hint": 912
   },
   "items": [
     {
@@ -6661,6 +6661,24 @@
       "badge": "event"
     },
     {
+      "id": 758,
+      "name": "☆ Подарок «Хранитель снов»",
+      "description": "Внутри ты найдешь 200 лилий, титул «Хранитель снов» и 50 печений.",
+      "price": 6500,
+      "priceOld": 7500,
+      "onSale": true,
+      "image": "https://parapa.ru/pictures/image/mall/481735.png",
+      "lookImage": "https://parapa.ru/pictures/image/mall/show/25-11-2019%2015-53-33.png",
+      "url": "https://parapa.ru/mall/goods/758/",
+      "category": "packs",
+      "categoryTitle": "Наборы",
+      "categories": [
+        "packs"
+      ],
+      "badge": "event",
+      "gender": null
+    },
+    {
       "id": 759,
       "name": "Интерактив для кровати «Сен-Виктуар» — «Звездочка»",
       "description": "Интерактив для кровати «Сен-Виктуар». Кровать в набор не входит.",
@@ -9790,12 +9808,12 @@
   },
   "filterMeta": {
     "mode": "local_heuristics",
-    "withCategory": 443,
+    "withCategory": 444,
     "withGender": 149,
-    "withBadge": 122,
+    "withBadge": 123,
     "defaultedToItems": 21,
     "byCategory": {
-      "packs": 39,
+      "packs": 40,
       "wings": 40,
       "pets": 34,
       "tricks": 32,
@@ -9803,6 +9821,6 @@
       "clothes": 172,
       "child_goods": 14
     },
-    "total": 443
+    "total": 444
   }
 }
