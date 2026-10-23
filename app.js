@@ -1282,6 +1282,8 @@ function bind() {
       state.query = els.q.value;
       state.activeId = null;
       render();
+      syncSearchUrl(state.query);
+      scheduleSearchTrack(state.query);
     }, 50);
   });
 
@@ -1435,6 +1437,8 @@ function openChangeItem(id) {
   if (els.q) {
     els.q.value = item.name || "";
     state.query = els.q.value;
+    syncSearchUrl(state.query);
+    scheduleSearchTrack(state.query);
     els.q.dispatchEvent(new Event("input", { bubbles: true }));
   }
   render();
@@ -1449,7 +1453,7 @@ setBg(currentBg());
 updateFiltersUi();
 bind();
 
-// SEO SearchAction: /?q=запрос
+// SEO SearchAction + GA: /?q=запрос
 try {
   const qParam = new URLSearchParams(window.location.search).get("q");
   if (qParam && els.q) {
@@ -1459,6 +1463,45 @@ try {
   }
 } catch {
   /* ignore */
+}
+
+/** Синхронизация ?q= для шаринга, SEO и улучшенной статистики GA */
+function syncSearchUrl(query) {
+  try {
+    const url = new URL(window.location.href);
+    const q = String(query || "").trim();
+    if (q) url.searchParams.set("q", q);
+    else url.searchParams.delete("q");
+    const next = `${url.pathname}${url.search}${url.hash}`;
+    const cur = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    if (next !== cur) history.replaceState({ futurumSearch: q }, "", next);
+  } catch {
+    /* ignore */
+  }
+}
+
+let searchTrackTimer = null;
+let lastTrackedSearch = "";
+
+/** Поиск в GA: view_search_results + search (с debounce, без спама) */
+function scheduleSearchTrack(query) {
+  clearTimeout(searchTrackTimer);
+  const term = String(query || "").trim();
+  if (term.length < 2) {
+    lastTrackedSearch = "";
+    return;
+  }
+  searchTrackTimer = setTimeout(() => {
+    if (term === lastTrackedSearch) return;
+    lastTrackedSearch = term;
+    if (typeof gtag !== "function") return;
+    try {
+      gtag("event", "view_search_results", { search_term: term });
+      gtag("event", "search", { search_term: term });
+    } catch {
+      /* ignore */
+    }
+  }, 700);
 }
 
 if (window.FuturumChanges) FuturumChanges.init();
