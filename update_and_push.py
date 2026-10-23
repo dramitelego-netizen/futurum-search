@@ -38,6 +38,12 @@ PUSH_PATHS = [
     "data/price_history.json",
     "data/id_state.json",
     "data/img",
+    "item",
+    "sections",
+    "sitemap.xml",
+    "sitemap.txt",
+    "robots.txt",
+    "build_seo_pages.py",
     "index.html",
     "catalog.html",
     "styles.css",
@@ -256,6 +262,31 @@ def ensure_git_identity() -> None:
     say("  git user не задан в config — использую временный identity для commit")
 
 
+def rebuild_seo_pages() -> None:
+    script = ROOT / "build_seo_pages.py"
+    if not script.exists():
+        say("  SEO: нет build_seo_pages.py — пропуск")
+        return
+    say("  SEO: генерация sections/, item/, sitemap…")
+    try:
+        r = subprocess.run(
+            [sys.executable, "-u", str(script)],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        out = ((r.stdout or "") + (r.stderr or "")).strip()
+        if out:
+            for line in out.splitlines()[-8:]:
+                say(f"    {line}")
+        if r.returncode != 0:
+            say(f"  ⚠ SEO build exit {r.returncode}")
+    except Exception as e:
+        say(f"  ⚠ SEO build: {e}")
+
+
 def push_to_github(dry_run: bool) -> int:
     say(box=True, msg="ШАГ: Заливка на GitHub\nПоказывает файлы и отправляет commit + push")
 
@@ -268,6 +299,9 @@ def push_to_github(dry_run: bool) -> int:
     branch = git("rev-parse", "--abbrev-ref", "HEAD")
     br = (branch.stdout or "main").strip()
     say(f"  Ветка:  {br}")
+
+    if not dry_run:
+        rebuild_seo_pages()
 
     rows = list_push_candidates()
     if not rows:

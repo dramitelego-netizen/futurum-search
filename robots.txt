@@ -1,5 +1,8 @@
 User-agent: *
 Allow: /
 
+# лаборатории UI — не для индекса
+Disallow: /*lab.html$
+
 Sitemap: https://dramitelego-netizen.github.io/futurum-search/sitemap.xml
 Sitemap: https://dramitelego-netizen.github.io/futurum-search/sitemap.txt

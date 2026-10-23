@@ -47,6 +47,11 @@ PUSH_PATHS = [
     "data/price_history.json",
     "data/id_state.json",
     "data/img",
+    "item",
+    "sections",
+    "sitemap.xml",
+    "sitemap.txt",
+    "robots.txt",
 ]
 
 
@@ -200,6 +205,32 @@ def ensure_git_identity() -> None:
     os.environ.setdefault("GIT_COMMITTER_EMAIL", os.environ["GIT_AUTHOR_EMAIL"])
 
 
+def rebuild_seo_pages() -> None:
+    """Пересобрать sections/, item/ и sitemap из items.json перед пушем."""
+    script = ROOT / "build_seo_pages.py"
+    if not script.exists():
+        say("  SEO: нет build_seo_pages.py — пропуск")
+        return
+    say("  SEO: генерация разделов, товаров и sitemap…")
+    try:
+        r = subprocess.run(
+            [sys.executable, "-u", str(script)],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        out = ((r.stdout or "") + (r.stderr or "")).strip()
+        if out:
+            for line in out.splitlines()[-5:]:
+                say(f"    {line}")
+        if r.returncode != 0:
+            say(f"  ⚠ SEO build exit {r.returncode}")
+    except Exception as e:
+        say(f"  ⚠ SEO build: {e}")
+
+
 def push_if_needed(changed: bool, do_push: bool, *, commit_msg: str | None = None) -> bool:
     """True, если был успешный push (или нечего пушить при наличии изменений в статусе нет)."""
     if not changed:
@@ -209,6 +240,7 @@ def push_if_needed(changed: bool, do_push: bool, *, commit_msg: str | None = Non
         say("  GitHub: есть изменения, но --no-push")
         return False
 
+    rebuild_seo_pages()
     ensure_git_identity()
     st = git("status", "--porcelain", "--", *PUSH_PATHS)
     lines = [ln for ln in (st.stdout or "").splitlines() if ln.strip()]
