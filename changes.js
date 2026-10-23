@@ -137,12 +137,12 @@
   }
 
   function shortTag(type) {
-    if (type === "price_down") return "↓ цена";
-    if (type === "price_up") return "↑ цена";
+    if (type === "price_down") return "цена снизилась";
+    if (type === "price_up") return "цена выросла";
     if (type === "sale") return "скидка";
-    if (type === "gone") return "ушёл";
-    if (type === "new") return "новый";
-    return "цена";
+    if (type === "gone") return "нет в продаже";
+    if (type === "new") return "новинка";
+    return "цена изменилась";
   }
 
   function buildEvents(items, history) {
@@ -357,16 +357,16 @@
 
     if (e.type === "gone") {
       return `
-        <div class="changes-ticker ${tone}" title="нет в продаже">
+        <div class="changes-ticker ${tone}" title="снят с продажи">
           <span class="changes-ticker-old">${escapeHtml(formatPriceNum(e.from))}</span>
           <span class="changes-ticker-sep">→</span>
-          <span class="changes-ticker-now">нет</span>
+          <span class="changes-ticker-now">снят</span>
         </div>`;
     }
 
     if (e.type === "new") {
       return `
-        <div class="changes-ticker ${tone}" title="новый предмет">
+        <div class="changes-ticker ${tone}" title="новый предмет в каталоге">
           <span class="changes-ticker-now">${escapeHtml(formatPriceNum(e.to))}</span>
           <span class="changes-ticker-delta is-new">new</span>
         </div>`;
