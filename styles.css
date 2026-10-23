@@ -1324,6 +1324,49 @@ body.is-stage .shell {
   color: color-mix(in srgb, var(--accent) 80%, white);
 }
 
+.about-card {
+  margin-top: 0.35rem;
+  padding: 0.7rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
+  background: color-mix(in srgb, var(--ink) 3.5%, transparent);
+  display: grid;
+  gap: 0.28rem;
+}
+
+.about-lead {
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.about-lead a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.about-lead a:hover {
+  border-bottom-color: var(--accent);
+}
+
+.about-sub {
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.35;
+  color: var(--mute);
+}
+
+.about-disc {
+  margin: 0.15rem 0 0;
+  font-size: 0.68rem;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  color: color-mix(in srgb, var(--mute) 78%, transparent);
+}
+
 .bg-picks {
   display: grid;
   gap: 0.4rem;
