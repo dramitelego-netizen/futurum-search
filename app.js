@@ -41,6 +41,8 @@ const state = {
   items: [],
   history: {},
   query: "",
+  /** id товара из вставленной ссылки parapa.ru/mall/goods/N/ */
+  linkItemId: null,
   activeId: null,
   list: [],
   favs: (window.FavStore && FavStore.loadLocal()) || new Set(),
@@ -51,6 +53,27 @@ const state = {
   badge: "",
   sort: loadSort(),
 };
+
+const LINK_STOPWORDS = new Set([
+  "для",
+  "от",
+  "на",
+  "и",
+  "с",
+  "в",
+  "по",
+  "из",
+  "к",
+  "ко",
+  "со",
+  "или",
+  "при",
+  "без",
+  "the",
+  "a",
+  "of",
+  "and",
+]);
 
 const els = {
   q: document.getElementById("q"),
@@ -412,6 +435,58 @@ function tokenize(q) {
   return normalize(q).split(" ").filter(Boolean);
 }
 
+/** Достаёт id из ссылки вида https://parapa.ru/mall/goods/903/ */
+function parseParapaGoodsId(raw) {
+  const s = String(raw || "").trim();
+  if (!s) return null;
+  const m = s.match(
+    /(?:https?:\/\/)?(?:www\.)?parapa\.ru\/mall\/goods\/(\d+)\/?/i
+  );
+  if (m) return Number(m[1]);
+  // короткая вставка: /mall/goods/903
+  const m2 = s.match(/^\s*\/?mall\/goods\/(\d+)\/?\s*$/i);
+  if (m2) return Number(m2[1]);
+  return null;
+}
+
+function looksLikeParapaLink(raw) {
+  return parseParapaGoodsId(raw) != null;
+}
+
+/** Значимые слова названия — для поиска похожих */
+function significantNameTokens(name) {
+  const tokens = tokenize(name).filter(
+    (t) => t.length >= 3 && !LINK_STOPWORDS.has(t) && !/^[☆★\d]+$/.test(t)
+  );
+  if (tokens.length >= 2) return tokens.slice(0, 6);
+  return tokenize(name).filter((t) => t.length >= 2).slice(0, 6);
+}
+
+/**
+ * Если в строке ссылка Parapa — подставляем название товара из каталога
+ * и запоминаем id, чтобы он был первым в выдаче.
+ * @returns {boolean} true, если ссылка распознана
+ */
+function resolveParapaLinkInQuery(raw) {
+  const id = parseParapaGoodsId(raw);
+  if (id == null) {
+    state.linkItemId = null;
+    return false;
+  }
+  const item = state.items.find((it) => Number(it.id) === id);
+  state.linkItemId = id;
+  if (item && item.name) {
+    if (els.q && els.q.value.trim() !== item.name) {
+      els.q.value = item.name;
+    }
+    state.query = item.name;
+  } else {
+    // ещё нет в нашем каталоге — оставляем ссылку, покажем понятное пустое
+    state.query = String(raw || "").trim();
+  }
+  return true;
+}
+
 function expandToken(token) {
   const n = normalize(token);
   if (!n) return [];
@@ -722,6 +797,31 @@ function sortRanked(list, hasQuery) {
 }
 
 function filtered() {
+  // Режим «по ссылке»: точный товар сверху + похожие по названию
+  if (state.linkItemId != null && state.items.length) {
+    const target = state.items.find((it) => Number(it.id) === state.linkItemId);
+    if (target) {
+      const tokens = significantNameTokens(target.name);
+      const similar = sortRanked(
+        state.items
+          .filter((it) => Number(it.id) !== Number(target.id))
+          .map((item) => {
+            const { score, fuzzy } = scoreItem(item, tokens);
+            return { item, score, fuzzy: true };
+          })
+          .filter((x) => x.score >= 40 && passesFilters(x.item)),
+        true
+      ).slice(0, 40);
+
+      const head = passesFilters(target)
+        ? [{ item: target, score: 1e6, fuzzy: false, fromLink: true }]
+        : [];
+      return head.concat(similar);
+    }
+    // id из ссылки есть, но товара нет в items.json
+    return [];
+  }
+
   const tokens = tokenize(state.query);
   const hasQuery = Boolean(tokens.length);
 
@@ -1011,6 +1111,9 @@ function selectByIndex(index, scroll = true) {
 }
 
 function emptyMessage(hasQuery) {
+  if (state.linkItemId != null) {
+    return `Товар #${state.linkItemId} пока нет в нашем каталоге — мониторинг ещё не подхватил`;
+  }
   if (!hasQuery && state.showFavs && state.showSale) {
     return "В избранном нет скидок";
   }
@@ -1044,7 +1147,8 @@ function playHeroCarSettle() {
 }
 
 function render() {
-  const hasQuery = Boolean(tokenize(state.query).length);
+  const hasQuery =
+    Boolean(tokenize(state.query).length) || state.linkItemId != null;
   const ranked = filtered();
   state.list = ranked;
   const showStage = hasQuery || browseMode();
@@ -1056,6 +1160,11 @@ function render() {
   document.body.classList.toggle("has-query", hasQuery);
   document.body.classList.toggle("has-filters", browseMode());
   updateFiltersUi();
+  const label = document.querySelector(".results-heading-label");
+  if (label) {
+    label.textContent =
+      state.linkItemId != null ? "по ссылке и похожие" : "найдено";
+  }
   if (els.resultsCount) {
     els.resultsCount.textContent = String(ranked.length);
   }
@@ -1082,7 +1191,7 @@ function render() {
   }
 
   els.results.innerHTML = ranked
-    .map(({ item, fuzzy }) => {
+    .map(({ item, fuzzy, fromLink }) => {
       const sale = itemOnSale(item);
       const gone = itemUnavailable(item);
       const fav = isFav(item.id);
@@ -1091,7 +1200,7 @@ function render() {
         <div class="result-row">
           <button
             type="button"
-            class="result${state.activeId === item.id ? " active" : ""}${sale ? " is-sale" : ""}${gone ? " is-unavailable" : ""}"
+            class="result${state.activeId === item.id ? " active" : ""}${sale ? " is-sale" : ""}${gone ? " is-unavailable" : ""}${fromLink ? " is-link-hit" : ""}"
             data-id="${item.id}"
           >
             <span class="result-main">
@@ -1099,9 +1208,10 @@ function render() {
               <span class="result-price${sale ? " is-sale" : ""}${gone ? " is-unavailable" : ""}">${escapeHtml(formatPriceShort(item.price))}</span>
             </span>
             <span class="result-meta">
+              ${fromLink ? `<span class="result-tag is-link">по ссылке</span>` : ""}
               ${gone ? `<span class="result-gone">нет в продаже</span>` : ""}
               ${!gone && sale ? `<span class="result-sale">скидка</span>` : ""}
-              ${fuzzy ? `<span class="result-tag">похоже</span>` : ""}
+              ${!fromLink && fuzzy ? `<span class="result-tag">похоже</span>` : ""}
             </span>
           </button>
           <button
@@ -1275,16 +1385,36 @@ function bind() {
   }
   syncSearchLine();
 
-  els.q.addEventListener("input", () => {
-    syncSearchLine();
-    clearTimeout(inputTimer);
-    inputTimer = setTimeout(() => {
-      state.query = els.q.value;
-      state.activeId = null;
+  function applyQueryFromInput() {
+    const raw = els.q.value;
+    if (resolveParapaLinkInQuery(raw)) {
+      state.activeId = state.linkItemId;
       render();
       syncSearchUrl(state.query);
       scheduleSearchTrack(state.query);
-    }, 50);
+      return;
+    }
+    state.linkItemId = null;
+    state.query = raw;
+    state.activeId = null;
+    render();
+    syncSearchUrl(state.query);
+    scheduleSearchTrack(state.query);
+  }
+
+  els.q.addEventListener("input", () => {
+    syncSearchLine();
+    clearTimeout(inputTimer);
+    inputTimer = setTimeout(applyQueryFromInput, 50);
+  });
+
+  // Вставка ссылки — сразу, без ожидания ввода по символам
+  els.q.addEventListener("paste", () => {
+    clearTimeout(inputTimer);
+    inputTimer = setTimeout(() => {
+      syncSearchLine();
+      applyQueryFromInput();
+    }, 0);
   });
 
   // ПК: наведение на список переключает превью с короткой задержкой.
@@ -1416,7 +1546,11 @@ async function load(isRefresh = false) {
     }
     // После загрузки каталога обязательно пересчитать выдачу
     // (иначе ?q= из ссылки срабатывает на пустом списке и зависает на 0)
-    if (tokenize(state.query).length || browseMode()) {
+    // если в поле уже была ссылка Parapa до загрузки каталога — резолвим сейчас
+    if (els.q && looksLikeParapaLink(els.q.value)) {
+      resolveParapaLinkInQuery(els.q.value);
+    }
+    if (tokenize(state.query).length || state.linkItemId != null || browseMode()) {
       render();
     } else if (!isRefresh && state.activeId) {
       const cur = state.items.find((it) => it.id === state.activeId);

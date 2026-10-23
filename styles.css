@@ -3210,6 +3210,18 @@ body.is-stage .seo-intro {
   opacity: 0.85;
 }
 
+.result-tag.is-link {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  opacity: 1;
+}
+
+.result.is-link-hit {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
 .result-sale {
   color: var(--accent-2);
   border: 1px solid color-mix(in srgb, var(--accent-2) 40%, transparent);
