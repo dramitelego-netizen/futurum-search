@@ -534,39 +534,49 @@ function editDistance(a, b, limit = 2) {
 function fuzzyTokenScore(token, hay) {
   if (!token || !hay) return -1;
   if (hay === token) return 100;
-  if (hay.startsWith(token)) return 78;
-  if (hay.includes(token)) return 52;
 
-  const words = hay.split(" ");
+  const words = hay.split(" ").filter(Boolean);
+  let best = -1;
+
+  // 1) сначала целые слова — «лилий» в «25 лилий» важнее, чем «лиловая»
   for (const w of words) {
-    if (w.startsWith(token)) return 70;
-    if (token.length >= 3 && w.includes(token)) return 48;
+    if (w === token) best = Math.max(best, 100);
+    else if (w.startsWith(token)) best = Math.max(best, 90);
+    else if (token.length >= 3 && w.includes(token)) best = Math.max(best, 58);
+  }
+  if (best >= 58) return best;
 
-    if (token.length >= 3) {
-      const maxDist = token.length <= 4 ? 1 : token.length <= 7 ? 2 : 2;
-      const slice = w.slice(0, Math.max(token.length, Math.min(w.length, token.length + 1)));
-      const d1 = editDistance(token, slice, maxDist);
-      if (d1 <= maxDist) return 36 - d1 * 6;
-      if (w.length <= token.length + 2) {
-        const d2 = editDistance(token, w, maxDist);
-        if (d2 <= maxDist) return 30 - d2 * 5;
-      }
+  if (hay.startsWith(token)) return 78;
+  if (hay.includes(` ${token} `) || hay.endsWith(` ${token}`) || hay.startsWith(`${token} `)) {
+    return 95;
+  }
+  if (hay.includes(token)) best = Math.max(best, 50);
+
+  // 2) опечатки — только к словам похожей длины (не «лилий»≈«лиловая»)
+  if (token.length >= 4) {
+    for (const w of words) {
+      if (Math.abs(w.length - token.length) > 1) continue;
+      const maxDist = token.length <= 5 ? 1 : 2;
+      const d = editDistance(token, w, maxDist);
+      if (d <= maxDist) best = Math.max(best, 34 - d * 8);
     }
   }
-  return -1;
+  return best;
 }
 
 function scoreAgainst(hay, forms) {
   let best = -1;
   let viaSynonym = false;
+  let exactWord = false;
   for (const f of forms) {
     const part = fuzzyTokenScore(f, hay);
     if (part > best) {
       best = part;
       viaSynonym = f !== forms[0];
+      exactWord = part >= 90 && f === forms[0];
     }
   }
-  return { best, viaSynonym };
+  return { best, viaSynonym, exactWord };
 }
 
 function scoreItem(item, tokens) {
@@ -575,23 +585,30 @@ function scoreItem(item, tokens) {
   const desc = normalize(item.description);
   let score = 0;
   let fuzzy = false;
+  let exactWords = 0;
 
   for (const t of tokens) {
     const forms = expandToken(t);
-    let { best: part, viaSynonym } = scoreAgainst(name, forms);
+    let { best: part, viaSynonym, exactWord } = scoreAgainst(name, forms);
     if (part < 0 && desc) {
       const d = scoreAgainst(desc, forms);
       if (d.best > 0) {
         part = d.best * 0.35;
         viaSynonym = viaSynonym || d.viaSynonym;
+        exactWord = false;
       }
     }
     if (part < 0) return { score: -1, fuzzy: false };
-    if (part < 40 || viaSynonym) fuzzy = true;
+    if (exactWord) exactWords += 1;
+    // «похоже» только для слабых/синонимных совпадений
+    if (part < 58 || viaSynonym) fuzzy = true;
     score += part;
   }
 
-  score += Math.max(0, 16 - name.length * 0.12);
+  // бонус за точные слова в названии
+  score += exactWords * 28;
+  // лёгкий бонус короткому названию, но слабее точного слова
+  score += Math.max(0, 10 - name.length * 0.08);
   return { score, fuzzy };
 }
 
@@ -787,7 +804,13 @@ function sortRanked(list, hasQuery) {
         return byName(a, b);
       case "relevance":
       default:
-        if (hasQuery) return b.score - a.score || byName(a, b);
+        if (hasQuery) {
+          // сначала точные попадания, потом «похоже», внутри — по score
+          if (Boolean(a.fuzzy) !== Boolean(b.fuzzy)) {
+            return a.fuzzy ? 1 : -1;
+          }
+          return b.score - a.score || byName(a, b);
+        }
         if (state.showSale) {
           return (
             discountAmount(b.item) - discountAmount(a.item) || byName(a, b)
