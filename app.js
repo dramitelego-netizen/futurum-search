@@ -685,9 +685,15 @@ function discountAmount(item) {
 
 function sortRanked(list, hasQuery) {
   const byName = (a, b) => a.item.name.localeCompare(b.item.name, "ru");
+  const byStock = (a, b) =>
+    Number(itemUnavailable(a.item)) - Number(itemUnavailable(b.item));
   const mode = state.sort;
 
   list.sort((a, b) => {
+    // сначала то, что в продаже, потом «нет в продаже»
+    const stock = byStock(a, b);
+    if (stock !== 0) return stock;
+
     switch (mode) {
       case "price-asc":
         return a.item.price - b.item.price || byName(a, b);
