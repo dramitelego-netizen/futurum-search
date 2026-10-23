@@ -6676,7 +6676,9 @@
         "packs"
       ],
       "badge": "event",
-      "gender": null
+      "gender": null,
+      "unavailable": false,
+      "missStreak": 0
     },
     {
       "id": 759,
