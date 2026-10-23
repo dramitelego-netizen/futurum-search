@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dramitelego-netizen.github.io/futurum-search/sitemap.xml
