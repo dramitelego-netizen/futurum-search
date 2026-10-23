@@ -913,9 +913,8 @@ function filtered() {
         true
       ).slice(0, 40);
 
-      const head = passesFilters(target)
-        ? [{ item: target, score: 1e6, fuzzy: false, fromLink: true }]
-        : [];
+      // сам товар по ссылке/id всегда показываем — фильтры на него не действуют
+      const head = [{ item: target, score: 1e6, fuzzy: false, fromLink: true }];
       return head.concat(similar);
     }
     // id из ссылки есть, но товара нет в items.json
@@ -1114,7 +1113,10 @@ let previewFadeTimer = null;
 
 function hidePreviewZoom() {
   const zoom = els.preview?.querySelector(":scope > .preview-zoom");
-  if (zoom) zoom.classList.remove("is-on");
+  if (!zoom) return;
+  zoom.classList.remove("is-on");
+  zoom.hidden = true;
+  zoom.setAttribute("aria-hidden", "true");
 }
 
 function ensurePreviewZoom() {
@@ -1123,6 +1125,7 @@ function ensurePreviewZoom() {
   if (!zoom) {
     zoom = document.createElement("div");
     zoom.className = "preview-zoom";
+    zoom.hidden = true;
     zoom.setAttribute("aria-hidden", "true");
     zoom.innerHTML =
       '<div class="preview-zoom-card"><img class="preview-zoom-img" alt="Как выглядит" decoding="async" /></div>';
@@ -1139,6 +1142,8 @@ function showPreviewZoom(src) {
   if (!zoom) return;
   const img = zoom.querySelector(".preview-zoom-img");
   if (img && img.src !== src) img.src = src;
+  zoom.hidden = false;
+  zoom.setAttribute("aria-hidden", "false");
   zoom.classList.add("is-on");
 }
 
@@ -1336,10 +1341,17 @@ function render() {
   const still =
     ranked.find((x) => Number(x.item.id) === Number(preferId)) || ranked[0];
   selectByIndex(
-    ranked.findIndex((x) => x.item.id === still.item.id),
+    ranked.findIndex((x) => Number(x.item.id) === Number(still.item.id)),
     false,
-    { forcePreview: state.linkItemId != null }
+    { forcePreview: true }
   );
+  // ссылка/id: ещё раз явно — на случай если selectByIndex рано вышел
+  if (state.linkItemId != null) {
+    const linkHit =
+      ranked.find((x) => Number(x.item.id) === Number(state.linkItemId)) ||
+      still;
+    if (linkHit) showPreview(linkHit.item);
+  }
 }
 
 function setMenuOpen(open) {

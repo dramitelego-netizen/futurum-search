@@ -3752,7 +3752,7 @@ body.is-stage .seo-intro {
     position: absolute;
     inset: 0;
     z-index: 90;
-    display: grid;
+    display: none;
     place-items: center;
     justify-items: center;
     align-items: center;
@@ -3763,16 +3763,11 @@ body.is-stage .seo-intro {
     min-height: 0;
     container-type: size;
     background: color-mix(in srgb, var(--panel-solid) 78%, transparent);
-    backdrop-filter: blur(8px);
-    opacity: 0;
-    visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.22s ease, visibility 0.22s ease;
   }
 
   .preview-zoom.is-on {
-    opacity: 1;
-    visibility: visible;
+    display: grid;
     pointer-events: auto;
   }
 
