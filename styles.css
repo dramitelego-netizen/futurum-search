@@ -1314,6 +1314,16 @@ body.is-stage .shell {
   color: color-mix(in srgb, var(--mute) 90%, transparent);
 }
 
+.side-menu-note a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
+.side-menu-note a:hover {
+  color: color-mix(in srgb, var(--accent) 80%, white);
+}
+
 .bg-picks {
   display: grid;
   gap: 0.4rem;
