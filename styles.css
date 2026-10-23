@@ -1647,6 +1647,35 @@ body.menu-open .side-rail {
     margin 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* в режиме поиска не возвращаем enter — иначе мерцание после отдачи */
+body.is-stage .hero:not(.hero-car-settle) {
+  animation: none;
+}
+
+/* подъём: car damper (вариант 10) */
+body.is-stage .hero.hero-car-settle {
+  animation: hero-car-damper 0.62s both;
+  transition: none !important;
+}
+
+@keyframes hero-car-damper {
+  0% {
+    transform: translateY(36vh);
+    animation-timing-function: cubic-bezier(0.3, 0.7, 0.4, 1);
+  }
+  55% {
+    transform: translateY(-5px);
+    animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+  78% {
+    transform: translateY(6px);
+    animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
 body.is-stage .brand-block {
   margin-bottom: 0.75rem;
 }
@@ -4436,6 +4465,10 @@ body.changes-open {
   .hint,
   body.is-stage #q {
     transition: none !important;
+  }
+
+  body.is-stage .hero.hero-car-settle {
+    animation: none !important;
   }
 
   .stage {

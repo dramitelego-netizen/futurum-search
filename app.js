@@ -1024,11 +1024,31 @@ function emptyMessage(hasQuery) {
   return "Ничего не найдено";
 }
 
+function playHeroCarSettle() {
+  const hero = document.querySelector(".hero");
+  if (!hero) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  hero.classList.remove("hero-car-settle");
+  void hero.offsetWidth;
+  hero.classList.add("hero-car-settle");
+
+  const done = (e) => {
+    if (e.target !== hero) return;
+    const name = e.animationName || "";
+    if (name && name !== "hero-car-damper") return;
+    hero.classList.remove("hero-car-settle");
+    hero.removeEventListener("animationend", done);
+  };
+  hero.addEventListener("animationend", done);
+}
+
 function render() {
   const hasQuery = Boolean(tokenize(state.query).length);
   const ranked = filtered();
   state.list = ranked;
   const showStage = hasQuery || browseMode();
+  const wasStage = document.body.classList.contains("is-stage");
 
   els.hint.hidden = showStage;
   els.stage.hidden = !showStage;
@@ -1038,6 +1058,13 @@ function render() {
   updateFiltersUi();
   if (els.resultsCount) {
     els.resultsCount.textContent = String(ranked.length);
+  }
+
+  if (showStage && !wasStage) {
+    playHeroCarSettle();
+  }
+  if (!showStage) {
+    document.querySelector(".hero")?.classList.remove("hero-car-settle");
   }
 
   if (!showStage) {
