@@ -1,8 +1,10 @@
-/** Лента изменений каталога + «прочитано» в localStorage */
+/** Лента изменений каталога: история всегда видна, «прочитано» только снимает бейдж */
 (() => {
   const SEEN_KEY = "futurum_changes_seen";
   const KNOWN_KEY = "futurum_known_ids";
-  const MAX_EVENTS = 120;
+  const NEW_LOG_KEY = "futurum_new_log";
+  const MAX_EVENTS = 300;
+  const MAX_SEEN = 800;
 
   let events = [];
   let itemsById = new Map();
@@ -33,7 +35,26 @@
 
   function saveSeen() {
     try {
-      localStorage.setItem(SEEN_KEY, JSON.stringify([...seen]));
+      let keys = [...seen];
+      if (keys.length > MAX_SEEN) keys = keys.slice(-MAX_SEEN);
+      localStorage.setItem(SEEN_KEY, JSON.stringify(keys));
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function loadNewLog() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(NEW_LOG_KEY) || "[]");
+      return Array.isArray(raw) ? raw : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveNewLog(log) {
+    try {
+      localStorage.setItem(NEW_LOG_KEY, JSON.stringify(log.slice(-200)));
     } catch {
       /* ignore */
     }
@@ -46,7 +67,6 @@
 
   function formatPriceNum(n) {
     if (n == null || Number.isNaN(Number(n))) return "—";
-    // без пробелов — на узком экране тикер не разъезжается
     return String(Math.round(Number(n)));
   }
 
@@ -100,9 +120,18 @@
     }
   }
 
-  function itemName(itemsById, id) {
-    const it = itemsById.get(Number(id)) || itemsById.get(String(id));
+  function itemName(map, id) {
+    const it = map.get(Number(id)) || map.get(String(id));
     return (it && it.name) || `#${id}`;
+  }
+
+  function shortTag(type) {
+    if (type === "price_down") return "↓ цена";
+    if (type === "price_up") return "↑ цена";
+    if (type === "sale") return "скидка";
+    if (type === "gone") return "ушёл";
+    if (type === "new") return "новый";
+    return "цена";
   }
 
   function buildEvents(items, history) {
@@ -120,17 +149,9 @@
         if (prev.price === cur.price && prev.priceOld === cur.priceOld) continue;
 
         let type = "price";
-        let title = "Цена изменилась";
-        if (cur.price < prev.price) {
-          type = "price_down";
-          title = "Цена снизилась";
-        } else if (cur.price > prev.price) {
-          type = "price_up";
-          title = "Цена выросла";
-        } else if (cur.priceOld && (!prev.priceOld || cur.priceOld !== prev.priceOld)) {
-          type = "sale";
-          title = "Появилась скидка";
-        }
+        if (cur.price < prev.price) type = "price_down";
+        else if (cur.price > prev.price) type = "price_up";
+        else if (cur.priceOld && (!prev.priceOld || cur.priceOld !== prev.priceOld)) type = "sale";
 
         const delta =
           typeof cur.price === "number" && typeof prev.price === "number"
@@ -141,7 +162,7 @@
           id: Number(id),
           name: itemName(itemsById, id),
           type,
-          title,
+          title: shortTag(type),
           t: cur.t || 0,
           from: prev.price,
           to: cur.price,
@@ -163,7 +184,7 @@
         id: it.id,
         name: it.name || `#${it.id}`,
         type: "gone",
-        title: "Исчез из продажи",
+        title: shortTag("gone"),
         t: since || 0,
         from: it.price,
         to: null,
@@ -174,7 +195,6 @@
       });
     }
 
-    // новые id относительно прошлого визита (первый заход — только запоминаем базу)
     let known;
     try {
       const raw = JSON.parse(localStorage.getItem(KNOWN_KEY) || "[]");
@@ -182,7 +202,11 @@
     } catch {
       known = new Set();
     }
+
     const currentIds = (items || []).map((it) => String(it.id));
+    let newLog = loadNewLog();
+    const logged = new Set(newLog.map((x) => String(x.id)));
+
     if (known.size === 0) {
       try {
         localStorage.setItem(KNOWN_KEY, JSON.stringify(currentIds));
@@ -193,21 +217,14 @@
       const now = Math.floor(Date.now() / 1000);
       for (const it of items || []) {
         const sid = String(it.id);
-        if (known.has(sid)) continue;
-        out.push({
-          key: `${it.id}:new`,
+        if (known.has(sid) || logged.has(sid)) continue;
+        newLog.push({
           id: it.id,
-          name: it.name || `#${it.id}`,
-          type: "new",
-          title: "Новый предмет",
           t: now,
-          from: null,
-          to: it.price,
-          delta: null,
-          detail: it.price != null
-            ? `Появился в каталоге по цене ${formatPrice(it.price)}`
-            : "Появился в каталоге",
+          price: it.price ?? null,
+          name: it.name || `#${it.id}`,
         });
+        logged.add(sid);
       }
       try {
         localStorage.setItem(
@@ -217,6 +234,26 @@
       } catch {
         /* ignore */
       }
+      saveNewLog(newLog);
+    }
+
+    for (const entry of newLog) {
+      const it = itemsById.get(Number(entry.id));
+      out.push({
+        key: `${entry.id}:new:${entry.t || 0}`,
+        id: Number(entry.id),
+        name: (it && it.name) || entry.name || `#${entry.id}`,
+        type: "new",
+        title: shortTag("new"),
+        t: entry.t || 0,
+        from: null,
+        to: entry.price != null ? entry.price : it?.price ?? null,
+        delta: null,
+        detail:
+          entry.price != null
+            ? `Появился в каталоге по цене ${formatPrice(entry.price)}`
+            : "Появился в каталоге",
+      });
     }
 
     out.sort((a, b) => b.t - a.t || b.id - a.id);
@@ -234,23 +271,23 @@
   function updateBadge() {
     if (!els.btn) return;
     const n = unreadCount();
+    const total = events.length;
     els.btn.classList.toggle("has-new", n > 0);
     els.btn.setAttribute(
       "aria-label",
       n > 0 ? `Изменения каталога, новых: ${n}` : "Изменения каталога"
     );
     if (els.dot) els.dot.hidden = n === 0;
-    // подпись кнопки и заголовок всегда «Изменения»;
-    // «Изменений нет» — только в пустом списке панели
     if (els.label) els.label.textContent = "Изменения";
     if (els.title) els.title.textContent = "Изменения";
     if (els.sub) {
-      if (n > 0) {
-        els.sub.hidden = false;
-        els.sub.textContent = `${n} ${plural(n, "новое изменение", "новых изменения", "новых изменений")}`;
+      els.sub.hidden = false;
+      if (total === 0) {
+        els.sub.textContent = "Пока пусто — появится, когда каталог изменится";
+      } else if (n > 0) {
+        els.sub.textContent = `${total} ${plural(total, "запись", "записи", "записей")} · ${n} ${plural(n, "новое", "новых", "новых")}`;
       } else {
-        els.sub.textContent = "";
-        els.sub.hidden = true;
+        els.sub.textContent = `${total} ${plural(total, "запись", "записи", "записей")} · всё просмотрено`;
       }
     }
   }
@@ -311,7 +348,7 @@
       return `
         <div class="changes-ticker ${tone}" title="нет в продаже">
           <span class="changes-ticker-old">${escapeHtml(formatPriceNum(e.from))}</span>
-          <span class="changes-ticker-sep">·</span>
+          <span class="changes-ticker-sep">→</span>
           <span class="changes-ticker-now">нет</span>
         </div>`;
     }
@@ -345,7 +382,7 @@
   function expandHtml(e) {
     const it = itemsById.get(e.id);
     const desc = (it && it.description ? String(it.description).trim() : "") || "";
-    const short = desc.length > 220 ? `${desc.slice(0, 220).trim()}…` : desc;
+    const short = desc.length > 180 ? `${desc.slice(0, 180).trim()}…` : desc;
     const status = it
       ? it.unavailable
         ? "<span>Статус: <strong>нет в продаже</strong></span>"
@@ -363,17 +400,18 @@
           ${status}
           <span>id <strong>${e.id}</strong></span>
         </div>
-        ${short ? `<p class="changes-item-desc">${escapeHtml(short)}</p>` : ""}
+        ${e.detail ? `<p class="changes-item-desc">${escapeHtml(e.detail)}</p>` : ""}
+        ${short && short !== e.detail ? `<p class="changes-item-desc">${escapeHtml(short)}</p>` : ""}
         ${link}
-        <p class="changes-item-hint">Нажми на карточку ещё раз, чтобы свернуть</p>
       </div>`;
   }
 
   function itemCardHtml(e) {
     const expanded = openKey === e.key;
+    const unread = !seen.has(e.key);
     const it = itemsById.get(e.id);
     return `
-      <li class="changes-item ${typeClass(e.type)}${expanded ? " is-open" : ""}" data-change-key="${escapeAttr(e.key)}">
+      <li class="changes-item ${typeClass(e.type)}${expanded ? " is-open" : ""}${unread ? " is-unread" : " is-read"}" data-change-key="${escapeAttr(e.key)}">
         <button type="button" class="changes-item-main" data-toggle-key="${escapeAttr(e.key)}" aria-expanded="${expanded ? "true" : "false"}">
           <div class="changes-item-row">
             ${thumbsHtml(it, false)}
@@ -383,7 +421,10 @@
                 <time class="changes-item-time">${escapeHtml(formatWhen(e.t))}</time>
               </span>
               <span class="changes-item-name">${escapeHtml(e.name)}</span>
+            </span>
+            <span class="changes-item-aside">
               ${priceStripHtml(e)}
+              ${unread ? '<span class="changes-unread-dot" aria-label="непрочитано"></span>' : ""}
             </span>
           </div>
         </button>
@@ -393,24 +434,25 @@
 
   function renderPanel() {
     if (!els.list) return;
-    const unread = unreadEvents();
     updateBadge();
-    if (!unread.length) {
+
+    if (!events.length) {
       openKey = "";
       els.list.innerHTML = `
         <li class="changes-empty">
-          <p>Изменений нет</p>
+          <p>Пока изменений нет</p>
+          <span>Здесь появится история цен, новинок и снятий с продажи</span>
         </li>`;
       if (els.markBtn) els.markBtn.hidden = true;
       return;
     }
 
-    if (els.markBtn) els.markBtn.hidden = false;
-    if (openKey && !unread.some((e) => e.key === openKey)) openKey = "";
+    if (els.markBtn) els.markBtn.hidden = unreadCount() === 0;
+    if (openKey && !events.some((e) => e.key === openKey)) openKey = "";
 
     let lastDay = "";
     const parts = [];
-    for (const e of unread) {
+    for (const e of events) {
       const day = dayLabel(e.t);
       if (day !== lastDay) {
         lastDay = day;
@@ -446,7 +488,7 @@
   }
 
   function markAllRead() {
-    for (const e of unreadEvents()) seen.add(e.key);
+    for (const e of events) seen.add(e.key);
     saveSeen();
     updateBadge();
     renderPanel();
@@ -474,6 +516,11 @@
       if (!toggle) return;
       const key = toggle.dataset.toggleKey || "";
       openKey = openKey === key ? "" : key;
+      // раскрытие тоже считает прочитанным
+      if (openKey) {
+        seen.add(openKey);
+        saveSeen();
+      }
       renderPanel();
       if (openKey) {
         const card = els.list.querySelector(`[data-change-key="${CSS.escape(openKey)}"]`);

@@ -2240,12 +2240,12 @@ body.is-stage .search-filters .filter-pill {
 .changes-list {
   list-style: none;
   margin: 0;
-  padding: 0.5rem 0.75rem 0.75rem;
+  padding: 0.35rem 0.55rem 0.65rem;
   overflow: auto;
   flex: 1 1 auto;
   min-height: 0;
   display: grid;
-  gap: 0.55rem;
+  gap: 0.28rem;
   align-content: start;
 }
 
@@ -2268,8 +2268,8 @@ body.is-stage .search-filters .filter-pill {
 }
 
 .changes-day {
-  margin: 0.55rem 0.35rem 0.1rem;
-  font-size: 0.68rem;
+  margin: 0.65rem 0.25rem 0.15rem;
+  font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -2279,12 +2279,22 @@ body.is-stage .search-filters .filter-pill {
 
 .changes-item {
   display: grid;
-  gap: 0.45rem;
-  padding: 0.9rem 1rem;
-  border-radius: 14px;
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--ink) 2.5%, transparent);
+  gap: 0.35rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
+  background: color-mix(in srgb, var(--ink) 2%, transparent);
   border-left: 3px solid transparent;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.changes-item.is-read {
+  opacity: 0.72;
+}
+
+.changes-item.is-unread {
+  opacity: 1;
+  background: color-mix(in srgb, var(--ink) 3.5%, transparent);
 }
 
 .changes-item.is-down {
@@ -2307,13 +2317,13 @@ body.is-stage .search-filters .filter-pill {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .changes-item-tag {
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--mute);
 }
@@ -2321,9 +2331,10 @@ body.is-stage .search-filters .filter-pill {
 .changes-item.is-down .changes-item-tag { color: var(--accent); }
 .changes-item.is-up .changes-item-tag { color: var(--accent-2); }
 .changes-item.is-new .changes-item-tag { color: #7aa2ff; }
+.changes-item.is-gone .changes-item-tag { color: var(--mute); }
 
 .changes-item-time {
-  font-size: 0.72rem;
+  font-size: 0.65rem;
   color: var(--mute);
   white-space: nowrap;
 }
@@ -2343,42 +2354,59 @@ body.is-stage .search-filters .filter-pill {
 
 .changes-item-row {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.75rem;
-  align-items: start;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.55rem;
+  align-items: center;
 }
 
 .changes-item-copy {
   display: grid;
-  gap: 0.28rem;
+  gap: 0.12rem;
   min-width: 0;
+}
+
+.changes-item-aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  max-width: 42%;
+}
+
+.changes-unread-dot {
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 50%;
+  background: #e23d4a;
+  flex-shrink: 0;
 }
 
 .changes-thumbs {
   display: grid;
   grid-auto-flow: column;
-  gap: 0.3rem;
+  gap: 0.2rem;
   flex-shrink: 0;
 }
 
 .changes-thumbs-empty {
-  width: 3.1rem;
-  height: 3.1rem;
-  border-radius: 10px;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 8px;
   background: color-mix(in srgb, var(--ink) 6%, transparent);
   border: 1px solid var(--line);
 }
 
 .changes-thumb,
 .changes-look {
-  width: 3.1rem;
-  height: 3.1rem;
+  width: 2.35rem;
+  height: 2.35rem;
   object-fit: contain;
   object-position: center;
-  border-radius: 10px;
+  border-radius: 8px;
   border: 1px solid var(--line);
   background: color-mix(in srgb, var(--ink) 4%, transparent);
-  padding: 0.15rem;
+  padding: 0.1rem;
   box-sizing: border-box;
 }
 
@@ -2389,18 +2417,21 @@ body.is-stage .search-filters .filter-pill {
 
 .changes-thumbs.is-big .changes-thumb,
 .changes-thumbs.is-big .changes-look {
-  width: 5.5rem;
-  height: 5.5rem;
-  border-radius: 12px;
-  padding: 0.25rem;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 10px;
+  padding: 0.2rem;
 }
 
 .changes-item-name {
   display: block;
   color: var(--ink);
-  font-size: 1.05rem;
+  font-size: 0.92rem;
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .changes-item-main:hover .changes-item-name {
@@ -2408,6 +2439,7 @@ body.is-stage .search-filters .filter-pill {
 }
 
 .changes-item.is-open {
+  opacity: 1;
   background: color-mix(in srgb, var(--accent) 6%, transparent);
   border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
 }
@@ -2470,15 +2502,16 @@ body.is-stage .search-filters .filter-pill {
   font-variant-numeric: tabular-nums;
 }
 
-/* тикер цены (вариант #5) */
+/* тикер цены — компактный, справа в строке */
 .changes-ticker {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: 0.35rem 0.45rem;
-  margin-top: 0.2rem;
-  padding: 0.4rem 0.65rem;
-  border-radius: 10px;
+  justify-content: flex-end;
+  gap: 0.2rem 0.28rem;
+  margin: 0;
+  padding: 0.22rem 0.4rem;
+  border-radius: 7px;
   background: color-mix(in srgb, #05080c 78%, var(--panel-solid));
   border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
   font-family: var(--display);
@@ -2512,20 +2545,20 @@ body.is-stage .search-filters .filter-pill {
 
 .changes-ticker-old {
   color: color-mix(in srgb, var(--mute) 88%, transparent);
-  font-size: 0.82rem;
+  font-size: 0.7rem;
   font-weight: 700;
   white-space: nowrap;
 }
 
 .changes-ticker-sep {
   color: color-mix(in srgb, var(--mute) 55%, transparent);
-  font-size: 0.85rem;
+  font-size: 0.7rem;
   flex: 0 0 auto;
 }
 
 .changes-ticker-now {
   color: var(--accent);
-  font-size: 1.05rem;
+  font-size: 0.82rem;
   font-weight: 800;
   white-space: nowrap;
 }
@@ -2536,7 +2569,7 @@ body.is-stage .search-filters .filter-pill {
 
 .changes-ticker.is-gone .changes-ticker-now {
   color: var(--mute);
-  font-size: 0.95rem;
+  font-size: 0.78rem;
 }
 
 .changes-ticker.is-new .changes-ticker-now {
@@ -2544,7 +2577,7 @@ body.is-stage .search-filters .filter-pill {
 }
 
 .changes-ticker-delta {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: 800;
   color: var(--accent-2);
   white-space: nowrap;
@@ -2578,19 +2611,23 @@ body.is-stage .search-filters .filter-pill {
 }
 
 .changes-screen-foot {
-  padding: 0.75rem 1rem 1rem;
+  padding: 0.55rem 0.75rem 0.75rem;
   border-top: 1px solid var(--line);
+}
+
+.changes-screen-foot:has(.changes-mark[hidden]) {
+  display: none;
 }
 
 .changes-mark {
   width: 100%;
-  padding: 0.7rem 0.9rem;
-  border-radius: 12px;
+  padding: 0.55rem 0.8rem;
+  border-radius: 10px;
   border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   color: var(--accent);
   font: inherit;
-  font-size: 0.92rem;
+  font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s;
@@ -3975,30 +4012,40 @@ body.is-stage .seo-intro {
   }
 
   .changes-list {
-    padding: 0.4rem 0.55rem 0.65rem;
-    gap: 0.45rem;
+    padding: 0.35rem 0.45rem 0.55rem;
+    gap: 0.28rem;
   }
 
   .changes-item {
-    padding: 0.75rem 0.7rem;
-    border-radius: 12px;
+    padding: 0.4rem 0.45rem;
+    border-radius: 10px;
   }
 
   .changes-item-row {
     grid-template-columns: auto minmax(0, 1fr);
-    gap: 0.55rem;
+    gap: 0.45rem;
+  }
+
+  .changes-item-aside {
+    grid-column: 2;
+    max-width: 100%;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .changes-item-name {
-    font-size: 0.95rem;
+    font-size: 0.88rem;
+    white-space: normal;
     overflow-wrap: anywhere;
   }
 
   .changes-thumb,
   .changes-look,
   .changes-thumbs-empty {
-    width: 2.55rem;
-    height: 2.55rem;
+    width: 2.2rem;
+    height: 2.2rem;
   }
 
   .changes-thumbs.is-big .changes-thumb,
@@ -4008,28 +4055,9 @@ body.is-stage .seo-intro {
   }
 
   .changes-ticker {
-    width: 100%;
+    width: fit-content;
     max-width: 100%;
     justify-content: flex-start;
-    align-content: center;
-    gap: 0.3rem 0.4rem;
-    padding: 0.38rem 0.5rem;
-  }
-
-  .changes-ticker-old {
-    font-size: 0.72rem;
-  }
-
-  .changes-ticker-sep {
-    font-size: 0.75rem;
-  }
-
-  .changes-ticker-now {
-    font-size: 0.92rem;
-  }
-
-  .changes-ticker-delta {
-    font-size: 0.7rem;
   }
 
   .changes-item-link {
