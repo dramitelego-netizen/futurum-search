@@ -1363,13 +1363,31 @@ function bind() {
 
   const searchWrap = els.q?.closest(".search-wrap");
   let typingPulseTimer = null;
+  let keyFlashTimer = null;
+  let resolveFlashTimer = null;
+
+  function flashSearch(kind) {
+    if (!searchWrap || prefersReducedMotion()) return;
+    const cls = kind === "resolve" ? "is-resolved" : kind === "miss" ? "is-miss" : "is-key";
+    searchWrap.classList.remove("is-key", "is-resolved", "is-miss");
+    // restart animation
+    void searchWrap.offsetWidth;
+    searchWrap.classList.add(cls);
+    clearTimeout(keyFlashTimer);
+    clearTimeout(resolveFlashTimer);
+    const ms = kind === "resolve" ? 720 : kind === "miss" ? 480 : 280;
+    const t = setTimeout(() => searchWrap.classList.remove(cls), ms);
+    if (kind === "key") keyFlashTimer = t;
+    else resolveFlashTimer = t;
+  }
+
   function syncSearchLine() {
     if (!searchWrap || !els.q) return;
     const empty = !els.q.value.trim();
     if (empty) {
       clearTimeout(typingPulseTimer);
       searchWrap.classList.add("is-idle");
-      searchWrap.classList.remove("is-typing", "is-rest");
+      searchWrap.classList.remove("is-typing", "is-rest", "is-key", "is-resolved", "is-miss");
       return;
     }
     searchWrap.classList.remove("is-idle");
@@ -1390,8 +1408,11 @@ function bind() {
 
   function applyQueryFromInput() {
     const raw = els.q.value;
+    const wasLink = looksLikeParapaLink(raw) || state.linkItemId != null;
     if (resolveParapaLinkInQuery(raw)) {
-      state.activeId = state.linkItemId;
+      const found = state.items.some((it) => Number(it.id) === state.linkItemId);
+      flashSearch(found ? "resolve" : "miss");
+      state.activeId = found ? state.linkItemId : null;
       render();
       syncSearchUrl(state.query);
       scheduleSearchTrack(state.query);
@@ -1400,6 +1421,7 @@ function bind() {
     state.linkItemId = null;
     state.query = raw;
     state.activeId = null;
+    if (wasLink) flashSearch("key");
     render();
     syncSearchUrl(state.query);
     scheduleSearchTrack(state.query);
@@ -1407,6 +1429,7 @@ function bind() {
 
   els.q.addEventListener("input", () => {
     syncSearchLine();
+    flashSearch("key");
     clearTimeout(inputTimer);
     inputTimer = setTimeout(applyQueryFromInput, 50);
   });

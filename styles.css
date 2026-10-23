@@ -2888,9 +2888,10 @@ body.changes-open {
   background: transparent;
   outline: none;
   box-shadow: none;
-  transition: color 0.2s;
+  transition: color 0.22s ease, text-shadow 0.22s ease, letter-spacing 0.22s ease;
   -webkit-appearance: none;
   appearance: none;
+  caret-color: var(--accent);
 }
 
 #q::placeholder {
@@ -2901,6 +2902,83 @@ body.changes-open {
 #q:focus {
   box-shadow: none;
   transform: none;
+}
+
+/* короткий вспых при каждом символе */
+.search-wrap.is-key #q {
+  animation: search-key-pop 0.28s ease-out;
+  color: color-mix(in srgb, var(--ink) 70%, var(--accent));
+  text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+/* ссылка / id распознаны → товар найден */
+.search-wrap.is-resolved #q {
+  animation: search-resolve-glow 0.7s ease-out;
+  color: color-mix(in srgb, var(--ink) 55%, var(--accent));
+  text-shadow: 0 0 22px color-mix(in srgb, var(--accent) 45%, transparent);
+  letter-spacing: 0.02em;
+}
+
+.search-wrap.is-resolved::after {
+  opacity: 1 !important;
+  animation: none !important;
+  background: linear-gradient(90deg, transparent, var(--accent), #b8fff5, var(--accent), transparent) !important;
+  filter: brightness(1.35);
+  box-shadow: 0 0 22px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+/* id из ссылки, но товара нет в каталоге */
+.search-wrap.is-miss #q {
+  animation: search-miss-shake 0.45s ease-out;
+  color: color-mix(in srgb, var(--ink) 75%, #e23d4a);
+}
+
+@keyframes search-key-pop {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  40% {
+    transform: translateY(-1px) scale(1.012);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes search-resolve-glow {
+  0% {
+    filter: brightness(1);
+  }
+  35% {
+    filter: brightness(1.2);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+@keyframes search-miss-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-wrap.is-key #q,
+  .search-wrap.is-resolved #q,
+  .search-wrap.is-miss #q {
+    animation: none;
+  }
 }
 
 .seo-intro {
