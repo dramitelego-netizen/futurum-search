@@ -77,6 +77,7 @@ const LINK_STOPWORDS = new Set([
 
 const els = {
   q: document.getElementById("q"),
+  searchIdHint: document.getElementById("searchIdHint"),
   stage: document.getElementById("stage"),
   results: document.getElementById("results"),
   preview: document.getElementById("preview"),
@@ -465,16 +466,40 @@ function significantNameTokens(name) {
   return tokenize(name).filter((t) => t.length >= 2).slice(0, 6);
 }
 
+/** Подсказка под строкой: id 66 → название, поле не трогаем */
+function syncIdHint(raw) {
+  const hint = els.searchIdHint;
+  if (!hint) return;
+  const s = String(raw ?? els.q?.value ?? "").trim();
+  const bareDigits = /^\d{1,6}$/.test(s);
+  const id = bareDigits ? Number(s) : state.linkItemId;
+  const item =
+    bareDigits && state.items.length
+      ? state.items.find((it) => Number(it.id) === id)
+      : null;
+  if (item && item.name) {
+    hint.hidden = false;
+    hint.innerHTML = `<span class="search-id-hint-id">#${escapeHtml(String(item.id))}</span><span class="search-id-hint-name">${escapeHtml(item.name)}</span>`;
+  } else if (bareDigits && state.linkItemId != null && !item) {
+    hint.hidden = false;
+    hint.innerHTML = `<span class="search-id-hint-id">#${escapeHtml(String(state.linkItemId))}</span><span class="search-id-hint-name is-miss">пока нет в каталоге</span>`;
+  } else {
+    hint.hidden = true;
+    hint.textContent = "";
+  }
+}
+
 /**
  * Если в строке ссылка/id Parapa — запоминаем id (первый в выдаче + превью).
  * Полную ссылку mall/goods/… меняем на название; голое число (66) оставляем —
- * иначе нельзя дописать 666.
+ * иначе нельзя дописать 666. Название показываем подсказкой под полем.
  * @returns {boolean} true, если ссылка/id распознаны
  */
 function resolveParapaLinkInQuery(raw) {
   const id = parseParapaGoodsId(raw);
   if (id == null) {
     state.linkItemId = null;
+    syncIdHint(raw);
     return false;
   }
   const item = state.items.find((it) => Number(it.id) === id);
@@ -490,6 +515,7 @@ function resolveParapaLinkInQuery(raw) {
     // ещё нет в нашем каталоге — оставляем как ввели
     state.query = String(raw || "").trim();
   }
+  syncIdHint(raw);
   return true;
 }
 
@@ -1539,6 +1565,7 @@ function bind() {
     state.linkItemId = null;
     state.query = raw;
     state.activeId = null;
+    syncIdHint(raw);
     if (wasLink) flashSearch("key");
     render();
     syncSearchUrl(state.query);

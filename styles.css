@@ -2021,6 +2021,66 @@ body.is-stage #q {
   z-index: 6;
 }
 
+/* голое id в поле → название предмета под строкой, поле не меняем */
+.search-id-hint {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.55rem;
+  margin: 0.45rem 0 0;
+  padding: 0 0.35rem;
+  min-height: 1.15em;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--mute);
+  letter-spacing: 0.01em;
+  animation: search-id-hint-in 0.28s ease-out;
+}
+
+.search-id-hint[hidden] {
+  display: none !important;
+}
+
+.search-id-hint-id {
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--accent) 75%, var(--mute));
+  font-weight: 600;
+}
+
+.search-id-hint-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  color: color-mix(in srgb, var(--ink) 72%, var(--mute));
+}
+
+.search-id-hint-name.is-miss {
+  color: color-mix(in srgb, var(--mute) 70%, #e23d4a);
+  font-style: italic;
+}
+
+@keyframes search-id-hint-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+body.is-stage .search-id-hint {
+  margin-top: 0.32rem;
+  font-size: 0.72rem;
+}
+
 /* фильтры под поиском — можно листать каталог без ввода */
 .search-filters {
   position: relative;
