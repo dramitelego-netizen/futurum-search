@@ -570,6 +570,19 @@ function render() {
 }
 
 function bind() {
+  document.addEventListener(
+    "click",
+    (e) => {
+      const btn = e.target.closest(".filter-pill");
+      if (!btn) return;
+      btn.classList.remove("is-click");
+      void btn.offsetWidth;
+      btn.classList.add("is-click");
+      window.setTimeout(() => btn.classList.remove("is-click"), 520);
+    },
+    true
+  );
+
   els.themeToggle?.addEventListener("click", () => {
     setTheme(nextTheme(currentTheme()));
   });

@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Фильтры — клик-отклик</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07090d;
+      --panel: #12161e;
+      --ink: #e8eef7;
+      --mute: #7d8a9a;
+      --accent: #3dffe0;
+      --accent-2: #ff4d6d;
+      --line: rgba(232, 238, 247, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Rajdhani", sans-serif;
+      background:
+        radial-gradient(ellipse 70% 45% at 20% 0%, #0f1a1c, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 90% 10%, rgba(61, 255, 224, 0.06), transparent 50%),
+        var(--bg);
+      color: var(--ink);
+      padding: 1.35rem clamp(1rem, 3vw, 2rem) 3rem;
+    }
+    h1 {
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin: 0 0 0.35rem;
+    }
+    .lead {
+      color: var(--mute);
+      margin: 0 0 1.35rem;
+      max-width: 48rem;
+      line-height: 1.45;
+    }
+    .lead code {
+      color: var(--accent);
+      font-size: 0.92em;
+    }
+    .hint {
+      display: inline-block;
+      margin: 0 0 1.1rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+      color: var(--accent);
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+    }
+    .grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+    .card {
+      background: color-mix(in srgb, var(--panel) 94%, black);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem 1.05rem 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .card.is-picked {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent),
+        0 12px 36px rgba(0, 0, 0, 0.35);
+    }
+    .card.is-fav {
+      border-color: color-mix(in srgb, #ffc857 40%, var(--line));
+    }
+    .card-num {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+    }
+    .card.is-fav .card-num { color: #ffc857; }
+    .card-title { font-weight: 700; font-size: 1.12rem; }
+    .card-desc { margin: 0; color: var(--mute); font-size: 0.9rem; line-height: 1.4; }
+
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      align-items: center;
+      padding: 0.75rem 0.65rem;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--ink) 3%, transparent);
+      border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+      min-height: 3.2rem;
+    }
+
+    .filter-pill {
+      position: relative;
+      overflow: hidden;
+      height: 1.7rem;
+      min-width: 1.7rem;
+      padding: 0 0.58rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel) 70%, transparent);
+      color: var(--mute);
+      font: inherit;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      -webkit-tap-highlight-color: transparent;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+      isolation: isolate;
+    }
+    .filter-pill:hover {
+      color: var(--ink);
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+    }
+    .filter-pill.on {
+      color: var(--accent);
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+    .filter-pill.sale.on {
+      color: var(--accent-2);
+      border-color: color-mix(in srgb, var(--accent-2) 45%, transparent);
+      background: color-mix(in srgb, var(--accent-2) 12%, transparent);
+    }
+
+    .pick {
+      margin-top: auto;
+      align-self: flex-start;
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      color: var(--accent);
+      font: inherit;
+      font-weight: 700;
+      font-size: 0.88rem;
+      letter-spacing: 0.04em;
+      padding: 0.4rem 0.85rem;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .pick:hover { background: color-mix(in srgb, var(--accent) 18%, transparent); }
+    .card.is-picked .pick {
+      background: var(--accent);
+      color: #041014;
+      border-color: var(--accent);
+    }
+
+    .footer-pick {
+      position: sticky;
+      bottom: 0.75rem;
+      margin-top: 1.5rem;
+      padding: 0.9rem 1rem;
+      border-radius: 14px;
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+      background: color-mix(in srgb, var(--panel) 92%, black);
+      backdrop-filter: blur(10px);
+      color: var(--mute);
+      font-size: 0.95rem;
+      z-index: 5;
+    }
+    .footer-pick strong { color: var(--accent); }
+
+    /* —— 1 Soft press —— */
+    .v1 .filter-pill {
+      transition: color 0.15s, border-color 0.15s, background 0.15s, transform 0.12s;
+    }
+    .v1 .filter-pill.is-click {
+      transform: scale(0.9);
+      filter: brightness(1.25);
+    }
+
+    /* —— 2 Neon pulse —— */
+    .v2 .filter-pill::after {
+      content: "";
+      position: absolute;
+      inset: -3px;
+      border-radius: inherit;
+      border: 2px solid var(--accent);
+      opacity: 0;
+      transform: scale(0.85);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .v2 .filter-pill.sale::after { border-color: var(--accent-2); }
+    .v2 .filter-pill.is-click::after {
+      animation: neon-pulse 0.45s ease-out forwards;
+    }
+    @keyframes neon-pulse {
+      0% { opacity: 0.95; transform: scale(0.92); }
+      100% { opacity: 0; transform: scale(1.35); }
+    }
+
+    /* —— 3 Ripple —— */
+    .v3 .filter-pill .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--accent) 45%, transparent);
+      transform: scale(0);
+      pointer-events: none;
+      animation: ripple-out 0.55s ease-out forwards;
+    }
+    .v3 .filter-pill.sale .ripple {
+      background: color-mix(in srgb, var(--accent-2) 45%, transparent);
+    }
+    @keyframes ripple-out {
+      to { transform: scale(2.8); opacity: 0; }
+    }
+
+    /* —— 4 Flash fill —— */
+    .v4 .filter-pill.is-click {
+      animation: flash-fill 0.38s ease-out;
+    }
+    .v4 .filter-pill.sale.is-click {
+      animation-name: flash-fill-sale;
+    }
+    @keyframes flash-fill {
+      0% { background: color-mix(in srgb, var(--accent) 55%, transparent); color: #041014; }
+      100% { }
+    }
+    @keyframes flash-fill-sale {
+      0% { background: color-mix(in srgb, var(--accent-2) 55%, transparent); color: #fff; }
+      100% { }
+    }
+
+    /* —— 5 Tick + glow —— */
+    .v5 .filter-pill {
+      transition: color 0.15s, border-color 0.15s, background 0.15s, transform 0.15s, box-shadow 0.15s;
+    }
+    .v5 .filter-pill.is-click {
+      transform: translateY(-2px) scale(1.06);
+      box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 45%, transparent);
+    }
+    .v5 .filter-pill.sale.is-click {
+      box-shadow: 0 0 16px color-mix(in srgb, var(--accent-2) 45%, transparent);
+    }
+
+    /* —— 6 Soft + Neon —— */
+    .v6 .filter-pill {
+      transition: color 0.15s, border-color 0.15s, background 0.15s, transform 0.12s;
+    }
+    .v6 .filter-pill::after {
+      content: "";
+      position: absolute;
+      inset: -3px;
+      border-radius: inherit;
+      border: 2px solid var(--accent);
+      opacity: 0;
+      pointer-events: none;
+      z-index: -1;
+    }
+    .v6 .filter-pill.sale::after { border-color: var(--accent-2); }
+    .v6 .filter-pill.is-click { transform: scale(0.9); }
+    .v6 .filter-pill.is-click::after {
+      animation: neon-pulse 0.45s ease-out forwards;
+    }
+
+    /* —— 7 Soft blink → ignite (то, что ты описал) —— */
+    .v7 .filter-pill.is-click {
+      animation: soft-blink-ignite 0.85s ease-in-out;
+    }
+    .v7 .filter-pill.sale.is-click {
+      animation-name: soft-blink-ignite-sale;
+    }
+    @keyframes soft-blink-ignite {
+      0% { filter: brightness(1); box-shadow: none; }
+      18% { filter: brightness(0.55); box-shadow: none; }
+      36% { filter: brightness(0.75); }
+      52% { filter: brightness(0.45); }
+      72% {
+        filter: brightness(1.35);
+        box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 55%, transparent),
+          0 0 28px color-mix(in srgb, var(--accent) 25%, transparent);
+        border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+      }
+      100% { filter: brightness(1); box-shadow: none; }
+    }
+    @keyframes soft-blink-ignite-sale {
+      0% { filter: brightness(1); box-shadow: none; }
+      18% { filter: brightness(0.55); box-shadow: none; }
+      36% { filter: brightness(0.75); }
+      52% { filter: brightness(0.45); }
+      72% {
+        filter: brightness(1.35);
+        box-shadow: 0 0 14px color-mix(in srgb, var(--accent-2) 55%, transparent),
+          0 0 28px color-mix(in srgb, var(--accent-2) 25%, transparent);
+        border-color: color-mix(in srgb, var(--accent-2) 70%, transparent);
+      }
+      100% { filter: brightness(1); box-shadow: none; }
+    }
+
+    /* —— 8 Dim then bloom —— */
+    .v8 .filter-pill.is-click {
+      animation: dim-bloom 0.7s ease-out;
+    }
+    .v8 .filter-pill.sale.is-click { animation-name: dim-bloom-sale; }
+    @keyframes dim-bloom {
+      0% { filter: brightness(1); transform: scale(1); }
+      30% { filter: brightness(0.4); transform: scale(0.94); }
+      100% {
+        filter: brightness(1.2);
+        transform: scale(1);
+        box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 40%, transparent);
+      }
+    }
+    @keyframes dim-bloom-sale {
+      0% { filter: brightness(1); transform: scale(1); }
+      30% { filter: brightness(0.4); transform: scale(0.94); }
+      100% {
+        filter: brightness(1.2);
+        transform: scale(1);
+        box-shadow: 0 0 18px color-mix(in srgb, var(--accent-2) 40%, transparent);
+      }
+    }
+
+    /* —— 9 Ember breathe —— */
+    .v9 .filter-pill.is-click {
+      animation: ember-breathe 1s ease-in-out;
+    }
+    .v9 .filter-pill.sale.is-click { animation-name: ember-breathe-sale; }
+    @keyframes ember-breathe {
+      0%, 100% { box-shadow: none; filter: brightness(1); }
+      25% { box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 30%, transparent); filter: brightness(0.85); }
+      50% { box-shadow: 0 0 22px color-mix(in srgb, var(--accent) 55%, transparent); filter: brightness(1.3); }
+      75% { box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 25%, transparent); filter: brightness(0.95); }
+    }
+    @keyframes ember-breathe-sale {
+      0%, 100% { box-shadow: none; filter: brightness(1); }
+      25% { box-shadow: 0 0 8px color-mix(in srgb, var(--accent-2) 30%, transparent); filter: brightness(0.85); }
+      50% { box-shadow: 0 0 22px color-mix(in srgb, var(--accent-2) 55%, transparent); filter: brightness(1.3); }
+      75% { box-shadow: 0 0 10px color-mix(in srgb, var(--accent-2) 25%, transparent); filter: brightness(0.95); }
+    }
+
+    /* —— 10 Heartbeat —— */
+    .v10 .filter-pill.is-click {
+      animation: heartbeat 0.65s ease-in-out;
+    }
+    .v10 .filter-pill.sale.is-click { animation-name: heartbeat-sale; }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); box-shadow: none; }
+      15% { transform: scale(0.92); filter: brightness(0.7); }
+      30% { transform: scale(1.08); filter: brightness(1.35); box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 50%, transparent); }
+      45% { transform: scale(0.96); filter: brightness(0.85); }
+      60% { transform: scale(1.05); filter: brightness(1.2); box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 35%, transparent); }
+    }
+    @keyframes heartbeat-sale {
+      0%, 100% { transform: scale(1); box-shadow: none; }
+      15% { transform: scale(0.92); filter: brightness(0.7); }
+      30% { transform: scale(1.08); filter: brightness(1.35); box-shadow: 0 0 16px color-mix(in srgb, var(--accent-2) 50%, transparent); }
+      45% { transform: scale(0.96); filter: brightness(0.85); }
+      60% { transform: scale(1.05); filter: brightness(1.2); box-shadow: 0 0 12px color-mix(in srgb, var(--accent-2) 35%, transparent); }
+    }
+
+    /* —— 11 Inner bloom —— */
+    .v11 .filter-pill::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(circle at center, color-mix(in srgb, var(--accent) 70%, transparent), transparent 70%);
+      opacity: 0;
+      transform: scale(0.2);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .v11 .filter-pill.sale::before {
+      background: radial-gradient(circle at center, color-mix(in srgb, var(--accent-2) 70%, transparent), transparent 70%);
+    }
+    .v11 .filter-pill.is-click::before {
+      animation: inner-bloom 0.6s ease-out forwards;
+    }
+    @keyframes inner-bloom {
+      0% { opacity: 0.9; transform: scale(0.15); }
+      100% { opacity: 0; transform: scale(1.8); }
+    }
+
+    /* —— 12 Border chase —— */
+    .v12 .filter-pill {
+      overflow: visible;
+      background-clip: padding-box;
+    }
+    .v12 .filter-pill::after {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      padding: 2px;
+      background: conic-gradient(from 0deg, transparent 0%, var(--accent) 20%, transparent 40%);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .v12 .filter-pill.sale::after {
+      background: conic-gradient(from 0deg, transparent 0%, var(--accent-2) 20%, transparent 40%);
+    }
+    .v12 .filter-pill.is-click::after {
+      animation: border-chase 0.7s linear forwards;
+    }
+    @keyframes border-chase {
+      0% { opacity: 1; transform: rotate(0deg); }
+      100% { opacity: 0; transform: rotate(360deg); }
+    }
+
+    /* —— 13 Liquid fill —— */
+    .v13 .filter-pill::before {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 0;
+      background: color-mix(in srgb, var(--accent) 35%, transparent);
+      pointer-events: none;
+      z-index: -1;
+      border-radius: inherit;
+    }
+    .v13 .filter-pill.sale::before {
+      background: color-mix(in srgb, var(--accent-2) 35%, transparent);
+    }
+    .v13 .filter-pill.is-click::before {
+      animation: liquid-fill 0.55s ease-out forwards;
+    }
+    @keyframes liquid-fill {
+      0% { height: 0; opacity: 0.9; }
+      55% { height: 100%; opacity: 0.85; }
+      100% { height: 100%; opacity: 0; }
+    }
+
+    /* —— 14 Shutter —— */
+    .v14 .filter-pill.is-click {
+      animation: shutter 0.5s steps(4, end);
+    }
+    @keyframes shutter {
+      0% { opacity: 1; filter: brightness(1); }
+      25% { opacity: 0.35; filter: brightness(0.5); }
+      50% { opacity: 1; filter: brightness(1.4); }
+      75% { opacity: 0.5; filter: brightness(0.7); }
+      100% { opacity: 1; filter: brightness(1); }
+    }
+
+    /* —— 15 Soft press + ignite —— */
+    .v15 .filter-pill.is-click {
+      animation: press-ignite 0.75s ease-out;
+    }
+    .v15 .filter-pill.sale.is-click { animation-name: press-ignite-sale; }
+    @keyframes press-ignite {
+      0% { transform: scale(1); filter: brightness(1); box-shadow: none; }
+      20% { transform: scale(0.88); filter: brightness(0.6); }
+      45% { transform: scale(0.92); filter: brightness(0.5); }
+      70% {
+        transform: scale(1.04);
+        filter: brightness(1.4);
+        box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 50%, transparent);
+      }
+      100% { transform: scale(1); filter: brightness(1); box-shadow: none; }
+    }
+    @keyframes press-ignite-sale {
+      0% { transform: scale(1); filter: brightness(1); box-shadow: none; }
+      20% { transform: scale(0.88); filter: brightness(0.6); }
+      45% { transform: scale(0.92); filter: brightness(0.5); }
+      70% {
+        transform: scale(1.04);
+        filter: brightness(1.4);
+        box-shadow: 0 0 20px color-mix(in srgb, var(--accent-2) 50%, transparent);
+      }
+      100% { transform: scale(1); filter: brightness(1); box-shadow: none; }
+    }
+
+    /* —— 16 Ghost trail —— */
+    .v16 .filter-pill {
+      overflow: visible;
+    }
+    .v16 .filter-pill::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 1px solid var(--accent);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .v16 .filter-pill.sale::after { border-color: var(--accent-2); }
+    .v16 .filter-pill.is-click::after {
+      animation: ghost-trail 0.55s ease-out forwards;
+    }
+    @keyframes ghost-trail {
+      0% { opacity: 0.8; transform: scale(1); filter: blur(0); }
+      100% { opacity: 0; transform: scale(1.55); filter: blur(2px); }
+    }
+
+    /* —— 17 Spring bounce —— */
+    .v17 .filter-pill.is-click {
+      animation: spring-bounce 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes spring-bounce {
+      0% { transform: scale(1); }
+      35% { transform: scale(0.85); filter: brightness(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    /* —— 18 Color wipe —— */
+    .v18 .filter-pill::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 55%, transparent), transparent);
+      transform: translateX(-120%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .v18 .filter-pill.sale::before {
+      background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent-2) 55%, transparent), transparent);
+    }
+    .v18 .filter-pill.is-click::before {
+      animation: color-wipe 0.5s ease-out forwards;
+    }
+    @keyframes color-wipe {
+      0% { transform: translateX(-120%); }
+      100% { transform: translateX(120%); }
+    }
+
+    /* —— 19 Candle flicker then steady —— */
+    .v19 .filter-pill.is-click {
+      animation: candle-flicker 0.9s ease-in-out;
+    }
+    .v19 .filter-pill.sale.is-click { animation-name: candle-flicker-sale; }
+    @keyframes candle-flicker {
+      0% { filter: brightness(1); box-shadow: none; }
+      12% { filter: brightness(0.55); }
+      22% { filter: brightness(1.15); box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 30%, transparent); }
+      34% { filter: brightness(0.65); }
+      48% { filter: brightness(1.25); box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 40%, transparent); }
+      62% { filter: brightness(0.8); }
+      80% {
+        filter: brightness(1.35);
+        box-shadow: 0 0 22px color-mix(in srgb, var(--accent) 55%, transparent);
+        border-color: color-mix(in srgb, var(--accent) 65%, transparent);
+      }
+      100% { filter: brightness(1); box-shadow: none; }
+    }
+    @keyframes candle-flicker-sale {
+      0% { filter: brightness(1); box-shadow: none; }
+      12% { filter: brightness(0.55); }
+      22% { filter: brightness(1.15); box-shadow: 0 0 8px color-mix(in srgb, var(--accent-2) 30%, transparent); }
+      34% { filter: brightness(0.65); }
+      48% { filter: brightness(1.25); box-shadow: 0 0 14px color-mix(in srgb, var(--accent-2) 40%, transparent); }
+      62% { filter: brightness(0.8); }
+      80% {
+        filter: brightness(1.35);
+        box-shadow: 0 0 22px color-mix(in srgb, var(--accent-2) 55%, transparent);
+        border-color: color-mix(in srgb, var(--accent-2) 65%, transparent);
+      }
+      100% { filter: brightness(1); box-shadow: none; }
+    }
+
+    /* —— 20 Magnetic snap —— */
+    .v20 .filter-pill.is-click {
+      animation: magnetic-snap 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .v20 .filter-pill.sale.is-click { animation-name: magnetic-snap-sale; }
+    @keyframes magnetic-snap {
+      0% { transform: scale(1) translateY(0); filter: brightness(1); }
+      40% { transform: scale(0.9) translateY(1px); filter: brightness(0.55); box-shadow: inset 0 0 8px rgba(0,0,0,0.4); }
+      100% {
+        transform: scale(1) translateY(0);
+        filter: brightness(1.25);
+        box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 45%, transparent);
+      }
+    }
+    @keyframes magnetic-snap-sale {
+      0% { transform: scale(1) translateY(0); filter: brightness(1); }
+      40% { transform: scale(0.9) translateY(1px); filter: brightness(0.55); box-shadow: inset 0 0 8px rgba(0,0,0,0.4); }
+      100% {
+        transform: scale(1) translateY(0);
+        filter: brightness(1.25);
+        box-shadow: 0 0 16px color-mix(in srgb, var(--accent-2) 45%, transparent);
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Клик-отклик фильтров</h1>
+  <p class="lead">
+    Покликай кнопки в каждом блоке. Когда понравится — нажми <strong>«Выбрать»</strong>
+    и напиши номер в чат (например <code>7</code>).
+  </p>
+  <div class="hint">★ 7 / 8 / 15 / 19 — близко к «мягко мигает → загорается»</div>
+
+  <div class="grid" id="grid">
+    <article class="card v1" data-variant="1">
+      <span class="card-num">ВАРИАНТ 1</span>
+      <div class="card-title">Soft press</div>
+      <p class="card-desc">Вжимается и на миг ярче. Спокойный «настоящий» клик.</p>
+      <div class="pills" data-fx="press"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v2" data-variant="2">
+      <span class="card-num">ВАРИАНТ 2</span>
+      <div class="card-title">Neon pulse</div>
+      <p class="card-desc">Кольцо вспыхивает вокруг и гаснет. Как сигнал в HUD.</p>
+      <div class="pills" data-fx="pulse"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v3" data-variant="3">
+      <span class="card-num">ВАРИАНТ 3</span>
+      <div class="card-title">Ripple</div>
+      <p class="card-desc">Из точки клика расходится волна внутри кнопки.</p>
+      <div class="pills" data-fx="ripple"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v4" data-variant="4">
+      <span class="card-num">ВАРИАНТ 4</span>
+      <div class="card-title">Flash fill</div>
+      <p class="card-desc">Резкая яркая заливка акцентом.</p>
+      <div class="pills" data-fx="flash"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v5" data-variant="5">
+      <span class="card-num">ВАРИАНТ 5</span>
+      <div class="card-title">Tick + glow</div>
+      <p class="card-desc">Подскок вверх и мягкое свечение.</p>
+      <div class="pills" data-fx="tick"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v6" data-variant="6">
+      <span class="card-num">ВАРИАНТ 6</span>
+      <div class="card-title">Soft + Neon</div>
+      <p class="card-desc">Вжатие + неоновый пульс.</p>
+      <div class="pills" data-fx="combo"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v7 is-fav" data-variant="7">
+      <span class="card-num">ВАРИАНТ 7 ★</span>
+      <div class="card-title">Soft blink → ignite</div>
+      <p class="card-desc">Мягко мигает (темнеет), потом загорается свечением. То, что ты описал.</p>
+      <div class="pills" data-fx="blink"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v8 is-fav" data-variant="8">
+      <span class="card-num">ВАРИАНТ 8 ★</span>
+      <div class="card-title">Dim then bloom</div>
+      <p class="card-desc">Одно мягкое затемнение → раскрытие свечения. Чище, чем мигание.</p>
+      <div class="pills" data-fx="bloom"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v9" data-variant="9">
+      <span class="card-num">ВАРИАНТ 9</span>
+      <div class="card-title">Ember breathe</div>
+      <p class="card-desc">Дышит как уголёк: гаснет–разгорается–гаснет.</p>
+      <div class="pills" data-fx="ember"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v10" data-variant="10">
+      <span class="card-num">ВАРИАНТ 10</span>
+      <div class="card-title">Heartbeat</div>
+      <p class="card-desc">Двойной пульс: тук-тук с подсветкой.</p>
+      <div class="pills" data-fx="heart"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v11" data-variant="11">
+      <span class="card-num">ВАРИАНТ 11</span>
+      <div class="card-title">Inner bloom</div>
+      <p class="card-desc">Свет вспыхивает из центра кнопки наружу.</p>
+      <div class="pills" data-fx="inner"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v12" data-variant="12">
+      <span class="card-num">ВАРИАНТ 12</span>
+      <div class="card-title">Border chase</div>
+      <p class="card-desc">Огонёк пробегает по обводке по кругу.</p>
+      <div class="pills" data-fx="chase"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v13" data-variant="13">
+      <span class="card-num">ВАРИАНТ 13</span>
+      <div class="card-title">Liquid fill</div>
+      <p class="card-desc">Заливка снизу вверх, как жидкость, и растворяется.</p>
+      <div class="pills" data-fx="liquid"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v14" data-variant="14">
+      <span class="card-num">ВАРИАНТ 14</span>
+      <div class="card-title">Shutter</div>
+      <p class="card-desc">Рваное мигание как затвор камеры.</p>
+      <div class="pills" data-fx="shutter"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v15 is-fav" data-variant="15">
+      <span class="card-num">ВАРИАНТ 15 ★</span>
+      <div class="card-title">Press → ignite</div>
+      <p class="card-desc">Вжимается и гаснет, потом вспыхивает ярче. Мягко + физично.</p>
+      <div class="pills" data-fx="pressignite"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v16" data-variant="16">
+      <span class="card-num">ВАРИАНТ 16</span>
+      <div class="card-title">Ghost trail</div>
+      <p class="card-desc">Контур отлетает и растворяется — «призрак» клика.</p>
+      <div class="pills" data-fx="ghost"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v17" data-variant="17">
+      <span class="card-num">ВАРИАНТ 17</span>
+      <div class="card-title">Spring bounce</div>
+      <p class="card-desc">Упругий отскок без свечения — чисто тактильный.</p>
+      <div class="pills" data-fx="spring"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v18" data-variant="18">
+      <span class="card-num">ВАРИАНТ 18</span>
+      <div class="card-title">Color wipe</div>
+      <p class="card-desc">Полоска света пробегает слева направо.</p>
+      <div class="pills" data-fx="wipe"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v19 is-fav" data-variant="19">
+      <span class="card-num">ВАРИАНТ 19 ★</span>
+      <div class="card-title">Candle flicker</div>
+      <p class="card-desc">Живое мерцание свечи, в конце уверенно загорается.</p>
+      <div class="pills" data-fx="candle"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+
+    <article class="card v20" data-variant="20">
+      <span class="card-num">ВАРИАНТ 20</span>
+      <div class="card-title">Magnetic snap</div>
+      <p class="card-desc">Втягивается внутрь (темно), потом щёлкает и светится.</p>
+      <div class="pills" data-fx="magnet"></div>
+      <button type="button" class="pick">Выбрать</button>
+    </article>
+  </div>
+
+  <div class="footer-pick" id="chosen">Выбрано: <strong>пока ничего</strong></div>
+
+  <script>
+    const LABELS = ["М", "Ж", "★", "☆", "Скидки", "Все", "Наборы", "Крылья", "Питомцы", "Транспорт"];
+    const LONG_FX = new Set(["blink", "bloom", "ember", "heart", "candle", "pressignite", "magnet", "chase"]);
+
+    function makePills(host) {
+      LABELS.forEach((label) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "filter-pill" + (label === "Скидки" ? " sale" : "");
+        btn.textContent = label;
+        if (label === "Все") btn.classList.add("on");
+        btn.addEventListener("click", (e) => onPillClick(btn, host.dataset.fx, e));
+        host.appendChild(btn);
+      });
+    }
+
+    function toggleGroup(btn) {
+      const row = btn.parentElement;
+      const isSale = btn.classList.contains("sale");
+      const isGenderOrBadge = ["М", "Ж", "★", "☆"].includes(btn.textContent);
+      if (isSale || isGenderOrBadge) {
+        btn.classList.toggle("on");
+        return;
+      }
+      row.querySelectorAll(".filter-pill:not(.sale)").forEach((b) => {
+        if (["М", "Ж", "★", "☆"].includes(b.textContent)) return;
+        b.classList.remove("on");
+      });
+      btn.classList.add("on");
+    }
+
+    function onPillClick(btn, fx, e) {
+      toggleGroup(btn);
+      btn.classList.remove("is-click");
+      void btn.offsetWidth;
+      btn.classList.add("is-click");
+
+      if (fx === "ripple") {
+        const rect = btn.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height) * 1.2;
+        const ripple = document.createElement("span");
+        ripple.className = "ripple";
+        ripple.style.width = ripple.style.height = size + "px";
+        ripple.style.left = e.clientX - rect.left - size / 2 + "px";
+        ripple.style.top = e.clientY - rect.top - size / 2 + "px";
+        btn.appendChild(ripple);
+        ripple.addEventListener("animationend", () => ripple.remove());
+      }
+
+      const ms = LONG_FX.has(fx) ? 950 : 520;
+      window.setTimeout(() => btn.classList.remove("is-click"), ms);
+    }
+
+    document.querySelectorAll(".pills").forEach(makePills);
+
+    const chosen = document.getElementById("chosen");
+    document.querySelectorAll(".pick").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const card = btn.closest(".card");
+        document.querySelectorAll(".card").forEach((c) => c.classList.remove("is-picked"));
+        card.classList.add("is-picked");
+        const n = card.dataset.variant;
+        const title = card.querySelector(".card-title").textContent;
+        chosen.innerHTML = `Выбрано: <strong>вариант ${n} — ${title}</strong>. Напиши в чат: <strong>${n}</strong>`;
+      });
+    });
+  </script>
+</body>
+</html>

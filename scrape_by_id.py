@@ -40,6 +40,9 @@ STATE_FILE = OUT / "id_state.json"
 
 START_ID = 1
 END_ID = 1500
+# Диапазон, в котором ищем «дыры» (предмет мог появиться на любом свободном id)
+GAP_SCAN_START = 1
+GAP_SCAN_END = 1000
 WORKERS = 10
 # После какого id начинаем считать «хвост» для ранней остановки
 EARLY_STOP_AFTER = 50  # подряд пустых в конце диапазона (проверяем пачками)
@@ -75,33 +78,97 @@ def decode_html(raw: bytes) -> str:
     return raw.decode("windows-1251", errors="replace")
 
 
+def _curl_cmd(url: str) -> list[str]:
+    return [
+        "curl.exe",
+        "-sL",
+        "--compressed",
+        "-c",
+        str(COOKIE_FILE),
+        "-b",
+        str(COOKIE_FILE),
+        "-A",
+        UA,
+        "-H",
+        "Accept-Language: ru-RU,ru;q=0.9",
+        "--max-time",
+        "70",
+        "--connect-timeout",
+        "20",
+        url,
+    ]
+
+
 def fetch(url: str, retries: int = 2) -> str | None:
+    """Полная страница (редко нужно)."""
     OUT.mkdir(parents=True, exist_ok=True)
     for attempt in range(1, retries + 1):
         proc = subprocess.run(
-            [
-                "curl.exe",
-                "-sL",
-                "--compressed",
-                "-c",
-                str(COOKIE_FILE),
-                "-b",
-                str(COOKIE_FILE),
-                "-A",
-                UA,
-                "-H",
-                "Accept-Language: ru-RU,ru;q=0.9",
-                "--max-time",
-                "70",
-                "--connect-timeout",
-                "20",
-                url,
-            ],
+            _curl_cmd(url),
             capture_output=True,
             check=False,
         )
         if proc.returncode == 0 and proc.stdout:
             return decode_html(proc.stdout)
+        time.sleep(0.4 * attempt)
+    return None
+
+
+def _html_enough_for_goods(raw: bytes, expected_id: int) -> bool:
+    """Уже есть форма товара (или ясно, что её нет в типичном начале страницы)."""
+    marker = f'id="form{expected_id}"'.encode("ascii", errors="ignore")
+    marker2 = f"id='form{expected_id}'".encode("ascii", errors="ignore")
+    if marker in raw or marker2 in raw:
+        # ждём закрытия формы + кусок description после неё
+        idx = raw.find(marker) if marker in raw else raw.find(marker2)
+        tail = raw[idx:]
+        close = tail.find(b"</form>")
+        if close < 0:
+            return False
+        # ~4 КБ после </form> обычно хватает на description
+        return len(tail) >= close + 8 + 4000
+    # пустые/чужие страницы: после ~48 КБ формы всё равно нет — хватит
+    return len(raw) >= 48_000
+
+
+def fetch_light(url: str, expected_id: int, retries: int = 2, max_bytes: int = 72_000) -> str | None:
+    """
+    Качает только нужный кусок HTML и обрывает поток.
+    Сервер всё равно отдаёт ~150 КБ страницу, но мы не читаем хвост
+    (скрипты/подвал) — меньше трафика и быстрее на «пустых» id.
+    """
+    OUT.mkdir(parents=True, exist_ok=True)
+    for attempt in range(1, retries + 1):
+        proc = subprocess.Popen(
+            _curl_cmd(url),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        )
+        assert proc.stdout is not None
+        chunks: list[bytes] = []
+        got = 0
+        try:
+            while got < max_bytes:
+                piece = proc.stdout.read(min(8192, max_bytes - got))
+                if not piece:
+                    break
+                chunks.append(piece)
+                got += len(piece)
+                blob = b"".join(chunks) if len(chunks) > 1 else chunks[0]
+                if _html_enough_for_goods(blob, expected_id):
+                    break
+        finally:
+            try:
+                proc.kill()
+            except OSError:
+                pass
+            try:
+                proc.wait(timeout=2)
+            except Exception:
+                pass
+        raw = b"".join(chunks)
+        if raw:
+            return decode_html(raw)
         time.sleep(0.4 * attempt)
     return None
 
@@ -267,7 +334,7 @@ def parse_goods(html: str, expected_id: int) -> dict | None:
 def check_id(gid: int) -> tuple[int, dict | None, float, str]:
     url = f"{BASE}/mall/goods/{gid}/"
     t0 = time.perf_counter()
-    html = fetch(url)
+    html = fetch_light(url, expected_id=gid)
     elapsed = time.perf_counter() - t0
     if not html:
         return gid, None, elapsed, "нет ответа"
@@ -454,6 +521,83 @@ def scan_full() -> None:
     log(f"Проверено id: {checked}, пустых: {empty}")
     log(f"Файл: {ITEMS_FILE}")
     log("=" * 60)
+
+
+def scan_gaps(
+    start: int = GAP_SCAN_START,
+    end: int = GAP_SCAN_END,
+    workers: int = 6,
+) -> int:
+    """
+    Проверяет ВСЕ id в [start, end], которых ещё нет в каталоге.
+    Так ловим новые предметы не только «в хвосте», а в любом пропуске.
+    """
+    OUT.mkdir(parents=True, exist_ok=True)
+    found = _prepare_found()
+    known = {int(k) for k in found}
+    start = max(1, int(start))
+    end = max(start, int(end))
+    todo = [i for i in range(start, end + 1) if i not in known]
+    workers = max(1, min(workers, WORKERS))
+
+    log("=" * 60)
+    log("Проверка ПРОПУСКОВ (дыры в диапазоне)")
+    log(f"Диапазон: {start}…{end}")
+    log(f"В каталоге: {len(found)} шт., неизвестных id в диапазоне: {len(todo)}")
+    log(f"Потоков: {workers}")
+    log("=" * 60)
+
+    if not todo:
+        log("Пропусков нет — все id в диапазоне уже известны")
+        return 0
+
+    warmup()
+    t_all = time.perf_counter()
+    new_items: list[dict] = []
+    empty_total = 0
+    checked = 0
+    batch_size = max(workers * 2, 8)
+
+    for offset in range(0, len(todo), batch_size):
+        batch = todo[offset : offset + batch_size]
+        results: list[tuple[int, dict | None, float, str]] = []
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futs = {pool.submit(check_id, gid): gid for gid in batch}
+            for fut in as_completed(futs):
+                results.append(fut.result())
+        results.sort(key=lambda x: x[0])
+
+        for gid, item, elapsed, status in results:
+            checked += 1
+            if item:
+                with SAVE_LOCK:
+                    found[str(gid)] = item
+                new_items.append(item)
+                log(
+                    f"★ НОВЫЙ [{gid}] {item['name']} — {item['price']} монет ({elapsed:.1f}с)"
+                )
+            else:
+                empty_total += 1
+                log(f"· [{gid}] нет ({status}, {elapsed:.1f}с)")
+
+        with SAVE_LOCK:
+            save_found(found, max(end, max((int(k) for k in found), default=end)))
+        done = min(offset + batch_size, len(todo))
+        log(f"  прогресс дыр: {done}/{len(todo)} | новых: {len(new_items)}")
+
+    save_found(found, max(end, max((int(k) for k in found), default=end)))
+    log("")
+    log("=" * 60)
+    log(f"Проверка пропусков завершена за {time.perf_counter() - t_all:.0f}с")
+    log(f"Проверено id: {checked}, пустых: {empty_total}, новых: {len(new_items)}")
+    if new_items:
+        for it in new_items[:20]:
+            log(f"  + [{it['id']}] {it['name']}")
+        if len(new_items) > 20:
+            log(f"  … и ещё {len(new_items) - 20}")
+    log(f"Всего в каталоге: {len(found)} → {ITEMS_FILE}")
+    log("=" * 60)
+    return len(new_items)
 
 
 def scan_new(ahead: int = 120, empty_stop: int = 40, workers: int = 6) -> int:

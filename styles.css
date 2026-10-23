@@ -1208,6 +1208,9 @@ body.is-stage .shell {
 }
 
 .filter-pill {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   padding: 0.32rem 0.62rem;
   border-radius: 999px;
   border: 1px solid var(--line);
@@ -1219,6 +1222,41 @@ body.is-stage .shell {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.filter-pill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--accent) 55%, transparent),
+    transparent
+  );
+  transform: translateX(-120%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.filter-pill.search-filters-sale::before,
+.filter-pill.sale::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--accent-2) 55%, transparent),
+    transparent
+  );
+}
+
+.filter-pill.is-click::before {
+  animation: filter-color-wipe 0.5s ease-out forwards;
+}
+
+@keyframes filter-color-wipe {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
 }
 
 .filter-pill:hover {

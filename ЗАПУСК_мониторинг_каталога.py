@@ -472,7 +472,14 @@ def one_round(
     do_images: bool,
     do_push: bool,
 ) -> dict:
-    from scrape_by_id import load_found, scan_new, warmup
+    from scrape_by_id import (
+        GAP_SCAN_END,
+        GAP_SCAN_START,
+        load_found,
+        scan_gaps,
+        scan_new,
+        warmup,
+    )
     from price_history import record_items
 
     attach_scrape_logger()
@@ -509,23 +516,30 @@ def one_round(
     changed_total = 0
     new_count = 0
 
-    # 1) новые id
-    say("── 1/3 Новые предметы (хвост после max id) ──")
+    # 1) новые id — сначала дыры 1…1000, потом хвост после max
+    say("── 1/3 Новые предметы (дыры 1…1000 + хвост) ──")
     max_id = max(ids) if ids else 0
     say(f"  Макс. известный id: {max_id}")
-    say(f"  Будем смотреть вперёд: {ahead} id, стоп после {empty_stop} пустых подряд")
+    say(f"  Дыры: проверяем все неизвестные id в {GAP_SCAN_START}…{GAP_SCAN_END}")
+    say(f"  Хвост: ещё +{ahead} id после max, стоп после {empty_stop} пустых подряд")
     say(f"  Потоков: {workers}")
     before_ids = set(found.keys())
     t1 = time.perf_counter()
     warmup()
-    new_count = scan_new(ahead=ahead, empty_stop=empty_stop, workers=workers)
+    gaps_new = scan_gaps(
+        start=GAP_SCAN_START, end=GAP_SCAN_END, workers=workers
+    )
+    say(f"  Пропуски 1…{GAP_SCAN_END}: найдено {gaps_new}")
+    tail_new = scan_new(ahead=ahead, empty_stop=empty_stop, workers=workers)
+    say(f"  Хвост после max: найдено {tail_new}")
+    new_count = gaps_new + tail_new
     say(f"  Шаг 1 занял {fmt_duration(time.perf_counter() - t1)}")
     found = load_found()
     after_ids = set(found.keys())
     brand_new = sorted(int(x) for x in (after_ids - before_ids))
     if brand_new:
         changed_total += len(brand_new)
-        say(f"  ★ Найдено новых: {len(brand_new)}")
+        say(f"  ★ Найдено новых всего: {len(brand_new)}")
         for nid in brand_new[:30]:
             it = found.get(str(nid)) or {}
             say(f"    + [{nid}] {it.get('name')} — {_price_label(it)} монет")
