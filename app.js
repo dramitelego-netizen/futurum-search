@@ -435,7 +435,7 @@ function tokenize(q) {
   return normalize(q).split(" ").filter(Boolean);
 }
 
-/** Достаёт id из ссылки вида https://parapa.ru/mall/goods/903/ */
+/** Достаёт id из ссылки или если в поле ОДНО число (весь запрос = 758) */
 function parseParapaGoodsId(raw) {
   const s = String(raw || "").trim();
   if (!s) return null;
@@ -444,8 +444,11 @@ function parseParapaGoodsId(raw) {
   );
   if (m) return Number(m[1]);
   // короткая вставка: /mall/goods/903
-  const m2 = s.match(/^\s*\/?mall\/goods\/(\d+)\/?\s*$/i);
+  const m2 = s.match(/^\/?mall\/goods\/(\d+)\/?$/i);
   if (m2) return Number(m2[1]);
+  // только цифры целиком — id товара (не путаем с «25 лилий»)
+  const m3 = s.match(/^(\d{1,6})$/);
+  if (m3) return Number(m3[1]);
   return null;
 }
 
