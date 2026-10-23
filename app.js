@@ -870,7 +870,6 @@ function previewCardHtml(item) {
       ? `<span class="preview-old">${escapeHtml(formatPrice(item.priceOld))}</span>`
       : "";
   const desc = briefDesc(item.description);
-  const fav = isFav(item.id);
   const thumb = itemThumb(item);
   const look = itemLook(item);
   const thumbSrcRaw = thumb ? proxyImage(thumb) : "";
@@ -892,14 +891,6 @@ function previewCardHtml(item) {
 
   return `
     <div class="preview-card${sale ? " is-sale" : ""}${gone ? " is-unavailable" : ""}${desc ? " has-desc" : ""}${look ? " has-look" : ""}">
-      <button
-        type="button"
-        class="fav-btn${fav ? " on" : ""}"
-        data-fav="${item.id}"
-        aria-pressed="${fav ? "true" : "false"}"
-        aria-label="${fav ? "Убрать из избранного" : "В избранное"}"
-        title="${fav ? "Убрать из избранного" : "В избранное"}"
-      >★</button>
       ${gone ? `<span class="gone-badge">нет в продаже</span>` : ""}
       ${!gone && sale ? `<span class="sale-badge">скидка</span>` : ""}
       <div class="preview-media">
@@ -1239,8 +1230,32 @@ function bind() {
     }, 50);
   });
 
+  // ПК: наведение на список переключает превью с короткой задержкой.
+  // Пока курсор в правой колонке — выбор зафиксирован, чтобы можно было
+  // спокойно увести мышь на картинку/цену, не задев соседние строки.
+  let hoverSelectTimer = null;
+  let previewPointerInside = false;
+  const HOVER_SELECT_MS = 200;
+
+  function clearHoverSelect() {
+    if (hoverSelectTimer != null) {
+      clearTimeout(hoverSelectTimer);
+      hoverSelectTimer = null;
+    }
+  }
+
+  function scheduleHoverSelect(idx) {
+    clearHoverSelect();
+    hoverSelectTimer = setTimeout(() => {
+      hoverSelectTimer = null;
+      if (previewPointerInside) return;
+      selectByIndex(idx, false);
+    }, HOVER_SELECT_MS);
+  }
+
   els.results.addEventListener("pointerover", (e) => {
     if (e.pointerType === "touch") return;
+    if (previewPointerInside) return;
     const row = e.target.closest(".result-row");
     if (!row) return;
     // игнор, если курсор остался внутри той же строки (имя ↔ цена ↔ ★)
@@ -1249,9 +1264,25 @@ function bind() {
     const btn = row.querySelector(".result[data-id]");
     if (!btn) return;
     const id = Number(btn.dataset.id);
-    if (state.activeId === id) return;
+    if (state.activeId === id) {
+      clearHoverSelect();
+      return;
+    }
     const idx = state.list.findIndex((x) => x.item.id === id);
-    if (idx >= 0) selectByIndex(idx, false);
+    if (idx >= 0) scheduleHoverSelect(idx);
+  });
+
+  els.results.addEventListener("pointerleave", () => {
+    clearHoverSelect();
+  });
+
+  els.preview.addEventListener("pointerenter", () => {
+    previewPointerInside = true;
+    clearHoverSelect();
+  });
+
+  els.preview.addEventListener("pointerleave", () => {
+    previewPointerInside = false;
   });
 
   els.results.addEventListener("click", (e) => {
@@ -1263,11 +1294,6 @@ function bind() {
       toggleFav(id);
       favBtn.classList.toggle("on", isFav(id));
       favBtn.setAttribute("aria-pressed", isFav(id) ? "true" : "false");
-      const cardFav = els.preview.querySelector(`[data-fav="${id}"]`);
-      if (cardFav) {
-        cardFav.classList.toggle("on", isFav(id));
-        cardFav.setAttribute("aria-pressed", isFav(id) ? "true" : "false");
-      }
       if (browseMode()) render();
       return;
     }
@@ -1286,29 +1312,7 @@ function bind() {
   });
 
   els.preview.addEventListener("click", (e) => {
-    if (e.target.closest(".preview-zoom")) {
-      hidePreviewZoom();
-      return;
-    }
-    const favBtn = e.target.closest("[data-fav]");
-    if (!favBtn) return;
-    e.preventDefault();
-    e.stopPropagation();
-    const id = Number(favBtn.dataset.fav);
-    toggleFav(id);
-    favBtn.classList.toggle("on", isFav(id));
-    favBtn.setAttribute("aria-pressed", isFav(id) ? "true" : "false");
-    favBtn.setAttribute(
-      "aria-label",
-      isFav(id) ? "Убрать из избранного" : "В избранное"
-    );
-    favBtn.title = isFav(id) ? "Убрать из избранного" : "В избранное";
-    const listFav = els.results.querySelector(`[data-fav="${id}"]`);
-    if (listFav) {
-      listFav.classList.toggle("on", isFav(id));
-      listFav.setAttribute("aria-pressed", isFav(id) ? "true" : "false");
-    }
-    if (browseMode()) render();
+    if (e.target.closest(".preview-zoom")) hidePreviewZoom();
   });
 
   // ПК: картинка «как выглядит» — крупно поверх всей панели превью
