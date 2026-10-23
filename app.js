@@ -906,8 +906,8 @@ function filtered() {
         state.items
           .filter((it) => Number(it.id) !== Number(target.id))
           .map((item) => {
-            const { score, fuzzy } = scoreItem(item, tokens);
-            return { item, score, fuzzy: true };
+            const { score, fuzzy, tier } = scoreItem(item, tokens);
+            return { item, score, fuzzy: true, tier: Math.max(tier ?? 2, 2) };
           })
           .filter((x) => x.score >= 40 && passesFilters(x.item)),
         true
@@ -1186,16 +1186,18 @@ function showPreview(item) {
   }, 220);
 }
 
-function selectByIndex(index, scroll = true) {
+function selectByIndex(index, scroll = true, { forcePreview = false } = {}) {
   if (!state.list.length) return;
   const i = Math.max(0, Math.min(state.list.length - 1, index));
   const entry = state.list[i];
   const same = state.activeId === entry.item.id;
+  const previewEmpty = !els.preview?.querySelector(".preview-card");
 
   warmAround(i);
 
-  // тот же пункт — не трогаем превью (иначе мигает при движении мыши по строке)
-  if (!same) {
+  // тот же пункт — не трогаем превью (иначе мигает при движении мыши по строке),
+  // но если превью пустое (ссылка/id) — обязательно показать
+  if (!same || forcePreview || previewEmpty) {
     state.activeId = entry.item.id;
     showPreview(entry.item);
   }
@@ -1330,10 +1332,13 @@ function render() {
   // прогрев первых картинок сразу после выдачи
   ranked.slice(0, 12).forEach((x) => warmItem(x.item));
 
-  const still = ranked.find((x) => x.item.id === state.activeId) || ranked[0];
+  const preferId = state.linkItemId != null ? state.linkItemId : state.activeId;
+  const still =
+    ranked.find((x) => Number(x.item.id) === Number(preferId)) || ranked[0];
   selectByIndex(
     ranked.findIndex((x) => x.item.id === still.item.id),
-    false
+    false,
+    { forcePreview: state.linkItemId != null }
   );
 }
 
@@ -1509,7 +1514,8 @@ function bind() {
     if (resolveParapaLinkInQuery(raw)) {
       const found = state.items.some((it) => Number(it.id) === state.linkItemId);
       flashSearch(found ? "resolve" : "miss");
-      state.activeId = found ? state.linkItemId : null;
+      // не ставим activeId заранее — иначе render решит, что превью уже показано
+      state.activeId = null;
       render();
       syncSearchUrl(state.query);
       scheduleSearchTrack(state.query);
@@ -1669,9 +1675,12 @@ async function load(isRefresh = false) {
     }
     // После загрузки каталога обязательно пересчитать выдачу
     // (иначе ?q= из ссылки срабатывает на пустом списке и зависает на 0)
-    // если в поле уже была ссылка Parapa до загрузки каталога — резолвим сейчас
-    if (els.q && looksLikeParapaLink(els.q.value)) {
-      resolveParapaLinkInQuery(els.q.value);
+    // ссылка/id могли прийти до загрузки каталога — резолвим после items.json
+    if (els.q && (looksLikeParapaLink(els.q.value) || state.linkItemId != null)) {
+      resolveParapaLinkInQuery(
+        looksLikeParapaLink(els.q.value) ? els.q.value : String(state.linkItemId)
+      );
+      state.activeId = null;
     }
     if (tokenize(state.query).length || state.linkItemId != null || browseMode()) {
       render();
