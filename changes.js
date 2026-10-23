@@ -96,11 +96,22 @@
   function thumbsHtml(it, big = false) {
     const thumb = itemThumbSrc(it);
     const look = itemLookSrc(it);
+    if (!big) {
+      // в списке — одна иконка фиксированного размера, чтобы строки были ровные
+      const src = thumb || look;
+      if (!src) {
+        return `<span class="changes-thumbs changes-thumbs-empty" aria-hidden="true"></span>`;
+      }
+      return `
+        <span class="changes-thumbs" aria-hidden="true">
+          <img class="changes-thumb" src="${escapeAttr(src)}" alt="" loading="lazy" decoding="async" />
+        </span>`;
+    }
     if (!thumb && !look) {
-      return `<span class="changes-thumbs ${big ? "is-big" : ""} changes-thumbs-empty" aria-hidden="true"></span>`;
+      return `<span class="changes-thumbs is-big changes-thumbs-empty" aria-hidden="true"></span>`;
     }
     return `
-      <span class="changes-thumbs ${big ? "is-big" : ""}" aria-hidden="true">
+      <span class="changes-thumbs is-big" aria-hidden="true">
         ${thumb ? `<img class="changes-thumb" src="${escapeAttr(thumb)}" alt="" loading="lazy" decoding="async" />` : ""}
         ${look ? `<img class="changes-look" src="${escapeAttr(look)}" alt="" loading="lazy" decoding="async" />` : ""}
       </span>`;
@@ -367,7 +378,7 @@
       e.delta != null && e.delta !== 0
         ? `<span class="changes-ticker-delta ${e.delta < 0 ? "is-neg" : "is-pos"}">${
             e.delta < 0 ? "−" : "+"
-          }${Math.abs(e.delta).toLocaleString("ru-RU")}</span>`
+          }${Math.abs(Math.round(e.delta))}</span>`
         : "";
 
     return `
@@ -416,15 +427,15 @@
           <div class="changes-item-row">
             ${thumbsHtml(it, false)}
             <span class="changes-item-copy">
-              <span class="changes-item-top">
-                <span class="changes-item-tag">${escapeHtml(e.title)}</span>
-                <time class="changes-item-time">${escapeHtml(formatWhen(e.t))}</time>
-              </span>
+              <span class="changes-item-tag">${escapeHtml(e.title)}</span>
               <span class="changes-item-name">${escapeHtml(e.name)}</span>
             </span>
             <span class="changes-item-aside">
               ${priceStripHtml(e)}
-              ${unread ? '<span class="changes-unread-dot" aria-label="непрочитано"></span>' : ""}
+              <span class="changes-item-meta-line">
+                <time class="changes-item-time">${escapeHtml(formatWhen(e.t))}</time>
+                ${unread ? '<span class="changes-unread-dot" aria-label="непрочитано"></span>' : ""}
+              </span>
             </span>
           </div>
         </button>

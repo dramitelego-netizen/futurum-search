@@ -2181,6 +2181,7 @@ body.is-stage .search-filters .filter-pill {
 
 .changes-screen-inner {
   width: min(44rem, 100%);
+  max-width: 100%;
   max-height: 100%;
   margin: 0 auto;
   display: flex;
@@ -2191,6 +2192,8 @@ body.is-stage .search-filters .filter-pill {
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
   overflow: hidden;
   text-align: left;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .changes-screen-head {
@@ -2241,7 +2244,8 @@ body.is-stage .search-filters .filter-pill {
   list-style: none;
   margin: 0;
   padding: 0.35rem 0.55rem 0.65rem;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   flex: 1 1 auto;
   min-height: 0;
   display: grid;
@@ -2280,12 +2284,15 @@ body.is-stage .search-filters .filter-pill {
 .changes-item {
   display: grid;
   gap: 0.35rem;
-  padding: 0.45rem 0.55rem;
+  padding: 0.4rem 0.5rem;
   border-radius: 10px;
   border: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
   background: color-mix(in srgb, var(--ink) 2%, transparent);
   border-left: 3px solid transparent;
   transition: opacity 0.15s, background 0.15s;
+  overflow: hidden;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .changes-item.is-read {
@@ -2313,19 +2320,17 @@ body.is-stage .search-filters .filter-pill {
   border-left-color: #5b8cff;
 }
 
-.changes-item-top {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
 .changes-item-tag {
-  font-size: 0.62rem;
+  display: block;
+  font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--mute);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .changes-item.is-down .changes-item-tag { color: var(--accent); }
@@ -2334,14 +2339,16 @@ body.is-stage .search-filters .filter-pill {
 .changes-item.is-gone .changes-item-tag { color: var(--mute); }
 
 .changes-item-time {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   color: var(--mute);
   white-space: nowrap;
+  line-height: 1;
 }
 
 .changes-item-main {
   display: block;
   width: 100%;
+  max-width: 100%;
   padding: 0;
   border: 0;
   background: transparent;
@@ -2350,57 +2357,72 @@ body.is-stage .search-filters .filter-pill {
   text-align: left;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .changes-item-row {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 0.55rem;
+  grid-template-columns: 2.4rem minmax(0, 1fr) max-content;
+  gap: 0.5rem;
   align-items: center;
+  min-width: 0;
+  width: 100%;
 }
 
 .changes-item-copy {
   display: grid;
-  gap: 0.12rem;
+  gap: 0.1rem;
   min-width: 0;
+  overflow: hidden;
 }
 
 .changes-item-aside {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.25rem;
-  flex-shrink: 0;
-  max-width: 42%;
+  justify-content: center;
+  gap: 0.18rem;
+  flex: 0 0 auto;
+  min-width: max-content;
+  max-width: none;
+}
+
+.changes-item-meta-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .changes-unread-dot {
-  width: 0.38rem;
-  height: 0.38rem;
+  width: 0.34rem;
+  height: 0.34rem;
   border-radius: 50%;
   background: #e23d4a;
   flex-shrink: 0;
 }
 
 .changes-thumbs {
-  display: grid;
-  grid-auto-flow: column;
-  gap: 0.2rem;
+  display: block;
+  width: 2.4rem;
+  height: 2.4rem;
   flex-shrink: 0;
 }
 
 .changes-thumbs-empty {
-  width: 2.35rem;
-  height: 2.35rem;
+  width: 2.4rem;
+  height: 2.4rem;
   border-radius: 8px;
   background: color-mix(in srgb, var(--ink) 6%, transparent);
   border: 1px solid var(--line);
+  box-sizing: border-box;
 }
 
 .changes-thumb,
 .changes-look {
-  width: 2.35rem;
-  height: 2.35rem;
+  display: block;
+  width: 2.4rem;
+  height: 2.4rem;
   object-fit: contain;
   object-position: center;
   border-radius: 8px;
@@ -2411,7 +2433,12 @@ body.is-stage .search-filters .filter-pill {
 }
 
 .changes-thumbs.is-big {
+  display: grid;
+  grid-auto-flow: column;
   justify-content: start;
+  gap: 0.25rem;
+  width: auto;
+  height: auto;
   margin-bottom: 0.15rem;
 }
 
@@ -2426,12 +2453,13 @@ body.is-stage .search-filters .filter-pill {
 .changes-item-name {
   display: block;
   color: var(--ink);
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 700;
   line-height: 1.2;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
 }
 
 .changes-item-main:hover .changes-item-name {
@@ -2502,25 +2530,26 @@ body.is-stage .search-filters .filter-pill {
   font-variant-numeric: tabular-nums;
 }
 
-/* тикер цены — компактный, справа в строке */
+/* тикер цены — одна строка, без сжатия */
 .changes-ticker {
-  display: flex;
+  display: inline-flex;
   flex-wrap: nowrap;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.2rem 0.28rem;
+  gap: 0.22rem;
   margin: 0;
-  padding: 0.22rem 0.4rem;
+  padding: 0.18rem 0.38rem;
   border-radius: 7px;
   background: color-mix(in srgb, #05080c 78%, var(--panel-solid));
   border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
   font-family: var(--display);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.01em;
-  width: fit-content;
-  max-width: 100%;
+  width: max-content;
+  max-width: none;
   box-sizing: border-box;
-  min-width: 0;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .changes-ticker.is-up {
@@ -2539,28 +2568,28 @@ body.is-stage .search-filters .filter-pill {
 .changes-ticker-sep,
 .changes-ticker-now,
 .changes-ticker-delta {
-  min-width: 0;
+  display: inline;
+  flex: 0 0 auto;
+  min-width: max-content;
   line-height: 1.15;
+  white-space: nowrap;
 }
 
 .changes-ticker-old {
   color: color-mix(in srgb, var(--mute) 88%, transparent);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  white-space: nowrap;
 }
 
 .changes-ticker-sep {
   color: color-mix(in srgb, var(--mute) 55%, transparent);
-  font-size: 0.7rem;
-  flex: 0 0 auto;
+  font-size: 0.68rem;
 }
 
 .changes-ticker-now {
   color: var(--accent);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 800;
-  white-space: nowrap;
 }
 
 .changes-ticker.is-up .changes-ticker-now {
@@ -2569,7 +2598,7 @@ body.is-stage .search-filters .filter-pill {
 
 .changes-ticker.is-gone .changes-ticker-now {
   color: var(--mute);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
 }
 
 .changes-ticker.is-new .changes-ticker-now {
@@ -2577,10 +2606,9 @@ body.is-stage .search-filters .filter-pill {
 }
 
 .changes-ticker-delta {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 800;
   color: var(--accent-2);
-  white-space: nowrap;
 }
 
 .changes-ticker-delta.is-neg {
@@ -4012,52 +4040,81 @@ body.is-stage .seo-intro {
   }
 
   .changes-list {
-    padding: 0.35rem 0.45rem 0.55rem;
-    gap: 0.28rem;
+    padding: 0.3rem 0.4rem 0.5rem;
+    gap: 0.25rem;
   }
 
   .changes-item {
-    padding: 0.4rem 0.45rem;
+    padding: 0.38rem 0.42rem;
     border-radius: 10px;
   }
 
   .changes-item-row {
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 0.45rem;
+    grid-template-columns: 2.15rem minmax(0, 1fr) max-content;
+    gap: 0.4rem;
   }
 
-  .changes-item-aside {
-    grid-column: 2;
-    max-width: 100%;
-    width: 100%;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
+  .changes-thumbs,
+  .changes-thumbs-empty,
+  .changes-thumb,
+  .changes-look {
+    width: 2.15rem;
+    height: 2.15rem;
   }
 
   .changes-item-name {
-    font-size: 0.88rem;
-    white-space: normal;
-    overflow-wrap: anywhere;
+    font-size: 0.82rem;
   }
 
-  .changes-thumb,
-  .changes-look,
-  .changes-thumbs-empty {
-    width: 2.2rem;
-    height: 2.2rem;
+  .changes-ticker {
+    padding: 0.14rem 0.3rem;
+  }
+
+  .changes-ticker-old,
+  .changes-ticker-sep {
+    font-size: 0.62rem;
+  }
+
+  .changes-ticker-now {
+    font-size: 0.72rem;
+  }
+
+  .changes-ticker-delta {
+    font-size: 0.58rem;
+  }
+
+  .changes-item-time {
+    font-size: 0.58rem;
+  }
+
+  /* на очень узких — цена под названием, без вылезания */
+  @media (max-width: 400px) {
+    .changes-item-row {
+      grid-template-columns: 2.15rem minmax(0, 1fr);
+      align-items: start;
+    }
+
+    .changes-item-aside {
+      grid-column: 2;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.25rem 0.45rem;
+    }
+
+    .changes-ticker {
+      max-width: 100%;
+    }
   }
 
   .changes-thumbs.is-big .changes-thumb,
   .changes-thumbs.is-big .changes-look {
     width: 4.25rem;
     height: 4.25rem;
-  }
-
-  .changes-ticker {
-    width: fit-content;
-    max-width: 100%;
-    justify-content: flex-start;
   }
 
   .changes-item-link {
