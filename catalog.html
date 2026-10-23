@@ -28,6 +28,26 @@
   />
   <meta property="og:url" content="https://dramitelego-netizen.github.io/futurum-search/catalog.html" />
   <meta property="og:image" content="https://dramitelego-netizen.github.io/futurum-search/og-image.png" />
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Поиск по магазину Parapa",
+          "item": "https://dramitelego-netizen.github.io/futurum-search/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Каталог магазина Parapa",
+          "item": "https://dramitelego-netizen.github.io/futurum-search/catalog.html"
+        }
+      ]
+    }
+  </script>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32" />
   <link rel="apple-touch-icon" href="favicon-48.png" />
@@ -55,8 +75,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=138" />
-  <link rel="stylesheet" href="catalog.css?v=138" />
+  <link rel="stylesheet" href="styles.css?v=151" />
+  <link rel="stylesheet" href="catalog.css?v=151" />
 </head>
 <body class="catalog-page">
   <div class="atmosphere" aria-hidden="true">
@@ -69,9 +89,9 @@
   </div>
 
   <header class="cat-top">
-    <a class="cat-back" href="./index.html?v=138" title="К поиску">← Поиск</a>
+    <a class="cat-back" href="./" title="К поиску по магазину Parapa">← Поиск по Parapa</a>
     <div class="cat-top-main">
-      <h1 class="brand cat-brand" data-text="CATALOG" aria-label="CATALOG">
+      <h1 class="brand cat-brand" data-text="CATALOG" aria-label="Каталог магазина Parapa">
         <span class="brand-main">CATALOG</span>
       </h1>
       <span class="cat-total" id="catTotal">0</span>
@@ -87,6 +107,13 @@
   </header>
 
   <main class="cat-shell">
+    <p class="seo-intro cat-seo-intro">
+      Полный каталог предметов
+      <a href="https://parapa.ru/" target="_blank" rel="noopener noreferrer">магазина Parapa</a>:
+      цены, скидки и фильтры по разделам.
+      Вернуться к
+      <a href="./">поиску по названию</a>.
+    </p>
     <section class="cat-controls">
       <input
         id="catQ"
@@ -147,7 +174,7 @@
     </section>
   </main>
 
-  <script src="fav-store.js?v=138"></script>
-  <script src="catalog.js?v=138"></script>
+  <script src="fav-store.js?v=151"></script>
+  <script src="catalog.js?v=151"></script>
 </body>
 </html>
