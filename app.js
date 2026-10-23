@@ -103,32 +103,75 @@ function stripGenderFromName(name) {
     .trim();
 }
 
-function genderBaseKey(name) {
-  return normalize(stripGenderFromName(name));
+/** Цвета в названии: «(черн.)», «(розов.)», «Белый мегалодон» */
+const COLOR_PAREN_RE =
+  /\s*\((?:тёмно-|темно-|светло-)?(?:черн|чёрн|бел|розов|красн|син|зелён|зелен|жёлт|желт|сер|золот|серебр|коричн|оранж|голуб|бирюз|бордов|бежев|кремов|фиолет|малин|изумруд|салат|бронз|перлам|радуж)[а-яёa-z.]{0,10}\)\s*/gi;
+
+const COLOR_WORD_RE =
+  /\b(?:тёмно-|темно-|светло-)?(?:белый|белая|белое|белые|чёрный|черный|чёрная|черная|чёрное|черное|чёрные|черные|красный|красная|красное|красные|синий|синяя|синее|синие|зелёный|зеленый|зелёная|зеленая|зелёное|зеленое|зелёные|зеленые|жёлтый|желтый|жёлтая|желтая|жёлтое|желтое|жёлтые|желтые|розовый|розовая|розовое|розовые|серый|серая|серое|серые|золотой|золотая|золотое|золотые|серебряный|серебряная|серебряное|серебристый|фиолетовый|фиолетовая|коричневый|коричневая|оранжевый|оранжевая|голубой|голубая|бирюзовый|бордовый|бежевый|кремовый|белый|бел\w*|чёрн\w*|черн\w*|красн\w*|син\w*|зелён\w*|зелен\w*|жёлт\w*|желт\w*|розов\w*|фиолет\w*|золот\w*|серебр\w*|коричн\w*|оранж\w*|голуб\w*|бирюз\w*|бордов\w*|бежев\w*|кремов\w*)\b/gi;
+
+function stripColorFromName(name) {
+  return String(name || "")
+    .replace(COLOR_PAREN_RE, " ")
+    .replace(COLOR_WORD_RE, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
-/** Пара/варианты того же предмета другого пола */
+/** База названия без пола и цвета — для поиска вариантов */
+function variantBaseKey(name) {
+  let s = String(name || "").replace(/[★☆]/g, " ");
+  s = stripGenderFromName(s);
+  s = stripColorFromName(s);
+  // короткие пометки в скобках, которые ещё остались: (парн.), (м.), …
+  s = s.replace(/\s*\([^)]{1,18}\)\s*/g, " ");
+  return normalize(s);
+}
+
+function genderBaseKey(name) {
+  return variantBaseKey(name);
+}
+
+/** Подпись варианта: цвет из скобок или пол */
+function variantTagLabel(item) {
+  const name = String(item?.name || "");
+  const paren = name.match(/\(([^)]+)\)\s*$/);
+  if (paren) {
+    const raw = paren[1].replace(/\.$/, "").trim();
+    if (/^(?:ж|м|жен|муж)/i.test(raw)) {
+      return item.gender === "m" || /^м/i.test(raw) ? "мужской" : "женский";
+    }
+    return raw;
+  }
+  if (item.gender === "m") return "мужской";
+  if (item.gender === "f") return "женский";
+  const colorWord = name.match(COLOR_WORD_RE);
+  if (colorWord) return colorWord[0];
+  return "вариант";
+}
+
+/**
+ * Варианты того же предмета: другой пол и/или цвет
+ * (918 черн. ↔ 919 розов., белый/синий мегалодон, муж/жен спиннинг)
+ */
 function findGenderVariants(target) {
   if (!target) return [];
-  const base = genderBaseKey(target.name);
+  const base = variantBaseKey(target.name);
   if (!base || base.length < 2) return [];
+  const targetNorm = normalize(target.name);
   return state.items
     .filter((it) => {
       if (Number(it.id) === Number(target.id)) return false;
-      const b = genderBaseKey(it.name);
-      if (!b || b !== base) return false;
-      // разные полы или хотя бы оба с полом в каталоге
-      const tg = target.gender || null;
-      const ig = it.gender || null;
-      if (tg && ig && tg !== ig) return true;
-      // fallback: одинаковая база, другое имя (часто (жен)/(муж))
-      return normalize(it.name) !== normalize(target.name);
+      if (normalize(it.name) === targetNorm) return false;
+      const b = variantBaseKey(it.name);
+      return Boolean(b) && b === base;
     })
     .map((item) => ({
       item,
       score: 9e5,
       fuzzy: false,
       genderTwin: true,
+      variantLabel: variantTagLabel(item),
     }));
 }
 
@@ -522,9 +565,9 @@ function looksLikeParapaLink(raw) {
   return parseParapaGoodsId(raw) != null;
 }
 
-/** Значимые слова названия — для поиска похожих (без пола) */
+/** Значимые слова названия — для поиска похожих (без пола и цвета) */
 function significantNameTokens(name) {
-  const stripped = stripGenderFromName(name);
+  const stripped = stripColorFromName(stripGenderFromName(name));
   const tokens = tokenize(stripped).filter(
     (t) => t.length >= 3 && !LINK_STOPWORDS.has(t) && !/^[☆★\d]+$/.test(t)
   );
@@ -1447,16 +1490,13 @@ function render() {
   }
 
   els.results.innerHTML = ranked
-    .map(({ item, fuzzy, fromLink, nearId, genderTwin }) => {
+    .map(({ item, fuzzy, fromLink, nearId, genderTwin, variantLabel }) => {
       const sale = itemOnSale(item);
       const gone = itemUnavailable(item);
       const fav = isFav(item.id);
-      const genderLabel =
-        item.gender === "m"
-          ? "мужской"
-          : item.gender === "f"
-            ? "женский"
-            : "другой пол";
+      const twinLabel = genderTwin
+        ? escapeHtml(variantLabel || variantTagLabel(item))
+        : "";
       return `
       <li>
         <div class="result-row">
@@ -1471,7 +1511,7 @@ function render() {
             </span>
             <span class="result-meta">
               ${fromLink ? `<span class="result-tag is-link">по ссылке</span>` : ""}
-              ${genderTwin ? `<span class="result-tag is-gender">${genderLabel}</span>` : ""}
+              ${genderTwin ? `<span class="result-tag is-gender">${twinLabel}</span>` : ""}
               ${nearId ? `<span class="result-tag is-near">#${escapeHtml(String(item.id))}</span>` : ""}
               ${gone ? `<span class="result-gone">нет в продаже</span>` : ""}
               ${!gone && sale ? `<span class="result-sale">скидка</span>` : ""}
