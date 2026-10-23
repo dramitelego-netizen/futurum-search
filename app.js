@@ -73,7 +73,64 @@ const LINK_STOPWORDS = new Set([
   "a",
   "of",
   "and",
+  // пол в названии — для «похоже» ищем без него
+  "жен",
+  "муж",
+  "женск",
+  "мужск",
+  "женский",
+  "мужской",
+  "женская",
+  "мужская",
+  "женские",
+  "мужские",
+  "женскую",
+  "мужскую",
 ]);
+
+/** Убрать пометку пола из названия: «Спиннинг (женский)» → «Спиннинг» */
+function stripGenderFromName(name) {
+  return String(name || "")
+    .replace(
+      /\s*\((?:жен(?:ск(?:ий|ая|ие|ую|ого)?|\.?|ский)?|муж(?:ск(?:ий|ая|ие|ую|ого)?|\.?|ской)?|ж|м)\)\s*/gi,
+      " "
+    )
+    .replace(
+      /\b(?:жен(?:ск(?:ий|ая|ие|ую|ого)?|\.?)|муж(?:ск(?:ий|ая|ие|ую|ого)?|\.?))\b/gi,
+      " "
+    )
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function genderBaseKey(name) {
+  return normalize(stripGenderFromName(name));
+}
+
+/** Пара/варианты того же предмета другого пола */
+function findGenderVariants(target) {
+  if (!target) return [];
+  const base = genderBaseKey(target.name);
+  if (!base || base.length < 2) return [];
+  return state.items
+    .filter((it) => {
+      if (Number(it.id) === Number(target.id)) return false;
+      const b = genderBaseKey(it.name);
+      if (!b || b !== base) return false;
+      // разные полы или хотя бы оба с полом в каталоге
+      const tg = target.gender || null;
+      const ig = it.gender || null;
+      if (tg && ig && tg !== ig) return true;
+      // fallback: одинаковая база, другое имя (часто (жен)/(муж))
+      return normalize(it.name) !== normalize(target.name);
+    })
+    .map((item) => ({
+      item,
+      score: 9e5,
+      fuzzy: false,
+      genderTwin: true,
+    }));
+}
 
 const els = {
   q: document.getElementById("q"),
@@ -457,13 +514,16 @@ function looksLikeParapaLink(raw) {
   return parseParapaGoodsId(raw) != null;
 }
 
-/** Значимые слова названия — для поиска похожих */
+/** Значимые слова названия — для поиска похожих (без пола) */
 function significantNameTokens(name) {
-  const tokens = tokenize(name).filter(
+  const stripped = stripGenderFromName(name);
+  const tokens = tokenize(stripped).filter(
     (t) => t.length >= 3 && !LINK_STOPWORDS.has(t) && !/^[☆★\d]+$/.test(t)
   );
   if (tokens.length >= 2) return tokens.slice(0, 6);
-  return tokenize(name).filter((t) => t.length >= 2).slice(0, 6);
+  return tokenize(stripped).filter(
+    (t) => t.length >= 2 && !LINK_STOPWORDS.has(t)
+  ).slice(0, 6);
 }
 
 /** Подсказка под строкой (вариант Z): крошечная метка, имя в title, поле не трогаем */
@@ -966,14 +1026,18 @@ function nearestItemsById(wantId, limit = 12) {
 }
 
 function filtered() {
-  // Режим «по ссылке» / id: точный товар сверху + похожие по названию
+  // Режим «по ссылке» / id: точный товар + вариант другого пола + похожие без учёта пола
   if (state.linkItemId != null && state.items.length) {
     const target = state.items.find((it) => Number(it.id) === state.linkItemId);
     if (target) {
+      const twins = findGenderVariants(target);
+      const twinIds = new Set(twins.map((x) => Number(x.item.id)));
+      twinIds.add(Number(target.id));
+
       const tokens = significantNameTokens(target.name);
       const similar = sortRanked(
         state.items
-          .filter((it) => Number(it.id) !== Number(target.id))
+          .filter((it) => !twinIds.has(Number(it.id)))
           .map((item) => {
             const { score, fuzzy, tier } = scoreItem(item, tokens);
             return { item, score, fuzzy: true, tier: Math.max(tier ?? 2, 2) };
@@ -982,9 +1046,9 @@ function filtered() {
         true
       ).slice(0, 40);
 
-      // сам товар по ссылке/id всегда показываем — фильтры на него не действуют
+      // сам товар и парный пол — всегда, даже если фильтр пола другой
       const head = [{ item: target, score: 1e6, fuzzy: false, fromLink: true }];
-      return head.concat(similar);
+      return head.concat(twins).concat(similar);
     }
     // точного id нет — ближайшие номера в каталоге
     return nearestItemsById(state.linkItemId, 12);
@@ -1375,16 +1439,22 @@ function render() {
   }
 
   els.results.innerHTML = ranked
-    .map(({ item, fuzzy, fromLink, nearId }) => {
+    .map(({ item, fuzzy, fromLink, nearId, genderTwin }) => {
       const sale = itemOnSale(item);
       const gone = itemUnavailable(item);
       const fav = isFav(item.id);
+      const genderLabel =
+        item.gender === "m"
+          ? "мужской"
+          : item.gender === "f"
+            ? "женский"
+            : "другой пол";
       return `
       <li>
         <div class="result-row">
           <button
             type="button"
-            class="result${state.activeId === item.id ? " active" : ""}${sale ? " is-sale" : ""}${gone ? " is-unavailable" : ""}${fromLink ? " is-link-hit" : ""}${nearId ? " is-near-id" : ""}"
+            class="result${state.activeId === item.id ? " active" : ""}${sale ? " is-sale" : ""}${gone ? " is-unavailable" : ""}${fromLink ? " is-link-hit" : ""}${nearId ? " is-near-id" : ""}${genderTwin ? " is-gender-twin" : ""}"
             data-id="${item.id}"
           >
             <span class="result-main">
@@ -1393,10 +1463,11 @@ function render() {
             </span>
             <span class="result-meta">
               ${fromLink ? `<span class="result-tag is-link">по ссылке</span>` : ""}
+              ${genderTwin ? `<span class="result-tag is-gender">${genderLabel}</span>` : ""}
               ${nearId ? `<span class="result-tag is-near">#${escapeHtml(String(item.id))}</span>` : ""}
               ${gone ? `<span class="result-gone">нет в продаже</span>` : ""}
               ${!gone && sale ? `<span class="result-sale">скидка</span>` : ""}
-              ${!fromLink && !nearId && fuzzy ? `<span class="result-tag">похоже</span>` : ""}
+              ${!fromLink && !nearId && !genderTwin && fuzzy ? `<span class="result-tag">похоже</span>` : ""}
             </span>
           </button>
           <button

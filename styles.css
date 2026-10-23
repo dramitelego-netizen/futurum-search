@@ -3362,6 +3362,17 @@ body.is-stage .seo-intro {
   opacity: 1;
 }
 
+.result-tag.is-gender {
+  color: color-mix(in srgb, var(--ink) 75%, var(--accent));
+  border-color: color-mix(in srgb, var(--line) 70%, var(--accent));
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  opacity: 1;
+}
+
+.result.is-gender-twin {
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--line));
+}
+
 .result.is-link-hit {
   border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
   background: color-mix(in srgb, var(--accent) 6%, transparent);
