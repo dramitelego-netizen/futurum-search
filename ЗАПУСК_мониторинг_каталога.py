@@ -750,9 +750,35 @@ def one_round(
             cursor = 0
         end = min(total, cursor + batch)
         batch_ids = ids[cursor:end]
+        batch_set = set(batch_ids)
+
+        # Каждый круг сразу перепроверяем снятые (свежие первыми).
+        # Иначе после ложного «нет в продаже» товар ждёт полный обход
+        # (~десятки кругов), хотя на сайте он уже снова есть.
+        gone = [
+            it
+            for it in found.values()
+            if it.get("unavailable") and int(it.get("id") or 0) not in batch_set
+        ]
+        gone.sort(key=lambda it: int(it.get("unavailableSince") or 0), reverse=True)
+        recheck_ids = [int(it["id"]) for it in gone[:8]]
+        if recheck_ids:
+            say(
+                f"  Приоритет: перепроверка {len(recheck_ids)} снятых "
+                f"(всего снятых вне пачки: {len(gone)})"
+            )
+            t2a = time.perf_counter()
+            n_back, notes_back = refresh_batch(recheck_ids, found, workers=workers)
+            say(f"  Приоритет занял {fmt_duration(time.perf_counter() - t2a)}")
+            changed_total += n_back
+            batch_notes.extend(notes_back)
+        else:
+            say("  Приоритет: снятых вне пачки нет")
+
         say(f"  Курсор до: {cursor}/{total} → после пачки будет {end}/{total}")
         t2 = time.perf_counter()
-        n_changed, batch_notes = refresh_batch(batch_ids, found, workers=workers)
+        n_changed, notes_main = refresh_batch(batch_ids, found, workers=workers)
+        batch_notes.extend(notes_main)
         say(f"  Шаг 2 занял {fmt_duration(time.perf_counter() - t2)}")
         changed_total += n_changed
         cursor = end
