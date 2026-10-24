@@ -410,44 +410,94 @@ def refresh_batch(ids: list[int], found: dict[str, dict], workers: int) -> tuple
                 if not old:
                     say(f"{prefix} [{gid}] пустой ответ, в каталоге нет — пропускаю ({elapsed:.1f}с)")
                     continue
-                # «пусто» = карточки нет на сайте → помечаем «нет в продаже»
-                # «нет ответа» = сеть/сайт лежит → не трогаем сразу, копим промахи
+
+                # Один ложный «пусто» (антибот/лаг) больше не снимает товар.
+                # При «пусто» сразу делаем ещё 2 проверки; снимаем только если все пустые.
+                # Сеть/защита — копим missStreak между кругами (порог 3).
                 if status == "пусто":
-                    was = bool(old.get("unavailable"))
-                    found[key] = mark_unavailable(old)
-                    if not was:
+                    empty_hits = 1
+                    recovered = None
+                    last_status, last_elapsed = status, elapsed
+                    for retry in range(2):
+                        time.sleep(1.0 + 0.5 * retry)
+                        _, item2, el2, st2 = check_id(gid)
+                        last_status, last_elapsed = st2, el2
+                        if item2:
+                            recovered = (item2, el2, st2)
+                            break
+                        if st2 == "пусто":
+                            empty_hits += 1
+                        else:
+                            # защита/сеть на повторе — не снимаем
+                            empty_hits = -1
+                            status, elapsed = st2, el2
+                            break
+
+                    if recovered:
+                        item, elapsed, status = recovered
+                        # дальше обычная ветка «товар найден»
+                    elif empty_hits >= 3:
+                        was = bool(old.get("unavailable"))
+                        found[key] = mark_unavailable(old)
+                        gone_n += 1
+                        if not was:
+                            changed += 1
+                            msg = (
+                                f"[{gid}] {old.get('name')}: нет в продаже "
+                                f"(пусто ×{empty_hits})"
+                            )
+                            notes.append(msg)
+                            say(f"{prefix} ✕ {msg} ({last_elapsed:.1f}с)")
+                        else:
+                            say(
+                                f"{prefix} · [{gid}] {old.get('name')}: "
+                                f"по-прежнему нет в продаже ({last_elapsed:.1f}с)"
+                            )
+                        continue
+                    else:
+                        streak = int(old.get("missStreak") or 0) + 1
+                        row = dict(old)
+                        row["missStreak"] = streak
+                        found[key] = row
+                        miss_n += 1
+                        say(
+                            f"{prefix} · [{gid}] {old.get('name')}: "
+                            f"сомнительный ответ ({last_status}, {last_elapsed:.1f}с) "
+                            f"— промах {streak}/3, оставляю"
+                        )
+                        continue
+
+                if not item:
+                    streak = int(old.get("missStreak") or 0) + 1
+                    row = dict(old)
+                    row["missStreak"] = streak
+                    # после 3 сетевых/защитных промахов подряд — тоже снимаем
+                    if streak >= 3 and not old.get("unavailable"):
+                        found[key] = mark_unavailable(row)
                         changed += 1
                         gone_n += 1
-                        msg = f"[{gid}] {old.get('name')}: нет в продаже"
+                        msg = (
+                            f"[{gid}] {old.get('name')}: нет в продаже "
+                            f"({status} ×{streak})"
+                        )
                         notes.append(msg)
-                        say(f"{prefix} ✕ {msg} ({elapsed:.1f}с)")
-                    else:
+                        say(f"{prefix} ✕ {msg}")
+                    elif streak >= 3 and old.get("unavailable"):
+                        found[key] = mark_unavailable(row)
                         gone_n += 1
                         say(
                             f"{prefix} · [{gid}] {old.get('name')}: "
                             f"по-прежнему нет в продаже ({elapsed:.1f}с)"
                         )
-                else:
-                    streak = int(old.get("missStreak") or 0) + 1
-                    old = dict(old)
-                    old["missStreak"] = streak
-                    # после 3 сетевых промахов подряд тоже помечаем
-                    if streak >= 3 and not old.get("unavailable"):
-                        found[key] = mark_unavailable(old)
-                        changed += 1
-                        gone_n += 1
-                        msg = f"[{gid}] {old.get('name')}: нет в продаже (нет ответа ×{streak})"
-                        notes.append(msg)
-                        say(f"{prefix} ✕ {msg}")
                     else:
-                        found[key] = old
+                        found[key] = row
                         miss_n += 1
                         say(
                             f"{prefix} · [{gid}] {old.get('name')}: "
                             f"не ответил ({status}, {elapsed:.1f}с) "
                             f"— промах {streak}/3, оставляю"
                         )
-                continue
+                    continue
 
             if not old:
                 found[key] = merge_item(None, item)

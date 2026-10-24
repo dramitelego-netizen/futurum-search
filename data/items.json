@@ -5,7 +5,7 @@
   "range": {
     "start": 1,
     "end": 1500,
-    "scanned_upto_hint": 63
+    "scanned_upto_hint": 1000
   },
   "items": [
     {
@@ -89,11 +89,10 @@
       ],
       "imageLocal": "data/img/57/icon.png",
       "lookImage": null,
-      "unavailable": true,
+      "unavailable": false,
       "missStreak": 0,
       "gender": "f",
-      "badge": null,
-      "unavailableSince": 1792834655
+      "badge": null
     },
     {
       "id": 58,

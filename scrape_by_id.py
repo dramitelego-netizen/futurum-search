@@ -331,6 +331,21 @@ def parse_goods(html: str, expected_id: int) -> dict | None:
     }
 
 
+def _looks_like_challenge(html: str) -> bool:
+    """Антибот / challenge: страница без нормальной витрины."""
+    if not html:
+        return False
+    low = html.lower()
+    if "bp_chl" in low:
+        return True
+    # крошечный ответ / редирект-заглушка без магазина
+    if len(html) < 1200 and ("temporary redirect" in low or "307" in low):
+        return True
+    if len(html) < 2500 and "form" not in low and "mall" not in low:
+        return True
+    return False
+
+
 def check_id(gid: int) -> tuple[int, dict | None, float, str]:
     url = f"{BASE}/mall/goods/{gid}/"
     t0 = time.perf_counter()
@@ -338,8 +353,13 @@ def check_id(gid: int) -> tuple[int, dict | None, float, str]:
     elapsed = time.perf_counter() - t0
     if not html:
         return gid, None, elapsed, "нет ответа"
+    if _looks_like_challenge(html):
+        return gid, None, elapsed, "защита"
     item = parse_goods(html, gid)
     if not item:
+        # долгий ответ без формы почти всегда сбой/обрезка, а не снятие товара
+        if elapsed >= 20:
+            return gid, None, elapsed, "нет ответа"
         return gid, None, elapsed, "пусто"
     return gid, item, elapsed, "ok"
 
