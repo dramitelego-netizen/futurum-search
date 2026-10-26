@@ -783,6 +783,16 @@ html[data-theme="gray"][data-bg="signal"] .atmosphere .grid { opacity: 0.18; }
 [data-theme="light"] .brand-main {
   filter: drop-shadow(0 0 12px rgba(10, 125, 110, 0.2))
     drop-shadow(0 0 26px rgba(10, 125, 110, 0.1));
+  background-image: linear-gradient(
+    90deg,
+    #0a7d6e,
+    #1a8ab8,
+    #4a6fd4,
+    #0a7d6e,
+    #1a8ab8,
+    #4a6fd4,
+    #0a7d6e
+  );
 }
 
 .particle-field {
@@ -1857,21 +1867,28 @@ body.is-stage #q {
   position: relative;
   z-index: 1;
   display: inline-block;
-  background: linear-gradient(
-    180deg,
-    var(--brand-hi) 0%,
-    var(--brand-mid) 42%,
-    var(--brand-deep) 100%
+  /* #12 Hue wash — бесшовный поток mint → sky → periwinkle */
+  background-image: linear-gradient(
+    90deg,
+    #3dffe0,
+    #5ad0ff,
+    #7a9bff,
+    #3dffe0,
+    #5ad0ff,
+    #7a9bff,
+    #3dffe0
   );
+  background-size: 200% 100%;
+  background-position: 0% 50%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  -webkit-text-fill-color: transparent;
   text-shadow: none;
   filter: drop-shadow(0 0 18px var(--brand-glow))
     drop-shadow(0 0 42px var(--brand-glow-soft));
-  /* спокойное свечение — без постоянного дрыга */
-  animation: brand-pulse 7s ease-in-out infinite;
-  animation-delay: 1.4s;
+  animation: brand-hue-flow 7s linear infinite;
+  animation-delay: 1.2s;
 }
 
 .brand.boot-glitch {
@@ -2001,17 +2018,9 @@ body.is-stage #q {
   100% { transform: translate(0, 0); clip-path: inset(58% 0 22% 0); }
 }
 
-@keyframes brand-pulse {
-  0%, 100% {
-    filter: drop-shadow(0 0 18px var(--brand-glow))
-      drop-shadow(0 0 42px var(--brand-glow-soft))
-      brightness(1);
-  }
-  50% {
-    filter: drop-shadow(0 0 24px var(--brand-glow))
-      drop-shadow(0 0 48px var(--brand-glow-soft))
-      brightness(1.06);
-  }
+@keyframes brand-hue-flow {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
 }
 
 .search-wrap {
