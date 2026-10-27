@@ -3049,14 +3049,29 @@ body.changes-open {
   }
 }
 
+.seo-kicker {
+  margin: 0.15rem auto 0.35rem;
+  max-width: 34rem;
+  text-align: center;
+  color: color-mix(in srgb, var(--mute) 92%, var(--accent));
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .seo-intro {
   margin: 0.35rem auto 0.95rem;
-  max-width: 34rem;
+  max-width: 36rem;
   text-align: center;
   color: color-mix(in srgb, var(--mute) 88%, transparent);
   font-size: 0.88rem;
   line-height: 1.45;
   letter-spacing: 0.01em;
+}
+
+.seo-intro strong {
+  color: color-mix(in srgb, var(--ink) 82%, var(--mute));
+  font-weight: 600;
 }
 
 .seo-intro a {
@@ -3069,7 +3084,8 @@ body.changes-open {
   border-bottom-color: var(--accent);
 }
 
-body.is-stage .seo-intro {
+body.is-stage .seo-intro,
+body.is-stage .seo-kicker {
   display: none;
 }
 

@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parent
 DATA = ROOT / "data"
 ITEMS_FILE = DATA / "items.json"
 HISTORY_FILE = DATA / "price_history.json"
+UPDATES_JSON = DATA / "updates.json"
 SECTIONS_DIR = ROOT / "sections"
 ITEMS_DIR = ROOT / "item"
 SITE = "https://dramitelego-netizen.github.io/futurum-search"
@@ -146,9 +147,10 @@ def page_shell(
 
 def nav(extra: str = "") -> str:
     return f"""    <nav class="nav" aria-label="Навигация">
-      <a href="{SITE}/">Поиск Parapa</a>
+      <a href="{SITE}/">Поиск Пара па</a>
       <a href="{SITE}/catalog.html">Каталог</a>
-      <a href="{SITE}/sections/sale.html">Скидки</a>
+      <a href="{SITE}/updates.html">Новинки</a>
+      <a href="{SITE}/para-pa-skidki.html">Скидки</a>
       {extra}
     </nav>"""
 
@@ -192,18 +194,18 @@ def build_section_page(
         items,
         key=lambda x: (0 if on_sale(x) else 1, str(x.get("name") or "").lower()),
     )
-    h1 = f"{title_ru} — магазин Parapa"
+    h1 = f"{title_ru} — магазин Пара па"
     body = f"""{nav(f'<a href="{SITE}/sections/{slug}.html">{esc(title_ru)}</a>')}
     <h1>{esc(h1)}</h1>
-    <p class="lead">{esc(description)} Неофициальный каталог FUTURUM Search.</p>
-    <p class="meta">В разделе: <b>{count}</b> предметов. Цены из магазина Parapa.</p>
+    <p class="lead">{esc(description)} Неофициальный каталог магазина Пара па (Parapa).</p>
+    <p class="meta">В разделе: <b>{count}</b> предметов. Цены в монетах магазина Пара па.</p>
     {section_pills(slug)}
     {item_rows(sorted_items)}
     <p class="footer">Неофициальный инструмент · не связан с администрацией Parapa ·
       <a href="{SITE}/?q=">открыть поиск</a></p>"""
     return page_shell(
-        title=f"{title_ru} Parapa — цены и список | FUTURUM",
-        description=description,
+        title=f"{title_ru} Пара па (Parapa) — цены | FUTURUM",
+        description=f"{description} Магазин Пара па / Parapa.",
         canonical=f"{SITE}/sections/{slug}.html",
         body=body,
         json_ld={
@@ -221,24 +223,25 @@ def build_section_page(
 def build_sale_page(items: list[dict]) -> str:
     sales = [i for i in items if on_sale(i) and not i.get("unavailable")]
     sales.sort(key=lambda x: str(x.get("name") or "").lower())
-    desc = "Актуальные скидки в магазине Parapa — список предметов со сниженной ценой."
+    desc = "Актуальные скидки в магазине Пара па (Parapa) — предметы со сниженной ценой в монетах."
     body = f"""{nav('<a href="' + SITE + '/sections/sale.html">Скидки</a>')}
-    <h1>Скидки магазина Parapa</h1>
-    <p class="lead">{esc(desc)} Неофициальный каталог FUTURUM Search.</p>
+    <h1>Скидки магазина Пара па</h1>
+    <p class="lead">{esc(desc)} Также см.
+      <a href="{SITE}/para-pa-skidki.html">обзор скидок Пара па</a>.</p>
     <p class="meta">Сейчас со скидкой: <b>{len(sales)}</b> предметов.</p>
     {section_pills("sale")}
     {item_rows(sales)}
     <p class="footer">Неофициальный инструмент ·
-      <a href="{SITE}/">поиск по Parapa</a></p>"""
+      <a href="{SITE}/">поиск по Пара па</a></p>"""
     return page_shell(
-        title="Скидки Parapa — цены со скидкой | FUTURUM",
+        title="Скидки Пара па (Parapa) — цены со скидкой | FUTURUM",
         description=desc,
         canonical=f"{SITE}/sections/sale.html",
         body=body,
         json_ld={
             "@context": "https://schema.org",
             "@type": "CollectionPage",
-            "name": "Скидки магазина Parapa",
+            "name": "Скидки магазина Пара па",
             "url": f"{SITE}/sections/sale.html",
             "numberOfItems": len(sales),
         },
@@ -251,7 +254,7 @@ def build_item_page(it: dict) -> str:
     desc_raw = (it.get("description") or "").strip()
     short = desc_raw[:155] + ("…" if len(desc_raw) > 155 else "")
     if not short:
-        short = f"{name} — цена в магазине Parapa. Неофициальный каталог FUTURUM Search."
+        short = f"{name} — цена в магазине Пара па (Parapa). Неофициальный каталог FUTURUM."
     price = it.get("price")
     old = it.get("priceOld")
     sale = on_sale(it)
@@ -299,7 +302,7 @@ def build_item_page(it: dict) -> str:
       <h1>{esc(name)}</h1>
       <div>{"".join(badges)}</div>
       {price_html}
-      <p class="meta">id {iid} · магазин Parapa</p>
+      <p class="meta">id {iid} · магазин Пара па (Parapa)</p>
       <p>{esc(desc_raw) if desc_raw else "Описание появится после обновления каталога."}</p>
       <p>
         <a href="{esc(parapa)}" rel="noopener noreferrer" target="_blank">Открыть на Parapa</a>
@@ -318,7 +321,7 @@ def build_item_page(it: dict) -> str:
         "url": f"{SITE}/item/{iid}.html",
         "description": short,
         "image": img_url,
-        "brand": {"@type": "Brand", "name": "Parapa"},
+        "brand": {"@type": "Brand", "name": "Пара па"},
         "offers": {
             "@type": "Offer",
             "url": parapa,
@@ -331,7 +334,7 @@ def build_item_page(it: dict) -> str:
     }
 
     return page_shell(
-        title=f"{name} — цена Parapa | FUTURUM",
+        title=f"{name} — цена Пара па (Parapa) | FUTURUM",
         description=short,
         canonical=f"{SITE}/item/{iid}.html",
         body=body,
@@ -363,6 +366,282 @@ def _load_price_lastmod() -> dict[int, str]:
             continue
         out[iid] = datetime.fromtimestamp(int(ts), tz=timezone.utc).date().isoformat()
     return out
+
+
+def _load_history() -> dict:
+    if not HISTORY_FILE.exists():
+        return {}
+    try:
+        raw = json.loads(HISTORY_FILE.read_text(encoding="utf-8"))
+        return raw if isinstance(raw, dict) else {}
+    except Exception:
+        return {}
+
+
+def _fmt_day(ts: int | float) -> str:
+    return datetime.fromtimestamp(int(ts), tz=timezone.utc).date().isoformat()
+
+
+def collect_updates(items: list[dict]) -> dict:
+    """Новинки (firstSeen / свежие id) + скидки + недавние смены цен."""
+    by_id = {int(i["id"]): i for i in items}
+    history = _load_history()
+
+    news = [i for i in items if i.get("firstSeen")]
+    news.sort(key=lambda x: int(x.get("firstSeen") or 0), reverse=True)
+    if len(news) < 12:
+        # запас: самые большие id как «относительно новые»
+        rest = sorted(items, key=lambda x: int(x["id"]), reverse=True)
+        seen = {int(i["id"]) for i in news}
+        for it in rest:
+            if int(it["id"]) in seen:
+                continue
+            news.append(it)
+            if len(news) >= 16:
+                break
+    news = news[:16]
+
+    sales = [i for i in items if on_sale(i) and not i.get("unavailable")]
+    sales.sort(key=lambda x: str(x.get("name") or "").lower())
+
+    price_moves: list[dict] = []
+    for key, series in history.items():
+        try:
+            iid = int(key)
+        except (TypeError, ValueError):
+            continue
+        if not isinstance(series, list) or len(series) < 2:
+            continue
+        last, prev = series[-1], series[-2]
+        if not isinstance(last, dict) or not isinstance(prev, dict):
+            continue
+        if last.get("price") == prev.get("price") and last.get("priceOld") == prev.get(
+            "priceOld"
+        ):
+            continue
+        it = by_id.get(iid)
+        if not it:
+            continue
+        price_moves.append(
+            {
+                "id": iid,
+                "name": it.get("name"),
+                "price": last.get("price"),
+                "priceOld": last.get("priceOld") or prev.get("price"),
+                "t": last.get("t") or 0,
+            }
+        )
+    price_moves.sort(key=lambda x: int(x.get("t") or 0), reverse=True)
+    price_moves = price_moves[:20]
+
+    payload = {
+        "generatedAt": datetime.now(tz=timezone.utc).isoformat(timespec="seconds"),
+        "news": [
+            {
+                "id": int(i["id"]),
+                "name": i.get("name"),
+                "price": i.get("price"),
+                "firstSeen": i.get("firstSeen"),
+            }
+            for i in news
+        ],
+        "sales": [
+            {
+                "id": int(i["id"]),
+                "name": i.get("name"),
+                "price": i.get("price"),
+                "priceOld": i.get("priceOld"),
+            }
+            for i in sales
+        ],
+        "priceMoves": price_moves,
+    }
+    UPDATES_JSON.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    return payload
+
+
+def build_updates_page(items: list[dict], payload: dict) -> str:
+    news = payload.get("news") or []
+    sales = payload.get("sales") or []
+    moves = payload.get("priceMoves") or []
+    by_id = {int(i["id"]): i for i in items}
+
+    def rows_from(entries: list[dict], *, kind: str) -> str:
+        bits = []
+        for e in entries:
+            iid = int(e["id"])
+            it = by_id.get(iid) or e
+            name = esc(it.get("name") or e.get("name") or f"#{iid}")
+            price = e.get("price", it.get("price"))
+            extra = ""
+            if kind == "sale" and e.get("priceOld"):
+                extra = f' <span class="pr sale">{esc(fmt_price(e.get("priceOld")))}</span>'
+            if kind == "move" and e.get("t"):
+                extra = f' <span class="meta">· {_fmt_day(e["t"])}</span>'
+            bits.append(
+                f'<li><a class="row" href="{SITE}/item/{iid}.html">'
+                f'<span class="nm">{name}</span>'
+                f'<span class="pr">{esc(fmt_price(price))}</span>{extra}'
+                f"</a></li>"
+            )
+        return '<ul class="list">' + "\n".join(bits) + "</ul>" if bits else "<p class=\"meta\">Пока пусто.</p>"
+
+    desc = (
+        "Новинки и скидки магазина Пара па (Parapa): свежие предметы, "
+        "акции и изменения цен в монетах. Обновляется мониторингом каталога."
+    )
+    body = f"""{nav('<a href="' + SITE + '/updates.html">Новинки</a>')}
+    <h1>Новинки и скидки Пара па</h1>
+    <p class="lead">{esc(desc)}</p>
+    <p class="meta">Лента строится из каталога FUTURUM · неофициальный обзор магазина Пара па.</p>
+
+    <h2 style="font-family:Orbitron,sans-serif;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;margin:1.4rem 0 .5rem">Скидки сейчас</h2>
+    {rows_from(sales, kind="sale")}
+
+    <h2 style="font-family:Orbitron,sans-serif;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;margin:1.4rem 0 .5rem">Недавние изменения цен</h2>
+    {rows_from(moves, kind="move")}
+
+    <h2 style="font-family:Orbitron,sans-serif;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;margin:1.4rem 0 .5rem">Новые / свежие id</h2>
+    {rows_from(news, kind="news")}
+
+    <p class="footer">См. также
+      <a href="{SITE}/para-pa-skidki.html">скидки Пара па</a> ·
+      <a href="{SITE}/para-pa-ceny.html">как читать цены</a> ·
+      <a href="{SITE}/">поиск</a></p>"""
+    return page_shell(
+        title="Новинки и скидки Пара па (Parapa) — магазин | FUTURUM",
+        description=desc,
+        canonical=f"{SITE}/updates.html",
+        body=body,
+        json_ld={
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "Новинки и скидки Пара па",
+            "url": f"{SITE}/updates.html",
+            "description": desc,
+        },
+    )
+
+
+def build_landing_magazin() -> str:
+    title = "Магазин Пара па (Parapa) — поиск предметов и каталог"
+    desc = (
+        "Что такое магазин Пара па и как быстро найти вещь по названию, id или ссылке. "
+        "Неофициальный поиск FUTURUM по каталогу Parapa."
+    )
+    body = f"""{nav('<a href="' + SITE + '/para-pa-magazin.html">Магазин</a>')}
+    <h1>Магазин Пара па — поиск и каталог</h1>
+    <p class="lead">{esc(desc)}</p>
+    <div class="card">
+      <p><strong>Пара па</strong> (официально Parapa / «Пара Па: Город Танцев») — онлайн-игра.
+        Внутри есть торговый центр: одежда, крылья, питомцы, транспорт и наборы.
+        Официальная витрина:
+        <a href="https://parapa.ru/mall/" rel="noopener noreferrer" target="_blank">parapa.ru/mall</a>.</p>
+      <p>FUTURUM — <em>неофициальный</em> поиск по этому магазину: удобно смотреть
+        <strong>цены в монетах</strong>, скидки и id, вставить ссылку
+        <code>mall/goods/…</code> или просто название.</p>
+      <p>Полезные страницы:</p>
+      <ul class="list">
+        <li><a class="row" href="{SITE}/"><span class="nm">Открыть поиск</span></a></li>
+        <li><a class="row" href="{SITE}/catalog.html"><span class="nm">Полный каталог</span></a></li>
+        <li><a class="row" href="{SITE}/para-pa-ceny.html"><span class="nm">Как читать цены</span></a></li>
+        <li><a class="row" href="{SITE}/para-pa-skidki.html"><span class="nm">Скидки Пара па</span></a></li>
+        <li><a class="row" href="{SITE}/updates.html"><span class="nm">Новинки и изменения</span></a></li>
+      </ul>
+    </div>
+    <p class="footer">Не связан с администрацией Parapa · пишется также «парапа», «parapa»</p>"""
+    return page_shell(
+        title=f"{title} | FUTURUM",
+        description=desc,
+        canonical=f"{SITE}/para-pa-magazin.html",
+        body=body,
+        json_ld={
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": title,
+            "url": f"{SITE}/para-pa-magazin.html",
+            "description": desc,
+            "about": {
+                "@type": "VideoGame",
+                "name": "Пара Па: Город Танцев",
+                "alternateName": ["Пара па", "Парапа", "Parapa"],
+            },
+        },
+    )
+
+
+def build_landing_ceny() -> str:
+    title = "Цены магазина Пара па — монеты, скидки и id"
+    desc = (
+        "Как читать цены в магазине Пара па (Parapa): монеты, старая цена при скидке, "
+        "id товара и ссылка mall/goods. Неофициальный гид FUTURUM."
+    )
+    body = f"""{nav('<a href="' + SITE + '/para-pa-ceny.html">Цены</a>')}
+    <h1>Цены в магазине Пара па</h1>
+    <p class="lead">{esc(desc)}</p>
+    <div class="card">
+      <p>В каталоге FUTURUM цены показаны <strong>в монетах</strong> магазина Пара па
+        (как на витрине parapa.ru), а не в рублях сторонних магазинов.</p>
+      <p>Если видите две цифры — сейчас скидка: новая цена и зачёркнутая старая.
+        Список акций:
+        <a href="{SITE}/para-pa-skidki.html">скидки Пара па</a>.</p>
+      <p>У каждого предмета есть <strong>id</strong> (например 57) и страница
+        <code>parapa.ru/mall/goods/ID/</code>. Можно вставить ссылку или id в
+        <a href="{SITE}/">поиск</a> — откроется карточка и похожие варианты.</p>
+      <p>Свежие смены цен смотрите в
+        <a href="{SITE}/updates.html">ленте новинок</a>.</p>
+    </div>
+    <p class="footer"><a href="{SITE}/para-pa-magazin.html">← о магазине Пара па</a></p>"""
+    return page_shell(
+        title=f"{title} | FUTURUM",
+        description=desc,
+        canonical=f"{SITE}/para-pa-ceny.html",
+        body=body,
+        json_ld={
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": title,
+            "url": f"{SITE}/para-pa-ceny.html",
+            "description": desc,
+        },
+    )
+
+
+def build_landing_skidki(items: list[dict]) -> str:
+    sales = [i for i in items if on_sale(i) and not i.get("unavailable")]
+    sales.sort(key=lambda x: str(x.get("name") or "").lower())
+    title = "Скидки Пара па (Parapa) — что по акции в магазине"
+    desc = (
+        "Актуальные скидки магазина Пара па: предметы со сниженной ценой в монетах. "
+        "Неофициальный список FUTURUM."
+    )
+    body = f"""{nav('<a href="' + SITE + '/para-pa-skidki.html">Скидки</a>')}
+    <h1>Скидки Пара па</h1>
+    <p class="lead">{esc(desc)}</p>
+    <p class="meta">Сейчас в каталоге со скидкой: <b>{len(sales)}</b>.
+      Полный список также на
+      <a href="{SITE}/sections/sale.html">странице скидок</a>.</p>
+    {item_rows(sales)}
+    <p class="footer">
+      <a href="{SITE}/updates.html">новинки и изменения цен</a> ·
+      <a href="{SITE}/para-pa-ceny.html">как читать цены</a> ·
+      <a href="{SITE}/">поиск</a>
+    </p>"""
+    return page_shell(
+        title=f"{title} | FUTURUM",
+        description=desc,
+        canonical=f"{SITE}/para-pa-skidki.html",
+        body=body,
+        json_ld={
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": title,
+            "url": f"{SITE}/para-pa-skidki.html",
+            "numberOfItems": len(sales),
+        },
+    )
 
 
 def write_sitemap(entries: list[tuple[str, str | None]]) -> None:
@@ -405,10 +684,31 @@ def main() -> int:
             old.unlink(missing_ok=True)
 
     catalog_last = max(lastmods.values()) if lastmods else None
+    today = datetime.now(tz=timezone.utc).date().isoformat()
     entries: list[tuple[str, str | None]] = [
         (f"{SITE}/", catalog_last),
         (f"{SITE}/catalog.html", catalog_last),
     ]
+
+    # посадочные «Пара па» + лента новинок/скидок
+    updates = collect_updates(items)
+    (ROOT / "updates.html").write_text(
+        build_updates_page(items, updates), encoding="utf-8"
+    )
+    (ROOT / "para-pa-magazin.html").write_text(
+        build_landing_magazin(), encoding="utf-8"
+    )
+    (ROOT / "para-pa-ceny.html").write_text(build_landing_ceny(), encoding="utf-8")
+    (ROOT / "para-pa-skidki.html").write_text(
+        build_landing_skidki(items), encoding="utf-8"
+    )
+    for path in (
+        "updates.html",
+        "para-pa-magazin.html",
+        "para-pa-ceny.html",
+        "para-pa-skidki.html",
+    ):
+        entries.append((f"{SITE}/{path}", today))
 
     # разделы
     sale_items = [i for i in items if on_sale(i) and not i.get("unavailable")]
@@ -442,7 +742,7 @@ def main() -> int:
     with_lm = sum(1 for _, lm in entries if lm)
     print(
         f"sections: {len(SECTIONS) + 1}, items: {len(items)}, "
-        f"sitemap urls: {len(entries)} (lastmod: {with_lm})"
+        f"landings: 4, sitemap urls: {len(entries)} (lastmod: {with_lm})"
     )
     return 0
 
