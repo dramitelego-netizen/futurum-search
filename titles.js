@@ -3046,7 +3046,7 @@ function expandGuideToken(token) {
 /** Общий значок титула в игре (одинаковый у всех) */
 function titleBadgeSrc() {
   return isSlimPagesHost()
-    ? `${siteRootPrefix()}data/title_img/3d077203ce.png`
+    ? `${location.origin}${siteRootPrefix()}data/title_img/3d077203ce.png`
     : "./data/title_img/3d077203ce.png";
 }
 
