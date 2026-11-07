@@ -8,7 +8,7 @@ const IMG_SRC_MODES = ["local", "remote"];
 const IMG_SRC_AUTO_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 /** Маленькая иконка, есть и на гиде, и на вики — для замера скорости */
 const IMG_SRC_PROBE = {
-  local: "data/wiki_img/33fd5835c73f65abdcf02ad4e97823f2.png",
+  local: "data/guide_img/33fd5835c73f65abdcf02ad4e97823f2.png",
   remote: "https://parapa.ru/wiki/images/b/b5/33fd5835c73f65abdcf02ad4e97823f2.png",
 };
 const BG_KEY = "futurum_bg";
@@ -1222,8 +1222,7 @@ async function maybeAutoPickImgSrc() {
     applyImgSrcMode(currentImgSrcMode(), { persist: false });
     return;
   }
-  // Slim Pages: wiki_img нет в артефакте, а parapa.ru для <img> часто режет антиботом.
-  // Держим режим «гид» (локальные data/img + title_img; wiki_img → пусто → оффер магазина).
+  // Pages: локальные data/img + title_img + guide_img (полный wiki_img в артефакт не кладём).
   if (isSlimPagesHost()) {
     applyImgSrcMode("local", {
       refresh: currentImgSrcMode() !== "local",
@@ -1281,15 +1280,16 @@ function absRemoteUrl(url) {
 function localImgPath(path) {
   const p = String(path || "").trim();
   if (!p) return "";
-  const rel = p.replace(/^\.\//, "").replace(/^\/+/, "");
-  // Slim Pages без wiki_img — пустой local, дальше itemImgPair возьмёт data/img оффера
-  if (isSlimPagesHost() && /^data\/wiki_img\//i.test(rel)) {
-    return "";
+  let rel = p.replace(/^\.\//, "").replace(/^\/+/, "");
+  // Полный data/wiki_img (~ГБ) в Pages не деплоим — всегда отдаём копию из data/guide_img.
+  if (/^data\/wiki_img\//i.test(rel)) {
+    const base = rel.split("/").pop();
+    if (base) rel = `data/guide_img/${base}`;
   }
   if (isSlimPagesHost() && /^data\//i.test(rel)) {
     return `${location.origin}${siteRootPrefix()}${rel}`;
   }
-  return p.startsWith("./") || p.startsWith("data/") || p.startsWith("/") ? (p.startsWith("./") ? p : `./${p}`) : `./${p}`;
+  return `./${rel}`;
 }
 
 /** Выбрать src + запасной путь (для onerror) */

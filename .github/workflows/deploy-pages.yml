@@ -1,4 +1,5 @@
-# Slim GitHub Pages deploy: drop oversized data/wiki_img (looks fall back to remote wiki URLs).
+# GitHub Pages: товары (data/img) + титулы (data/title_img) + значки гида (data/guide_img)
+# всегда в артефакте. Полный data/wiki_img (~ГБ) не деплоим.
 name: Deploy Pages
 
 on:
@@ -25,13 +26,71 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Drop oversized look cache from site artifact
+      - name: Verify required image packs
         run: |
+          set -e
+          test -d data/img
+          test -d data/title_img
+          test -d data/guide_img
+          python3 - <<'PY'
+          import json, sys
+          from pathlib import Path
+
+          def must_file(p: Path, label: str):
+              if not p.is_file():
+                  print(f"MISSING {label}: {p}", file=sys.stderr)
+                  sys.exit(1)
+
+          shop = json.loads(Path("data/items.json").read_text(encoding="utf-8"))
+          miss_icon = []
+          for it in shop.get("items") or []:
+              icon = str(it.get("imageLocal") or "").lstrip("./")
+              if not icon:
+                  miss_icon.append(it.get("name") or it.get("id"))
+                  continue
+              if not Path(icon).is_file():
+                  miss_icon.append(f"{it.get('name')}: {icon}")
+          if miss_icon:
+              print("Shop icons missing:", *miss_icon[:20], sep="\n", file=sys.stderr)
+              sys.exit(1)
+
+          wiki = json.loads(Path("data/wiki_items.json").read_text(encoding="utf-8"))
+          miss_guide = []
+          for it in wiki.get("items") or []:
+              if it.get("kind") != "achievements":
+                  continue
+              img = str(it.get("image") or "").lstrip("./")
+              if not img:
+                  miss_guide.append(it.get("name"))
+                  continue
+              base = Path(img).name
+              guide = Path("data/guide_img") / base
+              if not guide.is_file():
+                  miss_guide.append(f"{it.get('name')}: {guide}")
+          if miss_guide:
+              print("Achievement badges missing:", *miss_guide[:20], sep="\n", file=sys.stderr)
+              sys.exit(1)
+
+          print(
+              "ok images:",
+              f"shop={len(shop.get('items') or [])}",
+              f"guide_img={sum(1 for _ in Path('data/guide_img').iterdir())}",
+              f"title_img={sum(1 for _ in Path('data/title_img').iterdir())}",
+          )
+          PY
+
+      - name: Drop oversized local-only caches from artifact
+        run: |
+          set -e
+          # Полный кэш вики только локально; на сайт идут data/guide_img + data/img + data/title_img
           if [ -d data/wiki_img ]; then
             du -sh data/wiki_img || true
             rm -rf data/wiki_img
           fi
           rm -f data/watch_catalog.log data/scrape.log || true
+          rm -f data/_wiki_page_*.html data/_wiki_*.html data/_gift_*.html 2>/dev/null || true
+          echo "Keeping image packs:"
+          du -sh data/img data/title_img data/guide_img 2>/dev/null || true
           du -sh . || true
 
       - name: Setup Pages
