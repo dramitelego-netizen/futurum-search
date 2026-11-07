@@ -1262,18 +1262,15 @@ function siteRootPrefix() {
   return "/";
 }
 
-/** Абсолютный URL картинки с вики/сервера игры */
+/** Внешний URL картинки. Parapa не используем — все картинки с гида (локальные packs). */
 function absRemoteUrl(url) {
   const u = String(url || "").trim();
   if (!u) return "";
-  // parapa.ru отдаёт anti-bot challenge на hotlink — на статическом Pages не используем
-  if (isSlimPagesHost() && /(?:^|\/\/)(?:www\.)?parapa\.ru\b/i.test(u)) return "";
+  if (/(?:^|\/\/)(?:www\.)?parapa\.ru\b/i.test(u)) return "";
   if (/^https?:\/\//i.test(u)) return u;
   if (u.startsWith("//")) return `https:${u}`;
-  if (u.startsWith("/")) {
-    if (isSlimPagesHost()) return "";
-    return `https://parapa.ru${u}`;
-  }
+  // относительные /wiki/... раньше вели на parapa — больше не подставляем
+  if (u.startsWith("/")) return "";
   return u;
 }
 
@@ -1296,11 +1293,12 @@ function localImgPath(path) {
   return `./${rel}`;
 }
 
-/** Выбрать src + запасной путь (для onerror) */
+/** Выбрать src + запасной путь (для onerror). Картинки только локальные packs. */
 function pickImgSources(localPath, remoteUrl) {
   const local = localImgPath(localPath);
-  const remote = absRemoteUrl(remoteUrl);
-  if (preferRemoteImages()) {
+  const remote = absRemoteUrl(remoteUrl); // parapa → ""
+  // Даже в режиме «вики» не уходим на parapa: remote почти всегда пуст.
+  if (preferRemoteImages() && remote) {
     return { src: remote || local, fb: remote && local && remote !== local ? local : "" };
   }
   return { src: local || remote, fb: local && remote && local !== remote ? remote : "" };
@@ -3092,36 +3090,28 @@ function itemShowcasePairs(it) {
     return out.slice(0, THUMB_CAROUSEL_MAX);
   }
 
-  // Pages: wiki-look'и часто >1MB и не в артефакте → 404 «битая» картинка.
-  // В списке всегда значок (+ look из data/img магазина, если есть).
-  if (isSlimPagesHost()) {
-    const badge = itemImgPair(it);
-    add(badge);
-    for (const o of itemShopOffers(it)) {
-      const p = pickImgSources(o.lookLocal || "", "");
-      if (p.src) add({ src: p.src, fb: badge.src || p.fb || "" });
-    }
-    return out.slice(0, THUMB_CAROUSEL_MAX);
-  }
-
+  // Картинки только из локальных packs (guide_img / data/img). Parapa не используем.
+  const badge = itemImgPair(it);
   const variants = Array.isArray(it.lookVariants) ? it.lookVariants : [];
-  for (const v of variants) add(lookVariantPair(v));
-  add(itemLookPair(it));
+  for (const v of variants) {
+    const p = lookVariantPair(v);
+    if (p.src) add({ src: p.src, fb: p.fb || badge.src || "" });
+  }
+  {
+    const look = itemLookPair(it);
+    if (look.src && look.src !== badge.src) add({ src: look.src, fb: look.fb || badge.src || "" });
+  }
   for (const o of itemShopOffers(it)) {
-    add(pickImgSources(o.lookLocal || "", o.lookImage || ""));
+    const p = pickImgSources(o.lookLocal || "", "");
+    if (p.src) add({ src: p.src, fb: p.fb || badge.src || "" });
   }
 
-  // если отдельного «вида» нет — для достижений и т.п. берём собственную картинку товара
-  if (!out.length) {
-    if (sec === "achievements") add(itemImgPair(it));
-  } else {
-    const badge = itemImgPair(it).src;
-    if (badge) {
-      const onlyExtra = out.filter((p) => p.src !== badge);
-      if (onlyExtra.length) return onlyExtra.slice(0, THUMB_CAROUSEL_MAX);
-    }
+  // Значок всегда первый (локальный guide_img). Look'и — дополнительные слайды.
+  if (badge.src) {
+    const rest = out.filter((p) => p.src !== badge.src);
+    return [{ src: badge.src, fb: badge.fb || "" }, ...rest].slice(0, THUMB_CAROUSEL_MAX);
   }
-
+  if (!out.length && sec === "achievements") add(itemImgPair(it));
   return out.slice(0, THUMB_CAROUSEL_MAX);
 }
 
@@ -3188,14 +3178,11 @@ function titleShotSrc(it) {
 function itemLookPair(it) {
   if (!it) return { src: "", fb: "" };
   const badge = itemImgPair(it);
-  // На Pages не подставляем wiki look → guide_img (файла часто нет) — иначе битая картинка.
-  if (!isSlimPagesHost()) {
-    const own = pickImgSources(it.lookImage || "", it.lookImageUrl || "");
-    if (own.src) return { src: own.src, fb: own.fb || badge.src || "" };
-  }
+  const own = pickImgSources(it.lookImage || "", "");
+  if (own.src) return { src: own.src, fb: own.fb || badge.src || "" };
   const offers = itemShopOffers(it);
   for (const o of offers) {
-    const p = pickImgSources(o.lookLocal || "", isSlimPagesHost() ? "" : o.lookImage || "");
+    const p = pickImgSources(o.lookLocal || "", "");
     if (p.src) return { src: p.src, fb: p.fb || badge.src || "" };
   }
   return badge;
@@ -3233,12 +3220,7 @@ function lookImgClass(it) {
 
 function lookVariantPair(v) {
   if (!v) return { src: "", fb: "" };
-  if (isSlimPagesHost()) {
-    // wiki-варианты вида на Pages не деплоим целиком — не отдаём заведомый 404
-    const img = String(v.image || "");
-    if (/wiki_img/i.test(img)) return { src: "", fb: "" };
-  }
-  return pickImgSources(v.image || "", v.url || "");
+  return pickImgSources(v.image || "", "");
 }
 
 function lookVariantSrc(v) {
