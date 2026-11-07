@@ -884,7 +884,7 @@ function renderMobFavorites() {
       if (!it) return "";
       const sec = itemSectionOf(it) || f.section;
       const title = sec === "titles";
-      const pair = title ? { src: TITLE_BADGE_SRC, fb: "" } : itemImgPair(it);
+      const pair = title ? { src: titleBadgeSrc(), fb: "" } : itemImgPair(it);
       const thumb = pair.src
         ? `<span class="result-thumb-frame"><img class="result-thumb" src="${escapeHtml(
             pair.src
@@ -1222,10 +1222,11 @@ async function maybeAutoPickImgSrc() {
     applyImgSrcMode(currentImgSrcMode(), { persist: false });
     return;
   }
-  // Slim Pages без wiki_img: картинки с удалённой вики (репо private → raw GitHub недоступен)
+  // Slim Pages: wiki_img нет в артефакте, а parapa.ru для <img> часто режет антиботом.
+  // Держим режим «гид» (локальные data/img + title_img; wiki_img → пусто → оффер магазина).
   if (isSlimPagesHost()) {
-    applyImgSrcMode("remote", {
-      refresh: currentImgSrcMode() !== "remote",
+    applyImgSrcMode("local", {
+      refresh: currentImgSrcMode() !== "local",
       persist: true,
     });
     return;
@@ -1249,13 +1250,31 @@ async function maybeAutoPickImgSrc() {
   applyImgSrcMode(mode, { refresh: mode !== currentImgSrcMode(), persist: true });
 }
 
+/** Корень сайта с учётом GitHub project Pages (/user.github.io/repo/). */
+function siteRootPrefix() {
+  try {
+    if (/\.github\.io$/i.test(location.hostname)) {
+      const m = String(location.pathname || "").match(/^\/([^/]+)\//);
+      if (m) return `/${m[1]}/`;
+    }
+  } catch {
+    /* ignore */
+  }
+  return "/";
+}
+
 /** Абсолютный URL картинки с вики/сервера игры */
 function absRemoteUrl(url) {
   const u = String(url || "").trim();
   if (!u) return "";
+  // parapa.ru отдаёт anti-bot challenge на hotlink — на статическом Pages не используем
+  if (isSlimPagesHost() && /(?:^|\/\/)(?:www\.)?parapa\.ru\b/i.test(u)) return "";
   if (/^https?:\/\//i.test(u)) return u;
   if (u.startsWith("//")) return `https:${u}`;
-  if (u.startsWith("/")) return `https://parapa.ru${u}`;
+  if (u.startsWith("/")) {
+    if (isSlimPagesHost()) return "";
+    return `https://parapa.ru${u}`;
+  }
   return u;
 }
 
@@ -1263,9 +1282,12 @@ function localImgPath(path) {
   const p = String(path || "").trim();
   if (!p) return "";
   const rel = p.replace(/^\.\//, "").replace(/^\/+/, "");
-  // Slim Pages без wiki_img — не отдаём битый локальный путь (pickImgSources возьмёт remote)
+  // Slim Pages без wiki_img — пустой local, дальше itemImgPair возьмёт data/img оффера
   if (isSlimPagesHost() && /^data\/wiki_img\//i.test(rel)) {
     return "";
+  }
+  if (isSlimPagesHost() && /^data\//i.test(rel)) {
+    return siteRootPrefix() + rel;
   }
   return p.startsWith("./") || p.startsWith("data/") || p.startsWith("/") ? (p.startsWith("./") ? p : `./${p}`) : `./${p}`;
 }
@@ -3022,7 +3044,11 @@ function expandGuideToken(token) {
 }
 
 /** Общий значок титула в игре (одинаковый у всех) */
-const TITLE_BADGE_SRC = "./data/title_img/3d077203ce.png";
+function titleBadgeSrc() {
+  return isSlimPagesHost()
+    ? `${siteRootPrefix()}data/title_img/3d077203ce.png`
+    : "./data/title_img/3d077203ce.png";
+}
 
 function itemImgPair(it) {
   if (!it) return { src: "", fb: "" };
@@ -3127,7 +3153,7 @@ function resultThumbHtml(it, { title = false } = {}) {
     return `<span class="${cls}" data-count="${showcase.length}">${slides}</span>`;
   }
 
-  const badgePair = title ? { src: TITLE_BADGE_SRC, fb: "" } : itemImgPair(it);
+  const badgePair = title ? { src: titleBadgeSrc(), fb: "" } : itemImgPair(it);
   if (badgePair.src) {
     return `<span class="result-thumb-frame"><img class="result-thumb" src="${escapeHtml(
       badgePair.src
@@ -4860,7 +4886,7 @@ function renderList() {
               ? [slotShort(it.slot), it.source].filter(Boolean).join(" · ")
               : [it.source, it.kindLabel].filter(Boolean).join(" · ");
       // реальные картинки если есть, иначе значок — во всех видах и категориях
-      const pair = title ? { src: TITLE_BADGE_SRC, fb: "" } : itemImgPair(it);
+      const pair = title ? { src: titleBadgeSrc(), fb: "" } : itemImgPair(it);
       const thumb = resultThumbHtml(it, { title });
       const opN = title ? Number(it.op) || 0 : 0;
       const opTone = title ? ` ${opClass(it.op)}` : "";

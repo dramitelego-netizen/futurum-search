@@ -68,10 +68,16 @@
         const imgs = ["local", "remote"];
         const im = localStorage.getItem("futurum_img_src");
         const manual = localStorage.getItem("futurum_img_src_manual") === "1";
-        // На Pages wiki_img отдаётся с raw GitHub (titles.js) — режим гид
-        const imgMode = manual && imgs.includes(im) ? im : imgs.includes(im) ? im : "local";
+        const onPages = /\.github\.io$/i.test(location.hostname) || /\.pages\.dev$/i.test(location.hostname);
+        const imgMode = onPages ? "local" : manual && imgs.includes(im) ? im : imgs.includes(im) ? im : "local";
         document.documentElement.setAttribute("data-img-src", imgMode);
-        document.documentElement.setAttribute("data-img-src-manual", manual ? "1" : "0");
+        document.documentElement.setAttribute("data-img-src-manual", onPages ? "0" : manual ? "1" : "0");
+        if (onPages) {
+          try {
+            localStorage.setItem("futurum_img_src", "local");
+            localStorage.removeItem("futurum_img_src_manual");
+          } catch (_) {}
+        }
         // titles-m.html = только мобильная версия
         document.documentElement.setAttribute("data-guide-force", "mobile");
         document.documentElement.setAttribute("data-guide-layout", "mobile");
@@ -422,7 +428,7 @@
     <span class="edge-neon-label">Поиск предметов</span>
   </a>
 
-  <script src="titles.js?v=117"></script>
+  <script src="titles.js?v=118"></script>
   <script src="edge-swap.js?v=3"></script>
 </body>
 </html>

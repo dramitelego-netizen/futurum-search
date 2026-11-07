@@ -1020,16 +1020,29 @@ function isSlimPagesHost() {
   }
 }
 
+function siteRootPrefix() {
+  try {
+    if (/\.github\.io$/i.test(location.hostname)) {
+      const m = String(location.pathname || "").match(/^\/([^/]+)\//);
+      if (m) return `/${m[1]}/`;
+    }
+  } catch {
+    /* ignore */
+  }
+  return "/";
+}
+
 function proxyImage(url) {
   if (!url) return "";
   if (url.startsWith("data/") || url.startsWith("./data/") || url.startsWith("/data/")) {
-    // На slim-хосте локальный wiki_img отсутствует — пусть сработает remote fallback снаружи
     if (isSlimPagesHost() && /(?:^|\/)data\/wiki_img\//i.test(url)) return "";
+    const rel = url.replace(/^\.\//, "").replace(/^\/+/, "");
+    if (isSlimPagesHost() && /^data\//i.test(rel)) return siteRootPrefix() + rel;
     return url.startsWith("/") ? url : `./${url.replace(/^\.\//, "")}`;
   }
   if (url.includes("parapa.ru")) {
-    // /proxy есть только на локальном сервере; на Pages отдаём прямую ссылку
-    if (isSlimPagesHost()) return url;
+    // На Pages parapa anti-bot ломает <img>; локальный /proxy есть только у dev-сервера
+    if (isSlimPagesHost()) return "";
     return `/proxy?u=${encodeURIComponent(url)}`;
   }
   return url;
@@ -1038,9 +1051,8 @@ function proxyImage(url) {
 function itemThumb(item) {
   if (!item) return "";
   if (isSlimPagesHost()) {
-    // предпочитаем то, что реально откроется на Pages
     if (item.imageLocal && !/wiki_img/i.test(item.imageLocal)) return item.imageLocal;
-    return item.image || item.imageLocal || "";
+    return "";
   }
   return item.imageLocal || item.image || "";
 }
@@ -1049,8 +1061,7 @@ function itemLook(item) {
   if (!item) return "";
   if (isSlimPagesHost()) {
     if (item.lookLocal && !/wiki_img/i.test(item.lookLocal)) return item.lookLocal;
-    if (item.lookUnavailable) return "";
-    return item.lookImage || item.lookLocal || "";
+    return "";
   }
   if (item.lookLocal) return item.lookLocal;
   if (item.lookUnavailable) return "";
