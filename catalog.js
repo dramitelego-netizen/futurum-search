@@ -166,26 +166,68 @@ function formatDate(ts) {
   }
 }
 
+function isSlimPagesHost() {
+  try {
+    const h = String(location.hostname || "");
+    return (
+      /\.github\.io$/i.test(h) ||
+      /\.pages\.dev$/i.test(h) ||
+      /\.workers\.dev$/i.test(h)
+    );
+  } catch {
+    return false;
+  }
+}
+
+function siteRootPrefix() {
+  try {
+    if (/\.github\.io$/i.test(location.hostname)) {
+      const parts = String(location.pathname || "").split("/").filter(Boolean);
+      if (parts.length) return `/${parts[0]}/`;
+    }
+  } catch {
+    /* ignore */
+  }
+  return "/";
+}
+
 function proxyImage(url) {
   if (!url) return "";
   if (url.startsWith("data/") || url.startsWith("./data/") || url.startsWith("/data/")) {
+    if (isSlimPagesHost() && /(?:^|\/)data\/wiki_img\//i.test(url)) return "";
+    const rel = url.replace(/^\.\//, "").replace(/^\/+/, "");
+    if (isSlimPagesHost() && /^data\//i.test(rel)) {
+      return `${location.origin}${siteRootPrefix()}${rel}`;
+    }
     return url.startsWith("/") ? url : `./${url.replace(/^\.\//, "")}`;
   }
   if (url.includes("parapa.ru")) {
+    if (isSlimPagesHost()) return "";
     return `/proxy?u=${encodeURIComponent(url)}`;
   }
   return url;
 }
 
 function itemThumb(item) {
+  if (!item) return "";
+  if (isSlimPagesHost()) {
+    if (item.imageLocal && !/wiki_img/i.test(item.imageLocal)) return item.imageLocal;
+    return "";
+  }
   return item.imageLocal || item.image || "";
 }
 
 function itemLook(item) {
   if (!item) return "";
+  if (isSlimPagesHost()) {
+    if (item.lookLocal && !/wiki_img/i.test(item.lookLocal)) return item.lookLocal;
+    // нет look — показываем иконку, чтобы карточка не была пустой
+    if (item.imageLocal && !/wiki_img/i.test(item.imageLocal)) return item.imageLocal;
+    return "";
+  }
   if (item.lookLocal) return item.lookLocal;
   if (item.lookUnavailable) return "";
-  return item.lookImage || "";
+  return item.lookImage || item.imageLocal || "";
 }
 
 function itemOnSale(item) {

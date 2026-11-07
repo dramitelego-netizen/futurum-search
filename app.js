@@ -1023,8 +1023,8 @@ function isSlimPagesHost() {
 function siteRootPrefix() {
   try {
     if (/\.github\.io$/i.test(location.hostname)) {
-      const m = String(location.pathname || "").match(/^\/([^/]+)\//);
-      if (m) return `/${m[1]}/`;
+      const parts = String(location.pathname || "").split("/").filter(Boolean);
+      if (parts.length) return `/${parts[0]}/`;
     }
   } catch {
     /* ignore */
@@ -1037,7 +1037,9 @@ function proxyImage(url) {
   if (url.startsWith("data/") || url.startsWith("./data/") || url.startsWith("/data/")) {
     if (isSlimPagesHost() && /(?:^|\/)data\/wiki_img\//i.test(url)) return "";
     const rel = url.replace(/^\.\//, "").replace(/^\/+/, "");
-    if (isSlimPagesHost() && /^data\//i.test(rel)) return siteRootPrefix() + rel;
+    if (isSlimPagesHost() && /^data\//i.test(rel)) {
+      return `${location.origin}${siteRootPrefix()}${rel}`;
+    }
     return url.startsWith("/") ? url : `./${url.replace(/^\.\//, "")}`;
   }
   if (url.includes("parapa.ru")) {
@@ -1061,11 +1063,12 @@ function itemLook(item) {
   if (!item) return "";
   if (isSlimPagesHost()) {
     if (item.lookLocal && !/wiki_img/i.test(item.lookLocal)) return item.lookLocal;
+    if (item.imageLocal && !/wiki_img/i.test(item.imageLocal)) return item.imageLocal;
     return "";
   }
   if (item.lookLocal) return item.lookLocal;
   if (item.lookUnavailable) return "";
-  return item.lookImage || "";
+  return item.lookImage || item.imageLocal || "";
 }
 
 function escapeHtml(s) {

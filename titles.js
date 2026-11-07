@@ -1254,8 +1254,8 @@ async function maybeAutoPickImgSrc() {
 function siteRootPrefix() {
   try {
     if (/\.github\.io$/i.test(location.hostname)) {
-      const m = String(location.pathname || "").match(/^\/([^/]+)\//);
-      if (m) return `/${m[1]}/`;
+      const parts = String(location.pathname || "").split("/").filter(Boolean);
+      if (parts.length) return `/${parts[0]}/`;
     }
   } catch {
     /* ignore */
@@ -1287,7 +1287,7 @@ function localImgPath(path) {
     return "";
   }
   if (isSlimPagesHost() && /^data\//i.test(rel)) {
-    return siteRootPrefix() + rel;
+    return `${location.origin}${siteRootPrefix()}${rel}`;
   }
   return p.startsWith("./") || p.startsWith("data/") || p.startsWith("/") ? (p.startsWith("./") ? p : `./${p}`) : `./${p}`;
 }
