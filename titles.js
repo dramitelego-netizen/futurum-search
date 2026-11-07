@@ -1287,7 +1287,11 @@ function localImgPath(path) {
     if (base) rel = `data/guide_img/${base}`;
   }
   if (isSlimPagesHost() && /^data\//i.test(rel)) {
-    return `${location.origin}${siteRootPrefix()}${rel}`;
+    const enc = rel
+      .split("/")
+      .map((seg) => encodeURIComponent(seg))
+      .join("/");
+    return `${location.origin}${siteRootPrefix()}${enc}`;
   }
   return `./${rel}`;
 }
@@ -3088,6 +3092,18 @@ function itemShowcasePairs(it) {
     return out.slice(0, THUMB_CAROUSEL_MAX);
   }
 
+  // Pages: wiki-look'и часто >1MB и не в артефакте → 404 «битая» картинка.
+  // В списке всегда значок (+ look из data/img магазина, если есть).
+  if (isSlimPagesHost()) {
+    const badge = itemImgPair(it);
+    add(badge);
+    for (const o of itemShopOffers(it)) {
+      const p = pickImgSources(o.lookLocal || "", "");
+      if (p.src) add({ src: p.src, fb: badge.src || p.fb || "" });
+    }
+    return out.slice(0, THUMB_CAROUSEL_MAX);
+  }
+
   const variants = Array.isArray(it.lookVariants) ? it.lookVariants : [];
   for (const v of variants) add(lookVariantPair(v));
   add(itemLookPair(it));
@@ -3171,14 +3187,18 @@ function titleShotSrc(it) {
 
 function itemLookPair(it) {
   if (!it) return { src: "", fb: "" };
-  const own = pickImgSources(it.lookImage || "", it.lookImageUrl || "");
-  if (own.src) return own;
+  const badge = itemImgPair(it);
+  // На Pages не подставляем wiki look → guide_img (файла часто нет) — иначе битая картинка.
+  if (!isSlimPagesHost()) {
+    const own = pickImgSources(it.lookImage || "", it.lookImageUrl || "");
+    if (own.src) return { src: own.src, fb: own.fb || badge.src || "" };
+  }
   const offers = itemShopOffers(it);
   for (const o of offers) {
-    const p = pickImgSources(o.lookLocal || "", o.lookImage || "");
-    if (p.src) return p;
+    const p = pickImgSources(o.lookLocal || "", isSlimPagesHost() ? "" : o.lookImage || "");
+    if (p.src) return { src: p.src, fb: p.fb || badge.src || "" };
   }
-  return { src: "", fb: "" };
+  return badge;
 }
 
 /** Полный внешний вид предмета — отдельно от значка в списке */
@@ -3213,6 +3233,11 @@ function lookImgClass(it) {
 
 function lookVariantPair(v) {
   if (!v) return { src: "", fb: "" };
+  if (isSlimPagesHost()) {
+    // wiki-варианты вида на Pages не деплоим целиком — не отдаём заведомый 404
+    const img = String(v.image || "");
+    if (/wiki_img/i.test(img)) return { src: "", fb: "" };
+  }
   return pickImgSources(v.image || "", v.url || "");
 }
 
