@@ -1198,27 +1198,34 @@ async function probeFasterImgSrc() {
   return "local";
 }
 
-function isGitHubPagesHost() {
+/** Slim static host (GitHub/Cloudflare Pages) — без тяжёлого data/wiki_img в артефакте. */
+function isSlimPagesHost() {
   try {
-    return /\.github\.io$/i.test(location.hostname);
+    const h = String(location.hostname || "");
+    return (
+      /\.github\.io$/i.test(h) ||
+      /\.pages\.dev$/i.test(h) ||
+      /\.workers\.dev$/i.test(h)
+    );
   } catch {
     return false;
   }
 }
 
-/** Slim Pages artifact без data/wiki_img — те же файлы с raw.githubusercontent */
-const PAGES_RAW_IMG_BASE =
-  "https://raw.githubusercontent.com/dramitelego-netizen/futurum-search/main/";
+/** @deprecated use isSlimPagesHost */
+function isGitHubPagesHost() {
+  return isSlimPagesHost();
+}
 
 async function maybeAutoPickImgSrc() {
   if (isImgSrcManual()) {
     applyImgSrcMode(currentImgSrcMode(), { persist: false });
     return;
   }
-  // На Pages wiki_img отдаём с raw GitHub (см. localImgPath) — режим «гид», не вики
-  if (isGitHubPagesHost()) {
-    applyImgSrcMode("local", {
-      refresh: currentImgSrcMode() !== "local",
+  // Slim Pages без wiki_img: картинки с удалённой вики (репо private → raw GitHub недоступен)
+  if (isSlimPagesHost()) {
+    applyImgSrcMode("remote", {
+      refresh: currentImgSrcMode() !== "remote",
       persist: true,
     });
     return;
@@ -1256,9 +1263,9 @@ function localImgPath(path) {
   const p = String(path || "").trim();
   if (!p) return "";
   const rel = p.replace(/^\.\//, "").replace(/^\/+/, "");
-  // Pages деплой без wiki_img (~6GB) — грузим кэш образов с raw GitHub
-  if (isGitHubPagesHost() && /^data\/wiki_img\//i.test(rel)) {
-    return PAGES_RAW_IMG_BASE + rel.split("/").map(encodeURIComponent).join("/").replace(/%2F/gi, "/");
+  // Slim Pages без wiki_img — не отдаём битый локальный путь (pickImgSources возьмёт remote)
+  if (isSlimPagesHost() && /^data\/wiki_img\//i.test(rel)) {
+    return "";
   }
   return p.startsWith("./") || p.startsWith("data/") || p.startsWith("/") ? (p.startsWith("./") ? p : `./${p}`) : `./${p}`;
 }

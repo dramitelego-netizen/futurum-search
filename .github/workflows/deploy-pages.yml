@@ -1,42 +1,47 @@
-# Deploy private GitHub → Cloudflare Pages (futurum / futurum-3yj.pages.dev).
-# Drops oversized wiki_img + log caches so the upload stays lean.
-name: Deploy Cloudflare Pages
+# Slim GitHub Pages deploy: drop oversized data/wiki_img (looks fall back to remote wiki URLs).
+name: Deploy Pages
 
 on:
   push:
-    branches: [main, cf-pages]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 concurrency:
-  group: cloudflare-pages
+  group: pages
   cancel-in-progress: true
 
 jobs:
   deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Slim site for upload
+      - name: Drop oversized look cache from site artifact
         run: |
-          set -euo pipefail
           if [ -d data/wiki_img ]; then
             du -sh data/wiki_img || true
             rm -rf data/wiki_img
           fi
           rm -f data/watch_catalog.log data/scrape.log || true
-          # drop local probes / labs noise if present (not needed live)
-          rm -rf data/_alice_gifts data/_wiki_page_* data/_gift_* 2>/dev/null || true
           du -sh . || true
 
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy . --project-name=futurum --branch=cf-pages --commit-dirty=true
+          path: .
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
