@@ -1,0 +1,21 @@
+# Slim GitLab Pages: drop data/wiki_img so artifact stays under size limits.
+# Images fall back to remote wiki URLs on the live site.
+pages:
+  stage: deploy
+  image: alpine:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - |
+      if [ -d data/wiki_img ]; then
+        du -sh data/wiki_img || true
+        rm -rf data/wiki_img
+      fi
+      mkdir -p public
+      # copy site without .git and the oversized look cache
+      tar --exclude='./.git' --exclude='./public' --exclude='./data/wiki_img' -cf - . | tar -C public -xf -
+      du -sh public || true
+  artifacts:
+    paths:
+      - public
+  publish: public

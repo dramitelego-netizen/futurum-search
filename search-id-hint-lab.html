@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Подсказка id — другие стили</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07090d;
+      --panel: #12161e;
+      --ink: #e8eef7;
+      --mute: #7d8a9a;
+      --accent: #3dffe0;
+      --accent-2: #ff4d6d;
+      --line: rgba(232, 238, 247, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Rajdhani", sans-serif;
+      background:
+        radial-gradient(ellipse 70% 45% at 20% 0%, #0f1a1c, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 90% 10%, rgba(61, 255, 224, 0.06), transparent 50%),
+        var(--bg);
+      color: var(--ink);
+      padding: 1.35rem clamp(1rem, 3vw, 2rem) 3rem;
+    }
+    h1 {
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin: 0 0 0.35rem;
+    }
+    .lead {
+      color: var(--mute);
+      margin: 0 0 0.85rem;
+      max-width: 46rem;
+      line-height: 1.45;
+    }
+    .lead strong { color: var(--accent); }
+    .sets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 0 0 1rem;
+    }
+    .sets button {
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--mute);
+      padding: 0.4rem 0.9rem;
+    }
+    .sets button.on {
+      color: #041014;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      margin: 0 0 1.1rem;
+    }
+    .tools label { color: var(--mute); font-size: 0.9rem; }
+    .tools input,
+    .tools select {
+      font: inherit;
+      background: #0a0c10;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      border-radius: 10px;
+      padding: 0.4rem 0.65rem;
+    }
+    .tools input { width: 5.5rem; }
+    .picked-bar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      margin: 0 0 1rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--panel) 92%, var(--accent) 8%);
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .picked-bar[hidden] { display: none !important; }
+    .picked-bar b { color: var(--accent); }
+    .picked-bar .copy {
+      font: inherit;
+      cursor: pointer;
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 0.35rem 0.85rem;
+    }
+    .grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    }
+    .card {
+      background: color-mix(in srgb, var(--panel) 94%, black);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem 1.05rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+    .card.is-picked {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent);
+    }
+    .card-num {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+    }
+    .card-title { font-weight: 700; font-size: 1.05rem; }
+    .card-desc { margin: 0; color: var(--mute); font-size: 0.86rem; line-height: 1.35; }
+    .demo {
+      padding: 1.2rem 1rem 1.05rem;
+      border-radius: 12px;
+      min-height: 7.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 0%, rgba(61, 255, 224, 0.05), transparent 60%),
+        #0a0c10;
+      border: 1px solid var(--line);
+    }
+    .pick {
+      margin-top: auto;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink);
+      padding: 0.45rem 0.9rem;
+    }
+    .card.is-picked .pick {
+      background: color-mix(in srgb, var(--accent) 16%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+      color: var(--accent);
+    }
+
+    .sw { position: relative; width: min(100%, 400px); margin: 0 auto; }
+    .sw input {
+      width: 100%;
+      font-family: "Rajdhani", sans-serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-align: center;
+      color: var(--ink);
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+      padding: 0.35rem 0.5rem 0.5rem;
+      outline: none;
+    }
+
+    /* ===== SET 2 — другие стили ===== */
+
+    /* M — бейдж НАД полем */
+    .m-badge {
+      display: flex;
+      justify-content: center;
+      margin: 0 0 0.55rem;
+    }
+    .m-badge span {
+      max-width: 100%;
+      padding: 0.2rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      letter-spacing: 0.02em;
+      color: #041014;
+      background: color-mix(in srgb, var(--accent) 82%, white);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* N — водяной знак за цифрами */
+    .n-wrap { position: relative; isolation: isolate; }
+    .n-water {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: clamp(1.6rem, 6vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: color-mix(in srgb, var(--accent) 12%, transparent);
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 0 0.5rem;
+    }
+    .n-wrap input { position: relative; z-index: 1; }
+
+    /* O — терминал / mono */
+    .o-term {
+      margin: 0.5rem 0 0;
+      padding: 0.4rem 0.55rem;
+      border-radius: 8px;
+      background: #06080c;
+      border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line));
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.68rem;
+      color: color-mix(in srgb, var(--accent) 70%, var(--ink));
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .o-term::before { content: "> "; opacity: 0.55; }
+
+    /* P — мини-карточка товара */
+    .p-card {
+      display: grid;
+      grid-template-columns: 2.4rem 1fr;
+      gap: 0.55rem;
+      align-items: center;
+      margin: 0.55rem auto 0;
+      max-width: 18rem;
+      padding: 0.45rem 0.55rem;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--panel) 80%, transparent);
+      border: 1px solid var(--line);
+    }
+    .p-thumb {
+      width: 2.4rem;
+      height: 2.4rem;
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 30% 30%, #5a6, transparent 55%),
+        linear-gradient(145deg, #1a2230, #0c1018);
+      border: 1px solid var(--line);
+    }
+    .p-meta { min-width: 0; }
+    .p-meta .lab {
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+    .p-meta .name {
+      font-size: 0.8rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--ink);
+    }
+
+    /* Q — статус-строка как в IDE */
+    .q-status {
+      display: flex;
+      justify-content: center;
+      gap: 0.55rem;
+      margin: 0.5rem 0 0;
+      font-size: 0.68rem;
+      color: var(--mute);
+      font-variant-numeric: tabular-nums;
+    }
+    .q-status b { color: var(--accent); font-weight: 700; }
+    .q-status .sep { opacity: 0.35; }
+    .q-status .nm {
+      max-width: 11rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: color-mix(in srgb, var(--ink) 70%, var(--mute));
+    }
+
+    /* R — пузырь */
+    .r-bubble {
+      position: relative;
+      margin: 0.65rem auto 0;
+      max-width: 17rem;
+      padding: 0.45rem 0.7rem;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--ink) 6%, transparent);
+      border: 1px solid var(--line);
+      font-size: 0.76rem;
+      text-align: center;
+      color: color-mix(in srgb, var(--ink) 80%, var(--mute));
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .r-bubble::before {
+      content: "";
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      width: 10px;
+      height: 10px;
+      margin-left: -5px;
+      background: inherit;
+      border-left: 1px solid var(--line);
+      border-top: 1px solid var(--line);
+      transform: rotate(45deg);
+    }
+
+    /* S — имя как второй «слой» placeholder */
+    .s-wrap { position: relative; }
+    .s-ph {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0.55rem;
+      text-align: center;
+      font-size: 0.72rem;
+      color: color-mix(in srgb, var(--mute) 75%, transparent);
+      pointer-events: none;
+      transform: translateY(1.15rem);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 0 0.5rem;
+    }
+
+    /* T — тонкая линия + fade имя */
+    .t-line {
+      margin: 0.55rem 0 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 55%, transparent), transparent);
+    }
+    .t-name {
+      margin: 0.4rem 0 0;
+      text-align: center;
+      font-size: 0.8rem;
+      background: linear-gradient(90deg, transparent 0%, var(--ink) 18%, var(--ink) 82%, transparent 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* U — сбоку от поля (ряд) */
+    .u-row {
+      display: grid;
+      grid-template-columns: 1fr minmax(0, 1.1fr);
+      gap: 0.75rem;
+      align-items: end;
+      width: min(100%, 400px);
+      margin: 0 auto;
+    }
+    .u-row .sw { width: 100%; margin: 0; }
+    .u-side {
+      font-size: 0.78rem;
+      line-height: 1.3;
+      color: color-mix(in srgb, var(--ink) 75%, var(--mute));
+      padding-bottom: 0.55rem;
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .u-side small {
+      display: block;
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: 0.15rem;
+    }
+
+    /* V — пульс-точка + имя */
+    .v-pulse {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      margin: 0.5rem 0 0;
+      font-size: 0.78rem;
+      color: color-mix(in srgb, var(--ink) 72%, var(--mute));
+    }
+    .v-pulse i {
+      width: 0.4rem;
+      height: 0.4rem;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+      flex: 0 0 auto;
+      animation: pulse-dot 1.6s ease-in-out infinite;
+    }
+    .v-pulse span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 16rem;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 0.45; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+
+    /* W — крупный id слева, имя справа под ним */
+    .w-block { width: min(100%, 400px); margin: 0 auto; }
+    .w-block input { text-align: left; padding-left: 0.15rem; }
+    .w-sub {
+      margin: 0.35rem 0 0;
+      font-size: 0.76rem;
+      color: var(--mute);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* X — «совпадение» с галочкой */
+    .x-ok {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin: 0.5rem auto 0;
+      max-width: 100%;
+      font-size: 0.76rem;
+      color: color-mix(in srgb, var(--ink) 78%, var(--mute));
+    }
+    .x-ok .mark {
+      flex: 0 0 auto;
+      width: 1.05rem;
+      height: 1.05rem;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: color-mix(in srgb, var(--accent) 18%, transparent);
+      color: var(--accent);
+      font-size: 0.7rem;
+      font-weight: 800;
+    }
+    .x-ok .nm {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .x-wrap { display: flex; flex-direction: column; align-items: center; }
+
+    /* Y — бегущая строка для длинных имён */
+    .y-marquee {
+      margin: 0.5rem 0 0;
+      overflow: hidden;
+      mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+    }
+    .y-marquee span {
+      display: inline-block;
+      padding-left: 100%;
+      white-space: nowrap;
+      font-size: 0.76rem;
+      color: color-mix(in srgb, var(--ink) 70%, var(--mute));
+      animation: marquee 9s linear infinite;
+    }
+    @keyframes marquee {
+      to { transform: translateX(-100%); }
+    }
+
+    /* Z — почти ничего: тонкая подсветка поля + title */
+    .z-wrap input {
+      border-bottom-color: color-mix(in srgb, var(--accent) 70%, var(--line));
+      text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 25%, transparent);
+    }
+    .z-cap {
+      margin: 0.35rem 0 0;
+      text-align: center;
+      font-size: 0.62rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--mute) 75%, transparent);
+    }
+  </style>
+</head>
+<body>
+  <h1>Подсказка id — другие стили</h1>
+  <p class="lead">
+    Новый набор, не похожий на прошлый. В поле по-прежнему только цифры.
+    Нажми <strong>Выбрать</strong> и напиши букву варианта в чат.
+  </p>
+
+  <div class="sets" id="sets">
+    <button type="button" data-set="2" class="on">Набор 2 — новые</button>
+    <button type="button" data-set="1">Набор 1 — старые</button>
+  </div>
+
+  <div class="tools">
+    <label for="demoId">id</label>
+    <input id="demoId" type="text" value="66" maxlength="6" inputmode="numeric" />
+    <label for="demoName">название</label>
+    <select id="demoName">
+      <option value="Крылья горящего Люцифера (женские)">короткое (66)</option>
+      <option value="★ Интерактив для туфельки «Поцелуй» (парный)">длинное (666)</option>
+      <option value="☆ Подарок «Хранитель снов»">подарок (758)</option>
+    </select>
+  </div>
+
+  <div class="picked-bar" id="pickedBar" hidden>
+    <span>Выбрано: <b id="pickedLabel">—</b></span>
+    <button type="button" class="copy" id="copyPick">Скопировать букву</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <script>
+    const SET1 = [
+      { id: "A", title: "Как было", desc: "#66 + название.", render: (id, n) => field(id, `<div style="margin:.45rem 0 0;text-align:center;font-size:.78rem;color:var(--mute)"><b style="color:var(--accent)">#${id}</b> ${n}</div>`) },
+      { id: "B", title: "Только имя", desc: "Без #id.", render: (id, n) => field(id, `<div style="margin:.4rem 0 0;text-align:center;font-size:.8rem;color:var(--mute)">${n}</div>`) },
+      { id: "C", title: "Стрелка", desc: "66 → имя.", render: (id, n) => field(id, `<div style="margin:.42rem 0 0;text-align:center;font-size:.78rem;color:var(--mute)">${id} <span style="color:var(--accent)">→</span> ${n}</div>`) },
+      { id: "E", title: "Чип", desc: "Таблетка.", render: (id, n) => field(id, `<div style="display:flex;justify-content:center;margin:.55rem 0 0"><span style="padding:.28rem .7rem;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent) 28%,var(--line));background:color-mix(in srgb,var(--accent) 8%,transparent);font-size:.74rem">#${id} ${n}</span></div>`) },
+      { id: "J", title: "Очень тихо", desc: "Почти не видно.", render: (id, n) => field(id, `<div style="margin:.35rem 0 0;text-align:center;font-size:.7rem;color:color-mix(in srgb,var(--mute) 88%,transparent)">${n}</div>`) },
+      { id: "L", title: "Тег id", desc: "Ярлык + имя.", render: (id, n) => field(id, `<div style="display:flex;justify-content:center;gap:.45rem;margin:.45rem 0 0;font-size:.74rem"><span style="padding:.12rem .4rem;border-radius:4px;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700">id</span><span style="color:var(--mute)">${n}</span></div>`) },
+    ];
+
+    const SET2 = [
+      {
+        id: "M",
+        title: "Бейдж сверху",
+        desc: "Название над строкой — поле чище.",
+        render: (id, n) =>
+          `<div class="sw"><div class="m-badge"><span>${n}</span></div><input readonly value="${id}" /></div>`,
+      },
+      {
+        id: "N",
+        title: "Водяной знак",
+        desc: "Имя светится за цифрами, отдельной строки нет.",
+        render: (id, n) =>
+          `<div class="sw n-wrap"><div class="n-water">${n}</div><input readonly value="${id}" /></div>`,
+      },
+      {
+        id: "O",
+        title: "Терминал",
+        desc: "Как строка в консоли: > match …",
+        render: (id, n) => field(id, `<div class="o-term">match ${id} · ${n}</div>`),
+      },
+      {
+        id: "P",
+        title: "Мини-карточка",
+        desc: "Превью предмета сразу под поиском.",
+        render: (id, n) =>
+          field(id, `<div class="p-card"><div class="p-thumb" aria-hidden="true"></div><div class="p-meta"><div class="lab">id ${id}</div><div class="name">${n}</div></div></div>`),
+      },
+      {
+        id: "Q",
+        title: "Статус IDE",
+        desc: "id · ok · название — служебная строка.",
+        render: (id, n) =>
+          field(id, `<div class="q-status"><span>id <b>${id}</b></span><span class="sep">·</span><span>ok</span><span class="sep">·</span><span class="nm">${n}</span></div>`),
+      },
+      {
+        id: "R",
+        title: "Пузырь",
+        desc: "Подсказка-облачко под полем.",
+        render: (id, n) => field(id, `<div class="r-bubble">${n}</div>`),
+      },
+      {
+        id: "S",
+        title: "Слой под полем",
+        desc: "Имя как второй уровень, не в самой строке.",
+        render: (id, n) =>
+          `<div class="sw s-wrap"><input readonly value="${id}" /><div class="s-ph">${n}</div></div>`,
+      },
+      {
+        id: "T",
+        title: "Fade-линия",
+        desc: "Тонкая черта и имя с градиентом.",
+        render: (id, n) => field(id, `<div class="t-line"></div><div class="t-name">${n}</div>`),
+      },
+      {
+        id: "U",
+        title: "Сбоку",
+        desc: "Цифры слева, расшифровка справа.",
+        render: (id, n) =>
+          `<div class="u-row"><div class="sw"><input readonly value="${id}" /></div><div class="u-side"><small>предмет</small>${n}</div></div>`,
+      },
+      {
+        id: "V",
+        title: "Пульс",
+        desc: "Точка «нашли» + название.",
+        render: (id, n) =>
+          field(id, `<div class="v-pulse"><i></i><span>${n}</span></div>`),
+      },
+      {
+        id: "W",
+        title: "Влево",
+        desc: "Цифры слева, имя спокойной подписью.",
+        render: (id, n) =>
+          `<div class="w-block"><input readonly value="${id}" /><div class="w-sub">${n}</div></div>`,
+      },
+      {
+        id: "X",
+        title: "Галочка",
+        desc: "Подтверждение совпадения.",
+        render: (id, n) =>
+          `<div class="sw x-wrap"><input readonly value="${id}" /><div class="x-ok"><span class="mark">✓</span><span class="nm">${n}</span></div></div>`,
+      },
+      {
+        id: "Y",
+        title: "Бегущая строка",
+        desc: "Для длинных названий — не обрезает.",
+        render: (id, n) => field(id, `<div class="y-marquee"><span>${n} · ${n}</span></div>`),
+      },
+      {
+        id: "Z",
+        title: "Почти пусто",
+        desc: "Только подсветка поля + крошечная метка.",
+        render: (id, n) =>
+          `<div class="sw z-wrap" title="${n}"><input readonly value="${id}" /><div class="z-cap">найдено</div></div>`,
+      },
+    ];
+
+    function field(id, below) {
+      return `<div class="sw"><input readonly value="${id}" />${below || ""}</div>`;
+    }
+
+    const grid = document.getElementById("grid");
+    const demoId = document.getElementById("demoId");
+    const demoName = document.getElementById("demoName");
+    const pickedBar = document.getElementById("pickedBar");
+    const pickedLabel = document.getElementById("pickedLabel");
+    let set = 2;
+    let picked = localStorage.getItem("futurum-id-hint-pick") || "";
+
+    function esc(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function list() {
+      return set === 1 ? SET1 : SET2;
+    }
+
+    function paint() {
+      const id = esc(demoId.value.trim() || "66");
+      const name = esc(demoName.value);
+      const variants = list();
+      grid.innerHTML = variants
+        .map(
+          (v) => `
+        <article class="card${picked === v.id ? " is-picked" : ""}" data-id="${v.id}">
+          <div class="card-num">ВАРИАНТ ${v.id}</div>
+          <div class="card-title">${v.title}</div>
+          <p class="card-desc">${v.desc}</p>
+          <div class="demo">${v.render(id, name)}</div>
+          <button type="button" class="pick">${picked === v.id ? "Выбрано ✓" : "Выбрать"}</button>
+        </article>`
+        )
+        .join("");
+
+      const all = [...SET1, ...SET2];
+      const v = all.find((x) => x.id === picked);
+      if (picked && v) {
+        pickedBar.hidden = false;
+        pickedLabel.textContent = `${v.id} — ${v.title}`;
+      } else {
+        pickedBar.hidden = true;
+      }
+    }
+
+    document.getElementById("sets").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-set]");
+      if (!btn) return;
+      set = Number(btn.dataset.set);
+      document.querySelectorAll("#sets button").forEach((b) => b.classList.toggle("on", b === btn));
+      paint();
+    });
+
+    grid.addEventListener("click", (e) => {
+      const btn = e.target.closest(".pick");
+      if (!btn) return;
+      picked = btn.closest(".card").dataset.id;
+      localStorage.setItem("futurum-id-hint-pick", picked);
+      paint();
+    });
+
+    document.getElementById("copyPick").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(picked);
+        const b = document.getElementById("copyPick");
+        b.textContent = "Скопировано: " + picked;
+        setTimeout(() => (b.textContent = "Скопировать букву"), 1200);
+      } catch { /* ignore */ }
+    });
+
+    demoId.addEventListener("input", paint);
+    demoName.addEventListener("change", paint);
+    paint();
+  </script>
+</body>
+</html>

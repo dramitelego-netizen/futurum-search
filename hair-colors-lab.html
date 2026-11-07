@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>FUTURUM · лаба цветов причёсок</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #070a10;
+      --panel: #0e151e;
+      --line: #2a3848;
+      --text: #e8f2f8;
+      --mute: #8aa0b4;
+      --accent: #3ecfbe;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Rajdhani", system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(900px 500px at 15% -10%, #123348 0%, transparent 55%),
+        var(--bg);
+      min-height: 100vh;
+    }
+    .top {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem 1rem;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, #05070a 92%, transparent);
+      backdrop-filter: blur(10px);
+    }
+    .top strong {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.74rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .top span { color: var(--mute); font-size: 0.86rem; }
+    .top a {
+      color: inherit;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      font-weight: 700;
+      font-size: 0.84rem;
+    }
+    .pick {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .pick button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .pick button.on {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+      background: color-mix(in srgb, var(--accent) 14%, var(--panel));
+    }
+    .note {
+      margin: 0;
+      padding: 0.55rem 1rem 0.8rem;
+      color: var(--mute);
+      font-size: 0.88rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(220px, 280px) 1fr;
+      gap: 1rem;
+      padding: 1rem;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    .item-list {
+      display: grid;
+      gap: 0.4rem;
+      position: sticky;
+      top: 5.5rem;
+    }
+    .item-list button {
+      appearance: none;
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 0.55rem 0.65rem;
+      font: inherit;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 0.55rem;
+      align-items: center;
+    }
+    .item-list button.on {
+      border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+      background: color-mix(in srgb, var(--accent) 10%, var(--panel));
+    }
+    .item-list img {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: #0a1018;
+    }
+    .item-list strong { display: block; font-size: 0.92rem; }
+    .item-list span { color: var(--mute); font-size: 0.74rem; }
+
+    .gallery {
+      display: grid;
+      gap: 1rem;
+    }
+    .fx-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      overflow: hidden;
+    }
+    .fx-card header {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      align-items: baseline;
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .fx-card header strong {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .fx-card header span { color: var(--mute); font-size: 0.8rem; }
+    .panel {
+      width: min(100%, 360px);
+      margin: 0.9rem;
+      padding: 0.85rem;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #0a1018;
+      display: grid;
+      gap: 0.65rem;
+    }
+    .panel-title {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 0.65rem;
+      align-items: center;
+    }
+    .panel-title img {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      border-radius: 10px;
+      background: #05070a;
+    }
+    .panel-title h3 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+    .panel-title p {
+      margin: 0.15rem 0 0;
+      color: var(--mute);
+      font-size: 0.8rem;
+    }
+    .look-stage {
+      position: relative;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #05070a;
+      min-height: 210px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+    .look-stage img {
+      max-width: 100%;
+      max-height: 240px;
+      object-fit: contain;
+    }
+    .look-caption {
+      margin: 0;
+      text-align: center;
+      font-size: 0.82rem;
+      color: color-mix(in srgb, var(--accent) 75%, #fff);
+      font-weight: 700;
+      text-transform: lowercase;
+    }
+    .meta {
+      margin: 0;
+      color: var(--mute);
+      font-size: 0.8rem;
+    }
+
+    /* A: thumbs under look */
+    .swatch-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .swatch {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: #101820;
+      border-radius: 10px;
+      padding: 0.2rem;
+      cursor: pointer;
+      width: 48px;
+    }
+    .swatch img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: contain;
+      border-radius: 7px;
+      background: #05070a;
+    }
+    .swatch.on {
+      border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+    .swatch span {
+      display: block;
+      margin-top: 0.15rem;
+      font-size: 0.62rem;
+      color: var(--mute);
+      text-align: center;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* B: color chips */
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .chip {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--text) 4%, transparent);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 0.28rem 0.65rem;
+      font: inherit;
+      font-weight: 700;
+      font-size: 0.78rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .chip i {
+      width: 0.7rem;
+      height: 0.7rem;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.25);
+      display: inline-block;
+    }
+    .chip.on {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+    }
+
+    /* C: all-colors grid */
+    .grid-colors {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.35rem;
+    }
+    .grid-colors button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: #101820;
+      border-radius: 10px;
+      padding: 0.25rem;
+      cursor: pointer;
+      color: var(--text);
+      font: inherit;
+    }
+    .grid-colors button.on {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+    }
+    .grid-colors img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: contain;
+      border-radius: 7px;
+      background: #05070a;
+    }
+    .grid-colors span {
+      display: block;
+      margin-top: 0.2rem;
+      font-size: 0.68rem;
+      text-align: center;
+      color: var(--mute);
+    }
+
+    /* D: horizontal filmstrip */
+    .film {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 72px;
+      gap: 0.4rem;
+      overflow-x: auto;
+      padding-bottom: 0.2rem;
+      scroll-snap-type: x mandatory;
+    }
+    .film button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: #101820;
+      border-radius: 12px;
+      padding: 0.25rem;
+      cursor: pointer;
+      scroll-snap-align: start;
+      color: var(--text);
+      font: inherit;
+    }
+    .film button.on {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+    }
+    .film img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: contain;
+      border-radius: 8px;
+      background: #05070a;
+    }
+    .film span {
+      display: block;
+      margin-top: 0.2rem;
+      font-size: 0.66rem;
+      text-align: center;
+      color: var(--mute);
+    }
+
+    /* E: split main + side rail of colors */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 78px;
+      gap: 0.45rem;
+      align-items: stretch;
+    }
+    .split .rail {
+      display: grid;
+      gap: 0.3rem;
+      overflow-y: auto;
+      max-height: 240px;
+    }
+    .split .rail button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: #101820;
+      border-radius: 8px;
+      padding: 0.15rem;
+      cursor: pointer;
+    }
+    .split .rail button.on {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+    }
+    .split .rail img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: contain;
+      border-radius: 6px;
+      background: #05070a;
+    }
+
+    /* F: big mosaic only */
+    .mosaic {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.4rem;
+    }
+    .mosaic button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: #101820;
+      border-radius: 12px;
+      padding: 0.35rem;
+      cursor: pointer;
+      color: var(--text);
+      font: inherit;
+      text-align: left;
+    }
+    .mosaic button.on {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+    }
+    .mosaic img {
+      width: 100%;
+      aspect-ratio: 1.1;
+      object-fit: contain;
+      border-radius: 8px;
+      background: #05070a;
+    }
+    .mosaic span {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div>
+      <strong>Цвета причёсок</strong>
+      <span>примеры в инфоблоке · выбери букву</span>
+    </div>
+    <a href="./titles.html">← Поиск по игре</a>
+  </header>
+
+  <div class="pick" id="itemPick"></div>
+  <p class="note">Слева предмет, справа 6 макетов одного инфоблока. Кликай цвета внутри карточек. Напиши в чат букву (A–F).</p>
+
+  <div class="layout">
+    <aside class="item-list" id="list"></aside>
+    <div class="gallery" id="gallery"></div>
+  </div>
+
+  <script>
+    const COLOR_HEX = {
+      черный: "#222",
+      чёрный: "#222",
+      красный: "#d44545",
+      желтый: "#d4b03a",
+      жёлтый: "#d4b03a",
+      синий: "#3a6fd4",
+      зеленый: "#3cb887",
+      зелёный: "#3cb887",
+      сиреневый: "#a878d4",
+      белый: "#e8eef5",
+      коричневый: "#8a5a3a",
+      розовый: "#e07aa8",
+      голубой: "#6eb7e0",
+      фиолетовый: "#7a56c8",
+      рыжий: "#c46a2b",
+      серый: "#8a93a0",
+    };
+
+    const FALLBACK = [
+      {
+        name: "Королева красоты",
+        icon: "https://parapa.ru/wiki/images/1/1b/5b21b318e3.png",
+        desc: "Ты сногсшибательна!",
+        colors: [
+          { label: "черный", url: "https://parapa.ru/wiki/images/1/15/A6d3aaa6d6123.png" },
+          { label: "красный", url: "https://parapa.ru/wiki/images/4/4c/117bbb29d2_%281%29.png" },
+          { label: "желтый", url: "https://parapa.ru/wiki/images/0/0b/B39c5774f112.png" },
+          { label: "синий", url: "https://parapa.ru/wiki/images/f/f3/Af63ff15f612.png" },
+          { label: "зеленый", url: "https://parapa.ru/wiki/images/2/2a/142b4bea54123.png" },
+          { label: "сиреневый", url: "https://parapa.ru/wiki/images/5/5b/C15e919d8f14.png" },
+          { label: "белый", url: "https://parapa.ru/wiki/images/3/30/94042b95f41258.png" },
+          { label: "коричневый", url: "https://parapa.ru/wiki/images/4/43/9156098d58147.png" },
+        ],
+      },
+    ];
+
+    let items = FALLBACK.slice();
+    let current = 0;
+    const selected = {}; // fxId -> color index
+
+    function imgSrc(url) {
+      if (!url) return "";
+      if (url.startsWith("http")) return `/proxy?u=${encodeURIComponent(url)}`;
+      return url;
+    }
+
+    function hexFor(label) {
+      return COLOR_HEX[String(label || "").toLowerCase()] || "#6a7686";
+    }
+
+    function getItem() {
+      return items[current] || items[0];
+    }
+
+    function colorAt(fx, item) {
+      const i = selected[fx] ?? 0;
+      return item.colors[Math.max(0, Math.min(item.colors.length - 1, i))];
+    }
+
+    function setColor(fx, idx) {
+      selected[fx] = idx;
+      renderGallery();
+    }
+
+    function titleBlock(item) {
+      return `<div class="panel-title">
+        <img src="${imgSrc(item.icon)}" alt="" width="56" height="56" loading="lazy" />
+        <div>
+          <h3>${item.name}</h3>
+          <p>${item.desc || "Причёска · цвета с вики"}</p>
+        </div>
+      </div>`;
+    }
+
+    function lookBlock(fx, item) {
+      const c = colorAt(fx, item);
+      return `<div class="look-stage"><img src="${imgSrc(c.url)}" alt="${c.label}" /></div>
+        <p class="look-caption">${c.label}</p>`;
+    }
+
+    const FX = [
+      {
+        id: "A",
+        title: "A · большой вид + миниатюры",
+        hint: "клик по миниатюре меняет верх",
+        html(item) {
+          const idx = selected.A ?? 0;
+          return `${titleBlock(item)}${lookBlock("A", item)}
+            <div class="swatch-row">
+              ${item.colors
+                .map(
+                  (c, i) => `<button type="button" class="swatch${i === idx ? " on" : ""}" data-fx="A" data-i="${i}" title="${c.label}">
+                    <img src="${imgSrc(c.url)}" alt="" loading="lazy" /><span>${c.label}</span>
+                  </button>`
+                )
+                .join("")}
+            </div>
+            <p class="meta">Источник · ТЦ · цвета с ссылок вики</p>`;
+        },
+      },
+      {
+        id: "B",
+        title: "B · большой вид + чипы цвета",
+        hint: "текстовые пилюли с точкой цвета",
+        html(item) {
+          const idx = selected.B ?? 0;
+          return `${titleBlock(item)}${lookBlock("B", item)}
+            <div class="chip-row">
+              ${item.colors
+                .map(
+                  (c, i) => `<button type="button" class="chip${i === idx ? " on" : ""}" data-fx="B" data-i="${i}">
+                    <i style="background:${hexFor(c.label)}"></i>${c.label}
+                  </button>`
+                )
+                .join("")}
+            </div>
+            <p class="meta">Компактно, если миниатюры мешают</p>`;
+        },
+      },
+      {
+        id: "C",
+        title: "C · сетка всех цветов",
+        hint: "сравнение сразу, крупный вид сверху",
+        html(item) {
+          const idx = selected.C ?? 0;
+          return `${titleBlock(item)}${lookBlock("C", item)}
+            <div class="grid-colors">
+              ${item.colors
+                .map(
+                  (c, i) => `<button type="button" class="${i === idx ? "on" : ""}" data-fx="C" data-i="${i}">
+                    <img src="${imgSrc(c.url)}" alt="" loading="lazy" /><span>${c.label}</span>
+                  </button>`
+                )
+                .join("")}
+            </div>`;
+        },
+      },
+      {
+        id: "D",
+        title: "D · горизонтальная лента",
+        hint: "свайп/скролл вбок",
+        html(item) {
+          const idx = selected.D ?? 0;
+          return `${titleBlock(item)}${lookBlock("D", item)}
+            <div class="film">
+              ${item.colors
+                .map(
+                  (c, i) => `<button type="button" class="${i === idx ? "on" : ""}" data-fx="D" data-i="${i}">
+                    <img src="${imgSrc(c.url)}" alt="" loading="lazy" /><span>${c.label}</span>
+                  </button>`
+                )
+                .join("")}
+            </div>`;
+        },
+      },
+      {
+        id: "E",
+        title: "E · вид + боковой рейл",
+        hint: "цвета столбиком справа",
+        html(item) {
+          const idx = selected.E ?? 0;
+          const c = colorAt("E", item);
+          return `${titleBlock(item)}
+            <div class="split">
+              <div class="look-stage"><img src="${imgSrc(c.url)}" alt="${c.label}" /></div>
+              <div class="rail">
+                ${item.colors
+                  .map(
+                    (x, i) => `<button type="button" class="${i === idx ? "on" : ""}" data-fx="E" data-i="${i}" title="${x.label}">
+                      <img src="${imgSrc(x.url)}" alt="" loading="lazy" />
+                    </button>`
+                  )
+                  .join("")}
+              </div>
+            </div>
+            <p class="look-caption">${c.label}</p>`;
+        },
+      },
+      {
+        id: "F",
+        title: "F · только мозаика",
+        hint: "без отдельного большого вида",
+        html(item) {
+          const idx = selected.F ?? 0;
+          return `${titleBlock(item)}
+            <div class="mosaic">
+              ${item.colors
+                .map(
+                  (c, i) => `<button type="button" class="${i === idx ? "on" : ""}" data-fx="F" data-i="${i}">
+                    <img src="${imgSrc(c.url)}" alt="" loading="lazy" /><span>${c.label}</span>
+                  </button>`
+                )
+                .join("")}
+            </div>
+            <p class="meta">Все цвета сразу крупнее</p>`;
+        },
+      },
+    ];
+
+    function renderList() {
+      const list = document.getElementById("list");
+      list.innerHTML = items
+        .map(
+          (it, i) => `<button type="button" class="${i === current ? "on" : ""}" data-item="${i}">
+            <img src="${imgSrc(it.icon)}" alt="" loading="lazy" />
+            <span><strong>${it.name}</strong><span>${it.colors.length} цветов</span></span>
+          </button>`
+        )
+        .join("");
+      list.querySelectorAll("[data-item]").forEach((b) => {
+        b.addEventListener("click", () => {
+          current = Number(b.dataset.item);
+          Object.keys(selected).forEach((k) => delete selected[k]);
+          renderList();
+          renderGallery();
+        });
+      });
+    }
+
+    function renderGallery() {
+      const item = getItem();
+      const gallery = document.getElementById("gallery");
+      gallery.innerHTML = FX.map(
+        (fx) => `<article class="fx-card" data-card="${fx.id}">
+          <header><strong>${fx.title}</strong><span>${fx.hint}</span></header>
+          <div class="panel">${fx.html(item)}</div>
+        </article>`
+      ).join("");
+      gallery.querySelectorAll("[data-fx][data-i]").forEach((b) => {
+        b.addEventListener("click", () => setColor(b.dataset.fx, Number(b.dataset.i)));
+      });
+    }
+
+    async function boot() {
+      try {
+        const res = await fetch("./data/_hair_color_samples.json", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length) items = data;
+        }
+      } catch {
+        /* fallback */
+      }
+      renderList();
+      renderGallery();
+    }
+
+    boot();
+  </script>
+</body>
+</html>

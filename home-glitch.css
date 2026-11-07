@@ -1,0 +1,195 @@
+/* Глитч-переход: сайт проявляется сквозь разрывы старого слоя */
+
+.home-glitch-portal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  overflow: hidden;
+  background: transparent;
+}
+
+.home-glitch-dest {
+  /* прямой ребёнок body — fixed, чтобы не переносить iframe (move = reload) */
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #05070a;
+  opacity: 1;
+  visibility: visible;
+  transform: translateZ(0) scale(1);
+  transform-origin: center center;
+  backface-visibility: hidden;
+  transition:
+    filter 0.45s ease,
+    transform 0.55s cubic-bezier(0.22, 0.72, 0.12, 1);
+  z-index: 9998;
+}
+
+.home-glitch-dest.is-ready,
+.home-glitch-dest.is-show,
+.home-glitch-dest.is-alive {
+  opacity: 1;
+  visibility: visible;
+}
+
+.home-glitch-promoted {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0 !important;
+  display: block !important;
+  z-index: 1;
+  background: #05070a;
+}
+
+html.is-portal-promoted,
+body.is-portal-promoted {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  background: #05070a !important;
+}
+
+.home-glitch-dest.is-settle {
+  transform: translateZ(0) scale(1) !important;
+  filter: none !important;
+}
+
+.home-glitch-matte {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #05070a;
+  opacity: 1;
+  transition: opacity 0.32s ease;
+  pointer-events: none;
+}
+
+/* рано уходит — целевая страница уже под глитчем */
+.home-glitch-matte.is-clear,
+.home-glitch-matte.is-out {
+  opacity: 0;
+}
+
+.home-glitch-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  transition: opacity 0.28s ease;
+}
+
+.home-glitch-veil.is-out {
+  opacity: 0;
+}
+
+.home-glitch-shot,
+.home-glitch-ghost {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  will-change: transform, filter, clip-path, opacity;
+  transform: translateZ(0);
+}
+
+.home-glitch-clone {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #05070a;
+  pointer-events: none;
+}
+
+.home-glitch-clone .atmosphere {
+  position: absolute;
+}
+
+.home-glitch-ghost {
+  opacity: 0;
+  mix-blend-mode: screen;
+  z-index: 3;
+}
+
+.home-glitch-cyan {
+  filter: brightness(1.05) sepia(0.4) hue-rotate(130deg) saturate(3.5);
+}
+
+.home-glitch-magenta {
+  filter: brightness(1.05) sepia(0.45) hue-rotate(280deg) saturate(3.8);
+}
+
+.home-glitch-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.home-glitch-scan {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0.28;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    color-mix(in srgb, #0ff 10%, transparent) 2px,
+    color-mix(in srgb, #0ff 10%, transparent) 3px
+  );
+  mix-blend-mode: screen;
+  animation: home-glitch-scan 0.55s steps(2, end) infinite;
+}
+
+.home-glitch-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(180, 255, 255, 0.28), transparent 55%),
+    linear-gradient(90deg, transparent, rgba(255, 0, 200, 0.12), transparent);
+  mix-blend-mode: screen;
+}
+
+.home-glitch-flash.is-on {
+  animation: home-glitch-flash 0.16s ease-out both;
+}
+
+@keyframes home-glitch-scan {
+  0% { transform: translateY(0); opacity: 0.18; }
+  50% { transform: translateY(3%); opacity: 0.48; }
+  100% { transform: translateY(-2%); opacity: 0.22; }
+}
+
+@keyframes home-glitch-flash {
+  0% { opacity: 0.55; }
+  100% { opacity: 0; }
+}
+
+body.is-home-glitch {
+  overflow: hidden !important;
+}
+
+body.is-home-glitch > .atmosphere,
+body.is-home-glitch > .home-shell {
+  visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-glitch-scan,
+  .home-glitch-flash.is-on {
+    animation: none;
+  }
+}

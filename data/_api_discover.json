@@ -1,0 +1,139 @@
+{
+  "hubs": [
+    {
+      "title": "Костюмы",
+      "missing": true,
+      "length": null
+    },
+    {
+      "title": "Купальники",
+      "missing": true,
+      "length": null
+    },
+    {
+      "title": "Нижнее белье",
+      "missing": true,
+      "length": null
+    },
+    {
+      "title": "Чулки",
+      "missing": true,
+      "length": null
+    },
+    {
+      "title": "Носки",
+      "missing": true,
+      "length": null
+    },
+    {
+      "title": "Перчатки",
+      "missing": true,
+      "length": null
+    },
+    {
+      "title": "Маски",
+      "missing": true,
+      "length": null
+    },
+    {
+      "title": "Очки",
+      "missing": true,
+      "length": null
+    },
+    {
+      "title": "Головные уборы",
+      "missing": true,
+      "length": null
+    },
+    {
+      "title": "Платья",
+      "missing": true,
+      "length": null
+    },
+    {
+      "title": "Штаны",
+      "missing": true,
+      "length": null
+    },
+    {
+      "title": "Макияж",
+      "missing": true,
+      "length": null
+    },
+    {
+      "title": "Обувь",
+      "missing": true,
+      "length": null
+    },
+    {
+      "title": "Одежда",
+      "missing": true,
+      "length": null
+    },
+    {
+      "title": "Краска",
+      "missing": true,
+      "length": null
+    },
+    {
+      "title": "Подарки",
+      "missing": false,
+      "length": 9555
+    },
+    {
+      "title": "Развлечения",
+      "missing": false,
+      "length": 20927
+    },
+    {
+      "title": "Качели",
+      "missing": false,
+      "length": 2388
+    },
+    {
+      "title": "Рюкзаки",
+      "missing": false,
+      "length": 27647
+    },
+    {
+      "title": "Зонты",
+      "missing": false,
+      "length": 9656
+    },
+    {
+      "title": "Шарики",
+      "missing": false,
+      "length": 8505
+    },
+    {
+      "title": "Жезлы",
+      "missing": false,
+      "length": 47902
+    },
+    {
+      "title": "Игрушки на ногу",
+      "missing": false,
+      "length": 10753
+    },
+    {
+      "title": "Игрушки на плечо",
+      "missing": false,
+      "length": 15965
+    },
+    {
+      "title": "Украшения (рука)",
+      "missing": false,
+      "length": 88703
+    },
+    {
+      "title": "Детские маски",
+      "missing": false,
+      "length": 3856
+    },
+    {
+      "title": "Интерактивная обувь",
+      "missing": false,
+      "length": 12870
+    }
+  ]
+}

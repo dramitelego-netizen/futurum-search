@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>FUTURUM · объём (локально)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@800;900&family=Rajdhani:wght@500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07090d;
+      --ink: #e8eef7;
+      --mute: #7d8a9a;
+      --line: rgba(232, 238, 247, 0.1);
+      --panel: #10141c;
+      --accent: #3dffe0;
+      --glow: rgba(61, 255, 224, 0.4);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: Rajdhani, system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 70% 40% at 15% 0%, #0f1a1c, transparent 55%),
+        var(--bg);
+    }
+    header {
+      padding: 1.4rem clamp(1rem, 3vw, 2rem) 0.5rem;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+    header h1 {
+      margin: 0 0 0.35rem;
+      font-family: Orbitron, sans-serif;
+      font-size: 0.95rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    header p { margin: 0; color: var(--mute); max-width: 40rem; }
+    header a { color: var(--accent); }
+
+    .list {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 0.75rem clamp(1rem, 3vw, 2rem) 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .card {
+      background: color-mix(in srgb, var(--panel) 92%, black);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1.1rem 1.2rem 1.35rem;
+    }
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      color: var(--mute);
+      font-size: 0.9rem;
+      margin-bottom: 0.85rem;
+    }
+    .num {
+      font-family: Orbitron, sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      color: color-mix(in srgb, var(--accent) 70%, var(--mute));
+    }
+    .stage {
+      display: grid;
+      place-items: center;
+      min-height: 140px;
+      border-radius: 12px;
+      background: #0a0d12;
+      border: 1px solid rgba(232, 238, 247, 0.06);
+      overflow: visible;
+      padding: 2rem 0.75rem 2.2rem;
+    }
+
+    /* общая типографика */
+    .brand {
+      --ls: 0.18em;
+      position: relative;
+      display: inline-block;
+      font-family: Orbitron, sans-serif;
+      font-weight: 900;
+      font-size: clamp(2.4rem, 9vw, 4.6rem);
+      letter-spacing: var(--ls);
+      text-indent: var(--ls);
+      line-height: 1;
+      text-transform: uppercase;
+      user-select: none;
+    }
+
+    /* лицевой слой: градиент #12 */
+    .face {
+      position: relative;
+      z-index: 5;
+      display: block;
+      background-image: linear-gradient(
+        90deg,
+        #3dffe0, #5ad0ff, #7a9bff, #3dffe0,
+        #5ad0ff, #7a9bff, #3dffe0
+      );
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      animation: flow 7s linear infinite;
+    }
+    @keyframes flow {
+      from { background-position: 0% 50%; }
+      to { background-position: 100% 50%; }
+    }
+
+    /*
+      Объём = твёрдые копии ПОД градиентом.
+      (text-shadow / drop-shadow на clip:text почти не видны — это и была «ошибка»)
+    */
+    .extrude {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 1;
+      color: #06201e;
+      -webkit-text-fill-color: #06201e;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* —— V1 лёгкий —— */
+    .v1 .e1 { transform: translate(1px, 1px); color: #0a2e2b; -webkit-text-fill-color: #0a2e2b; }
+    .v1 .e2 { transform: translate(2px, 2px); color: #071f1d; -webkit-text-fill-color: #071f1d; }
+    .v1 .face { filter: drop-shadow(0 0 14px var(--glow)); }
+
+    /* —— V2 заметный —— */
+    .v2 .e1 { transform: translate(1px, 1px); color: #0d3a36; -webkit-text-fill-color: #0d3a36; }
+    .v2 .e2 { transform: translate(2px, 2px); color: #0a2e2b; -webkit-text-fill-color: #0a2e2b; }
+    .v2 .e3 { transform: translate(3px, 3px); color: #072420; -webkit-text-fill-color: #072420; }
+    .v2 .e4 { transform: translate(4px, 5px); color: #041614; -webkit-text-fill-color: #041614; }
+    .v2 .face { filter: drop-shadow(0 0 16px var(--glow)); }
+
+    /* —— V3 bevel: светлая кромка сверху-слева + тёмная снизу —— */
+    .v3 .hi {
+      z-index: 4;
+      color: rgba(255, 255, 255, 0.45);
+      -webkit-text-fill-color: rgba(255, 255, 255, 0.45);
+      transform: translate(-1px, -1px);
+      mix-blend-mode: screen;
+    }
+    .v3 .e1 { transform: translate(1px, 2px); color: #08302c; -webkit-text-fill-color: #08302c; }
+    .v3 .e2 { transform: translate(2px, 3px); color: #051c1a; -webkit-text-fill-color: #051c1a; }
+    .v3 .face { filter: drop-shadow(0 0 14px var(--glow)); }
+
+    /* —— V4 толстая «таблетка» —— */
+    .v4 .e1 { transform: translate(1px, 1px); color: #124a46; -webkit-text-fill-color: #124a46; }
+    .v4 .e2 { transform: translate(2px, 2px); color: #0e3c38; -webkit-text-fill-color: #0e3c38; }
+    .v4 .e3 { transform: translate(3px, 3px); color: #0a2e2b; -webkit-text-fill-color: #0a2e2b; }
+    .v4 .e4 { transform: translate(4px, 4px); color: #072420; -webkit-text-fill-color: #072420; }
+    .v4 .e5 { transform: translate(5px, 6px); color: #041614; -webkit-text-fill-color: #041614; }
+    .v4 .e6 {
+      transform: translate(6px, 8px);
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 10px 18px rgba(0, 0, 0, 0.55);
+    }
+    .v4 .hi {
+      z-index: 4;
+      color: rgba(255, 255, 255, 0.28);
+      -webkit-text-fill-color: rgba(255, 255, 255, 0.28);
+      transform: translate(-1px, -1px);
+    }
+    .v4 .face { filter: drop-shadow(0 0 18px var(--glow)); }
+
+    /* —— V5 парит —— */
+    .v5 { animation: float 4.5s ease-in-out infinite; }
+    .v5 .e1 { transform: translate(1px, 2px); color: #0a2e2b; -webkit-text-fill-color: #0a2e2b; }
+    .v5 .e2 { transform: translate(2px, 3px); color: #061c1a; -webkit-text-fill-color: #061c1a; }
+    .v5 .face { filter: drop-shadow(0 0 16px var(--glow)); }
+    .v5 .floor {
+      position: absolute;
+      left: 10%;
+      right: 10%;
+      bottom: -18px;
+      height: 12px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(0, 0, 0, 0.5), transparent 70%);
+      filter: blur(2px);
+      animation: shadowPulse 4.5s ease-in-out infinite;
+      z-index: 0;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    @keyframes shadowPulse {
+      0%, 100% { transform: scaleX(1); opacity: 0.75; }
+      50% { transform: scaleX(0.86); opacity: 0.4; }
+    }
+
+    /* —— V6 плоско (как сейчас на сайте) —— */
+    .v6 .face {
+      filter:
+        drop-shadow(0 0 18px var(--glow))
+        drop-shadow(0 0 36px rgba(30, 196, 174, 0.2));
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .face, .v5, .v5 .floor { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>FUTURUM · объём</h1>
+    <p>
+      Исправлено: объём делается <b>слоями под градиентом</b> (иначе при clip:text все варианты выглядели одинаково).
+      Выбери номер. <a href="./">← сайт</a> · <a href="./futurum-gradient-lab.html">градиенты</a>
+    </p>
+  </header>
+
+  <div class="list" id="list"></div>
+
+  <script>
+    const word = "FUTURUM";
+    const samples = [
+      { id: "V1", title: "Лёгкий объём", layers: 2, hi: false, floor: false, cls: "v1" },
+      { id: "V2", title: "Заметная экструзия", layers: 4, hi: false, floor: false, cls: "v2" },
+      { id: "V3", title: "Bevel (блик + кромка)", layers: 2, hi: true, floor: false, cls: "v3" },
+      { id: "V4", title: "Толстая «таблетка»", layers: 6, hi: true, floor: false, cls: "v4" },
+      { id: "V5", title: "Парит + тень", layers: 2, hi: false, floor: true, cls: "v5" },
+      { id: "V6", title: "Как сейчас на сайте (плоско)", layers: 0, hi: false, floor: false, cls: "v6" },
+    ];
+
+    const list = document.getElementById("list");
+    for (const s of samples) {
+      const layers = [];
+      for (let i = 1; i <= s.layers; i++) {
+        layers.push(`<span class="extrude e${i}" aria-hidden="true">${word}</span>`);
+      }
+      if (s.cls === "v4") {
+        /* e6 — только мягкая тень */
+        layers.push(`<span class="extrude e6" aria-hidden="true">${word}</span>`);
+      }
+      const hi = s.hi ? `<span class="extrude hi" aria-hidden="true">${word}</span>` : "";
+      const floor = s.floor ? `<span class="floor" aria-hidden="true"></span>` : "";
+
+      const card = document.createElement("article");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="meta">
+          <span class="num">#${s.id}</span>
+          <span>${s.title}</span>
+        </div>
+        <div class="stage">
+          <div class="brand ${s.cls}">
+            ${floor}
+            ${layers.join("")}
+            ${hi}
+            <span class="face">${word}</span>
+          </div>
+        </div>
+      `;
+      list.appendChild(card);
+    }
+  </script>
+</body>
+</html>

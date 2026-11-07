@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Компактные категории · FUTURUM lab</title>
+  <meta name="theme-color" content="#05070a" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #05070a;
+      --text: #e8eef7;
+      --mute: #7d8a9a;
+      --line: rgba(232, 238, 247, 0.1);
+      --panel: rgba(14, 18, 26, 0.72);
+      --panel-solid: rgba(10, 13, 18, 0.94);
+      --accent: #3dffe0;
+      --accent-2: #ff4d6d;
+      --font: "Rajdhani", "Segoe UI", sans-serif;
+      --display: "Orbitron", "Bahnschrift", sans-serif;
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      color: var(--text);
+      font-family: var(--font);
+      font-weight: 500;
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse 48% 36% at 8% 0%, rgba(61, 255, 224, 0.14), transparent 62%),
+        radial-gradient(ellipse 36% 32% at 96% 8%, rgba(255, 77, 109, 0.1), transparent 64%),
+        linear-gradient(180deg, #0a1016 0%, #05070a 46%);
+    }
+    button, input, select { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    h1, h2, p { margin: 0; }
+    :focus-visible {
+      outline: 2px solid color-mix(in srgb, var(--accent) 70%, transparent);
+      outline-offset: 2px;
+    }
+
+    .frame { width: min(980px, 100%); margin: 0 auto; padding: 16px 14px 40px; }
+    .kicker {
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    h1 {
+      margin: 4px 0 6px;
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+    .lead { color: var(--mute); font-size: 0.95rem; line-height: 1.35; margin-bottom: 14px; }
+
+    .switch {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .tab {
+      text-align: left;
+      background: color-mix(in srgb, var(--panel) 55%, transparent);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 8px 10px;
+      min-width: 0;
+    }
+    .tab.on {
+      border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+    .tab-key {
+      font-family: var(--display);
+      color: var(--accent);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+    }
+    .tab-blurb {
+      display: block;
+      margin-top: 2px;
+      font-size: 0.8rem;
+      color: var(--mute);
+      font-weight: 600;
+      line-height: 1.2;
+    }
+    .tab.on .tab-blurb { color: var(--text); }
+
+    .phone {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--panel-solid) 92%, transparent);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+      max-width: 420px;
+    }
+    .phone-bar {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 12px 14px 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand {
+      font-family: var(--display);
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      font-size: 1rem;
+      background: linear-gradient(90deg, #3dffe0, #5ad0ff, #b8fff5);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .phone-sec { color: var(--mute); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .phone-body { padding: 10px 12px 14px; }
+    .search {
+      display: flex;
+      align-items: center;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0 12px;
+      background: color-mix(in srgb, #05070a 55%, transparent);
+      margin-bottom: 10px;
+    }
+    .search input {
+      flex: 1;
+      border: 0;
+      background: transparent;
+      outline: none;
+    }
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--mute);
+      font-size: 0.82rem;
+      margin: 10px 0 8px;
+      font-weight: 600;
+    }
+    .meta strong { color: var(--accent); font-variant-numeric: tabular-nums; }
+    .hits { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+    .hit {
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      background: color-mix(in srgb, var(--panel) 50%, transparent);
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+    .hit span { display: block; color: var(--mute); font-size: 0.75rem; font-weight: 600; margin-top: 2px; }
+
+    /* —— A: select —— */
+    .a-select {
+      width: 100%;
+      appearance: none;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--panel) 70%, transparent);
+      padding: 0.55rem 2rem 0.55rem 0.75rem;
+      font-weight: 700;
+      background-image:
+        linear-gradient(45deg, transparent 50%, var(--accent) 50%),
+        linear-gradient(135deg, var(--accent) 50%, transparent 50%);
+      background-position: calc(100% - 16px) 55%, calc(100% - 11px) 55%;
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
+    }
+
+    /* —— B: one-line chips —— */
+    .b-row {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .b-row::-webkit-scrollbar { display: none; }
+    .chip {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel) 55%, transparent);
+      color: var(--mute);
+      padding: 0.32rem 0.65rem;
+      font-weight: 700;
+      font-size: 0.8rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      max-width: 11.5rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .chip.on {
+      color: var(--text);
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+    }
+    .chip .n { color: var(--accent); margin-left: 0.25rem; font-variant-numeric: tabular-nums; }
+    .chip-kind {
+      font-size: 0.62rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      opacity: 0.75;
+      margin-right: 0.2rem;
+    }
+
+    /* —— C: disclosure —— */
+    .c-wrap { position: relative; }
+    .c-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--panel) 70%, transparent);
+      padding: 0.55rem 0.75rem;
+      font-weight: 700;
+    }
+    .c-btn .val { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .c-btn .chev { color: var(--mute); transition: transform 0.15s; }
+    .c-wrap.open .c-btn .chev { transform: rotate(180deg); color: var(--accent); }
+    .c-panel {
+      display: none;
+      margin-top: 6px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel-solid);
+      overflow: hidden;
+    }
+    .c-wrap.open .c-panel { display: block; }
+    .c-search {
+      width: 100%;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      background: transparent;
+      padding: 0.55rem 0.75rem;
+      outline: none;
+    }
+    .c-list {
+      max-height: 220px;
+      overflow: auto;
+      padding: 4px;
+    }
+    .c-item {
+      width: 100%;
+      display: flex;
+      gap: 8px;
+      align-items: baseline;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      border-radius: 8px;
+      padding: 0.45rem 0.55rem;
+      font-weight: 600;
+      color: var(--mute);
+    }
+    .c-item:hover { background: color-mix(in srgb, var(--accent) 7%, transparent); color: var(--text); }
+    .c-item.on {
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      color: var(--text);
+      box-shadow: inset 2px 0 0 var(--accent);
+    }
+    .c-item .n { margin-left: auto; color: var(--accent); font-variant-numeric: tabular-nums; font-weight: 700; }
+    .c-item.is-miss { display: none; }
+
+    /* —— D: buckets —— */
+    .d-buckets {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-bottom: 8px;
+    }
+    .d-buckets::-webkit-scrollbar { display: none; }
+    .bucket {
+      flex: 0 0 auto;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel) 55%, transparent);
+      color: var(--mute);
+      padding: 0.4rem 0.7rem;
+      font-weight: 700;
+      font-size: 0.82rem;
+    }
+    .bucket.on {
+      color: var(--text);
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+    }
+    .bucket .n { color: var(--accent); margin-left: 0.25rem; font-variant-numeric: tabular-nums; }
+    .d-subs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      max-height: 7.2rem;
+      overflow: auto;
+      padding-right: 2px;
+    }
+    .d-subs .chip { max-width: none; white-space: normal; }
+
+    .note {
+      margin-top: 16px;
+      color: var(--mute);
+      font-size: 0.88rem;
+      line-height: 1.4;
+      max-width: 420px;
+    }
+    .note code {
+      color: var(--accent);
+      font-family: inherit;
+      font-weight: 700;
+    }
+
+    .view { display: none; }
+    .view.on { display: block; }
+
+    @media (max-width: 860px) {
+      .switch { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="kicker">FUTURUM · локальные макеты</p>
+    <h1>Компактные фильтры категорий</h1>
+    <p class="lead">Сейчас длинные названия событий/колёс занимают пол-экрана. Выбери вариант — потом перенесём в гайд.</p>
+
+    <div class="switch" role="tablist" aria-label="Вариант">
+      <button type="button" class="tab on" data-v="a" role="tab" aria-selected="true">
+        <span class="tab-key">A</span>
+        <span class="tab-blurb">Один выпадающий список</span>
+      </button>
+      <button type="button" class="tab" data-v="b" role="tab" aria-selected="false">
+        <span class="tab-key">B</span>
+        <span class="tab-blurb">Одна линия чипов, скролл</span>
+      </button>
+      <button type="button" class="tab" data-v="c" role="tab" aria-selected="false">
+        <span class="tab-key">C</span>
+        <span class="tab-blurb">Кнопка «Источник» + поиск</span>
+      </button>
+      <button type="button" class="tab" data-v="d" role="tab" aria-selected="false">
+        <span class="tab-key">D</span>
+        <span class="tab-blurb">Типы: колёса / события / билеты</span>
+      </button>
+    </div>
+
+    <div class="phone" aria-label="Макет телефона">
+      <div class="phone-bar">
+        <span class="brand">FUTURUM</span>
+        <span class="phone-sec">Одежда</span>
+      </div>
+      <div class="phone-body">
+        <label class="search"><input type="search" placeholder="Поиск по каталогу…" disabled /></label>
+
+        <section class="view on" data-view="a" id="view-a"></section>
+        <section class="view" data-view="b" id="view-b"></section>
+        <section class="view" data-view="c" id="view-c"></section>
+        <section class="view" data-view="d" id="view-d"></section>
+
+        <div class="meta">
+          <span id="meta-label">Все источники</span>
+          <span>найдено <strong id="meta-n">1457</strong></span>
+        </div>
+        <ul class="hits" id="hits"></ul>
+      </div>
+    </div>
+
+    <p class="note" id="note"></p>
+  </div>
+
+  <script>
+    const CATS = [
+      { name: "Постоянный ассортимент", n: 32 },
+      { name: 'Событие "Семидневные испытания"', n: 30 },
+      { name: "Юбилейное колесо удачи", n: 18 },
+      { name: "Новинки в онлайн-магазине", n: 17 },
+      { name: 'Событие "Любовь всей жизни"', n: 16 },
+      { name: 'Событие "Любовные признания"', n: 16 },
+      { name: 'Событие "Я напишу себе любовь"', n: 16 },
+      { name: "Октябрьское колесо удачи", n: 16 },
+      { name: 'Колесо удачи "Бархатный сезон"', n: 16 },
+      { name: "Летнее колесо удачи", n: 16 },
+      { name: "Весеннее колесо удачи", n: 16 },
+      { name: 'Событие "Подарок волшебника"', n: 13 },
+      { name: 'Колесо фортуны "Лето продолжается"', n: 13 },
+      { name: 'Событие "Весенний турнир в Скайлайте"', n: 13 },
+      { name: 'Билет "Магия танца"', n: 13 },
+      { name: "Осеннее колесо удачи", n: 13 },
+      { name: 'Колесо фортуны "Планета райских птиц"', n: 12 },
+      { name: 'Колесо фортуны "Жутко везет!"', n: 12 },
+      { name: 'Лотерейный билет "Лето продолжается"', n: 11 },
+      { name: "Новогоднее колесо удачи", n: 11 },
+      { name: "Чертово колесо удачи", n: 11 },
+      { name: 'Новогодний турнир в "Скайлайте"', n: 10 },
+      { name: 'Событие "Подарки для любимых"', n: 10 },
+      { name: 'Событие "Новогодние танцы"', n: 10 },
+      { name: 'Событие "Весенние лилии"', n: 10 },
+      { name: "Веселое колесо удачи", n: 10 },
+      { name: 'Колесо удачи "Волшебная зима"', n: 10 },
+      { name: 'Акция "Готовимся к Хэллоуину"', n: 10 },
+      { name: 'Колесо фортуны "Золото и багрянец"', n: 9 },
+      { name: 'Событие "Клуб 100"', n: 9 },
+      { name: 'Билет "Под счастливой звездой"', n: 9 },
+      { name: "Февральское колесо удачи", n: 9 },
+      { name: 'Билет "Золотая пора"', n: 8 },
+      { name: 'Билет "Карнавал"', n: 8 },
+      { name: 'Билет "Мечтатели и странники"', n: 8 },
+      { name: 'Билет "Мир звезд"', n: 8 },
+      { name: 'Билет "Привет из Старого Города!"', n: 8 },
+      { name: 'Событие "Найди клад"', n: 8 },
+      { name: 'Колесо фортуны "Осенний уют"', n: 8 },
+      { name: 'Событие "На стиле!"', n: 8 }
+    ];
+
+    const TOTAL = 1457;
+    const state = { v: "a", cat: "", bucket: "all", cOpen: false, cQ: "" };
+
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const fmt = (n) => new Intl.NumberFormat("ru-RU").format(n);
+
+    function classify(name) {
+      const s = name.toLowerCase();
+      if (/постоянн|магазин|новинк/.test(s)) return { kind: "shop", label: "Магазин" };
+      if (/билет|лотерейн/.test(s)) return { kind: "ticket", label: "Билет" };
+      if (/колес|фортун|чертов/.test(s)) return { kind: "wheel", label: "Колесо" };
+      if (/событ|акци|турнир/.test(s)) return { kind: "event", label: "Событие" };
+      return { kind: "other", label: "Другое" };
+    }
+
+    function shortLabel(name) {
+      let s = name
+        .replace(/^Событие\s+/i, "")
+        .replace(/^Акция\s+/i, "")
+        .replace(/^Лотерейный билет\s+/i, "")
+        .replace(/^Билет\s+/i, "")
+        .replace(/^Колесо фортуны\s+/i, "")
+        .replace(/^Колесо удачи\s+/i, "")
+        .replace(/[«»""„‟]/g, "")
+        .trim();
+      if (/^юбилейное колесо/i.test(name)) s = "Юбилейное";
+      if (/^летнее колесо/i.test(name)) s = "Летнее";
+      if (/^весеннее колесо/i.test(name)) s = "Весеннее";
+      if (/^осеннее колесо/i.test(name)) s = "Осеннее";
+      if (/^октябрьское колесо/i.test(name)) s = "Октябрьское";
+      if (/^новогоднее колесо/i.test(name)) s = "Новогоднее";
+      if (/^февральское колесо/i.test(name)) s = "Февральское";
+      if (/^веселое колесо/i.test(name)) s = "Весёлое";
+      if (/^чертово колесо/i.test(name)) s = "Чёртово";
+      if (/постоянный ассортимент/i.test(name)) s = "Постоянный";
+      if (/новинки в онлайн/i.test(name)) s = "Новинки магазина";
+      if (s.length > 22) s = s.slice(0, 21) + "…";
+      return s;
+    }
+
+    function selectedCount() {
+      if (!state.cat) return TOTAL;
+      const hit = CATS.find((c) => c.name === state.cat);
+      return hit ? hit.n : TOTAL;
+    }
+
+    function paintHits() {
+      const label = state.cat || "Все источники";
+      document.getElementById("meta-label").textContent = label.length > 34 ? label.slice(0, 33) + "…" : label;
+      document.getElementById("meta-n").textContent = fmt(selectedCount());
+      const samples = state.cat
+        ? ["Образец костюма", "Второй цвет", "Вариант (ж)"]
+        : ["Платье неона", "Куртка арены", "Комплект витрины", "Топ сигнала", "Юбка орбиты"];
+      document.getElementById("hits").innerHTML = samples
+        .map((n) => `<li class="hit">${esc(n)}<span>${esc(state.cat || "смешанные источники")}</span></li>`)
+        .join("");
+    }
+
+    function notes() {
+      const map = {
+        a: "A · всегда одна строка. Полные названия видны в списке. Минус: хуже «пролистать глазами», чем чипы.",
+        b: "B · одна горизонтальная полоса. Короткие ярлыки + тип (Соб./Колесо/Билет). Полное имя — в title при наведении/долгом тапе.",
+        c: "C · по умолчанию одна кнопка. По клику — панель с поиском по источникам. Удобно при 40+ длинных названиях.",
+        d: "D · сначала тип (Магазин / Колёса / События / Билеты), внутри — уже короче список. Хорошо, если часто ищешь «все колёса»."
+      };
+      document.getElementById("note").innerHTML = map[state.v];
+    }
+
+    function setVariant(v) {
+      state.v = v;
+      document.querySelectorAll(".tab").forEach((el) => {
+        const on = el.dataset.v === v;
+        el.classList.toggle("on", on);
+        el.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      document.querySelectorAll(".view").forEach((el) => {
+        el.classList.toggle("on", el.dataset.view === v);
+      });
+      if (location.hash !== "#" + v) history.replaceState(null, "", "#" + v);
+      notes();
+    }
+
+    function paintA() {
+      const opts = [`<option value="">Все источники · ${fmt(TOTAL)}</option>`]
+        .concat(CATS.map((c) => `<option value="${esc(c.name)}"${c.name === state.cat ? " selected" : ""}>${esc(c.name)} · ${c.n}</option>`))
+        .join("");
+      document.getElementById("view-a").innerHTML = `<select class="a-select" id="a-select" aria-label="Источник">${opts}</select>`;
+    }
+
+    function paintB() {
+      const chips = [`<button type="button" class="chip${state.cat ? "" : " on"}" data-cat="">Все<span class="n">${fmt(TOTAL)}</span></button>`]
+        .concat(
+          CATS.map((c) => {
+            const kind = classify(c.name);
+            const short = shortLabel(c.name);
+            return `<button type="button" class="chip${c.name === state.cat ? " on" : ""}" data-cat="${esc(c.name)}" title="${esc(c.name)}"><span class="chip-kind">${esc(kind.label)}</span>${esc(short)}<span class="n">${c.n}</span></button>`;
+          })
+        )
+        .join("");
+      document.getElementById("view-b").innerHTML = `<div class="b-row" role="group" aria-label="Источник">${chips}</div>`;
+    }
+
+    function paintC() {
+      const current = state.cat || "Все источники";
+      const items = [`<button type="button" class="c-item${state.cat ? "" : " on"}" data-cat="">Все источники<span class="n">${fmt(TOTAL)}</span></button>`]
+        .concat(
+          CATS.map((c) => {
+            const miss = state.cQ && !c.name.toLowerCase().includes(state.cQ.toLowerCase());
+            return `<button type="button" class="c-item${c.name === state.cat ? " on" : ""}${miss ? " is-miss" : ""}" data-cat="${esc(c.name)}">${esc(c.name)}<span class="n">${c.n}</span></button>`;
+          })
+        )
+        .join("");
+      document.getElementById("view-c").innerHTML =
+        `<div class="c-wrap${state.cOpen ? " open" : ""}" id="c-wrap">` +
+        `<button type="button" class="c-btn" id="c-toggle" aria-expanded="${state.cOpen ? "true" : "false"}">` +
+        `<span>Источник</span><span class="val">${esc(current)}</span><span class="chev">▾</span></button>` +
+        `<div class="c-panel"><input class="c-search" id="c-search" type="search" placeholder="Найти событие или колесо…" value="${esc(state.cQ)}" />` +
+        `<div class="c-list">${items}</div></div></div>`;
+    }
+
+    function paintD() {
+      const buckets = [
+        { id: "all", label: "Все" },
+        { id: "shop", label: "Магазин" },
+        { id: "wheel", label: "Колёса" },
+        { id: "event", label: "События" },
+        { id: "ticket", label: "Билеты" },
+        { id: "other", label: "Другое" }
+      ];
+      const counts = Object.fromEntries(buckets.map((b) => [b.id, 0]));
+      counts.all = TOTAL;
+      CATS.forEach((c) => {
+        counts[classify(c.name).kind] += c.n;
+      });
+      const bucketHtml = buckets
+        .map(
+          (b) =>
+            `<button type="button" class="bucket${state.bucket === b.id ? " on" : ""}" data-bucket="${b.id}">${esc(b.label)}<span class="n">${fmt(counts[b.id] || 0)}</span></button>`
+        )
+        .join("");
+      const filtered = CATS.filter((c) => state.bucket === "all" || classify(c.name).kind === state.bucket);
+      const chips = [`<button type="button" class="chip${state.cat ? "" : " on"}" data-cat="">Все в типе</button>`]
+        .concat(
+          filtered.map((c) => {
+            return `<button type="button" class="chip${c.name === state.cat ? " on" : ""}" data-cat="${esc(c.name)}" title="${esc(c.name)}">${esc(shortLabel(c.name))}<span class="n">${c.n}</span></button>`;
+          })
+        )
+        .join("");
+      document.getElementById("view-d").innerHTML =
+        `<div class="d-buckets" role="group" aria-label="Тип источника">${bucketHtml}</div>` +
+        `<div class="d-subs" role="group" aria-label="Источник">${chips}</div>`;
+    }
+
+    function paint() {
+      paintA();
+      paintB();
+      paintC();
+      paintD();
+      paintHits();
+      notes();
+    }
+
+    document.body.addEventListener("click", (e) => {
+      const tab = e.target.closest("[data-v]");
+      if (tab) {
+        setVariant(tab.dataset.v);
+        return;
+      }
+      if (e.target.closest("#c-toggle")) {
+        state.cOpen = !state.cOpen;
+        paintC();
+        return;
+      }
+      const catBtn = e.target.closest("[data-cat]");
+      if (catBtn && catBtn.closest(".view.on")) {
+        state.cat = catBtn.dataset.cat || "";
+        if (state.v === "c") state.cOpen = false;
+        paint();
+        return;
+      }
+      const bucket = e.target.closest("[data-bucket]");
+      if (bucket) {
+        state.bucket = bucket.dataset.bucket;
+        state.cat = "";
+        paintD();
+        paintHits();
+      }
+    });
+
+    document.body.addEventListener("change", (e) => {
+      if (e.target.id === "a-select") {
+        state.cat = e.target.value || "";
+        paintHits();
+      }
+    });
+
+    document.body.addEventListener("input", (e) => {
+      if (e.target.id === "c-search") {
+        state.cQ = e.target.value || "";
+        paintC();
+      }
+    });
+
+    const fromHash = (location.hash || "").replace("#", "");
+    if (["a", "b", "c", "d"].includes(fromHash)) state.v = fromHash;
+    paint();
+    setVariant(state.v);
+  </script>
+</body>
+</html>

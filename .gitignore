@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Secrets / local session
+data/cookies.txt
+data/_titles_wiki.html
+data/user_favs/
+
+# Logs & scrape junk
+*.log
+data/*.log
+data/probe/
+data/debug_*.html
+data/_probe*.html
+data/scrape.log
+data/download_images.log
+data/update_and_push.log
+data/watch_catalog.log
+data/watch_state.json
+
+# local temp scripts
+_tmp_*.py
+_tmp_*.html
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.tmp
+_check_tmp.py

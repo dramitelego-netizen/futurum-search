@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>FUTURUM · полоска перехода по краю</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #070a10;
+      --line: #2a3848;
+      --text: #e8f2f8;
+      --mute: #8aa0b4;
+      --shop: #3ecfbe;
+      --game: #d4a24a;
+      --dur: 780ms;
+      --ease: cubic-bezier(0.22, 0.72, 0.12, 1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Rajdhani", system-ui, sans-serif;
+      color: var(--text);
+      background: #05070a;
+      overflow: hidden;
+    }
+    .top {
+      position: relative;
+      z-index: 40;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem 1rem;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, #05070a 92%, transparent);
+    }
+    .top strong {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .top span { color: var(--mute); font-size: 0.84rem; }
+    .top a {
+      color: inherit;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.32rem 0.7rem;
+      font-weight: 700;
+      font-size: 0.82rem;
+    }
+    .fxs {
+      position: relative;
+      z-index: 40;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      padding: 0.55rem 1rem;
+      border-bottom: 1px solid var(--line);
+      background: #070a10;
+    }
+    .fxs button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: #0e151e;
+      color: var(--text);
+      border-radius: 999px;
+      padding: 0.32rem 0.65rem;
+      font: inherit;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .fxs button.on {
+      border-color: color-mix(in srgb, var(--shop) 55%, var(--line));
+      background: color-mix(in srgb, var(--shop) 12%, #0e151e);
+    }
+    .note {
+      position: relative;
+      z-index: 40;
+      margin: 0;
+      padding: 0.5rem 1rem 0.65rem;
+      color: var(--mute);
+      font-size: 0.84rem;
+      background: #070a10;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .scene {
+      position: relative;
+      height: calc(100vh - 7.2rem);
+      overflow: hidden;
+      background: #05070a;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      padding: 1rem 3.2rem 1.2rem;
+      background:
+        linear-gradient(105deg, rgba(5, 7, 10, 0.9) 20%, rgba(5, 7, 10, 0.55) 100%),
+        center / cover no-repeat;
+      transition: transform var(--dur) var(--ease), opacity var(--dur) ease, filter var(--dur) ease;
+    }
+    .screen.shop {
+      --tone: var(--shop);
+      background-image:
+        linear-gradient(105deg, rgba(5, 7, 10, 0.92) 24%, rgba(5, 7, 10, 0.5) 100%),
+        url("./hub-shop.jpg");
+    }
+    .screen.game {
+      --tone: var(--game);
+      background-image:
+        linear-gradient(105deg, rgba(5, 7, 10, 0.92) 24%, rgba(5, 7, 10, 0.5) 100%),
+        url("./hub-titles.jpg");
+    }
+    .screen[hidden] { display: none !important; }
+
+    .head em {
+      display: block;
+      font-style: normal;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--tone) 80%, #fff);
+      font-weight: 700;
+    }
+    .head h1 {
+      margin: 0.15rem 0 0.75rem;
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(1.05rem, 2.5vw, 1.45rem);
+      letter-spacing: 0.04em;
+    }
+    .search {
+      height: 2.45rem;
+      max-width: 42rem;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--tone) 40%, var(--line));
+      background: color-mix(in srgb, #0a121a 78%, transparent);
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      color: var(--mute);
+      font-weight: 600;
+      margin-bottom: 0.9rem;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.55rem;
+      align-content: start;
+    }
+    .card {
+      min-height: 108px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--tone) 8%, #101820);
+      padding: 0.55rem;
+      display: grid;
+      align-content: end;
+      gap: 0.12rem;
+    }
+    .card i {
+      display: block;
+      height: 46px;
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--tone) 16%, #0a121a);
+      margin-bottom: 0.3rem;
+    }
+    .card b { font-size: 0.86rem; }
+    .card small { color: var(--mute); font-size: 0.74rem; }
+
+    /* ===== КРАЕВЫЕ ПОЛОСКИ ===== */
+    .edge {
+      position: absolute;
+      top: 12%;
+      bottom: 12%;
+      width: 44px;
+      z-index: 20;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+      color: var(--text);
+      font: inherit;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 0.65rem;
+      text-decoration: none;
+      overflow: hidden;
+      transition:
+        width 280ms var(--ease),
+        box-shadow 280ms ease,
+        background 280ms ease,
+        border-color 280ms ease;
+    }
+    .edge-left {
+      left: 0;
+      border-radius: 0 16px 16px 0;
+      border-right: 1px solid color-mix(in srgb, var(--game) 45%, var(--line));
+      background:
+        linear-gradient(90deg, color-mix(in srgb, var(--game) 22%, #0a1018), color-mix(in srgb, #0a1018 88%, transparent));
+      box-shadow: 0 0 0 0 transparent;
+    }
+    .edge-right {
+      right: 0;
+      border-radius: 16px 0 0 16px;
+      border-left: 1px solid color-mix(in srgb, var(--shop) 45%, var(--line));
+      background:
+        linear-gradient(270deg, color-mix(in srgb, var(--shop) 22%, #0a1018), color-mix(in srgb, #0a1018 88%, transparent));
+    }
+    body.is-game .edge-left {
+      border-right-color: color-mix(in srgb, var(--shop) 45%, var(--line));
+      background:
+        linear-gradient(90deg, color-mix(in srgb, var(--shop) 22%, #0a1018), color-mix(in srgb, #0a1018 88%, transparent));
+    }
+    body.is-game .edge-right {
+      border-left-color: color-mix(in srgb, var(--game) 45%, var(--line));
+      background:
+        linear-gradient(270deg, color-mix(in srgb, var(--game) 22%, #0a1018), color-mix(in srgb, #0a1018 88%, transparent));
+    }
+
+    .edge:hover,
+    .edge:focus-visible {
+      width: 58px;
+      outline: none;
+      box-shadow: 0 0 28px color-mix(in srgb, var(--tone, var(--shop)) 25%, transparent);
+    }
+    .edge-left { --tone: var(--game); }
+    .edge-right { --tone: var(--shop); }
+    body.is-game .edge-left { --tone: var(--shop); }
+    body.is-game .edge-right { --tone: var(--game); }
+
+    .edge .glow {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.55;
+      background: linear-gradient(
+        180deg,
+        transparent 0%,
+        color-mix(in srgb, var(--tone) 35%, transparent) 50%,
+        transparent 100%
+      );
+      animation: edgePulse 2.8s ease-in-out infinite;
+    }
+    @keyframes edgePulse {
+      0%, 100% { opacity: 0.25; transform: translateY(-8%); }
+      50% { opacity: 0.7; transform: translateY(8%); }
+    }
+
+    .edge .chev {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: color-mix(in srgb, var(--tone) 85%, #fff);
+      text-shadow: 0 0 12px color-mix(in srgb, var(--tone) 50%, transparent);
+    }
+    .edge .label {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .edge-right .label { transform: none; }
+
+    /* варианты внешнего вида полоски */
+    body[data-strip="neon"] .edge-left,
+    body[data-strip="neon"] .edge-right {
+      width: 10px;
+      border-radius: 0;
+    }
+    body[data-strip="neon"] .edge .label,
+    body[data-strip="neon"] .edge .chev { opacity: 0; }
+    body[data-strip="neon"] .edge:hover {
+      width: 52px;
+    }
+    body[data-strip="neon"] .edge:hover .label,
+    body[data-strip="neon"] .edge:hover .chev { opacity: 1; }
+    body[data-strip="neon"] .edge-left {
+      box-shadow: 2px 0 18px color-mix(in srgb, var(--tone) 45%, transparent);
+      background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--tone) 70%, #fff), transparent);
+      border: 0;
+    }
+    body[data-strip="neon"] .edge-right {
+      box-shadow: -2px 0 18px color-mix(in srgb, var(--tone) 45%, transparent);
+      background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--tone) 70%, #fff), transparent);
+      border: 0;
+    }
+
+    body[data-strip="tab"] .edge {
+      top: 28%;
+      bottom: 28%;
+      width: 40px;
+    }
+    body[data-strip="pill"] .edge {
+      top: 50%;
+      bottom: auto;
+      height: 160px;
+      width: 46px;
+      transform: translateY(-50%);
+      border-radius: 18px;
+      margin: 0 0.45rem;
+    }
+    body[data-strip="pill"] .edge-left { left: 0.35rem; }
+    body[data-strip="pill"] .edge-right { right: 0.35rem; }
+
+    /* анимация ухода/прихода страниц */
+    .screen.go-left { transform: translateX(-112%); opacity: 0.2; filter: brightness(0.7); }
+    .screen.go-right { transform: translateX(112%); opacity: 0.2; filter: brightness(0.7); }
+    .screen.from-left { transform: translateX(-112%); opacity: 0.25; }
+    .screen.from-right { transform: translateX(112%); opacity: 0.25; }
+    .screen.on { transform: none; opacity: 1; filter: none; z-index: 2; }
+
+    @media (max-width: 720px) {
+      .screen { padding: 1rem 2.6rem 1rem; }
+      .edge { width: 36px; top: 16%; bottom: 16%; }
+      .edge .label { font-size: 0.74rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .screen, .edge, .edge .glow { transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+<body data-strip="neon">
+  <header class="top">
+    <div>
+      <strong>Краевая полоска</strong>
+      <span>открыт SEARCH → слева/справа полоска на другой поиск</span>
+    </div>
+    <a href="./">← Главная</a>
+  </header>
+
+  <div class="fxs" id="fxs"></div>
+  <p class="note">Полоска по краю экрана. Кликни её — страница уезжает, другой поиск заезжает с той же стороны. Выбери вид полоски A–C.</p>
+
+  <div class="scene" id="scene">
+    <!-- на экране магазина справа полоска «к игре», слева тоже можно «к игре» как вариант; логика: одна полоска ведёт на другой поиск -->
+    <button type="button" class="edge edge-left" id="edgeLeft" aria-label="Другой поиск">
+      <span class="glow" aria-hidden="true"></span>
+      <span class="chev" aria-hidden="true">‹</span>
+      <span class="label" id="labelLeft">Поиск по игре</span>
+    </button>
+    <button type="button" class="edge edge-right" id="edgeRight" aria-label="Другой поиск">
+      <span class="glow" aria-hidden="true"></span>
+      <span class="label" id="labelRight">Поиск по игре</span>
+      <span class="chev" aria-hidden="true">›</span>
+    </button>
+
+    <section class="screen shop on" id="screenShop" data-screen="shop">
+      <div>
+        <div class="head">
+          <em>Открыто сейчас</em>
+          <h1>SEARCH · Поиск предметов</h1>
+        </div>
+        <div class="search">Найти предмет, id или ссылку…</div>
+        <div class="cards">
+          <div class="card"><i></i><b>Крылья</b><small>1 240</small></div>
+          <div class="card"><i></i><b>Питомец</b><small>980</small></div>
+          <div class="card"><i></i><b>Набор</b><small>−20%</small></div>
+          <div class="card"><i></i><b>Очки</b><small>310</small></div>
+          <div class="card"><i></i><b>Платье</b><small>540</small></div>
+          <div class="card"><i></i><b>Фон</b><small>750</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen game" id="screenGame" data-screen="game" hidden>
+      <div>
+        <div class="head">
+          <em>Открыто сейчас</em>
+          <h1>SEARCH · Поиск по игре</h1>
+        </div>
+        <div class="search">Титул, крылья, питомец…</div>
+        <div class="cards">
+          <div class="card"><i></i><b>Титул</b><small>ОП</small></div>
+          <div class="card"><i></i><b>Крылья</b><small>вики</small></div>
+          <div class="card"><i></i><b>Питомец</b><small>гид</small></div>
+          <div class="card"><i></i><b>Одежда</b><small>гид</small></div>
+          <div class="card"><i></i><b>Транспорт</b><small>гид</small></div>
+          <div class="card"><i></i><b>Причёска</b><small>гид</small></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const STRIPS = [
+      { id: "rail", key: "A", label: "A · широкая полоска с текстом" },
+      { id: "neon", key: "B", label: "B · тонкая неоновая (раскрывается)" },
+      { id: "pill", key: "C", label: "C · капсула у края" },
+      { id: "tab", key: "D", label: "D · короткий таб по центру края" },
+    ];
+
+    const fxs = document.getElementById("fxs");
+    const shop = document.getElementById("screenShop");
+    const game = document.getElementById("screenGame");
+    const labelLeft = document.getElementById("labelLeft");
+    const labelRight = document.getElementById("labelRight");
+    let page = "shop";
+    let busy = false;
+
+    STRIPS.forEach((s) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = s.label;
+      if (s.id === "neon") b.classList.add("on");
+      b.addEventListener("click", () => {
+        document.body.dataset.strip = s.id;
+        fxs.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+      });
+      fxs.appendChild(b);
+    });
+
+    function syncLabels() {
+      const other = page === "shop" ? "Поиск по игре" : "Поиск предметов";
+      labelLeft.textContent = other;
+      labelRight.textContent = other;
+      document.body.classList.toggle("is-game", page === "game");
+    }
+
+    function go(dir) {
+      if (busy) return;
+      busy = true;
+      const next = page === "shop" ? "game" : "shop";
+      const cur = page === "shop" ? shop : game;
+      const nxt = next === "shop" ? shop : game;
+
+      nxt.hidden = false;
+      cur.classList.remove("on", "go-left", "go-right", "from-left", "from-right");
+      nxt.classList.remove("on", "go-left", "go-right", "from-left", "from-right");
+
+      // с какой полоски кликнули — в ту сторону уезжаем, новый заезжает оттуда же
+      if (dir === "left") {
+        nxt.classList.add("from-left");
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            cur.classList.add("go-right");
+            nxt.classList.remove("from-left");
+            nxt.classList.add("on");
+          });
+        });
+      } else {
+        nxt.classList.add("from-right");
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            cur.classList.add("go-left");
+            nxt.classList.remove("from-right");
+            nxt.classList.add("on");
+          });
+        });
+      }
+
+      window.setTimeout(() => {
+        cur.hidden = true;
+        cur.classList.remove("on", "go-left", "go-right");
+        nxt.classList.add("on");
+        page = next;
+        syncLabels();
+        busy = false;
+      }, 800);
+    }
+
+    document.getElementById("edgeLeft").addEventListener("click", () => go("left"));
+    document.getElementById("edgeRight").addEventListener("click", () => go("right"));
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") go("left");
+      if (e.key === "ArrowRight") go("right");
+    });
+
+    syncLabels();
+  </script>
+</body>
+</html>

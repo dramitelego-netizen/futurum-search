@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Подъём поиска — отдача</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07090d;
+      --panel: #12161e;
+      --ink: #e8eef7;
+      --mute: #7d8a9a;
+      --accent: #3dffe0;
+      --line: rgba(232, 238, 247, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Rajdhani", sans-serif;
+      background:
+        radial-gradient(ellipse 70% 45% at 20% 0%, #0f1a1c, transparent 55%),
+        var(--bg);
+      color: var(--ink);
+      padding: 1.2rem clamp(1rem, 3vw, 2rem) 3rem;
+    }
+    h1 {
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(0.95rem, 2.4vw, 1.2rem);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin: 0 0 0.35rem;
+    }
+    .lead {
+      color: var(--mute);
+      margin: 0 0 1rem;
+      max-width: 46rem;
+      line-height: 1.45;
+    }
+    .lead strong { color: var(--accent); }
+    .hint {
+      margin: 0 0 1.1rem;
+      color: var(--mute);
+      font-size: 0.9rem;
+    }
+    .grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+    .card {
+      background: color-mix(in srgb, var(--panel) 94%, black);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .card.is-picked {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent);
+    }
+    .card-num {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+    }
+    .card-title { font-weight: 700; font-size: 1.02rem; }
+    .card-desc { margin: 0; color: var(--mute); font-size: 0.84rem; line-height: 1.35; }
+
+    .stage-box {
+      position: relative;
+      height: 220px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #0a0c10;
+      overflow: hidden;
+    }
+    .stage-box::after {
+      content: "результаты";
+      position: absolute;
+      left: 50%;
+      bottom: 0.55rem;
+      transform: translateX(-50%);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--mute) 70%, transparent);
+      opacity: 0;
+      transition: opacity 0.35s;
+    }
+    .stage-box.is-up::after { opacity: 0.7; }
+
+    .hero-mock {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: min(92%, 260px);
+      transform: translate(-50%, -50%);
+      text-align: center;
+      will-change: transform;
+    }
+    .hero-mock .brand {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.95rem;
+      letter-spacing: 0.16em;
+      margin: 0 0 0.45rem;
+      color: var(--accent);
+    }
+    .hero-mock .field {
+      width: 100%;
+      border: none;
+      border-bottom: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
+      background: transparent;
+      color: var(--ink);
+      text-align: center;
+      font: inherit;
+      font-weight: 600;
+      font-size: 0.92rem;
+      padding: 0.45rem 0.35rem;
+      outline: none;
+    }
+    .hero-mock .field::placeholder { color: var(--mute); }
+    .hero-mock .pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.25rem;
+      margin-top: 0.45rem;
+    }
+    .hero-mock .pill {
+      height: 1.25rem;
+      padding: 0 0.45rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel) 70%, transparent);
+      color: var(--mute);
+      font-size: 0.65rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .stage-box.is-up .hero-mock {
+      top: 0.7rem;
+      transform: translate(-50%, 0);
+    }
+
+    /* базовый переход без отдачи */
+    .v0 .hero-mock {
+      transition: top 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* мягкая пружина — лёгкий перелёт и возврат */
+    .v1.is-up .hero-mock {
+      animation: rise-soft 0.7s cubic-bezier(0.22, 1.35, 0.36, 1) both;
+    }
+    @keyframes rise-soft {
+      0% { top: 50%; transform: translate(-50%, -50%); }
+      70% { top: 0.35rem; transform: translate(-50%, 0); }
+      100% { top: 0.7rem; transform: translate(-50%, 0); }
+    }
+
+    /* амортизатор: быстрее вверх, мягкий отскок вниз */
+    .v2.is-up .hero-mock {
+      animation: rise-damper 0.85s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+    }
+    @keyframes rise-damper {
+      0% { top: 50%; transform: translate(-50%, -50%); }
+      55% { top: 0.15rem; transform: translate(-50%, 0); }
+      78% { top: 0.95rem; transform: translate(-50%, 0); }
+      100% { top: 0.7rem; transform: translate(-50%, 0); }
+    }
+
+    /* очень мягкая отдача — почти незаметный дожим */
+    .v3.is-up .hero-mock {
+      animation: rise-feather 0.95s cubic-bezier(0.22, 1.2, 0.36, 1) both;
+    }
+    @keyframes rise-feather {
+      0% { top: 50%; transform: translate(-50%, -50%); }
+      65% { top: 0.5rem; transform: translate(-50%, 0); }
+      100% { top: 0.7rem; transform: translate(-50%, 0); }
+    }
+
+    /* пружина сильнее (как батут, но всё ещё мягко) */
+    .v4.is-up .hero-mock {
+      animation: rise-spring 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+    @keyframes rise-spring {
+      0% { top: 50%; transform: translate(-50%, -50%) scale(1); }
+      60% { top: 0.2rem; transform: translate(-50%, 0) scale(1.015); }
+      100% { top: 0.7rem; transform: translate(-50%, 0) scale(1); }
+    }
+
+    /* двойной дожим как у подвески */
+    .v5.is-up .hero-mock {
+      animation: rise-suspension 1.05s ease-out both;
+    }
+    @keyframes rise-suspension {
+      0% { top: 50%; transform: translate(-50%, -50%); }
+      45% { top: 0.1rem; transform: translate(-50%, 0); }
+      65% { top: 1.05rem; transform: translate(-50%, 0); }
+      82% { top: 0.55rem; transform: translate(-50%, 0); }
+      100% { top: 0.7rem; transform: translate(-50%, 0); }
+    }
+
+    /* scaleY сжатие на приземлении */
+    .v6.is-up .hero-mock {
+      animation: rise-squash 0.8s cubic-bezier(0.22, 1.4, 0.36, 1) both;
+      transform-origin: top center;
+    }
+    @keyframes rise-squash {
+      0% { top: 50%; transform: translate(-50%, -50%) scaleY(1); }
+      58% { top: 0.25rem; transform: translate(-50%, 0) scaleY(0.94); }
+      78% { top: 0.85rem; transform: translate(-50%, 0) scaleY(1.03); }
+      100% { top: 0.7rem; transform: translate(-50%, 0) scaleY(1); }
+    }
+
+    /* замедление у финиша без явного отскока (ease-out тяжёлый) */
+    .v7.is-up .hero-mock {
+      animation: rise-ease 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes rise-ease {
+      0% { top: 50%; transform: translate(-50%, -50%); }
+      100% { top: 0.7rem; transform: translate(-50%, 0); }
+    }
+
+    /* лёгкий overshoot по Y через transform */
+    .v8.is-up .hero-mock {
+      animation: rise-overshoot 0.78s cubic-bezier(0.22, 1.45, 0.36, 1) both;
+    }
+    @keyframes rise-overshoot {
+      0% { top: 50%; transform: translate(-50%, -50%); }
+      100% { top: 0.7rem; transform: translate(-50%, 0); }
+    }
+
+    /* мягкий damper + чуть opacity */
+    .v9.is-up .hero-mock {
+      animation: rise-soft-fade 0.88s cubic-bezier(0.2, 1.25, 0.3, 1) both;
+    }
+    @keyframes rise-soft-fade {
+      0% { top: 50%; transform: translate(-50%, -50%); opacity: 1; }
+      50% { top: 0.25rem; transform: translate(-50%, 0); opacity: 0.92; }
+      75% { top: 0.9rem; transform: translate(-50%, 0); opacity: 1; }
+      100% { top: 0.7rem; transform: translate(-50%, 0); opacity: 1; }
+    }
+
+    /* самый «автомобильный»: резкий ход вверх, вязкий возврат */
+    .v10.is-up .hero-mock {
+      animation: rise-car 1s both;
+    }
+    @keyframes rise-car {
+      0% { top: 50%; transform: translate(-50%, -50%); animation-timing-function: cubic-bezier(0.3, 0.7, 0.4, 1); }
+      50% { top: 0.05rem; transform: translate(-50%, 0); animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1); }
+      72% { top: 1.1rem; transform: translate(-50%, 0); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+      88% { top: 0.58rem; transform: translate(-50%, 0); }
+      100% { top: 0.7rem; transform: translate(-50%, 0); }
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .play, .pick {
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      color: var(--accent);
+      font: inherit;
+      font-weight: 700;
+      font-size: 0.84rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .play { border-color: var(--line); color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
+    .pick:hover, .play:hover { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); }
+    .card.is-picked .pick {
+      background: var(--accent);
+      color: #041014;
+      border-color: var(--accent);
+    }
+    .footer-pick {
+      position: sticky;
+      bottom: 0.75rem;
+      margin-top: 1.4rem;
+      padding: 0.9rem 1rem;
+      border-radius: 14px;
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+      background: color-mix(in srgb, var(--panel) 92%, black);
+      backdrop-filter: blur(10px);
+      color: var(--mute);
+      font-size: 0.95rem;
+      z-index: 5;
+    }
+    .footer-pick strong { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <h1>Подъём с отдачей</h1>
+  <p class="lead">
+    Блок поиска поднимается вверх и <strong>мягко дожимается</strong>, как амортизатор:
+    чуть перелетает → возвращается → встаёт на место.
+    Нажми <strong>«Показать»</strong> в каждом варианте (можно несколько раз).
+  </p>
+  <p class="hint">Ближе к «машине»: 2, 5, 10. Совсем мягко: 1, 3, 9.</p>
+
+  <div class="grid" id="grid"></div>
+  <div class="footer-pick" id="chosen">Выбрано: <strong>пока ничего</strong></div>
+
+  <script>
+    const VARIANTS = [
+      { id: 0, title: "Сейчас (без отдачи)", desc: "Обычный плавный подъём, как на сайте." },
+      { id: 1, title: "Soft overshoot", desc: "Лёгкий перелёт и мягкая посадка." },
+      { id: 2, title: "Damper", desc: "Быстрее вверх, вязкий отскок вниз — как амортизатор." },
+      { id: 3, title: "Feather", desc: "Очень мягкий дожим, почти незаметный." },
+      { id: 4, title: "Spring", desc: "Пружинистее + чуть scale." },
+      { id: 5, title: "Suspension", desc: "Двойной дожим подвески." },
+      { id: 6, title: "Squash", desc: "Сжатие на приземлении, потом распрямление." },
+      { id: 7, title: "Heavy ease", desc: "Без отскока, только сильное замедление у финиша." },
+      { id: 8, title: "Curve overshoot", desc: "Отдача через easing-кривую." },
+      { id: 9, title: "Soft fade settle", desc: "Отдача + лёгкое мигание прозрачности." },
+      { id: 10, title: "Car damper", desc: "Самый «автомобильный» ход: резкий подъём, вязкая отдача." },
+    ];
+
+    const grid = document.getElementById("grid");
+    const chosen = document.getElementById("chosen");
+
+    function play(box, hero) {
+      box.classList.remove("is-up");
+      hero.style.animation = "none";
+      void hero.offsetWidth;
+      hero.style.animation = "";
+      requestAnimationFrame(() => box.classList.add("is-up"));
+    }
+
+    VARIANTS.forEach((v) => {
+      const card = document.createElement("article");
+      card.className = "card";
+      card.dataset.variant = String(v.id);
+      card.innerHTML = `
+        <span class="card-num">ВАРИАНТ ${v.id}</span>
+        <div class="card-title">${v.title}</div>
+        <p class="card-desc">${v.desc}</p>
+        <div class="stage-box v${v.id}">
+          <div class="hero-mock">
+            <div class="brand">FUTURUM</div>
+            <input class="field" type="search" placeholder="Название предмета…" readonly tabindex="-1" />
+            <div class="pills">
+              <span class="pill">М</span>
+              <span class="pill">Ж</span>
+              <span class="pill">Скидки</span>
+              <span class="pill">Все</span>
+              <span class="pill">Крылья</span>
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="button" class="play">Показать</button>
+          <button type="button" class="pick">Выбрать</button>
+        </div>
+      `;
+      const box = card.querySelector(".stage-box");
+      const hero = card.querySelector(".hero-mock");
+      card.querySelector(".play").addEventListener("click", () => play(box, hero));
+      card.querySelector(".pick").addEventListener("click", () => {
+        document.querySelectorAll(".card").forEach((c) => c.classList.remove("is-picked"));
+        card.classList.add("is-picked");
+        chosen.innerHTML = `Выбрано: <strong>вариант ${v.id} — ${v.title}</strong>. Напиши в чат: <strong>${v.id}</strong>`;
+      });
+      // автопроигрыш при появлении с небольшой задержкой по id
+      setTimeout(() => play(box, hero), 280 + v.id * 70);
+      grid.appendChild(card);
+    });
+  </script>
+</body>
+</html>

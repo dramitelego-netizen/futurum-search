@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>FUTURUM · глитч случайный</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=181" />
+  <link rel="stylesheet" href="home-glitch.css?v=6" />
+  <link rel="stylesheet" href="home-glitch-lab.css?v=4" />
+</head>
+<body class="glab" data-theme="dark">
+  <div class="atmosphere" aria-hidden="true">
+    <div class="atm-wash"></div>
+    <div class="atm-flow"></div>
+    <div class="grid"></div>
+  </div>
+
+  <header class="glab-top">
+    <a class="glab-btn" href="./">← Домой</a>
+    <div class="glab-top-main">
+      <strong>Глитч-переход</strong>
+      <span>только случайно · веса 100 → 10</span>
+    </div>
+    <button type="button" class="glab-btn" id="replayBtn">Ещё раз</button>
+  </header>
+
+  <aside class="glab-picker" aria-label="Шансы глитча">
+    <p class="glab-label">Шансы (веса)</p>
+    <div class="glab-list" id="fxList"></div>
+    <p class="glab-hint" id="fxHint">На главной уровень не выбирается — каждый переход кидает случайный из 10 по этим весам.</p>
+  </aside>
+
+  <main class="glab-stage">
+    <p class="glab-title" id="fxTitle">—</p>
+    <button type="button" class="glab-tile" id="tile">
+      <img src="./hub-shop.jpg" alt="" width="640" height="640" />
+      <span class="glab-tile-copy">
+        <em>Превью</em>
+        <strong>Кликни</strong>
+        <span>случайный глитч по весам · сайт проявляется сквозь слой</span>
+      </span>
+    </button>
+    <p class="glab-note">1 мягче чаще (вес 100), 10 жёстче реже (вес 10). Выбор уровня отключён.</p>
+  </main>
+
+  <script src="home-glitch.js?v=11"></script>
+  <script src="home-glitch-lab.js?v=5"></script>
+</body>
+</html>

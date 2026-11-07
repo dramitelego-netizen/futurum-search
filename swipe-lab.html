@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>FUTURUM · плавный переход влево/вправо</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #070a10;
+      --panel: #0d141c;
+      --line: #2a3848;
+      --text: #e8f2f8;
+      --mute: #8aa0b4;
+      --shop: #3ecfbe;
+      --game: #d4a24a;
+      --dur: 720ms;
+      --ease: cubic-bezier(0.22, 0.72, 0.12, 1);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Rajdhani", system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(900px 480px at 20% -10%, #123348 0%, transparent 55%),
+        radial-gradient(800px 420px at 90% 0%, #3a2814 0%, transparent 50%),
+        var(--bg);
+    }
+
+    .top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1rem;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.1rem;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, #05070a 88%, transparent);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .top strong {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .top span { color: var(--mute); font-size: 0.88rem; }
+    .top a {
+      color: var(--text);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .pick {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.55rem;
+      padding: 0.9rem 1.1rem 0.2rem;
+    }
+    .pick button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel) 90%, transparent);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 0.55rem 0.65rem;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+      display: grid;
+      gap: 0.1rem;
+    }
+    .pick button strong { font-size: 0.92rem; }
+    .pick button em {
+      font-style: normal;
+      font-size: 0.75rem;
+      color: var(--mute);
+    }
+    .pick button.on {
+      border-color: color-mix(in srgb, var(--shop) 55%, var(--line));
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--shop) 30%, transparent);
+    }
+
+    .stage-wrap {
+      padding: 0.85rem 1.1rem 1.4rem;
+    }
+    .stage {
+      position: relative;
+      height: min(68vh, 620px);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: #05070a;
+      isolation: isolate;
+    }
+
+    .nav-row {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0.75rem;
+      z-index: 5;
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      pointer-events: none;
+    }
+    .nav-row button {
+      pointer-events: auto;
+      appearance: none;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, #0a121a 85%, transparent);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 0.4rem 0.9rem;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+    }
+    .nav-row button[aria-current="page"] {
+      border-color: color-mix(in srgb, var(--shop) 50%, var(--line));
+      background: color-mix(in srgb, var(--shop) 16%, #0a121a);
+    }
+    .nav-row button[data-go="game"][aria-current="page"] {
+      border-color: color-mix(in srgb, var(--game) 55%, var(--line));
+      background: color-mix(in srgb, var(--game) 16%, #0a121a);
+    }
+
+    .pane {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      padding: 3.2rem 1.1rem 1.1rem;
+      background:
+        linear-gradient(180deg, transparent 35%, rgba(5, 7, 10, 0.88) 100%),
+        center / cover no-repeat;
+      will-change: transform, opacity, filter;
+    }
+    .pane.shop {
+      background-image:
+        linear-gradient(180deg, transparent 30%, rgba(5, 7, 10, 0.9) 100%),
+        url("./hub-shop.jpg");
+      --accent: var(--shop);
+    }
+    .pane.game {
+      background-image:
+        linear-gradient(180deg, transparent 30%, rgba(5, 7, 10, 0.9) 100%),
+        url("./hub-titles.jpg");
+      --accent: var(--game);
+    }
+    .pane .copy {
+      align-self: end;
+      display: grid;
+      gap: 0.25rem;
+      max-width: 28rem;
+    }
+    .pane .kicker {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--accent) 80%, #fff);
+      font-weight: 700;
+    }
+    .pane h3 {
+      margin: 0;
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(1.1rem, 2.8vw, 1.55rem);
+      letter-spacing: 0.04em;
+    }
+    .pane p {
+      margin: 0;
+      color: var(--mute);
+      font-size: 0.95rem;
+    }
+    .fake-ui {
+      display: grid;
+      gap: 0.45rem;
+      margin-top: 0.85rem;
+    }
+    .fake-bar {
+      height: 2.2rem;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+      background: color-mix(in srgb, #0a121a 70%, transparent);
+    }
+    .fake-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.4rem;
+    }
+    .fake-card {
+      height: 4.2rem;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--accent) 8%, #101820);
+    }
+
+    .hint {
+      margin: 0.75rem 1.1rem 1.5rem;
+      color: var(--mute);
+      font-size: 0.9rem;
+    }
+
+    /* —— FX A: slide —— */
+    body[data-fx="slide"] .pane {
+      transition: transform var(--dur) var(--ease), opacity calc(var(--dur) * 0.85) ease;
+    }
+    body[data-fx="slide"] .pane.is-from-left { transform: translateX(-108%); opacity: 0.35; }
+    body[data-fx="slide"] .pane.is-from-right { transform: translateX(108%); opacity: 0.35; }
+    body[data-fx="slide"] .pane.is-to-left { transform: translateX(-108%); opacity: 0.2; }
+    body[data-fx="slide"] .pane.is-to-right { transform: translateX(108%); opacity: 0.2; }
+    body[data-fx="slide"] .pane.is-on { transform: translateX(0); opacity: 1; z-index: 2; }
+
+    /* —— FX B: push (как стопка карточек) —— */
+    body[data-fx="push"] .pane {
+      transition: transform var(--dur) var(--ease), filter var(--dur) ease;
+    }
+    body[data-fx="push"] .pane.is-from-left { transform: translateX(-100%) scale(0.96); filter: brightness(0.7); }
+    body[data-fx="push"] .pane.is-from-right { transform: translateX(100%) scale(0.96); filter: brightness(0.7); }
+    body[data-fx="push"] .pane.is-to-left { transform: translateX(-42%) scale(0.92); filter: brightness(0.55); }
+    body[data-fx="push"] .pane.is-to-right { transform: translateX(42%) scale(0.92); filter: brightness(0.55); }
+    body[data-fx="push"] .pane.is-on { transform: translateX(0) scale(1); filter: none; z-index: 2; }
+
+    /* —— FX C: cover (новая накрывает) —— */
+    body[data-fx="cover"] .pane {
+      transition: transform var(--dur) var(--ease);
+    }
+    body[data-fx="cover"] .pane.is-on { transform: translateX(0); z-index: 1; }
+    body[data-fx="cover"] .pane.is-to-left,
+    body[data-fx="cover"] .pane.is-to-right { transform: translateX(0); z-index: 1; }
+    body[data-fx="cover"] .pane.is-from-right { transform: translateX(100%); z-index: 3; }
+    body[data-fx="cover"] .pane.is-from-left { transform: translateX(-100%); z-index: 3; }
+    body[data-fx="cover"] .pane.is-cover-on { transform: translateX(0); z-index: 3; }
+
+    /* —— FX D: parallax + fade —— */
+    body[data-fx="parallax"] .pane {
+      transition:
+        transform var(--dur) var(--ease),
+        opacity calc(var(--dur) * 0.9) ease,
+        filter var(--dur) ease;
+    }
+    body[data-fx="parallax"] .pane.is-from-left { transform: translateX(-48%) scale(1.04); opacity: 0; filter: blur(8px); }
+    body[data-fx="parallax"] .pane.is-from-right { transform: translateX(48%) scale(1.04); opacity: 0; filter: blur(8px); }
+    body[data-fx="parallax"] .pane.is-to-left { transform: translateX(-28%) scale(0.98); opacity: 0; filter: blur(6px); }
+    body[data-fx="parallax"] .pane.is-to-right { transform: translateX(28%) scale(0.98); opacity: 0; filter: blur(6px); }
+    body[data-fx="parallax"] .pane.is-on { transform: translateX(0) scale(1); opacity: 1; filter: none; z-index: 2; }
+
+    /* —— FX E: soft swap (очень спокойный) —— */
+    body[data-fx="soft"] .pane {
+      transition: transform 880ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 700ms ease;
+    }
+    body[data-fx="soft"] .pane.is-from-left { transform: translateX(-18%); opacity: 0; }
+    body[data-fx="soft"] .pane.is-from-right { transform: translateX(18%); opacity: 0; }
+    body[data-fx="soft"] .pane.is-to-left { transform: translateX(-12%); opacity: 0; }
+    body[data-fx="soft"] .pane.is-to-right { transform: translateX(12%); opacity: 0; }
+    body[data-fx="soft"] .pane.is-on { transform: translateX(0); opacity: 1; z-index: 2; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .pane { transition: none !important; }
+    }
+  </style>
+</head>
+<body data-fx="slide">
+  <header class="top">
+    <div>
+      <strong>Переход влево / вправо</strong>
+      <span>Магазин ↔ Поиск по игре · только превью</span>
+    </div>
+    <a href="./">← Главная</a>
+  </header>
+
+  <div class="pick" id="fxPick" aria-label="Стиль перехода"></div>
+
+  <div class="stage-wrap">
+    <div class="stage" id="stage">
+      <div class="nav-row">
+        <button type="button" data-go="shop" aria-current="page">← Поиск предметов</button>
+        <button type="button" data-go="game">Поиск по игре →</button>
+      </div>
+
+      <section class="pane shop is-on" data-pane="shop" aria-label="Магазин">
+        <div class="copy">
+          <span class="kicker">Магазин</span>
+          <h3>Поиск предметов</h3>
+          <p>Цены, скидки, id — уезжает влево, когда открываешь игру.</p>
+          <div class="fake-ui" aria-hidden="true">
+            <div class="fake-bar"></div>
+            <div class="fake-row"><div class="fake-card"></div><div class="fake-card"></div><div class="fake-card"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="pane game is-from-right" data-pane="game" aria-label="Игра" hidden>
+        <div class="copy">
+          <span class="kicker">Игра</span>
+          <h3>Поиск по игре</h3>
+          <p>Титулы и справочник — приходит справа.</p>
+          <div class="fake-ui" aria-hidden="true">
+            <div class="fake-bar"></div>
+            <div class="fake-row"><div class="fake-card"></div><div class="fake-card"></div><div class="fake-card"></div></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <p class="hint">Кликай кнопки сверху сцены или стрелки клавиатуры ← →. Выбери стиль и напиши в чат букву (A–E) — встрою между магазином и поиском по игре.</p>
+
+  <script>
+    const FX = [
+      { id: "slide", key: "A", title: "Slide", desc: "оба экрана едут как лента" },
+      { id: "push", key: "B", title: "Push", desc: "старый чуть уезжает и тускнеет" },
+      { id: "cover", key: "C", title: "Cover", desc: "новый накрывает сверху" },
+      { id: "parallax", key: "D", title: "Parallax", desc: "сдвиг + лёгкое размытие" },
+      { id: "soft", key: "E", title: "Soft", desc: "короткий мягкий выезд" },
+    ];
+
+    const pick = document.getElementById("fxPick");
+    const shop = document.querySelector('[data-pane="shop"]');
+    const game = document.querySelector('[data-pane="game"]');
+    const btns = [...document.querySelectorAll(".nav-row [data-go]")];
+    let page = "shop";
+    let busy = false;
+
+    FX.forEach((fx, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.dataset.fx = fx.id;
+      if (i === 0) b.classList.add("on");
+      b.innerHTML = `<strong>${fx.key} · ${fx.title}</strong><em>${fx.desc}</em>`;
+      b.addEventListener("click", () => {
+        document.body.dataset.fx = fx.id;
+        pick.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+        go(page === "shop" ? "game" : "shop");
+      });
+      pick.appendChild(b);
+    });
+
+    function clearClasses(el) {
+      el.classList.remove(
+        "is-on",
+        "is-from-left",
+        "is-from-right",
+        "is-to-left",
+        "is-to-right",
+        "is-cover-on"
+      );
+    }
+
+    function go(next) {
+      if (busy || next === page) return;
+      busy = true;
+      const toGame = next === "game";
+      const cur = toGame ? shop : game;
+      const nxt = toGame ? game : shop;
+      const fx = document.body.dataset.fx;
+
+      nxt.hidden = false;
+      clearClasses(cur);
+      clearClasses(nxt);
+
+      if (fx === "cover") {
+        cur.classList.add("is-on");
+        nxt.classList.add(toGame ? "is-from-right" : "is-from-left");
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            nxt.classList.remove("is-from-right", "is-from-left");
+            nxt.classList.add("is-cover-on");
+          });
+        });
+      } else {
+        cur.classList.add(toGame ? "is-to-left" : "is-to-right");
+        nxt.classList.add(toGame ? "is-from-right" : "is-from-left");
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            nxt.classList.remove("is-from-right", "is-from-left");
+            nxt.classList.add("is-on");
+          });
+        });
+      }
+
+      btns.forEach((b) => {
+        b.setAttribute("aria-current", b.dataset.go === next ? "page" : null);
+      });
+
+      window.setTimeout(() => {
+        clearClasses(cur);
+        cur.hidden = true;
+        clearClasses(nxt);
+        nxt.classList.add(fx === "cover" ? "is-cover-on" : "is-on");
+        if (fx === "cover") nxt.classList.add("is-on");
+        page = next;
+        busy = false;
+      }, 780);
+    }
+
+    btns.forEach((b) => b.addEventListener("click", () => go(b.dataset.go)));
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") go("game");
+      if (e.key === "ArrowLeft") go("shop");
+    });
+  </script>
+</body>
+</html>

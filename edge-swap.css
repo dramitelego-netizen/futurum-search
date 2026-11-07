@@ -1,0 +1,224 @@
+/* Тонкий неон по краю + единый leave/enter (keyframes, без same-frame transition) */
+
+.edge-neon {
+  --edge-tone: #3ecfbe;
+  position: fixed;
+  top: 14%;
+  bottom: 14%;
+  width: 10px;
+  z-index: 60;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  text-decoration: none;
+  color: var(--text, #e8f2f8);
+  cursor: pointer;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in srgb, var(--edge-tone) 75%, #fff) 50%,
+    transparent 100%
+  );
+  box-shadow: 0 0 14px color-mix(in srgb, var(--edge-tone) 40%, transparent);
+  transition:
+    width 240ms cubic-bezier(0.22, 0.72, 0.12, 1),
+    box-shadow 240ms ease,
+    background 240ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.edge-neon-left {
+  left: 0;
+  border-radius: 0 8px 8px 0;
+}
+
+.edge-neon-right {
+  right: 0;
+  border-radius: 8px 0 0 8px;
+}
+
+body.shop-page .edge-neon {
+  --edge-tone: #d4a24a;
+}
+
+body.guide-page .edge-neon {
+  --edge-tone: #3ecfbe;
+}
+
+.edge-neon-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--edge-tone) 50%, transparent),
+    transparent
+  );
+}
+
+.edge-neon-label {
+  position: relative;
+  z-index: 1;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: "Rajdhani", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  color: color-mix(in srgb, var(--edge-tone) 85%, #fff);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--edge-tone) 45%, transparent);
+  transition: opacity 200ms ease;
+}
+
+.edge-neon-right .edge-neon-label {
+  transform: none;
+}
+
+.edge-neon:hover,
+.edge-neon:focus-visible {
+  width: 48px;
+  outline: none;
+  box-shadow: 0 0 22px color-mix(in srgb, var(--edge-tone) 50%, transparent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--edge-tone) 15%, #0a1018),
+    color-mix(in srgb, var(--edge-tone) 55%, #0a1018),
+    color-mix(in srgb, var(--edge-tone) 15%, #0a1018)
+  );
+}
+
+.edge-neon:hover .edge-neon-label,
+.edge-neon:focus-visible .edge-neon-label {
+  opacity: 1;
+}
+
+html.edge-swap-out,
+html.edge-swap-in {
+  background: #05070a;
+}
+
+html.edge-swap-out body,
+html.edge-swap-in body {
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* уход — keyframes (не transition: иначе класс+цель в одном кадре = мгновенный прыжок) */
+html.edge-swap-out-left body {
+  animation: edge-swap-leave-left 420ms cubic-bezier(0.22, 0.72, 0.12, 1) both;
+}
+
+html.edge-swap-out-right body {
+  animation: edge-swap-leave-right 420ms cubic-bezier(0.22, 0.72, 0.12, 1) both;
+}
+
+html.edge-swap-out-fade body {
+  animation: edge-swap-leave-fade 320ms cubic-bezier(0.22, 0.72, 0.12, 1) both;
+}
+
+html.edge-swap-in-left body {
+  --edge-enter-x: -5%;
+  animation: edge-swap-enter 460ms cubic-bezier(0.22, 0.72, 0.12, 1) both;
+}
+
+html.edge-swap-in-right body {
+  --edge-enter-x: 5%;
+  animation: edge-swap-enter 460ms cubic-bezier(0.22, 0.72, 0.12, 1) both;
+}
+
+html.edge-swap-in-fade body {
+  animation: edge-swap-enter-fade 420ms cubic-bezier(0.22, 0.72, 0.12, 1) both;
+}
+
+@keyframes edge-swap-leave-left {
+  from {
+    transform: none;
+    opacity: 1;
+  }
+  to {
+    transform: translateX(6%);
+    opacity: 0;
+  }
+}
+
+@keyframes edge-swap-leave-right {
+  from {
+    transform: none;
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-6%);
+    opacity: 0;
+  }
+}
+
+@keyframes edge-swap-leave-fade {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+
+@keyframes edge-swap-enter {
+  from {
+    transform: translateX(var(--edge-enter-x, 5%));
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes edge-swap-enter-fade {
+  from {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+body.menu-open .edge-neon {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 720px) {
+  .edge-neon {
+    width: 8px;
+    top: 18%;
+    bottom: 18%;
+  }
+  .edge-neon:hover,
+  .edge-neon:focus-visible {
+    width: 42px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .edge-neon,
+  html.edge-swap-out body,
+  html.edge-swap-in body {
+    transition: none !important;
+    animation: none !important;
+  }
+  .edge-neon-label {
+    opacity: 1;
+  }
+}

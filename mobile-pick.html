@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>FUTURUM · выбор мобильной версии</title>
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07090d;
+      --panel: #0e131a;
+      --line: rgba(90, 220, 200, 0.22);
+      --text: #e8eef5;
+      --mute: #8a96a8;
+      --accent: #3dffd0;
+      --op8: #ff4d5e;
+      --op4: #ff9a3c;
+      --op2: #b57cff;
+      --op1: #f0d24a;
+      --safe-b: env(safe-area-inset-bottom, 0px);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: "Rajdhani", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(120% 80% at 50% -10%, rgba(61, 255, 208, 0.14), transparent 50%),
+        radial-gradient(80% 50% at 100% 100%, rgba(181, 124, 255, 0.08), transparent 45%),
+        var(--bg);
+      padding: 0.85rem 0.85rem calc(1rem + var(--safe-b));
+    }
+    .wrap { width: min(100%, 920px); margin: 0 auto; display: grid; gap: 0.85rem; }
+    .head { text-align: center; display: grid; gap: 0.3rem; }
+    .brand {
+      margin: 0;
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(1.25rem, 5vw, 1.8rem);
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      text-shadow: 0 0 24px rgba(61, 255, 208, 0.35);
+    }
+    .sub { margin: 0; color: var(--mute); font-size: 0.9rem; line-height: 1.35; }
+    .tip {
+      margin: 0;
+      font-size: 0.78rem;
+      color: color-mix(in srgb, var(--accent) 75%, var(--mute));
+      font-weight: 700;
+    }
+
+    .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.35rem; }
+    @media (min-width: 560px) {
+      .tabs { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    }
+    .tab {
+      appearance: none; border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel) 88%, transparent);
+      color: var(--text); border-radius: 12px; padding: 0.5rem 0.3rem;
+      font: inherit; font-weight: 700; cursor: pointer;
+    }
+    .tab small { display: block; margin-top: 0.1rem; font-size: 0.64rem; font-weight: 600; color: var(--mute); }
+    .tab.on {
+      border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+      color: var(--accent);
+    }
+    .tab.on small { color: color-mix(in srgb, var(--accent) 70%, var(--mute)); }
+
+    .stage { display: grid; gap: 0.75rem; justify-items: center; }
+    .phone {
+      width: min(100%, 340px);
+      aspect-ratio: 9 / 19.2;
+      border-radius: 28px;
+      border: 2px solid color-mix(in srgb, var(--accent) 35%, #2a3340);
+      background: #05070a;
+      box-shadow: 0 24px 50px rgba(0,0,0,.55), inset 0 0 0 1px rgba(61,255,208,.08);
+      overflow: hidden; position: relative; touch-action: manipulation;
+      user-select: none;
+    }
+    .phone::before {
+      content: ""; position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+      width: 88px; height: 10px; border-radius: 999px; background: #11161e; z-index: 20;
+    }
+
+    .screen {
+      position: absolute; inset: 0; padding: 22px 10px 10px;
+      display: none; flex-direction: column; gap: 0.4rem;
+      background: linear-gradient(180deg, rgba(61,255,208,.06), transparent 28%), #080b10;
+    }
+    .screen.on { display: flex; }
+
+    .top { display: flex; align-items: center; gap: 0.4rem; }
+    .logo { font-family: "Orbitron", sans-serif; font-size: 0.7rem; letter-spacing: .06em; color: var(--accent); font-weight: 700; }
+    .search {
+      flex: 1; min-width: 0; height: 30px; border-radius: 999px; border: 1px solid var(--line);
+      background: rgba(255,255,255,.04); color: var(--text); font: inherit; font-size: 0.72rem;
+      padding: 0 0.7rem; outline: none;
+    }
+    .search::placeholder { color: var(--mute); }
+    .icon-btn {
+      flex: 0 0 auto; width: 30px; height: 30px; border-radius: 10px; border: 1px solid var(--line);
+      background: rgba(255,255,255,.04); color: var(--accent); font: inherit; font-weight: 800; cursor: pointer;
+    }
+
+    .chips { display: flex; gap: 0.28rem; overflow-x: auto; scrollbar-width: none; }
+    .chips::-webkit-scrollbar { display: none; }
+    .chip {
+      flex: 0 0 auto; padding: 0.24rem 0.52rem; border-radius: 999px; border: 1px solid var(--line);
+      background: transparent; color: var(--mute); font: inherit; font-size: 0.64rem; font-weight: 700; cursor: pointer;
+    }
+    .chip.on {
+      color: var(--accent);
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+
+    .list {
+      flex: 1; min-height: 0; overflow: auto; display: grid; gap: 0.28rem; align-content: start;
+      border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+      border-radius: 14px; padding: 0.35rem; background: rgba(0,0,0,.25);
+      -webkit-overflow-scrolling: touch;
+    }
+    .row {
+      display: grid; grid-template-columns: 34px minmax(0,1fr) auto; gap: 0.4rem; align-items: center;
+      padding: 0.38rem 0.42rem; border-radius: 10px; border: 0; width: 100%; text-align: left;
+      font: inherit; color: inherit; cursor: pointer;
+      background: color-mix(in srgb, var(--row, var(--op8)) 7%, transparent);
+      box-shadow: inset 2px 0 0 var(--row, var(--op8));
+      transition: background .12s, transform .1s;
+    }
+    .row:active { transform: scale(0.985); }
+    .row.on {
+      background: color-mix(in srgb, var(--row, var(--op8)) 16%, transparent);
+      outline: 1px solid color-mix(in srgb, var(--row, var(--op8)) 40%, transparent);
+    }
+    .thumb {
+      width: 34px; height: 34px; border-radius: 8px;
+      background: radial-gradient(circle at 30% 30%, #fff6, transparent 40%),
+        linear-gradient(135deg, #2a8f8a, #1a3a55 55%, #3a1a4a);
+    }
+    .name { font-size: 0.74rem; font-weight: 700; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: color-mix(in srgb, var(--row, var(--text)) 80%, #fff); }
+    .meta { font-size: 0.58rem; color: var(--mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .op {
+      font-size: 0.62rem; font-weight: 800; padding: 0.18rem 0.4rem; border-radius: 999px;
+      color: var(--row, var(--op8));
+      border: 1px solid color-mix(in srgb, var(--row, var(--op8)) 40%, transparent);
+      background: color-mix(in srgb, var(--row, var(--op8)) 16%, transparent);
+    }
+
+    .sheet {
+      position: absolute; left: 8px; right: 8px; bottom: 8px; z-index: 8;
+      border-radius: 18px 18px 22px 22px;
+      border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      background: color-mix(in srgb, #0c121a 96%, transparent);
+      box-shadow: 0 -12px 40px rgba(0,0,0,.5);
+      padding: 0.35rem 0.55rem 0.7rem;
+      display: none; flex-direction: column; gap: 0.35rem;
+      max-height: 78%;
+      transition: height .22s ease, max-height .22s ease, transform .2s ease, opacity .18s ease;
+      transform: translateY(12px); opacity: 0;
+    }
+    .sheet.open { display: flex; transform: none; opacity: 1; }
+    .sheet.mid { height: 48%; }
+    .sheet.tall { height: 78%; }
+    .sheet.full {
+      top: 18px; height: auto; max-height: none; bottom: 8px;
+    }
+    .grab {
+      width: 40px; height: 5px; border-radius: 999px; background: rgba(255,255,255,.25);
+      margin: 0.15rem auto 0.1rem; cursor: pointer; border: 0; padding: 0;
+      display: block;
+    }
+    .look {
+      height: 78px; border-radius: 12px; border: 1px solid var(--line); flex: 0 0 auto;
+      background: linear-gradient(180deg, transparent 55%, #05070a),
+        radial-gradient(circle at 50% 40%, #6ad, transparent 45%),
+        linear-gradient(160deg, #1c4a58, #0a1520);
+      transition: height .2s ease;
+    }
+    .sheet.tall .look, .sheet.full .look { height: 130px; }
+    .sheet-head { display: flex; align-items: start; gap: 0.45rem; }
+    .sheet-head h4 { margin: 0; font-size: 0.9rem; font-weight: 700; flex: 1; min-width: 0; }
+    .sheet-close, .sheet-expand {
+      flex: 0 0 auto; border: 1px solid var(--line); background: transparent; color: var(--mute);
+      border-radius: 8px; width: 28px; height: 28px; cursor: pointer; font: inherit; font-weight: 700;
+    }
+    .sheet p { margin: 0; font-size: 0.68rem; color: var(--mute); line-height: 1.35; }
+    .sheet-actions { display: flex; gap: 0.35rem; margin-top: 0.15rem; }
+    .sheet-actions button {
+      flex: 1; border-radius: 10px; border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent);
+      font: inherit; font-weight: 700; font-size: 0.72rem; padding: 0.45rem; cursor: pointer;
+    }
+
+    .dim {
+      position: absolute; inset: 0; z-index: 7; background: rgba(0,0,0,.45);
+      display: none; border: 0; padding: 0; cursor: pointer;
+    }
+    .dim.on { display: block; }
+
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.25rem; }
+    .steps span {
+      text-align: center; padding: 0.28rem 0.2rem; border-radius: 8px; border: 1px solid var(--line);
+      color: var(--mute); font-size: 0.58rem; font-weight: 700;
+    }
+    .steps span.on {
+      color: var(--accent);
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+
+    .catalog-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem; flex: 1; align-content: start; overflow: auto;
+    }
+    .cat {
+      border-radius: 12px; border: 1px solid var(--line); padding: 0.85rem 0.5rem; text-align: center;
+      font-size: 0.74rem; font-weight: 700; background: rgba(255,255,255,.03); color: inherit;
+      cursor: pointer; font: inherit;
+    }
+    .cat b { display: block; color: var(--accent); font-size: 1rem; margin-bottom: 0.15rem; }
+    .cat:active { transform: scale(0.98); }
+
+    .drawer {
+      position: absolute; inset: 0; z-index: 15; display: none; background: rgba(0,0,0,.5);
+    }
+    .drawer.on { display: block; }
+    .drawer-panel {
+      position: absolute; top: 0; left: 0; bottom: 0; width: 78%;
+      background: #0b1018; border-right: 1px solid var(--line);
+      padding: 28px 0.7rem 0.7rem; display: grid; gap: 0.35rem; align-content: start;
+      transform: translateX(-105%); transition: transform .22s ease;
+    }
+    .drawer.on .drawer-panel { transform: none; }
+    .drawer-panel h5 { margin: 0 0 0.3rem; font-size: 0.78rem; color: var(--accent); }
+    .drawer-item {
+      text-align: left; border: 1px solid var(--line); background: transparent; color: var(--text);
+      border-radius: 10px; padding: 0.55rem 0.6rem; font: inherit; font-weight: 700; cursor: pointer;
+    }
+    .drawer-item.on {
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent);
+    }
+
+    .toast {
+      position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%);
+      z-index: 25; padding: 0.4rem 0.7rem; border-radius: 999px; font-size: 0.7rem; font-weight: 700;
+      background: color-mix(in srgb, var(--accent) 18%, #0a1018); color: var(--accent);
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+      opacity: 0; pointer-events: none; transition: opacity .2s;
+      white-space: nowrap;
+    }
+    .toast.on { opacity: 1; }
+
+    .empty {
+      margin: auto; color: var(--mute); font-size: 0.78rem; text-align: center; padding: 1rem;
+    }
+
+    .info { width: min(100%, 340px); display: grid; gap: 0.4rem; text-align: center; }
+    .info h2 { margin: 0; font-size: 1.1rem; }
+    .info p { margin: 0; color: var(--mute); font-size: 0.88rem; line-height: 1.4; }
+    .pros { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.3rem; }
+    .pros span {
+      font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.45rem; border-radius: 999px;
+      border: 1px solid var(--line); color: color-mix(in srgb, var(--text) 85%, var(--mute));
+    }
+
+    .actions { display: grid; gap: 0.4rem; width: min(100%, 340px); }
+    .btn {
+      appearance: none; border: 0; border-radius: 14px; padding: 0.8rem 1rem;
+      font: inherit; font-weight: 800; font-size: 1rem; cursor: pointer;
+    }
+    .btn-pick {
+      color: #041018; background: linear-gradient(135deg, #5dffd8, #2ad4b0);
+      box-shadow: 0 0 24px rgba(61,255,208,.28);
+    }
+    .btn-pick:disabled { opacity: .7; cursor: default; }
+    .btn-link {
+      background: transparent; color: var(--mute); border: 1px solid var(--line);
+      text-decoration: none; text-align: center;
+    }
+    .chosen {
+      display: none; width: min(100%, 340px); padding: 0.7rem 0.85rem; border-radius: 14px;
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+      background: color-mix(in srgb, var(--accent) 10%, transparent); color: var(--accent);
+      font-weight: 700; text-align: center; line-height: 1.35;
+    }
+    .chosen.on { display: block; }
+    .hint { margin: 0; text-align: center; color: var(--mute); font-size: 0.76rem; }
+
+    /* E — bottom nav */
+    .screen[data-screen="e"] {
+      padding-bottom: 8px;
+      gap: 0.3rem;
+    }
+    .screen[data-screen="e"] .dim.on {
+      bottom: 64px;
+      border-radius: 0 0 18px 18px;
+    }
+    .screen[data-screen="e"] .sheet {
+      bottom: 68px;
+      left: 8px;
+      right: 8px;
+      max-height: calc(100% - 90px);
+    }
+    .screen[data-screen="e"] .sheet.mid { height: 42%; }
+    .screen[data-screen="e"] .sheet.tall { height: calc(100% - 90px); max-height: none; }
+    .bnav {
+      position: relative;
+      z-index: 12;
+      flex: 0 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.2rem;
+      margin-top: auto;
+      padding: 0.28rem 0.28rem 0.32rem;
+      min-height: 56px;
+      border: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
+      background:
+        linear-gradient(180deg, rgba(61,255,208,.06), transparent 55%),
+        rgba(8, 12, 18, .97);
+      border-radius: 18px;
+      box-shadow: 0 -8px 28px rgba(0,0,0,.35);
+    }
+    .bnav button {
+      appearance: none; border: 0; background: transparent; color: var(--mute);
+      font: inherit; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.01em;
+      min-height: 48px; padding: 0.35rem 0.15rem 0.3rem;
+      cursor: pointer; border-radius: 14px;
+      display: grid; gap: 0.2rem; justify-items: center; align-content: center;
+      position: relative;
+      transition: color .15s, background .15s, transform .1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .bnav button::before {
+      content: "";
+      position: absolute; top: 3px; left: 50%; transform: translateX(-50%) scaleX(0);
+      width: 18px; height: 3px; border-radius: 999px;
+      background: var(--accent);
+      transition: transform .18s ease;
+    }
+    .bnav button .ico {
+      width: 22px; height: 22px; display: grid; place-items: center;
+      color: inherit;
+    }
+    .bnav button .ico svg {
+      width: 20px; height: 20px; display: block;
+      fill: none; stroke: currentColor; stroke-width: 1.8;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .bnav button .lbl { line-height: 1; color: inherit; }
+    .bnav button .badge {
+      position: absolute; top: 5px; right: calc(50% - 18px);
+      min-width: 15px; height: 15px; padding: 0 4px;
+      border-radius: 999px; font-size: 0.55rem; font-weight: 800;
+      line-height: 15px; text-align: center;
+      color: #041018; background: var(--accent);
+      box-shadow: 0 0 0 2px #080c12;
+      display: none;
+    }
+    .bnav button .badge.on { display: inline-block; }
+    .bnav button:active {
+      transform: scale(0.94);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+    .bnav button.on {
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+    }
+    .bnav button.on::before { transform: translateX(-50%) scaleX(1); }
+    .bnav button.pulse {
+      animation: bnavPulse .28s ease;
+    }
+    @keyframes bnavPulse {
+      0% { transform: scale(1); }
+      40% { transform: scale(0.92); }
+      100% { transform: scale(1); }
+    }
+    .fav-empty {
+      margin: auto; text-align: center; color: var(--mute); font-size: 0.78rem;
+      display: grid; gap: 0.45rem; padding: 1rem;
+    }
+    .fav-empty button {
+      appearance: none; border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent);
+      border-radius: 10px; padding: 0.45rem 0.7rem; font: inherit; font-weight: 700; cursor: pointer;
+    }
+    .e-panel { flex: 1; min-height: 0; display: none; flex-direction: column; gap: 0.35rem; }
+    .e-panel.on { display: flex; }
+
+    /* E catalog */
+    .e-cat-head {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem;
+      padding: 0.1rem 0.15rem 0.15rem;
+    }
+    .e-cat-head .logo { font-size: 0.78rem; }
+    .e-cat-head .sub {
+      margin: 0; color: var(--mute); font-size: 0.62rem; font-weight: 700;
+    }
+    .e-cat-list {
+      flex: 1; min-height: 0; overflow: auto; display: grid; gap: 0.4rem;
+      align-content: start; padding: 0.1rem; -webkit-overflow-scrolling: touch;
+    }
+    .e-cat-row {
+      appearance: none; border: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
+      border-radius: 16px; width: 100%; text-align: left; cursor: pointer;
+      font: inherit; color: inherit; padding: 0.55rem 0.55rem 0.55rem 0.5rem;
+      display: grid; grid-template-columns: 44px minmax(0,1fr) auto; gap: 0.55rem; align-items: center;
+      background:
+        linear-gradient(120deg, color-mix(in srgb, var(--cat, var(--accent)) 14%, transparent), transparent 55%),
+        rgba(255,255,255,.03);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cat, transparent) 18%, transparent);
+      transition: transform .1s, border-color .15s, background .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .e-cat-row:active { transform: scale(0.985); }
+    .e-cat-row.on {
+      border-color: color-mix(in srgb, var(--cat, var(--accent)) 55%, transparent);
+      background:
+        linear-gradient(120deg, color-mix(in srgb, var(--cat, var(--accent)) 22%, transparent), transparent 60%),
+        color-mix(in srgb, var(--cat, var(--accent)) 8%, rgba(255,255,255,.03));
+    }
+    .e-cat-ico {
+      width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center;
+      color: var(--cat, var(--accent));
+      background: color-mix(in srgb, var(--cat, var(--accent)) 16%, transparent);
+      border: 1px solid color-mix(in srgb, var(--cat, var(--accent)) 35%, transparent);
+    }
+    .e-cat-ico svg {
+      width: 22px; height: 22px; display: block;
+      fill: none; stroke: currentColor; stroke-width: 1.7;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .e-cat-text { min-width: 0; display: grid; gap: 0.12rem; }
+    .e-cat-text .t {
+      font-size: 0.86rem; font-weight: 800; line-height: 1.15;
+      color: color-mix(in srgb, var(--text) 92%, #fff);
+    }
+    .e-cat-text .d {
+      font-size: 0.6rem; color: var(--mute); line-height: 1.25;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .e-cat-side {
+      display: grid; gap: 0.2rem; justify-items: end; align-content: center;
+    }
+    .e-cat-side .n {
+      font-size: 0.68rem; font-weight: 800; color: var(--cat, var(--accent));
+      padding: 0.14rem 0.42rem; border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--cat, var(--accent)) 35%, transparent);
+      background: color-mix(in srgb, var(--cat, var(--accent)) 12%, transparent);
+    }
+    .e-cat-side .chev {
+      width: 16px; height: 16px; color: var(--mute); opacity: .75;
+    }
+    .e-cat-side .chev svg {
+      width: 16px; height: 16px; display: block;
+      fill: none; stroke: currentColor; stroke-width: 2;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .e-cat-row.on .chev { color: var(--cat, var(--accent)); opacity: 1; }
+
+    /* F — look grid */
+    .grid2 {
+      flex: 1; min-height: 0; overflow: auto; display: grid;
+      grid-template-columns: 1fr 1fr; gap: 0.35rem; align-content: start;
+      padding: 0.1rem; -webkit-overflow-scrolling: touch;
+    }
+    .card-tile {
+      appearance: none; border: 1px solid var(--line); border-radius: 14px;
+      background: rgba(255,255,255,.03); color: inherit; font: inherit; text-align: left;
+      padding: 0.35rem; cursor: pointer; display: grid; gap: 0.28rem;
+      transition: transform .1s, border-color .12s;
+    }
+    .card-tile:active { transform: scale(0.98); }
+    .card-tile.on {
+      border-color: color-mix(in srgb, var(--row, var(--accent)) 55%, transparent);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--row, var(--accent)) 25%, transparent);
+    }
+    .card-tile .tile-look {
+      height: 72px; border-radius: 10px;
+      background: radial-gradient(circle at 50% 40%, #6ad, transparent 48%),
+        linear-gradient(160deg, #1c4a58, #0a1520 60%, #2a1a40);
+    }
+    .card-tile .tile-name {
+      font-size: 0.68rem; font-weight: 700; line-height: 1.15;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      color: color-mix(in srgb, var(--row, var(--text)) 85%, #fff);
+    }
+    .card-tile .tile-meta {
+      display: flex; justify-content: space-between; align-items: center; gap: 0.25rem;
+    }
+    .card-tile .tile-meta .meta { font-size: 0.55rem; color: var(--mute); flex: 1; min-width: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .overlay-card {
+      position: absolute; inset: 18px 8px 8px; z-index: 9;
+      border-radius: 18px; border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      background: #0b1018; display: none; flex-direction: column; gap: 0.4rem;
+      padding: 0.55rem; transform: scale(0.96); opacity: 0;
+      transition: transform .18s ease, opacity .18s ease;
+    }
+    .overlay-card.open { display: flex; transform: none; opacity: 1; }
+    .overlay-card .look { height: 150px; flex: 0 0 auto; }
+    .overlay-card .sheet-actions { margin-top: auto; }
+
+    @media (min-width: 780px) {
+      .actions { grid-template-columns: 1.4fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="head">
+      <p class="brand">FUTURUM</p>
+      <p class="sub">Потрогай превью в «телефоне»: тапай разделы, строки, карточки.</p>
+      <p class="tip" id="tip">A: тап по титулу → карточка снизу · ≡ → каталог</p>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="Варианты мобилки">
+      <button type="button" class="tab on" data-v="a" role="tab" aria-selected="true">A<small>Поиск первым</small></button>
+      <button type="button" class="tab" data-v="b" role="tab" aria-selected="false">B<small>Шаги каталога</small></button>
+      <button type="button" class="tab" data-v="c" role="tab" aria-selected="false">C<small>Карточка в фокусе</small></button>
+      <button type="button" class="tab" data-v="d" role="tab" aria-selected="false">D<small>Гибрид</small></button>
+      <button type="button" class="tab" data-v="e" role="tab" aria-selected="false">E<small>Низ-навигация</small></button>
+      <button type="button" class="tab" data-v="f" role="tab" aria-selected="false">F<small>Сетка look</small></button>
+    </div>
+
+    <div class="stage">
+      <div class="phone" id="phone">
+        <div class="toast" id="toast"></div>
+
+        <!-- A -->
+        <section class="screen on" data-screen="a">
+          <div class="top">
+            <span class="logo">FUTURUM</span>
+            <input class="search" data-filter="a" placeholder="Название, ОП…" />
+            <button type="button" class="icon-btn" data-open-drawer="a" title="Каталог">≡</button>
+          </div>
+          <div class="chips" data-chips="a"></div>
+          <div class="list" data-list="a"></div>
+          <button type="button" class="dim" data-dim="a" aria-label="Закрыть"></button>
+          <div class="sheet mid" data-sheet="a">
+            <button type="button" class="grab" data-expand="a" aria-label="Развернуть"></button>
+            <div class="look"></div>
+            <div class="sheet-head">
+              <h4 data-sheet-title="a">—</h4>
+              <button type="button" class="sheet-expand" data-expand="a" title="Больше">↕</button>
+              <button type="button" class="sheet-close" data-close="a" title="Закрыть">✕</button>
+            </div>
+            <p data-sheet-meta="a"></p>
+            <div class="sheet-actions">
+              <button type="button" data-toast="Открыть на вики">На вики →</button>
+              <button type="button" data-toast="Скопировано">Поделиться</button>
+            </div>
+          </div>
+          <div class="drawer" data-drawer="a">
+            <div class="drawer-panel">
+              <h5>Каталог</h5>
+              <button type="button" class="drawer-item on" data-section="Титулы">Титулы</button>
+              <button type="button" class="drawer-item" data-section="Крылья">Крылья</button>
+              <button type="button" class="drawer-item" data-section="Одежда">Одежда</button>
+              <button type="button" class="drawer-item" data-section="Питомцы">Питомцы</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- B -->
+        <section class="screen" data-screen="b">
+          <div class="top">
+            <button type="button" class="icon-btn" data-b-back title="Назад">←</button>
+            <span class="logo">FUTURUM</span>
+            <input class="search" data-filter="b" placeholder="Поиск…" />
+          </div>
+          <div class="steps">
+            <span data-b-step="1" class="on">1 Каталог</span>
+            <span data-b-step="2">2 Список</span>
+            <span data-b-step="3">3 Карточка</span>
+          </div>
+          <div class="catalog-grid" data-b-view="catalog">
+            <button type="button" class="cat" data-b-cat="Титулы"><b>СТ</b>Статус</button>
+            <button type="button" class="cat" data-b-cat="Одежда"><b>ОД</b>Одежда</button>
+            <button type="button" class="cat" data-b-cat="Крылья"><b>АК</b>Аксессуары</button>
+            <button type="button" class="cat" data-b-cat="Питомцы"><b>КП</b>Компаньоны</button>
+            <button type="button" class="cat" data-b-cat="Титулы"><b>РК</b>В руках</button>
+            <button type="button" class="cat" data-b-cat="Одежда"><b>ВЗ</b>Визитка</button>
+          </div>
+          <div class="list" data-list="b" data-b-view="list" hidden></div>
+          <button type="button" class="dim" data-dim="b" aria-label="Закрыть"></button>
+          <div class="sheet full" data-sheet="b" data-b-view="card" hidden>
+            <button type="button" class="grab" data-close="b" aria-label="Закрыть"></button>
+            <div class="look"></div>
+            <div class="sheet-head">
+              <h4 data-sheet-title="b">—</h4>
+              <button type="button" class="sheet-close" data-close="b">✕</button>
+            </div>
+            <p data-sheet-meta="b"></p>
+            <div class="sheet-actions">
+              <button type="button" data-toast="Карточка · вики">На вики →</button>
+              <button type="button" data-b-back>К списку</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- C -->
+        <section class="screen" data-screen="c">
+          <div class="top">
+            <span class="logo">FUTURUM</span>
+            <input class="search" data-filter="c" placeholder="Поиск…" />
+          </div>
+          <div class="chips" data-chips="c"></div>
+          <div class="list" data-list="c" style="flex:0 0 38%"></div>
+          <button type="button" class="dim" data-dim="c" aria-label="Закрыть"></button>
+          <div class="sheet tall" data-sheet="c">
+            <button type="button" class="grab" data-expand="c" aria-label="Развернуть"></button>
+            <div class="look"></div>
+            <div class="sheet-head">
+              <h4 data-sheet-title="c">—</h4>
+              <button type="button" class="sheet-expand" data-expand="c">↕</button>
+              <button type="button" class="sheet-close" data-close="c">✕</button>
+            </div>
+            <p data-sheet-meta="c"></p>
+            <div class="sheet-actions">
+              <button type="button" data-toast="Крупный look">Увеличить</button>
+              <button type="button" data-toast="На вики">Вики →</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- D -->
+        <section class="screen" data-screen="d">
+          <div class="top">
+            <span class="logo">FUTURUM</span>
+            <input class="search" data-filter="d" placeholder="Название…" />
+            <button type="button" class="icon-btn" data-toast="Фильтры ОП / источник" title="Фильтры">⚙</button>
+          </div>
+          <div class="chips" data-chips="d"></div>
+          <div class="list" data-list="d"></div>
+          <button type="button" class="dim" data-dim="d" aria-label="Закрыть"></button>
+          <div class="sheet mid" data-sheet="d">
+            <button type="button" class="grab" data-expand="d" aria-label="Развернуть"></button>
+            <div class="look"></div>
+            <div class="sheet-head">
+              <h4 data-sheet-title="d">—</h4>
+              <button type="button" class="sheet-expand" data-expand="d">↕</button>
+              <button type="button" class="sheet-close" data-close="d">✕</button>
+            </div>
+            <p data-sheet-meta="d"></p>
+            <div class="sheet-actions">
+              <button type="button" data-expand="d">Ещё / свернуть</button>
+              <button type="button" data-toast="На вики">Вики →</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- E -->
+        <section class="screen" data-screen="e">
+          <div class="e-panel on" data-e-panel="home">
+            <div class="top">
+              <span class="logo">FUTURUM</span>
+              <input class="search" data-filter="e" placeholder="Название, ОП…" />
+            </div>
+            <div class="chips" data-chips="e"></div>
+            <div class="list" data-list="e"></div>
+          </div>
+          <div class="e-panel" data-e-panel="catalog">
+            <div class="e-cat-head">
+              <span class="logo">Каталог</span>
+              <p class="sub" data-e-cat-total>разделы гида</p>
+            </div>
+            <div class="e-cat-list" data-e-catalog></div>
+          </div>
+          <div class="e-panel" data-e-panel="fav">
+            <div class="top"><span class="logo">Избранное</span></div>
+            <div class="fav-empty" data-e-fav>
+              <div>Пока пусто — тапни ★ на карточке</div>
+            </div>
+          </div>
+          <div class="e-panel" data-e-panel="more">
+            <div class="top"><span class="logo">Ещё</span></div>
+            <div class="list" style="border:0;background:transparent;padding:0">
+              <button type="button" class="drawer-item" data-toast="Фильтр по ОП">Фильтр по ОП</button>
+              <button type="button" class="drawer-item" data-toast="Источники">Источники</button>
+              <button type="button" class="drawer-item" data-toast="Тема">Тема интерфейса</button>
+            </div>
+          </div>
+          <nav class="bnav" aria-label="Нижняя навигация">
+            <button type="button" class="on" data-e-tab="home" data-e-label="Поиск" aria-label="Поиск">
+              <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16.5 16.5L21 21"/></svg></span>
+              <span class="lbl">Поиск</span>
+            </button>
+            <button type="button" data-e-tab="catalog" data-e-label="Каталог" aria-label="Каталог">
+              <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></span>
+              <span class="lbl">Каталог</span>
+            </button>
+            <button type="button" data-e-tab="fav" data-e-label="Избранное" aria-label="Избранное">
+              <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3.8l2.2 4.5 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L4.8 9l5-.7L12 3.8z"/></svg></span>
+              <span class="lbl">Избранное</span>
+              <span class="badge" data-e-fav-badge>0</span>
+            </button>
+            <button type="button" data-e-tab="more" data-e-label="Ещё" aria-label="Ещё">
+              <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="18.5" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span>
+              <span class="lbl">Ещё</span>
+            </button>
+          </nav>
+          <button type="button" class="dim" data-dim="e" aria-label="Закрыть"></button>
+          <div class="sheet mid" data-sheet="e">
+            <button type="button" class="grab" data-expand="e" aria-label="Развернуть"></button>
+            <div class="look"></div>
+            <div class="sheet-head">
+              <h4 data-sheet-title="e">—</h4>
+              <button type="button" class="sheet-expand" data-expand="e">↕</button>
+              <button type="button" class="sheet-close" data-close="e">✕</button>
+            </div>
+            <p data-sheet-meta="e"></p>
+            <div class="sheet-actions">
+              <button type="button" data-e-fav-add>★ В избранное</button>
+              <button type="button" data-toast="На вики">Вики →</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- F -->
+        <section class="screen" data-screen="f">
+          <div class="top">
+            <span class="logo">FUTURUM</span>
+            <input class="search" data-filter="f" placeholder="Поиск…" />
+            <button type="button" class="icon-btn" data-toast="Сортировка" title="Сортировка">⇅</button>
+          </div>
+          <div class="chips" data-chips="f"></div>
+          <div class="grid2" data-grid="f"></div>
+          <button type="button" class="dim" data-dim="f" aria-label="Закрыть"></button>
+          <div class="overlay-card" data-overlay="f">
+            <div class="look"></div>
+            <div class="sheet-head">
+              <h4 data-sheet-title="f">—</h4>
+              <button type="button" class="sheet-close" data-close="f">✕</button>
+            </div>
+            <p data-sheet-meta="f"></p>
+            <div class="sheet-actions">
+              <button type="button" data-toast="Крупный look">Увеличить</button>
+              <button type="button" data-toast="На вики">Вики →</button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="info">
+        <h2 id="title">A · Поиск первым</h2>
+        <p id="desc">Поиск и список сразу. Тап по строке — карточка снизу, ≡ — каталог.</p>
+        <div class="pros" id="pros"></div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn btn-pick" id="pick">Выбрать этот вариант</button>
+        <a class="btn btn-link" href="./titles.html">Открыть текущий гид</a>
+      </div>
+      <div class="chosen" id="chosen"></div>
+      <p class="hint">Выбери вариант → напиши в чат «делай A/B/C/D/E/F».</p>
+    </div>
+  </div>
+
+  <script>
+    const ITEMS = [
+      { name: "Мэр Пара Па", meta: "Доп. ячейка · Выборы", op: 8, section: "Титулы", color: "var(--op8)" },
+      { name: "Ангел отчаяния", meta: "Пленительная красота", op: 8, section: "Титулы", color: "var(--op8)" },
+      { name: "Звёздная пара", meta: "Любящие сердца", op: 4, section: "Титулы", color: "var(--op4)" },
+      { name: "Super Star", meta: "Большая охота", op: 8, section: "Титулы", color: "var(--op8)" },
+      { name: "Крылья феникса", meta: "Компаньоны · событие", op: 2, section: "Крылья", color: "var(--op2)" },
+      { name: "Ангельские крылья", meta: "ТЦ · любой цвет", op: 1, section: "Крылья", color: "var(--op1)" },
+      { name: "Костюм «Габи»", meta: "Осенний сюрприз", op: 0, section: "Одежда", color: "#8a93a3" },
+      { name: "Габриэлла", meta: "Причёски · ТЦ", op: 0, section: "Одежда", color: "#8a93a3" },
+      { name: "Ведьма Габи и кот", meta: "Игрушки · на плечо", op: 2, section: "Питомцы", color: "var(--op2)" },
+      { name: "Пегас", meta: "Транспорт · событие", op: 4, section: "Питомцы", color: "var(--op4)" },
+    ];
+
+    const SECTIONS = ["Титулы", "Крылья", "Одежда", "Питомцы"];
+    const CAT_META = {
+      "Титулы": {
+        desc: "Статусы и титулы персонажа",
+        color: "var(--op8)",
+        /* медаль / бейдж статуса */
+        icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="14" r="5.2"/><path d="M9.2 9.2 8 3.8l4 1.6L16 3.8l-1.2 5.4"/><path d="M12 11.6v5.2"/><path d="M10.2 14.2h3.6"/></svg>',
+      },
+      "Крылья": {
+        desc: "Крылья и аксессуары спины",
+        color: "var(--op2)",
+        /* раскрытые крылья */
+        icon: '<svg viewBox="0 0 24 24"><path d="M12 20v-8"/><path d="M12 12C7 11 4.2 8.2 3 5c1.2 1.1 3.4 2.2 5.2 2.6C6.8 9.2 5.2 11.4 4.5 14c2.2-.3 5.1.2 7.5 2"/><path d="M12 12c5-1 7.8-3.8 9-7-1.2 1.1-3.4 2.2-5.2 2.6 1.4 1.6 3 3.8 3.7 6.4-2.2-.3-5.1.2-7.5 2"/><path d="M8.5 8.8c1.1.9 2.3 1.4 3.5 1.4s2.4-.5 3.5-1.4"/></svg>',
+      },
+      "Одежда": {
+        desc: "Костюмы, причёски, образы",
+        color: "var(--op4)",
+        /* футболка */
+        icon: '<svg viewBox="0 0 24 24"><path d="M8.5 4.5h2.2c.4 1.4 1.2 2.2 1.3 2.2s.9-.8 1.3-2.2h2.2l4 2.8-2.1 2.7h-1.4V19.5H8V10h-1.4L4.5 7.3 8.5 4.5z"/></svg>',
+      },
+      "Питомцы": {
+        desc: "Компаньоны и транспорт",
+        color: "var(--op1)",
+        /* лапка */
+        icon: '<svg viewBox="0 0 24 24"><ellipse cx="12" cy="16.2" rx="4.2" ry="3.4"/><circle cx="7.2" cy="10.2" r="1.7"/><circle cx="10.2" cy="7.6" r="1.6"/><circle cx="13.8" cy="7.6" r="1.6"/><circle cx="16.8" cy="10.2" r="1.7"/></svg>',
+      },
+    };
+    const DATA = {
+      a: {
+        title: "A · Поиск первым",
+        desc: "Поиск и список сразу. Тап по строке — карточка снизу, ≡ — каталог.",
+        tip: "A: тап по титулу → карточка · ≡ → каталог · ↕ развернуть",
+        pros: ["быстрый поиск", "мало тапов", "список главный"],
+      },
+      b: {
+        title: "B · Шаги каталога",
+        desc: "Каталог → список → карточка. Кнопка ← возвращает на шаг назад.",
+        tip: "B: выбери раздел → строку → карточку · ← назад",
+        pros: ["понятные шаги", "каталог в центре", "больше тапов"],
+      },
+      c: {
+        title: "C · Карточка в фокусе",
+        desc: "Компактный список. Тап открывает большую карточку с look.",
+        tip: "C: тап по строке → большой sheet · ↕ ещё больше",
+        pros: ["красивые картинки", "карточка важнее", "список проще"],
+      },
+      d: {
+        title: "D · Гибрид",
+        desc: "Список сверху, карточка снизу. Можно развернуть и свернуть.",
+        tip: "D: тап по строке → sheet · ↕ или «Ещё» развернуть",
+        pros: ["баланс", "удобно одной рукой", "знакомо"],
+      },
+      e: {
+        title: "E · Нижняя навигация",
+        desc: "Крупный таббар снизу: поиск, каталог, избранное, ещё. Карточка не перекрывает табы.",
+        tip: "E: тапай табы снизу · повторный «Поиск» → наверх · ★ → badge",
+        pros: ["крупные табы", "избранное + badge", "табы всегда доступны"],
+      },
+      f: {
+        title: "F · Сетка look",
+        desc: "Плитки с превью look. Тап открывает полноэкранную карточку.",
+        tip: "F: тап по плитке → большой look · чипы сменяют раздел",
+        pros: ["визуальный обзор", "look сразу", "мало текста"],
+      },
+    };
+
+    const KEY = "futurum-mobile-pick";
+    let current = "a";
+    const state = {
+      a: { section: "Титулы", q: "", selected: null, tall: false },
+      b: { step: 1, section: "Титулы", q: "", selected: null },
+      c: { section: "Титулы", q: "", selected: null, tall: true },
+      d: { section: "Титулы", q: "", selected: null, tall: false },
+      e: { section: "Титулы", q: "", selected: null, tall: false, tab: "home", favs: [] },
+      f: { section: "Титулы", q: "", selected: null },
+    };
+
+    const phone = document.getElementById("phone");
+    const toastEl = document.getElementById("toast");
+    let toastTimer;
+
+    function toast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add("on");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove("on"), 1200);
+    }
+
+    function filtered(v) {
+      const st = state[v];
+      const q = (st.q || "").trim().toLowerCase();
+      return ITEMS.filter((it) => {
+        if (it.section !== st.section) return false;
+        if (!q) return true;
+        return (it.name + " " + it.meta + " " + it.op).toLowerCase().includes(q);
+      });
+    }
+
+    function rowHtml(it, activeName) {
+      return `<button type="button" class="row${it.name === activeName ? " on" : ""}" style="--row:${it.color}" data-item="${escapeAttr(it.name)}">
+        <span class="thumb" aria-hidden="true"></span>
+        <span><div class="name">${escapeHtml(it.name)}</div><div class="meta">${escapeHtml(it.meta)}</div></span>
+        <span class="op">${it.op} ОП</span>
+      </button>`;
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+    function escapeAttr(s) { return escapeHtml(s); }
+
+    function renderChips(v) {
+      const host = document.querySelector(`[data-chips="${v}"]`);
+      if (!host) return;
+      host.innerHTML = SECTIONS.map((s) =>
+        `<button type="button" class="chip${state[v].section === s ? " on" : ""}" data-section="${s}">${s}</button>`
+      ).join("");
+    }
+
+    function renderList(v) {
+      const host = document.querySelector(`[data-list="${v}"]`);
+      if (!host) return;
+      const list = filtered(v);
+      host.innerHTML = list.length
+        ? list.map((it) => rowHtml(it, state[v].selected)).join("")
+        : `<div class="empty">Ничего не найдено</div>`;
+    }
+
+    function renderGrid(v) {
+      const host = document.querySelector(`[data-grid="${v}"]`);
+      if (!host) return;
+      const list = filtered(v);
+      host.innerHTML = list.length
+        ? list.map((it) => `
+          <button type="button" class="card-tile${it.name === state[v].selected ? " on" : ""}" style="--row:${it.color}" data-item="${escapeAttr(it.name)}">
+            <span class="tile-look" aria-hidden="true"></span>
+            <span class="tile-name">${escapeHtml(it.name)}</span>
+            <span class="tile-meta"><span class="meta">${escapeHtml(it.meta)}</span><span class="op">${it.op} ОП</span></span>
+          </button>`).join("")
+        : `<div class="empty" style="grid-column:1/-1">Ничего не найдено</div>`;
+    }
+
+    function updateFavBadge() {
+      const badge = document.querySelector("[data-e-fav-badge]");
+      if (!badge) return;
+      const n = state.e.favs.length;
+      badge.textContent = n > 9 ? "9+" : String(n);
+      badge.classList.toggle("on", n > 0);
+    }
+
+    function renderECatalog() {
+      const host = document.querySelector("[data-e-catalog]");
+      const total = document.querySelector("[data-e-cat-total]");
+      if (!host) return;
+      const all = ITEMS.length;
+      if (total) total.textContent = `${all} поз. · выбери раздел`;
+      host.innerHTML = SECTIONS.map((s) => {
+        const meta = CAT_META[s];
+        const count = ITEMS.filter((it) => it.section === s).length;
+        const on = state.e.section === s ? " on" : "";
+        return `<button type="button" class="e-cat-row${on}" style="--cat:${meta.color}" data-e-cat="${escapeAttr(s)}">
+          <span class="e-cat-ico" aria-hidden="true">${meta.icon}</span>
+          <span class="e-cat-text"><span class="t">${escapeHtml(s)}</span><span class="d">${escapeHtml(meta.desc)}</span></span>
+          <span class="e-cat-side">
+            <span class="n">${count}</span>
+            <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+          </span>
+        </button>`;
+      }).join("");
+    }
+
+    function renderFavs() {
+      const host = document.querySelector("[data-e-fav]");
+      if (!host) return;
+      const names = state.e.favs;
+      updateFavBadge();
+      if (!names.length) {
+        host.className = "fav-empty";
+        host.removeAttribute("style");
+        host.innerHTML = `<div>Пока пусто — тапни ★ на карточке</div>
+          <button type="button" data-e-tab="home" data-e-label="Поиск">К поиску</button>`;
+        return;
+      }
+      host.className = "list";
+      host.style.flex = "1";
+      host.innerHTML = names.map((name) => {
+        const it = findItem(name);
+        if (!it) return "";
+        return rowHtml(it, state.e.selected);
+      }).join("");
+    }
+
+    function setETab(tab, { fromClick } = {}) {
+      const same = state.e.tab === tab;
+      if (same && tab === "home" && fromClick) {
+        const list = document.querySelector('[data-list="e"]');
+        if (list) list.scrollTop = 0;
+        toast("К началу списка");
+        closeSheet("e");
+        return;
+      }
+      state.e.tab = tab;
+      document.querySelectorAll(".bnav [data-e-tab]").forEach((btn) => {
+        const on = btn.dataset.eTab === tab;
+        btn.classList.toggle("on", on);
+        if (on && fromClick) {
+          btn.classList.remove("pulse");
+          void btn.offsetWidth;
+          btn.classList.add("pulse");
+        }
+      });
+      document.querySelectorAll("[data-e-panel]").forEach((panel) => {
+        panel.classList.toggle("on", panel.dataset.ePanel === tab);
+      });
+      if (tab === "home") renderList("e");
+      if (tab === "catalog") renderECatalog();
+      if (tab === "fav") renderFavs();
+      closeSheet("e");
+      updateFavBadge();
+    }
+
+    function findItem(name) {
+      return ITEMS.find((x) => x.name === name) || null;
+    }
+
+    function openSheet(v, name, { tall } = {}) {
+      const it = findItem(name);
+      if (!it) return;
+      state[v].selected = name;
+      if (tall != null) state[v].tall = tall;
+      const sheet = document.querySelector(`[data-sheet="${v}"]`);
+      const overlay = document.querySelector(`[data-overlay="${v}"]`);
+      const dim = document.querySelector(`[data-dim="${v}"]`);
+      const title = document.querySelector(`[data-sheet-title="${v}"]`);
+      const meta = document.querySelector(`[data-sheet-meta="${v}"]`);
+      if (title) title.textContent = it.name;
+      if (meta) meta.textContent = `${it.op} ОП · ${it.meta} · раздел «${it.section}»`;
+      if (overlay) {
+        overlay.classList.add("open");
+      }
+      if (sheet) {
+        sheet.hidden = false;
+        sheet.classList.add("open");
+        sheet.classList.toggle("tall", !!state[v].tall);
+        sheet.classList.toggle("mid", !state[v].tall && v !== "b" && v !== "c");
+        if (v === "c") {
+          sheet.classList.add("tall");
+          sheet.classList.toggle("full", !!state[v].tall);
+        }
+        if (v === "b") {
+          sheet.classList.add("full");
+        }
+      }
+      if (dim) dim.classList.add("on");
+      if (v === "f") renderGrid("f");
+      else renderList(v);
+      if (v === "b") setBStep(3);
+      if (v === "e") {
+        const favBtn = document.querySelector("[data-e-fav-add]");
+        if (favBtn) {
+          const on = state.e.favs.includes(name);
+          favBtn.textContent = on ? "★ Убрать" : "★ В избранное";
+        }
+      }
+    }
+
+    function closeSheet(v) {
+      const sheet = document.querySelector(`[data-sheet="${v}"]`);
+      const overlay = document.querySelector(`[data-overlay="${v}"]`);
+      const dim = document.querySelector(`[data-dim="${v}"]`);
+      if (sheet) {
+        sheet.classList.remove("open", "full");
+        if (v === "b") sheet.hidden = true;
+      }
+      if (overlay) overlay.classList.remove("open");
+      if (dim) dim.classList.remove("on");
+      state[v].selected = null;
+      if (v === "f") renderGrid("f");
+      else if (v === "e" && state.e.tab === "fav") renderFavs();
+      else renderList(v);
+      if (v === "b" && state.b.step === 3) setBStep(2);
+    }
+
+    function toggleTall(v) {
+      if (!state[v].selected) return;
+      state[v].tall = !state[v].tall;
+      openSheet(v, state[v].selected, { tall: state[v].tall });
+      toast(state[v].tall ? "Карточка развернута" : "Карточка компактнее");
+    }
+
+    function setBStep(step) {
+      state.b.step = step;
+      document.querySelectorAll("[data-b-step]").forEach((el) => {
+        el.classList.toggle("on", Number(el.dataset.bStep) === step);
+      });
+      const cat = document.querySelector('[data-b-view="catalog"]');
+      const list = document.querySelector('[data-b-view="list"]');
+      const card = document.querySelector('[data-b-view="card"]');
+      if (cat) cat.hidden = step !== 1;
+      if (list) {
+        list.hidden = step !== 2;
+        if (step === 2) renderList("b");
+      }
+      if (card) {
+        if (step === 3) {
+          card.hidden = false;
+          card.classList.add("open");
+          document.querySelector('[data-dim="b"]')?.classList.add("on");
+        } else {
+          card.hidden = true;
+          card.classList.remove("open");
+          document.querySelector('[data-dim="b"]')?.classList.remove("on");
+        }
+      }
+    }
+
+    function bBack() {
+      if (state.b.step === 3) {
+        closeSheet("b");
+        setBStep(2);
+        return;
+      }
+      if (state.b.step === 2) {
+        setBStep(1);
+        return;
+      }
+      toast("Уже в каталоге");
+    }
+
+    function renderAllFor(v) {
+      renderChips(v);
+      if (v === "b") {
+        if (state.b.step === 1) setBStep(1);
+        else if (state.b.step === 2) setBStep(2);
+        else renderList("b");
+      } else if (v === "e") {
+        setETab(state.e.tab || "home");
+        renderList("e");
+        renderECatalog();
+        renderFavs();
+      } else if (v === "f") {
+        renderGrid("f");
+      } else {
+        renderList(v);
+      }
+    }
+
+    // events
+    phone.addEventListener("click", (e) => {
+      const t = e.target;
+
+      const toastBtn = t.closest("[data-toast]");
+      if (toastBtn) {
+        toast(toastBtn.dataset.toast);
+        return;
+      }
+
+      const chip = t.closest(".chip[data-section]");
+      if (chip) {
+        const screen = chip.closest(".screen").dataset.screen;
+        state[screen].section = chip.dataset.section;
+        state[screen].selected = null;
+        closeSheet(screen);
+        renderChips(screen);
+        if (screen === "f") renderGrid("f");
+        else renderList(screen);
+        toast(`Раздел: ${chip.dataset.section}`);
+        return;
+      }
+
+      const row = t.closest(".row[data-item], .card-tile[data-item]");
+      if (row) {
+        const screen = row.closest(".screen").dataset.screen;
+        const tallDefault = screen === "c";
+        openSheet(screen, row.dataset.item, { tall: state[screen].tall || tallDefault });
+        return;
+      }
+
+      const eTab = t.closest("[data-e-tab]");
+      if (eTab) {
+        const tab = eTab.dataset.eTab;
+        const label = eTab.dataset.eLabel || tab;
+        const was = state.e.tab;
+        setETab(tab, { fromClick: true });
+        if (was !== tab) toast(label);
+        return;
+      }
+
+      const eCat = t.closest("[data-e-cat]");
+      if (eCat) {
+        state.e.section = eCat.dataset.eCat;
+        setETab("home");
+        renderChips("e");
+        renderList("e");
+        toast(`Раздел: ${eCat.dataset.eCat}`);
+        return;
+      }
+
+      if (t.closest("[data-e-fav-add]")) {
+        const name = state.e.selected;
+        if (!name) return;
+        const i = state.e.favs.indexOf(name);
+        if (i >= 0) {
+          state.e.favs.splice(i, 1);
+          toast("Убрано из избранного");
+        } else {
+          state.e.favs.push(name);
+          toast("В избранном");
+        }
+        openSheet("e", name, { tall: state.e.tall });
+        renderFavs();
+        updateFavBadge();
+        return;
+      }
+
+      const openDrawer = t.closest("[data-open-drawer]");
+      if (openDrawer) {
+        const id = openDrawer.dataset.openDrawer;
+        document.querySelector(`[data-drawer="${id}"]`)?.classList.add("on");
+        return;
+      }
+
+      const drawer = t.closest(".drawer");
+      if (drawer && !t.closest(".drawer-panel")) {
+        drawer.classList.remove("on");
+        return;
+      }
+
+      const drawerItem = t.closest(".drawer-item[data-section]");
+      if (drawerItem) {
+        const screen = drawerItem.closest(".screen").dataset.screen;
+        state[screen].section = drawerItem.dataset.section;
+        drawerItem.parentElement.querySelectorAll(".drawer-item").forEach((el) => el.classList.toggle("on", el === drawerItem));
+        drawerItem.closest(".drawer")?.classList.remove("on");
+        closeSheet(screen);
+        renderChips(screen);
+        renderList(screen);
+        toast(`Раздел: ${drawerItem.dataset.section}`);
+        return;
+      }
+
+      const close = t.closest("[data-close]");
+      if (close) {
+        closeSheet(close.dataset.close);
+        return;
+      }
+
+      const expand = t.closest("[data-expand]");
+      if (expand) {
+        toggleTall(expand.dataset.expand);
+        return;
+      }
+
+      const dim = t.closest("[data-dim]");
+      if (dim) {
+        closeSheet(dim.dataset.dim);
+        return;
+      }
+
+      const bCat = t.closest("[data-b-cat]");
+      if (bCat) {
+        state.b.section = bCat.dataset.bCat;
+        state.b.selected = null;
+        setBStep(2);
+        toast(`Раздел: ${bCat.dataset.bCat}`);
+        return;
+      }
+
+      if (t.closest("[data-b-back]")) {
+        bBack();
+      }
+    });
+
+    phone.addEventListener("input", (e) => {
+      const input = e.target.closest("[data-filter]");
+      if (!input) return;
+      const v = input.dataset.filter;
+      state[v].q = input.value;
+      if (v === "f") renderGrid("f");
+      else renderList(v);
+    });
+
+    // outer UI
+    const tabs = [...document.querySelectorAll(".tab")];
+    const screens = [...document.querySelectorAll(".screen")];
+    const title = document.getElementById("title");
+    const desc = document.getElementById("desc");
+    const tip = document.getElementById("tip");
+    const pros = document.getElementById("pros");
+    const pick = document.getElementById("pick");
+    const chosen = document.getElementById("chosen");
+
+    function show(v) {
+      current = v;
+      tabs.forEach((t) => {
+        const on = t.dataset.v === v;
+        t.classList.toggle("on", on);
+        t.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      screens.forEach((s) => s.classList.toggle("on", s.dataset.screen === v));
+      const d = DATA[v];
+      title.textContent = d.title;
+      desc.textContent = d.desc;
+      tip.textContent = d.tip;
+      pros.innerHTML = d.pros.map((x) => `<span>${x}</span>`).join("");
+      renderAllFor(v);
+      refreshChosen();
+    }
+
+    function refreshChosen() {
+      const saved = localStorage.getItem(KEY);
+      if (!saved || !DATA[saved]) {
+        chosen.classList.remove("on");
+        chosen.textContent = "";
+        pick.textContent = "Выбрать этот вариант";
+        pick.disabled = false;
+        return;
+      }
+      chosen.classList.add("on");
+      chosen.textContent = `Твой выбор: ${DATA[saved].title}. Напиши в чат «делай ${saved.toUpperCase()}».`;
+      pick.textContent = saved === current ? "Выбран ✓" : "Выбрать этот вариант";
+      pick.disabled = saved === current;
+    }
+
+    tabs.forEach((t) => t.addEventListener("click", () => show(t.dataset.v)));
+    pick.addEventListener("click", () => {
+      localStorage.setItem(KEY, current);
+      refreshChosen();
+      toast(`Выбран ${current.toUpperCase()}`);
+    });
+
+    // init
+    ["a", "c", "d", "e", "f"].forEach(renderAllFor);
+    setBStep(1);
+    updateFavBadge();
+    const start = "e";
+    show(DATA[start] ? start : "e");
+  </script>
+</body>
+</html>

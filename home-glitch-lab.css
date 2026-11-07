@@ -1,0 +1,225 @@
+.glab {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--text);
+  font-family: "Rajdhani", sans-serif;
+}
+
+.glab-top {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, #05070a 88%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.glab-top-main {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.glab-top-main strong {
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.glab-top-main span {
+  font-size: 0.78rem;
+  color: var(--mute);
+}
+
+.glab-btn {
+  appearance: none;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.glab-btn:hover {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.glab-picker {
+  position: fixed;
+  top: 4.2rem;
+  left: 0.75rem;
+  z-index: 15;
+  width: min(260px, calc(100vw - 1.5rem));
+  max-height: calc(100vh - 5rem);
+  overflow: auto;
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.75rem;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, #0a1018 92%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+.glab-label {
+  margin: 0;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+  font-weight: 700;
+}
+
+.glab-list {
+  display: grid;
+  gap: 0.28rem;
+}
+
+.glab-fx {
+  display: grid;
+  gap: 0.12rem;
+  width: 100%;
+  margin: 0;
+  padding: 0.45rem 0.55rem;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  pointer-events: none;
+}
+
+.glab-fx strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.glab-fx span {
+  font-size: 0.7rem;
+  color: var(--mute);
+}
+
+.glab-fx.on {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.glab-hint,
+.glab-saved,
+.glab-note {
+  margin: 0;
+  font-size: 0.74rem;
+  line-height: 1.35;
+  color: var(--mute);
+}
+
+.glab-saved {
+  color: color-mix(in srgb, #7ad0a8 80%, var(--text));
+  font-weight: 700;
+}
+
+.glab-stage {
+  min-height: calc(100vh - 4rem);
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.85rem;
+  padding: 5.5rem 1rem 2rem min(280px, 32vw);
+}
+
+.glab-title {
+  margin: 0;
+  font-family: "Orbitron", sans-serif;
+  font-size: clamp(0.95rem, 2.4vw, 1.2rem);
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.glab-tile {
+  position: relative;
+  width: min(100%, 340px);
+  aspect-ratio: 1;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #0a1018;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.glab-tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.glab-tile-copy {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: grid;
+  gap: 0.12rem;
+  padding: 0.85rem 0.95rem 1rem;
+  background: linear-gradient(transparent, rgba(5, 7, 10, 0.92));
+}
+
+.glab-tile-copy em {
+  font-style: normal;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, #7ad0a8 75%, #fff);
+  font-weight: 700;
+}
+
+.glab-tile-copy strong {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.glab-tile-copy span {
+  font-size: 0.78rem;
+  color: var(--mute);
+}
+
+.glab-note {
+  max-width: 34rem;
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .glab-top {
+    grid-template-columns: 1fr auto;
+  }
+
+  .glab-top .glab-btn:first-child {
+    grid-column: 1 / -1;
+    width: fit-content;
+  }
+
+  .glab-picker {
+    position: static;
+    width: auto;
+    margin: 0.75rem;
+  }
+
+  .glab-stage {
+    padding: 1rem 1rem 2rem;
+  }
+}

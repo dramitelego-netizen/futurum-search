@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>FUTURUM · перелистывание между поисками</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #070a10;
+      --panel: #0e151e;
+      --line: #2a3848;
+      --text: #e8f2f8;
+      --mute: #8aa0b4;
+      --accent: #3ecfbe;
+      --game: #d4a24a;
+      --dur: 900ms;
+      --ease: cubic-bezier(0.22, 0.7, 0.12, 1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Rajdhani", system-ui, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+    .bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--line);
+      background: #05070a;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+    .bar strong {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .bar span { color: var(--mute); font-size: 0.85rem; }
+    .bar a {
+      color: inherit;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    .fxs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .fxs button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 0.35rem 0.7rem;
+      font: inherit;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+    .fxs button.on {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+      background: color-mix(in srgb, var(--accent) 14%, var(--panel));
+    }
+    .hint {
+      margin: 0;
+      padding: 0.55rem 1rem 0.75rem;
+      color: var(--mute);
+      font-size: 0.86rem;
+    }
+
+    /* имитация реального сайта: сайдбар + контент */
+    .shell {
+      display: grid;
+      grid-template-columns: minmax(200px, 240px) 1fr;
+      min-height: calc(100vh - 7.5rem);
+    }
+    @media (max-width: 820px) {
+      .shell { grid-template-columns: 1fr; }
+      .side { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+    .side {
+      padding: 0.9rem;
+      border-right: 1px solid var(--line);
+      background: #0a1018;
+      display: grid;
+      gap: 0.45rem;
+      align-content: start;
+    }
+    .side .lbl {
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--mute);
+      font-weight: 700;
+      margin: 0.2rem 0 0.15rem;
+    }
+    .side-btn {
+      appearance: none;
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--text) 3%, transparent);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 0.55rem 0.7rem;
+      font: inherit;
+      cursor: pointer;
+      display: grid;
+      gap: 0.08rem;
+    }
+    .side-btn strong { font-size: 0.92rem; }
+    .side-btn span { font-size: 0.74rem; color: var(--mute); }
+    .side-btn.on {
+      border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+    body.is-game .side-btn.on {
+      border-color: color-mix(in srgb, var(--game) 55%, var(--line));
+      background: color-mix(in srgb, var(--game) 12%, transparent);
+    }
+    .side-btn:disabled { opacity: 0.45; cursor: default; }
+
+    .viewport {
+      position: relative;
+      overflow: hidden;
+      background: #05070a;
+      perspective: 1600px;
+    }
+
+    .page {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      padding: 1rem 1.1rem 1.2rem;
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--tone) 10%, #0a1018), #070a10 55%),
+        center / cover no-repeat;
+      transform-origin: left center;
+      backface-visibility: hidden;
+      will-change: transform, opacity, filter;
+    }
+    .page.shop {
+      --tone: var(--accent);
+      background-image:
+        linear-gradient(105deg, rgba(7, 10, 16, 0.88) 28%, rgba(7, 10, 16, 0.55) 100%),
+        url("./hub-shop.jpg");
+    }
+    .page.game {
+      --tone: var(--game);
+      background-image:
+        linear-gradient(105deg, rgba(7, 10, 16, 0.88) 28%, rgba(7, 10, 16, 0.55) 100%),
+        url("./hub-titles.jpg");
+    }
+    .page-head {
+      display: grid;
+      gap: 0.15rem;
+      margin-bottom: 0.85rem;
+    }
+    .page-head em {
+      font-style: normal;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--tone) 80%, #fff);
+      font-weight: 700;
+    }
+    .page-head h2 {
+      margin: 0;
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(1rem, 2.4vw, 1.35rem);
+      letter-spacing: 0.04em;
+    }
+    .search {
+      height: 2.4rem;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--tone) 35%, var(--line));
+      background: color-mix(in srgb, #0a121a 75%, transparent);
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      color: var(--mute);
+      font-weight: 600;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.55rem;
+      align-content: start;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      min-height: 110px;
+      background: color-mix(in srgb, var(--tone) 8%, #101820);
+      padding: 0.55rem;
+      display: grid;
+      align-content: end;
+      gap: 0.15rem;
+    }
+    .card i {
+      display: block;
+      height: 48px;
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--tone) 18%, #0a121a);
+      margin-bottom: 0.35rem;
+    }
+    .card b { font-size: 0.86rem; }
+    .card small { color: var(--mute); font-size: 0.74rem; }
+
+    .page.is-front { z-index: 2; }
+    .page.is-back { z-index: 1; }
+    .page[hidden] { display: none !important; }
+
+    /* ===== FX ===== */
+    /* A: page curl / flip */
+    body[data-fx="flip"] .page {
+      transition: transform var(--dur) var(--ease), filter var(--dur) ease, opacity 200ms linear;
+      transform-style: preserve-3d;
+    }
+    body[data-fx="flip"] .page.flip-out-left {
+      transform: rotateY(-92deg);
+      filter: brightness(0.55);
+      z-index: 4;
+    }
+    body[data-fx="flip"] .page.flip-out-right {
+      transform: rotateY(92deg);
+      transform-origin: right center;
+      filter: brightness(0.55);
+      z-index: 4;
+    }
+    body[data-fx="flip"] .page.flip-in-from-right {
+      transform: rotateY(88deg);
+      transform-origin: right center;
+      filter: brightness(0.7);
+      z-index: 3;
+    }
+    body[data-fx="flip"] .page.flip-in-from-left {
+      transform: rotateY(-88deg);
+      transform-origin: left center;
+      filter: brightness(0.7);
+      z-index: 3;
+    }
+    body[data-fx="flip"] .page.flip-settle {
+      transform: rotateY(0);
+      filter: none;
+      z-index: 2;
+    }
+
+    /* B: book turn — старый лист уезжает, новый снизу */
+    body[data-fx="book"] .page {
+      transition: transform var(--dur) var(--ease), box-shadow var(--dur) ease, filter var(--dur) ease;
+      transform-origin: left center;
+    }
+    body[data-fx="book"] .page.book-turn {
+      transform: rotateY(-105deg);
+      box-shadow: -30px 0 60px rgba(0,0,0,0.55);
+      filter: brightness(0.5);
+      z-index: 5;
+    }
+    body[data-fx="book"] .page.book-turn-back {
+      transform: rotateY(105deg);
+      transform-origin: right center;
+      box-shadow: 30px 0 60px rgba(0,0,0,0.55);
+      filter: brightness(0.5);
+      z-index: 5;
+    }
+    body[data-fx="book"] .page.book-wait {
+      transform: scale(0.985);
+      filter: brightness(0.75);
+      z-index: 1;
+    }
+    body[data-fx="book"] .page.book-show {
+      transform: none;
+      filter: none;
+      z-index: 2;
+    }
+
+    /* C: sheet slide (перелистывание плоскости) */
+    body[data-fx="sheet"] .page {
+      transition: transform 820ms var(--ease), opacity 820ms ease;
+    }
+    body[data-fx="sheet"] .page.sheet-out-left { transform: translateX(-110%) rotate(-1.5deg); opacity: 0.15; z-index: 3; }
+    body[data-fx="sheet"] .page.sheet-out-right { transform: translateX(110%) rotate(1.5deg); opacity: 0.15; z-index: 3; }
+    body[data-fx="sheet"] .page.sheet-in-right { transform: translateX(108%) rotate(1.2deg); opacity: 0.2; z-index: 4; }
+    body[data-fx="sheet"] .page.sheet-in-left { transform: translateX(-108%) rotate(-1.2deg); opacity: 0.2; z-index: 4; }
+    body[data-fx="sheet"] .page.sheet-on { transform: none; opacity: 1; z-index: 2; }
+
+    /* D: peel */
+    body[data-fx="peel"] .page {
+      transition: clip-path 880ms var(--ease), transform 880ms var(--ease), filter 880ms ease;
+    }
+    body[data-fx="peel"] .page.peel-away-left {
+      clip-path: inset(0 100% 0 0);
+      transform: translateX(-8%);
+      filter: brightness(0.6);
+      z-index: 4;
+    }
+    body[data-fx="peel"] .page.peel-away-right {
+      clip-path: inset(0 0 0 100%);
+      transform: translateX(8%);
+      filter: brightness(0.6);
+      z-index: 4;
+    }
+    body[data-fx="peel"] .page.peel-under {
+      clip-path: inset(0 0 0 0);
+      transform: scale(0.99);
+      filter: brightness(0.8);
+      z-index: 1;
+    }
+    body[data-fx="peel"] .page.peel-on {
+      clip-path: inset(0 0 0 0);
+      transform: none;
+      filter: none;
+      z-index: 2;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .page { transition: none !important; }
+    }
+  </style>
+</head>
+<body data-fx="flip">
+  <header class="bar">
+    <div>
+      <strong>Перелистывание поисков</strong>
+      <span>как будто уже в магазине → другой поиск, без главной</span>
+    </div>
+    <a href="./">← Главная</a>
+  </header>
+
+  <div class="fxs" id="fxs"></div>
+  <p class="hint">Жми в сайдбаре «Поиск по игре» / «Поиск предметов» — страница листается вбок. Выбери стиль A–D и напиши букву в чат.</p>
+
+  <div class="shell">
+    <aside class="side" aria-label="Навигация как на сайте">
+      <p class="lbl">Разделы</p>
+      <button type="button" class="side-btn" disabled>
+        <strong>Домой</strong>
+        <span>в лабе не нужно</span>
+      </button>
+      <button type="button" class="side-btn on" id="btnShop" data-go="shop">
+        <strong>Поиск предметов</strong>
+        <span>магазин · цены и скидки</span>
+      </button>
+      <button type="button" class="side-btn" id="btnGame" data-go="game">
+        <strong>Поиск по игре</strong>
+        <span>титулы и справочник</span>
+      </button>
+      <button type="button" class="side-btn" disabled>
+        <strong>Каталог</strong>
+        <span>для примера</span>
+      </button>
+    </aside>
+
+    <main class="viewport" id="viewport">
+      <section class="page shop is-front" id="pageShop" data-page="shop">
+        <div>
+          <div class="page-head">
+            <em>Сейчас открыто</em>
+            <h2>Поиск предметов</h2>
+          </div>
+          <div class="search">Найти предмет, id или вставить ссылку…</div>
+          <div class="cards">
+            <div class="card"><i></i><b>Крылья</b><small>1 240 монет</small></div>
+            <div class="card"><i></i><b>Питомец</b><small>980 монет</small></div>
+            <div class="card"><i></i><b>Набор</b><small>скидка −20%</small></div>
+            <div class="card"><i></i><b>Очки</b><small>310 монет</small></div>
+            <div class="card"><i></i><b>Платье</b><small>540 монет</small></div>
+            <div class="card"><i></i><b>Фон</b><small>750 монет</small></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page game" id="pageGame" data-page="game" hidden>
+        <div>
+          <div class="page-head">
+            <em>Сейчас открыто</em>
+            <h2>Поиск по игре</h2>
+          </div>
+          <div class="search">Титул, крылья, питомец, одежда…</div>
+          <div class="cards">
+            <div class="card"><i></i><b>Титул</b><small>ОП · скрин</small></div>
+            <div class="card"><i></i><b>Крылья</b><small>вики</small></div>
+            <div class="card"><i></i><b>Питомец</b><small>справочник</small></div>
+            <div class="card"><i></i><b>Одежда</b><small>раздел</small></div>
+            <div class="card"><i></i><b>Транспорт</b><small>раздел</small></div>
+            <div class="card"><i></i><b>Причёска</b><small>раздел</small></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const FX = [
+      { id: "flip", key: "A", label: "A · Page flip" },
+      { id: "book", key: "B", label: "B · Book turn" },
+      { id: "sheet", key: "C", label: "C · Sheet slide" },
+      { id: "peel", key: "D", label: "D · Peel" },
+    ];
+
+    const fxs = document.getElementById("fxs");
+    const shop = document.getElementById("pageShop");
+    const game = document.getElementById("pageGame");
+    const btnShop = document.getElementById("btnShop");
+    const btnGame = document.getElementById("btnGame");
+    let page = "shop";
+    let busy = false;
+
+    FX.forEach((fx, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      if (i === 0) b.classList.add("on");
+      b.textContent = fx.label;
+      b.addEventListener("click", () => {
+        document.body.dataset.fx = fx.id;
+        fxs.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+      });
+      fxs.appendChild(b);
+    });
+
+    function wipe(el) {
+      el.className = `page ${el.dataset.page}`;
+    }
+
+    function setSide(next) {
+      btnShop.classList.toggle("on", next === "shop");
+      btnGame.classList.toggle("on", next === "game");
+      document.body.classList.toggle("is-game", next === "game");
+    }
+
+    function go(next) {
+      if (busy || next === page) return;
+      busy = true;
+      const fx = document.body.dataset.fx || "flip";
+      const cur = page === "shop" ? shop : game;
+      const nxt = next === "shop" ? shop : game;
+      const toGame = next === "game";
+
+      nxt.hidden = false;
+      wipe(cur);
+      wipe(nxt);
+      cur.classList.add("is-front");
+      nxt.classList.add("is-back");
+
+      // force reflow
+      void cur.offsetWidth;
+
+      if (fx === "flip") {
+        nxt.classList.add(toGame ? "flip-in-from-right" : "flip-in-from-left");
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            cur.classList.add(toGame ? "flip-out-left" : "flip-out-right");
+            nxt.classList.remove("flip-in-from-right", "flip-in-from-left");
+            nxt.classList.add("flip-settle");
+          });
+        });
+      } else if (fx === "book") {
+        nxt.classList.add("book-wait");
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            cur.classList.add(toGame ? "book-turn" : "book-turn-back");
+            nxt.classList.remove("book-wait");
+            nxt.classList.add("book-show");
+          });
+        });
+      } else if (fx === "sheet") {
+        nxt.classList.add(toGame ? "sheet-in-right" : "sheet-in-left");
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            cur.classList.add(toGame ? "sheet-out-left" : "sheet-out-right");
+            nxt.classList.remove("sheet-in-right", "sheet-in-left");
+            nxt.classList.add("sheet-on");
+          });
+        });
+      } else if (fx === "peel") {
+        nxt.classList.add("peel-under");
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            cur.classList.add(toGame ? "peel-away-left" : "peel-away-right");
+            nxt.classList.remove("peel-under");
+            nxt.classList.add("peel-on");
+          });
+        });
+      }
+
+      setSide(next);
+
+      window.setTimeout(() => {
+        wipe(cur);
+        wipe(nxt);
+        cur.hidden = true;
+        nxt.hidden = false;
+        nxt.classList.add("is-front");
+        page = next;
+        busy = false;
+      }, 920);
+    }
+
+    btnShop.addEventListener("click", () => go("shop"));
+    btnGame.addEventListener("click", () => go("game"));
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") go("game");
+      if (e.key === "ArrowLeft") go("shop");
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>FUTURUM · выбор вида мобильного сайта</title>
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Rajdhani:wght@500;600;700&family=Manrope:wght@500;600;700;800&family=IBM+Plex+Sans:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --page-bg: #07090d;
+      --page-text: #e8eef5;
+      --page-mute: #8a96a8;
+      --page-accent: #3dffd0;
+      --page-line: rgba(90, 220, 200, 0.22);
+      --safe-b: env(safe-area-inset-bottom, 0px);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: "Rajdhani", sans-serif;
+      color: var(--page-text);
+      background:
+        radial-gradient(120% 70% at 50% -8%, rgba(61, 255, 208, 0.12), transparent 48%),
+        var(--page-bg);
+      padding: 0.85rem 0.85rem calc(1rem + var(--safe-b));
+    }
+    .wrap { width: min(100%, 980px); margin: 0 auto; display: grid; gap: 0.85rem; }
+    .head { text-align: center; display: grid; gap: 0.25rem; }
+    .brand {
+      margin: 0;
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(1.2rem, 4.5vw, 1.7rem);
+      letter-spacing: 0.08em;
+      color: var(--page-accent);
+    }
+    .sub { margin: 0; color: var(--page-mute); font-size: 0.9rem; line-height: 1.35; }
+    .tip {
+      margin: 0;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: color-mix(in srgb, var(--page-accent) 75%, var(--page-mute));
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.35rem;
+    }
+    @media (max-width: 720px) {
+      .tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    .tab {
+      appearance: none;
+      border: 1px solid var(--page-line);
+      background: rgba(14, 19, 26, 0.9);
+      color: var(--page-text);
+      border-radius: 12px;
+      padding: 0.45rem 0.25rem;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .tab small {
+      display: block;
+      margin-top: 0.08rem;
+      font-size: 0.6rem;
+      font-weight: 600;
+      color: var(--page-mute);
+      line-height: 1.2;
+    }
+    .tab.on {
+      border-color: color-mix(in srgb, var(--page-accent) 55%, transparent);
+      background: color-mix(in srgb, var(--page-accent) 14%, transparent);
+      color: var(--page-accent);
+    }
+    .tab.on small { color: color-mix(in srgb, var(--page-accent) 70%, var(--page-mute)); }
+
+    .stage { display: grid; gap: 0.7rem; justify-items: center; }
+    .hint-bar {
+      width: min(100%, 340px);
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--page-mute);
+      line-height: 1.35;
+    }
+    .hint-bar b { color: color-mix(in srgb, var(--page-accent) 80%, var(--page-mute)); }
+
+    .phone {
+      width: min(100%, 340px);
+      aspect-ratio: 9 / 19.2;
+      border-radius: 28px;
+      border: 2px solid color-mix(in srgb, var(--page-accent) 35%, #2a3340);
+      background: #05070a;
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.55);
+      overflow: hidden;
+      position: relative;
+      touch-action: manipulation;
+      user-select: none;
+    }
+    .phone::before {
+      content: "";
+      position: absolute;
+      top: 8px; left: 50%; transform: translateX(-50%);
+      width: 88px; height: 10px; border-radius: 999px;
+      background: #11161e; z-index: 40; pointer-events: none;
+    }
+
+    .theme {
+      position: absolute; inset: 0; display: none;
+      --bg: #080b10; --panel: #101820; --panel2: #16202b;
+      --line: rgba(90, 220, 200, 0.22); --text: #e8eef5; --mute: #8a96a8;
+      --accent: #3dffd0; --accent-ink: #04120f; --nav: #0d141c;
+      --row: rgba(255, 255, 255, 0.04); --radius: 14px;
+      --font: "Rajdhani", sans-serif; --display: "Orbitron", sans-serif;
+      font-family: var(--font); color: var(--text); background: var(--bg);
+    }
+    .theme.on { display: block; }
+
+    .ui {
+      position: absolute; inset: 0;
+      padding: 22px 10px 10px;
+      display: none; flex-direction: column; gap: 0.4rem;
+      background:
+        radial-gradient(90% 40% at 50% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 60%),
+        var(--bg);
+    }
+    .ui.on { display: flex; }
+
+    .top { display: flex; align-items: center; gap: 0.4rem; }
+    .logo {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      font-family: var(--display);
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      font-weight: 700;
+      flex: 0 0 auto;
+      cursor: pointer;
+      line-height: 1;
+      text-shadow: 0 0 16px color-mix(in srgb, var(--accent) 40%, transparent);
+    }
+    .search {
+      flex: 1; min-width: 0; height: 32px; border-radius: 999px;
+      border: 1px solid var(--line); background: rgba(255, 255, 255, 0.04);
+      color: var(--text); font: inherit; font-size: 0.72rem; padding: 0 0.7rem; outline: none;
+    }
+    .search::placeholder { color: var(--mute); }
+
+    .chips { display: flex; gap: 0.28rem; overflow-x: auto; scrollbar-width: none; }
+    .chips::-webkit-scrollbar { display: none; }
+    .chip {
+      appearance: none; flex: 0 0 auto; padding: 0.22rem 0.5rem; border-radius: 999px;
+      border: 1px solid var(--line); background: transparent; color: var(--mute);
+      font: inherit; font-size: 0.62rem; font-weight: 700; cursor: pointer;
+    }
+    .chip.on {
+      color: var(--accent);
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+    .chip:active { transform: scale(0.96); }
+
+    .hero-home {
+      margin-top: 0.2rem; padding: 0.85rem 0.8rem;
+      border-radius: calc(var(--radius) + 4px); border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel) 88%, transparent);
+      display: grid; gap: 0.45rem;
+    }
+    .hero-home h2 { margin: 0; font-size: 1.05rem; font-weight: 800; line-height: 1.2; }
+    .hero-home p { margin: 0; color: var(--mute); font-size: 0.72rem; line-height: 1.35; }
+    .cta, .quick-btn, .row, .cat-card, .bnav-btn, .sheet-btn {
+      cursor: pointer; -webkit-tap-highlight-color: transparent;
+    }
+    .cta {
+      appearance: none; border: 0; border-radius: 12px; padding: 0.55rem 0.75rem;
+      font: inherit; font-weight: 800; font-size: 0.82rem;
+      background: var(--accent); color: var(--accent-ink);
+    }
+    .cta:active, .quick-btn:active, .row:active, .cat-card:active, .bnav-btn:active, .sheet-btn:active {
+      transform: scale(0.97); opacity: 0.92;
+    }
+
+    .quick { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.35rem; }
+    .quick-btn {
+      display: flex; align-items: center; gap: 0.4rem; padding: 0.55rem;
+      border-radius: var(--radius); border: 1px solid var(--line);
+      background: var(--panel); font: inherit; color: var(--text);
+      font-size: 0.72rem; font-weight: 700; text-align: left;
+    }
+    .quick-btn span {
+      width: 28px; height: 28px; border-radius: 10px; display: grid; place-items: center;
+      background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); font-size: 0.8rem;
+    }
+
+    .demo-items {
+      display: grid; gap: 0.35rem;
+    }
+    .demo-label {
+      margin: 0.15rem 0 0;
+      font-size: 0.62rem; font-weight: 700; color: var(--mute); letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .scroll {
+      flex: 1; min-height: 0; overflow: auto; display: grid; gap: 0.35rem;
+      align-content: start; -webkit-overflow-scrolling: touch;
+    }
+    .row {
+      appearance: none; width: 100%;
+      display: grid; grid-template-columns: 44px 1fr auto; gap: 0.45rem; align-items: center;
+      padding: 0.4rem; border-radius: var(--radius);
+      border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+      background: var(--row); color: inherit; font: inherit; text-align: left;
+    }
+    .row .th {
+      width: 44px; height: 44px; border-radius: 11px;
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--accent) 30%, #2b6a8a), #1a3348 55%, #3a2a58);
+      border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+      background-size: cover; background-position: center;
+    }
+    .row .t { font-size: 0.78rem; font-weight: 800; line-height: 1.15; }
+    .row .m { font-size: 0.62rem; color: var(--mute); margin-top: 0.1rem; }
+    .row .op {
+      font-size: 0.7rem; font-weight: 800; color: var(--accent);
+      padding: 0.2rem 0.35rem; border-radius: 8px;
+      background: color-mix(in srgb, var(--accent) 12%, transparent); min-width: 1.6rem; text-align: center;
+    }
+
+    .empty {
+      padding: 1rem 0.6rem; text-align: center; color: var(--mute); font-size: 0.75rem; line-height: 1.35;
+    }
+
+    .cat-grid {
+      flex: 1; min-height: 0; overflow: auto; display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.4rem; align-content: start;
+    }
+    .cat-card {
+      appearance: none; text-align: left; color: inherit; font: inherit;
+      padding: 0.7rem 0.65rem; border-radius: calc(var(--radius) + 2px);
+      border: 1px solid var(--line); background: var(--panel); display: grid; gap: 0.25rem;
+    }
+    .cat-card .ico {
+      width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center;
+      background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent);
+      font-size: 0.95rem; margin-bottom: 0.15rem;
+    }
+    .cat-card b { font-size: 0.8rem; }
+    .cat-card span { font-size: 0.62rem; color: var(--mute); }
+
+    .sec-head {
+      display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.15rem;
+    }
+    .back-mini {
+      appearance: none; border: 1px solid var(--line); background: color-mix(in srgb, var(--accent) 12%, transparent);
+      color: var(--accent); border-radius: 999px; padding: 0.25rem 0.55rem;
+      font: inherit; font-size: 0.68rem; font-weight: 700; cursor: pointer;
+    }
+    .sec-head h3 { margin: 0; font-size: 0.9rem; font-weight: 800; }
+
+    .bnav {
+      margin-top: auto; height: 54px; border-radius: 16px; border: 1px solid var(--line);
+      background: var(--nav); display: grid; grid-template-columns: repeat(4, 1fr);
+      place-items: center; padding: 0 0.2rem; flex: 0 0 auto;
+    }
+    .bnav-btn {
+      appearance: none; border: 0; background: transparent; width: 100%; height: 100%;
+      display: grid; justify-items: center; align-content: center; gap: 0.1rem;
+      font: inherit; font-size: 0.55rem; font-weight: 700; color: var(--mute); padding: 0;
+    }
+    .bnav-btn.on { color: var(--accent); }
+    .bnav-btn i { font-style: normal; font-size: 0.95rem; line-height: 1; position: relative; }
+    .bnav-btn .badge {
+      position: absolute; top: -4px; right: -8px; min-width: 14px; height: 14px;
+      border-radius: 999px; background: var(--accent); color: var(--accent-ink);
+      font-size: 0.55rem; font-weight: 800; display: grid; place-items: center; padding: 0 3px;
+    }
+
+    /* sheet F */
+    .dim {
+      position: absolute; inset: 0 0 66px; background: rgba(0,0,0,0.55);
+      z-index: 20; display: none; border: 0; padding: 0; cursor: pointer;
+    }
+    .dim.on { display: block; }
+    .sheet {
+      position: absolute; z-index: 21;
+      inset: 8px 8px 70px; border-radius: 20px; overflow: hidden;
+      background: #16202b; border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+      display: none; flex-direction: column;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+    }
+    .sheet.on { display: flex; }
+    .sheet-scroll {
+      flex: 1; min-height: 0; overflow: auto; -webkit-overflow-scrolling: touch;
+      position: relative; padding-bottom: 1rem;
+    }
+    .sheet-hero {
+      width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block;
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--accent) 35%, #2b6a8a), #1a3348 45%, #4a2a6a);
+    }
+    .sheet-chrome {
+      position: absolute; top: 10px; left: 10px; right: 10px; z-index: 2;
+      display: flex; align-items: center; gap: 0.35rem; pointer-events: none;
+    }
+    .sheet-chrome > * { pointer-events: auto; }
+    .sheet-back, .sheet-ico {
+      appearance: none; border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(10,14,20,0.72); color: var(--accent);
+      font: inherit; font-weight: 700; cursor: pointer;
+    }
+    .sheet-back {
+      display: inline-flex; align-items: center; gap: 0.15rem;
+      border-radius: 999px; padding: 0.28rem 0.6rem 0.28rem 0.4rem; font-size: 0.72rem;
+    }
+    .sheet-ico {
+      width: 32px; height: 32px; border-radius: 10px; color: #eef4fb; font-size: 0.9rem;
+      display: grid; place-items: center;
+    }
+    .sheet-ico.on { color: var(--accent); }
+    .sheet-spacer { flex: 1; }
+    .sheet-body { padding: 0.55rem 0.8rem 0; display: grid; gap: 0.45rem; }
+    .sheet-title { margin: 0; font-size: 1.12rem; font-weight: 800; line-height: 1.2; }
+    .sheet-thumbs { display: flex; gap: 0.35rem; }
+    .sheet-thumbs i {
+      width: 44px; height: 44px; border-radius: 10px; display: block;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: linear-gradient(135deg, #2b6a8a, #1a3348);
+    }
+    .sheet-thumbs i.on { border-color: var(--accent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent); }
+    .block {
+      border-radius: 12px; background: #2a384a; border: 1px solid rgba(255,255,255,0.1);
+      padding: 0.55rem 0.6rem;
+    }
+    .block .lbl {
+      color: color-mix(in srgb, var(--accent) 80%, #fff); font-size: 0.62rem;
+      font-weight: 700; letter-spacing: 0.05em; margin-bottom: 0.25rem;
+    }
+    .grid2 {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem 0.7rem; font-size: 0.82rem;
+    }
+    .grid2 span { color: #9eb0c4; font-size: 0.62rem; display: block; }
+
+    .pick-btn {
+      appearance: none; border: 0; border-radius: 14px; padding: 0.75rem 1rem;
+      width: min(100%, 340px); font: inherit; font-weight: 800; font-size: 0.95rem;
+      cursor: pointer; color: #04120f;
+      background: linear-gradient(135deg, #5dffd8, #3dffd0);
+      box-shadow: 0 0 24px rgba(61, 255, 208, 0.25);
+    }
+    .pick-btn:active { transform: scale(0.98); }
+    .note {
+      text-align: center; color: var(--page-mute); font-size: 0.75rem;
+      margin: 0; max-width: 36rem; line-height: 1.35;
+    }
+
+    /* themes A–J (same as before) */
+    .t-a { --bg:#080b10; --panel:#101820; --accent:#3dffd0; --nav:#0d141c; }
+    .t-b {
+      --bg:#12161c; --panel:#1a212b; --line:rgba(150,170,190,.18); --text:#edf2f7; --mute:#97a3b3;
+      --accent:#7dffe0; --nav:#171d26; --row:#1a212b; --radius:16px; --font:"Manrope",sans-serif;
+    }
+    .t-b .hero-home { background:linear-gradient(160deg,#222b38,#1a212b); border:0; }
+    .t-b .bnav { border:0; border-radius:18px; }
+    .t-c {
+      --bg:#f3f6fa; --panel:#fff; --line:#d5dee8; --text:#15202c; --mute:#64748b;
+      --accent:#0b9a80; --accent-ink:#fff; --nav:#fff; --row:#fff; --radius:16px; --font:"Manrope",sans-serif;
+    }
+    .t-c .ui { background: radial-gradient(90% 40% at 50% 0%, rgba(11,154,128,.1), transparent 60%), var(--bg); }
+    .t-c .search { background:#fff; }
+    .t-c .cta { color:#fff; }
+    .t-c .sheet { background:#eef3f8; color:#15202c; border-color:#d5dee8; }
+    .t-c .block { background:#fff; border-color:#d5dee8; color:#15202c; }
+    .t-c .block .lbl { color:#0b9a80; }
+    .t-c .grid2 span { color:#64748b; }
+    .t-d {
+      --bg:#0a1018; --panel:rgba(22,34,48,.55); --line:rgba(255,255,255,.12); --text:#f2f7fc;
+      --mute:#a7b6c8; --accent:#6dffe0; --nav:rgba(12,20,30,.72); --row:rgba(255,255,255,.05); --radius:18px;
+    }
+    .t-d .ui {
+      background:
+        radial-gradient(70% 45% at 15% 10%, rgba(61,255,208,.2), transparent 50%),
+        radial-gradient(60% 40% at 90% 30%, rgba(90,140,255,.18), transparent 45%), #070c14;
+    }
+    .t-d .hero-home, .t-d .row, .t-d .cat-card, .t-d .bnav, .t-d .search, .t-d .quick-btn {
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      background: rgba(18,28,40,.45); border-color: rgba(255,255,255,.14);
+    }
+    .t-e { --bg:#06080c; --panel:#121a24; --accent:#3dffd0; --nav:#0b1118; }
+    .t-e .top-hideable { display:none; }
+    .t-e .brand-hero { display:grid; gap:.35rem; padding:.7rem .2rem .4rem; text-align:center; }
+    .t-e .brand-hero .mark {
+      font-family:var(--display); font-size:1.35rem; letter-spacing:.1em; color:var(--accent);
+      text-shadow:0 0 28px rgba(61,255,208,.35);
+    }
+    .t-e .brand-hero p { margin:0; color:var(--mute); font-size:.72rem; }
+    .t-e .search-wide { height:40px; border-radius:14px; text-align:center; font-size:.8rem; background:rgba(255,255,255,.05); }
+    .t-f {
+      --bg:#090d12; --panel:#141c26; --accent:#3dffd0; --radius:10px; --nav:#0c1219; --font:"IBM Plex Sans",sans-serif;
+    }
+    .t-f .logo { font-size:.58rem; }
+    .t-f .search { height:28px; font-size:.66rem; }
+    .t-f .row { grid-template-columns:36px 1fr auto; padding:.28rem; }
+    .t-f .row .th { width:36px; height:36px; border-radius:8px; }
+    .t-f .bnav { height:48px; border-radius:12px; }
+    .t-g {
+      --bg:#0b1016; --panel:#15202c; --accent:#5dffd8; --line:rgba(93,255,216,.18);
+      --radius:20px; --nav:transparent; --font:"Manrope",sans-serif;
+    }
+    .t-g .ui { gap:.55rem; padding-bottom:18px; }
+    .t-g .bnav {
+      width:calc(100% - 18px); margin:0 auto; height:58px; border-radius:999px;
+      background:rgba(16,24,34,.92); box-shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    .t-g .hero-home { border:0; background:linear-gradient(145deg,#1a2a38,#121c28); padding:1rem; }
+    .t-g .row { border:0; background:var(--panel); }
+    .t-h {
+      --bg:#120f0c; --panel:#1c1814; --line:rgba(255,180,90,.2); --text:#f6efe6; --mute:#a89886;
+      --accent:#ffb45a; --accent-ink:#2a1808; --nav:#17130f; --row:#1c1814; --radius:14px; --font:"Manrope",sans-serif;
+    }
+    .t-h .ui { background: radial-gradient(90% 40% at 50% 0%, rgba(255,180,90,.14), transparent 55%), var(--bg); }
+    .t-h .row .th { background:linear-gradient(135deg,#8a5a28,#3a2a1c 50%,#5a3a20); }
+    .t-i {
+      --bg:#050705; --panel:#0b120c; --line:rgba(80,255,140,.35); --text:#d8ffe6; --mute:#6f9a7c;
+      --accent:#4dff8a; --accent-ink:#03140a; --nav:#07100a; --row:#0b120c; --radius:4px;
+      --font:"IBM Plex Sans",sans-serif; --display:"IBM Plex Sans",sans-serif;
+    }
+    .t-i .logo { font-family:var(--font); letter-spacing:.14em; text-transform:uppercase; text-shadow:none; }
+    .t-i .search, .t-i .chip, .t-i .row, .t-i .cat-card, .t-i .hero-home, .t-i .bnav, .t-i .cta, .t-i .quick-btn, .t-i .sheet { border-radius:4px; }
+    .t-i .cta { background:transparent; color:var(--accent); border:1px solid var(--accent); }
+    .t-j {
+      --bg:#10151c; --panel:#1c2530; --line:transparent; --text:#f0f4f8; --mute:#93a0b0;
+      --accent:#5eead4; --accent-ink:#042f2e; --nav:#161d26; --row:#1c2530; --radius:22px; --font:"Manrope",sans-serif;
+    }
+    .t-j .search { background:#243040; border:0; height:38px; }
+    .t-j .chip { background:#243040; border:0; }
+    .t-j .chip.on { background:color-mix(in srgb, var(--accent) 22%, #243040); }
+    .t-j .hero-home, .t-j .row, .t-j .cat-card { border:0; }
+    .t-j .bnav { border:0; border-radius:22px; }
+    .t-j .cta { border-radius:999px; }
+
+    .brand-hero { display: none; }
+    .t-e .brand-hero { display: grid; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="head">
+      <h1 class="brand">FUTURUM</h1>
+      <p class="sub">Кликай внутри телефона: меню, каталог, поиск и карточки предметов</p>
+      <p class="tip">Выбери букву темы · всё внутри кликабельно · потом «Выбрать этот»</p>
+    </header>
+
+    <div class="tabs" id="tabs" role="tablist"></div>
+
+    <div class="stage">
+      <p class="hint-bar">Тапни <b>Крылья Кая</b> или <b>Крылья Гермеса</b> · нижнее меню · каталог · ☆</p>
+      <div class="phone" id="phone"></div>
+      <button type="button" class="pick-btn" id="pick">Выбрать этот · A</button>
+      <p class="note" id="desc">A — тёмный teal / neon — как уже сделано</p>
+    </div>
+  </div>
+
+  <script>
+    const META = {
+      A: ["Сейчас", "Тёмный teal / neon — как уже сделано"],
+      B: ["Спокойный", "Мягкий графит + mint, воздух и Manrope"],
+      C: ["Светлый", "Дневной режим: белые панели, зелёный акцент"],
+      D: ["Стекло", "Glass: размытие, градиенты, полупрозрачные блоки"],
+      E: ["Бренд-герой", "Большой FUTURUM на старте, поиск по центру"],
+      F: ["Компакт", "Плотнее: больше строк на экран, меньше отступов"],
+      G: ["Плавающее меню", "Круглая нижняя панель + мягкие карточки"],
+      H: ["Янтарь", "Тёплый графит и оранжевый акцент"],
+      I: ["Cyber", "Жёсткие углы, терминальный зелёный"],
+      J: ["Приложение", "Крупные скругления, без рамок, «store»-вид"],
+    };
+
+    const ITEMS = [
+      {
+        id: "kaya",
+        name: "Крылья Кая",
+        section: "Крылья",
+        cat: "acc",
+        meta: "событие · база знаний",
+        where: "Фиолетовые: событие «Базе Знаний — 9 лет!» · Желтые: Колесо удачи",
+        stats: [["АНИМАЦИЯ", "да"], ["ПОЛЁТ", "да"], ["АУРА", "нет"], ["СРОК", "вечно"]],
+        hue: "linear-gradient(135deg,#5a8cff,#2a4060 40%,#7a4dff)",
+      },
+      {
+        id: "hermes",
+        name: "Крылья Гермеса",
+        section: "Крылья",
+        cat: "acc",
+        meta: "билет · детская мечта",
+        where: "Билет «Жажда сокровищ», событие «Детская мечта»",
+        stats: [["АНИМАЦИЯ", "да"], ["ПОЛЁТ", "да"], ["АУРА", "нет"], ["СРОК", "вечно"]],
+        hue: "linear-gradient(135deg,#ffc14d,#8a5a20 45%,#c47a2a)",
+      },
+      {
+        id: "luxury",
+        name: "Крылья роскоши",
+        section: "Крылья",
+        cat: "acc",
+        meta: "лотерея · Алиса",
+        where: "Лотерейный билет «Пропуск в высший свет», Алиса",
+        stats: [["АНИМАЦИЯ", "да"], ["ПОЛЁТ", "да"], ["АУРА", "да"], ["СРОК", "вечно"]],
+        hue: "linear-gradient(135deg,#f0d24a,#6a4a18 50%,#b57cff)",
+      },
+      {
+        id: "night",
+        name: "Крылья ангела ночи",
+        section: "Крылья",
+        cat: "acc",
+        meta: "магазин · акция",
+        where: "Онлайн-магазин (ж/м), акция «Демоническая пиньята»",
+        stats: [["АНИМАЦИЯ", "да"], ["ПОЛЁТ", "да"], ["АУРА", "нет"], ["СРОК", "вечно"]],
+        hue: "linear-gradient(135deg,#2a1a40,#101828 40%,#6a3a8a)",
+      },
+      {
+        id: "title1",
+        name: "Порхаю как бабочка",
+        section: "Титулы",
+        cat: "progress",
+        meta: "2 ОП · Алиса",
+        where: "Алиса (обмен подарков)",
+        stats: [["ОП", "2"], ["ЗНАЧОК", "есть"], ["СРОК", "вечно"], ["ПОЛ", "все"]],
+        hue: "linear-gradient(135deg,#ff8ab8,#5a2a48 50%,#3dffd0)",
+      },
+      {
+        id: "emote1",
+        name: "Посох повелительницы неба",
+        section: "Жесты",
+        cat: "emotes",
+        meta: "ТЦ · спа-салон",
+        where: "ТЦ, подарок «Спа-салон», событие «Улыбка Фортуны»",
+        stats: [["ТИП", "жест"], ["АНИМАЦИЯ", "да"], ["СРОК", "вечно"], ["СЛОТ", "в руках"]],
+        hue: "linear-gradient(135deg,#4dffc8,#1a4050 45%,#4060a0)",
+      },
+    ];
+
+    const CATS = [
+      { id: "progress", ico: "◆", t: "Прогресс", m: "титулы, камни" },
+      { id: "clothes", ico: "👕", t: "Одежда", m: "костюмы" },
+      { id: "acc", ico: "✨", t: "Аксессуары", m: "крылья, украшения" },
+      { id: "pets", ico: "🪽", t: "Спутники", m: "питомцы" },
+      { id: "emotes", ico: "🖐", t: "Жесты", m: "эмоции" },
+      { id: "card", ico: "🪪", t: "Визитка", m: "рамки" },
+    ];
+
+    const state = {
+      theme: "A",
+      screen: "home",
+      chip: "all",
+      q: "",
+      cat: null,
+      sheetId: null,
+      favs: new Set(["kaya"]),
+    };
+
+    const tabs = document.getElementById("tabs");
+    const phone = document.getElementById("phone");
+    const pick = document.getElementById("pick");
+    const desc = document.getElementById("desc");
+
+    tabs.innerHTML = Object.keys(META).map((k) =>
+      `<button type="button" class="tab${k === "A" ? " on" : ""}" data-theme="${k}">${k}<small>${META[k][0]}</small></button>`
+    ).join("");
+
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]));
+    }
+
+    function filteredItems() {
+      let list = ITEMS.slice();
+      if (state.screen === "catalog" && state.cat) {
+        list = list.filter((it) => it.cat === state.cat);
+      }
+      if (state.screen === "fav") {
+        list = list.filter((it) => state.favs.has(it.id));
+      }
+      if (state.chip === "wings") list = list.filter((it) => it.section === "Крылья");
+      if (state.chip === "titles") list = list.filter((it) => it.section === "Титулы");
+      if (state.chip === "emotes") list = list.filter((it) => it.section === "Жесты");
+      const q = state.q.trim().toLowerCase();
+      if (q) list = list.filter((it) => (it.name + " " + it.section + " " + it.meta).toLowerCase().includes(q));
+      return list;
+    }
+
+    function rowHtml(it) {
+      const fav = state.favs.has(it.id);
+      return `<button type="button" class="row" data-open="${esc(it.id)}">
+        <div class="th" style="background:${esc(it.hue)}"></div>
+        <div><div class="t">${esc(it.name)}</div><div class="m">${esc(it.section)} · ${esc(it.meta)}</div></div>
+        <div class="op">${fav ? "★" : "·"}</div>
+      </button>`;
+    }
+
+    function listHtml(emptyText) {
+      const list = filteredItems();
+      if (!list.length) return `<div class="empty">${esc(emptyText || "Ничего не найдено")}</div>`;
+      return list.map(rowHtml).join("");
+    }
+
+    function bnavHtml(active) {
+      const n = state.favs.size;
+      return `<nav class="bnav" aria-label="Навигация">
+        <button type="button" class="bnav-btn${active === "home" || active === "search" ? " on" : ""}" data-go="search"><i>○</i>Поиск</button>
+        <button type="button" class="bnav-btn${active === "catalog" ? " on" : ""}" data-go="catalog"><i>□</i>Каталог</button>
+        <button type="button" class="bnav-btn${active === "fav" ? " on" : ""}" data-go="fav"><i>☆${n ? `<span class="badge">${n}</span>` : ""}</i>Избранное</button>
+        <button type="button" class="bnav-btn${active === "more" ? " on" : ""}" data-go="more"><i>…</i>Ещё</button>
+      </nav>`;
+    }
+
+    function chipsHtml() {
+      const chips = [
+        ["all", "Всё"],
+        ["wings", "Крылья"],
+        ["titles", "Титулы"],
+        ["emotes", "Жесты"],
+      ];
+      return `<div class="chips">${chips.map(([id, t]) =>
+        `<button type="button" class="chip${state.chip === id ? " on" : ""}" data-chip="${id}">${t}</button>`
+      ).join("")}</div>`;
+    }
+
+    function sheetHtml() {
+      const it = ITEMS.find((x) => x.id === state.sheetId);
+      if (!it) return `<button type="button" class="dim" data-close-sheet hidden></button><div class="sheet" hidden></div>`;
+      const on = state.favs.has(it.id);
+      const stats = it.stats.map(([a, b]) => `<div><span>${esc(a)}</span>${esc(b)}</div>`).join("");
+      return `
+        <button type="button" class="dim on" data-close-sheet aria-label="Закрыть"></button>
+        <div class="sheet on" role="dialog" aria-label="${esc(it.name)}">
+          <div class="sheet-scroll">
+            <div class="sheet-hero" style="background:${esc(it.hue)}"></div>
+            <div class="sheet-chrome">
+              <button type="button" class="sheet-back sheet-btn" data-close-sheet>‹ К списку</button>
+              <span class="sheet-spacer"></span>
+              <button type="button" class="sheet-ico sheet-btn${on ? " on" : ""}" data-fav="${esc(it.id)}" aria-label="Избранное">${on ? "★" : "☆"}</button>
+              <button type="button" class="sheet-ico sheet-btn" data-close-sheet aria-label="Закрыть">✕</button>
+            </div>
+            <div class="sheet-body">
+              <h2 class="sheet-title">${esc(it.name)}</h2>
+              <div class="sheet-thumbs"><i class="on" style="background:${esc(it.hue)}"></i><i></i><i></i></div>
+              <div class="block"><div class="lbl">ХАРАКТЕРИСТИКИ</div><div class="grid2">${stats}</div></div>
+              <div class="block"><div class="lbl">ГДЕ ПОЛУЧИТЬ</div>${esc(it.where)}</div>
+              <div class="block"><div class="lbl">РАЗДЕЛ</div>${esc(it.section)}</div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function screenHome() {
+      const demos = ITEMS.slice(0, 2).map(rowHtml).join("");
+      return `
+        <div class="brand-hero"><div class="mark">FUTURUM</div><p>Справочник по игре</p></div>
+        <div class="top top-hideable"><button type="button" class="logo" data-go="home">FUTURUM</button>
+          <input class="search" data-q placeholder="Название, ОП…" value="${esc(state.q)}" /></div>
+        ${state.theme === "E" ? `<input class="search search-wide" data-q placeholder="Название, ОП…" value="${esc(state.q)}" />` : ""}
+        ${chipsHtml()}
+        <div class="hero-home">
+          <h2>Найди предмет или титул</h2>
+          <p>Кликай по предметам ниже или открой каталог</p>
+          <button type="button" class="cta" data-go="catalog">Открыть каталог</button>
+        </div>
+        <div class="quick">
+          <button type="button" class="quick-btn" data-go="fav"><span>☆</span>Избранное</button>
+          <button type="button" class="quick-btn" data-go="search"><span>⌕</span>Поиск</button>
+        </div>
+        <p class="demo-label">Для проверки · тапни</p>
+        <div class="demo-items scroll">${demos}</div>
+        ${bnavHtml("home")}`;
+    }
+
+    function screenSearch() {
+      return `
+        <div class="brand-hero"><div class="mark">FUTURUM</div><p>Поиск</p></div>
+        <div class="top"><button type="button" class="logo" data-go="home">FUTURUM</button>
+          <input class="search" data-q placeholder="Название, ОП…" value="${esc(state.q)}" /></div>
+        ${chipsHtml()}
+        <div class="scroll">${listHtml("Нет совпадений — сбрось фильтр")}</div>
+        ${bnavHtml("search")}`;
+    }
+
+    function screenCatalog() {
+      if (state.cat) {
+        const cat = CATS.find((c) => c.id === state.cat);
+        return `
+          <div class="sec-head">
+            <button type="button" class="back-mini" data-cat-back>‹ Назад</button>
+            <h3>${esc(cat ? cat.t : "Раздел")}</h3>
+          </div>
+          <div class="scroll">${listHtml("В этом разделе пока пусто (демо)")}</div>
+          ${bnavHtml("catalog")}`;
+      }
+      return `
+        <div class="brand-hero"><div class="mark">FUTURUM</div><p>Каталог</p></div>
+        <div class="top top-hideable"><button type="button" class="logo" data-go="home">FUTURUM</button>
+          <input class="search" data-q placeholder="Раздел или предмет…" value="${esc(state.q)}" /></div>
+        <div class="cat-grid">
+          ${CATS.map((c) => `<button type="button" class="cat-card" data-cat="${c.id}">
+            <div class="ico">${c.ico}</div><b>${esc(c.t)}</b><span>${esc(c.m)}</span>
+          </button>`).join("")}
+        </div>
+        ${bnavHtml("catalog")}`;
+    }
+
+    function screenFav() {
+      return `
+        <div class="top"><button type="button" class="logo" data-go="home">FUTURUM</button>
+          <div style="font-size:.8rem;font-weight:800">Избранное</div></div>
+        <div class="scroll">${listHtml("Пока пусто — открой карточку и нажми ☆")}</div>
+        ${bnavHtml("fav")}`;
+    }
+
+    function screenMore() {
+      return `
+        <div class="top"><button type="button" class="logo" data-go="home">FUTURUM</button>
+          <div style="font-size:.8rem;font-weight:800">Ещё</div></div>
+        <div class="scroll" style="gap:.4rem">
+          <button type="button" class="row" data-go="search"><div class="th"></div><div><div class="t">Поиск</div><div class="m">по названию</div></div><div class="op">→</div></button>
+          <button type="button" class="row" data-go="catalog"><div class="th"></div><div><div class="t">Каталог</div><div class="m">разделы</div></div><div class="op">→</div></button>
+          <button type="button" class="row" data-go="fav"><div class="th"></div><div><div class="t">Избранное</div><div class="m">${state.favs.size} шт.</div></div><div class="op">→</div></button>
+          <div class="block" style="margin-top:.3rem"><div class="lbl">ТЕМА</div>Сейчас выбрана буква ${esc(state.theme)} · ${esc(META[state.theme][0])}</div>
+        </div>
+        ${bnavHtml("more")}`;
+    }
+
+    function render() {
+      const body =
+        state.screen === "home" ? screenHome() :
+        state.screen === "search" ? screenSearch() :
+        state.screen === "catalog" ? screenCatalog() :
+        state.screen === "fav" ? screenFav() :
+        screenMore();
+
+      phone.innerHTML = `
+        <div class="theme t-${state.theme.toLowerCase()} on" data-v="${state.theme}">
+          <div class="ui on">${body}</div>
+          ${sheetHtml()}
+        </div>`;
+
+      tabs.querySelectorAll(".tab").forEach((el) => el.classList.toggle("on", el.dataset.theme === state.theme));
+      pick.textContent = `Выбрать этот · ${state.theme}`;
+      desc.textContent = `${state.theme} — ${META[state.theme][1]}`;
+
+      const qEl = phone.querySelector("[data-q]");
+      if (qEl && document.activeElement === qEl) {
+        const len = qEl.value.length;
+        qEl.focus();
+        try { qEl.setSelectionRange(len, len); } catch {}
+      }
+    }
+
+    phone.addEventListener("click", (e) => {
+      const t = e.target.closest("[data-theme],[data-go],[data-chip],[data-open],[data-cat],[data-cat-back],[data-close-sheet],[data-fav]");
+      if (!t) {
+        if (e.target.matches(".dim") || e.target.closest(".dim")) {
+          state.sheetId = null;
+          render();
+        }
+        return;
+      }
+      if (t.dataset.go) {
+        state.screen = t.dataset.go === "search" ? (state.screen === "home" && !state.q ? "search" : "search") : t.dataset.go;
+        if (t.dataset.go === "home") { state.screen = "home"; state.cat = null; }
+        if (t.dataset.go === "catalog") state.cat = null;
+        if (t.dataset.go === "search") state.screen = "search";
+        state.sheetId = null;
+        render();
+        return;
+      }
+      if (t.dataset.chip) {
+        state.chip = t.dataset.chip;
+        if (state.screen === "home") state.screen = "search";
+        render();
+        return;
+      }
+      if (t.dataset.open) {
+        state.sheetId = t.dataset.open;
+        render();
+        return;
+      }
+      if (t.dataset.cat) {
+        state.cat = t.dataset.cat;
+        state.q = "";
+        render();
+        return;
+      }
+      if (t.hasAttribute("data-cat-back")) {
+        state.cat = null;
+        render();
+        return;
+      }
+      if (t.hasAttribute("data-close-sheet")) {
+        state.sheetId = null;
+        render();
+        return;
+      }
+      if (t.dataset.fav) {
+        const id = t.dataset.fav;
+        if (state.favs.has(id)) state.favs.delete(id);
+        else state.favs.add(id);
+        render();
+      }
+    });
+
+    phone.addEventListener("input", (e) => {
+      if (!e.target.matches("[data-q]")) return;
+      state.q = e.target.value;
+      if (state.screen === "home" && state.q.trim()) state.screen = "search";
+      render();
+      const qEl = phone.querySelector("[data-q]");
+      if (qEl) {
+        qEl.focus();
+        const len = qEl.value.length;
+        try { qEl.setSelectionRange(len, len); } catch {}
+      }
+    });
+
+    phone.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && state.sheetId) {
+        state.sheetId = null;
+        render();
+      }
+    });
+
+    tabs.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-theme]");
+      if (!btn) return;
+      state.theme = btn.dataset.theme;
+      state.sheetId = null;
+      render();
+    });
+
+    pick.addEventListener("click", () => {
+      try { localStorage.setItem("futurum_mobile_look", state.theme); } catch {}
+      pick.textContent = `Выбрано · ${state.theme} ✓`;
+      desc.textContent = `Запомнил вариант ${state.theme}. Напиши в чат букву ${state.theme} — внедрю во весь мобильный сайт.`;
+    });
+
+    render();
+  </script>
+</body>
+</html>

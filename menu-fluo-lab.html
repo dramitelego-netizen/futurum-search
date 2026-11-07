@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Меню — люминесцент</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07090d;
+      --panel: #12161e;
+      --ink: #e8eef7;
+      --mute: #7d8a9a;
+      --accent: #3dffe0;
+      --line: rgba(232, 238, 247, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Rajdhani", sans-serif;
+      background: radial-gradient(ellipse 70% 45% at 15% 0%, #0f1a1c, var(--bg));
+      color: var(--ink);
+      padding: 1.35rem clamp(1rem, 3vw, 2rem) 3rem;
+    }
+    h1 {
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin: 0 0 0.35rem;
+    }
+    .lead { color: var(--mute); margin: 0 0 1.25rem; max-width: 40rem; line-height: 1.4; }
+    .grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+    .card {
+      background: color-mix(in srgb, var(--panel) 94%, black);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0.95rem 1rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .card.is-picked {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+    }
+    .card-num {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+    }
+    .card-title { font-weight: 700; font-size: 1.05rem; }
+    .card-desc { margin: 0; color: var(--mute); font-size: 0.88rem; line-height: 1.35; }
+    .stage {
+      position: relative;
+      height: 9rem;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(ellipse 60% 50% at 70% 30%, rgba(61,255,224,0.06), transparent 60%),
+        #0a0e14;
+      overflow: hidden;
+    }
+    .stage-fake {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-content: center;
+      opacity: 0.18;
+      font-family: "Orbitron", sans-serif;
+      letter-spacing: 0.2em;
+      font-size: 0.85rem;
+      color: var(--accent);
+      pointer-events: none;
+    }
+    .actions { margin-top: auto; }
+    button.pick {
+      font: inherit;
+      font-weight: 700;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+      background: color-mix(in srgb, var(--accent) 22%, transparent);
+      color: #041410;
+      padding: 0.4rem 0.9rem;
+      cursor: pointer;
+    }
+    .picked {
+      position: sticky;
+      bottom: 0.75rem;
+      margin-top: 1.2rem;
+      padding: 0.9rem 1rem;
+      border-radius: 12px;
+      border: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      color: var(--mute);
+      backdrop-filter: blur(8px);
+    }
+    .picked strong {
+      color: var(--accent);
+      font-family: "Orbitron", sans-serif;
+      letter-spacing: 0.06em;
+    }
+
+    .demo {
+      position: absolute;
+      top: 1.1rem;
+      left: 1.1rem;
+      width: 3.55rem;
+      height: 3.55rem;
+      border: 0;
+      border-radius: 13px;
+      background: transparent;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+    .bars {
+      display: grid;
+      gap: 0.45rem;
+      width: 1.75rem;
+      justify-items: start;
+      position: relative;
+      z-index: 1;
+    }
+    .bars i {
+      display: block;
+      width: 1.75rem;
+      height: 3px;
+      border-radius: 2px;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.35);
+    }
+    .bars i:nth-child(2) { width: 1.3rem; }
+
+    /* —— 1 мягкий люминесцент (основной) —— */
+    .l1::after {
+      content: "";
+      position: absolute;
+      inset: -6px;
+      border-radius: 18px;
+      background: radial-gradient(circle, rgba(220, 240, 255, 0.28), transparent 68%);
+      pointer-events: none;
+      animation: l1-halo 7.5s ease-in-out infinite;
+    }
+    .l1 .bars i {
+      animation: l1-tube 7.5s ease-in-out infinite;
+    }
+    @keyframes l1-tube {
+      0%, 100% {
+        opacity: 0.92;
+        filter: brightness(1);
+        box-shadow: 0 0 8px rgba(230, 245, 255, 0.35);
+      }
+      18% {
+        opacity: 1;
+        filter: brightness(1.08);
+        box-shadow: 0 0 14px rgba(230, 245, 255, 0.55);
+      }
+      42% {
+        opacity: 0.78;
+        filter: brightness(0.88);
+        box-shadow: 0 0 6px rgba(230, 245, 255, 0.22);
+      }
+      /* редкий «запуск лампы» — мягко, не строб */
+      58% { opacity: 0.55; filter: brightness(0.7); box-shadow: none; }
+      61% { opacity: 0.95; filter: brightness(1.15); box-shadow: 0 0 16px rgba(230, 245, 255, 0.6); }
+      64% { opacity: 0.7; filter: brightness(0.85); }
+      68% { opacity: 1; filter: brightness(1.12); box-shadow: 0 0 18px rgba(230, 245, 255, 0.65); }
+      78%, 92% {
+        opacity: 0.95;
+        filter: brightness(1.05);
+        box-shadow: 0 0 12px rgba(230, 245, 255, 0.45);
+      }
+    }
+    @keyframes l1-halo {
+      0%, 100% { opacity: 0.25; transform: scale(0.96); }
+      18% { opacity: 0.45; transform: scale(1.02); }
+      42% { opacity: 0.15; transform: scale(0.94); }
+      58% { opacity: 0.05; }
+      68% { opacity: 0.55; transform: scale(1.06); }
+      85% { opacity: 0.35; transform: scale(1); }
+    }
+
+    /* —— 2 ещё реже, почти только дыхание —— */
+    .l2::after {
+      content: "";
+      position: absolute;
+      inset: -8px;
+      border-radius: 20px;
+      background: radial-gradient(circle, rgba(200, 230, 255, 0.22), transparent 70%);
+      pointer-events: none;
+      animation: l2-halo 11s ease-in-out infinite;
+    }
+    .l2 .bars i { animation: l2-tube 11s ease-in-out infinite; }
+    @keyframes l2-tube {
+      0%, 100% { opacity: 0.9; filter: brightness(1); box-shadow: 0 0 9px rgba(220,240,255,0.35); }
+      30% { opacity: 1; filter: brightness(1.1); box-shadow: 0 0 16px rgba(220,240,255,0.55); }
+      55% { opacity: 0.72; filter: brightness(0.85); box-shadow: 0 0 5px rgba(220,240,255,0.2); }
+      72% { opacity: 0.5; filter: brightness(0.65); box-shadow: none; }
+      76% { opacity: 0.88; filter: brightness(1.08); box-shadow: 0 0 14px rgba(220,240,255,0.5); }
+      80% { opacity: 0.65; }
+      85% { opacity: 1; filter: brightness(1.12); box-shadow: 0 0 18px rgba(220,240,255,0.6); }
+    }
+    @keyframes l2-halo {
+      0%, 100% { opacity: 0.2; }
+      30% { opacity: 0.4; }
+      55% { opacity: 0.12; }
+      72% { opacity: 0.04; }
+      85% { opacity: 0.48; }
+    }
+
+    /* —— 3 тёплый люминесцент (чуть желтоватый) —— */
+    .l3::after {
+      content: "";
+      position: absolute;
+      inset: -7px;
+      border-radius: 18px;
+      background: radial-gradient(circle, rgba(255, 245, 210, 0.26), transparent 68%);
+      pointer-events: none;
+      animation: l3-halo 8.5s ease-in-out infinite;
+    }
+    .l3 .bars i {
+      background: #fff6e8;
+      animation: l3-tube 8.5s ease-in-out infinite;
+    }
+    @keyframes l3-tube {
+      0%, 100% { opacity: 0.9; filter: brightness(1); box-shadow: 0 0 10px rgba(255,230,180,0.4); }
+      25% { opacity: 1; filter: brightness(1.1); box-shadow: 0 0 18px rgba(255,230,180,0.65); }
+      48% { opacity: 0.75; filter: brightness(0.88); }
+      62% { opacity: 0.48; box-shadow: none; }
+      66% { opacity: 0.92; filter: brightness(1.15); box-shadow: 0 0 20px rgba(255,230,180,0.7); }
+      70% { opacity: 0.68; }
+      75% { opacity: 1; filter: brightness(1.08); box-shadow: 0 0 16px rgba(255,230,180,0.55); }
+    }
+    @keyframes l3-halo {
+      0%, 100% { opacity: 0.22; }
+      25% { opacity: 0.42; }
+      48% { opacity: 0.14; }
+      62% { opacity: 0.05; }
+      75% { opacity: 0.5; }
+    }
+
+    /* —— 4 холодный офисный —— */
+    .l4::after {
+      content: "";
+      position: absolute;
+      inset: -6px;
+      border-radius: 18px;
+      background: radial-gradient(circle, rgba(180, 220, 255, 0.3), transparent 68%);
+      pointer-events: none;
+      animation: l4-halo 9s ease-in-out infinite;
+    }
+    .l4 .bars i {
+      background: #e8f4ff;
+      animation: l4-tube 9s ease-in-out infinite;
+    }
+    @keyframes l4-tube {
+      0%, 100% { opacity: 0.88; box-shadow: 0 0 8px rgba(170,210,255,0.4); filter: brightness(1); }
+      20% { opacity: 1; box-shadow: 0 0 15px rgba(170,210,255,0.6); filter: brightness(1.08); }
+      45% { opacity: 0.7; box-shadow: 0 0 5px rgba(170,210,255,0.2); filter: brightness(0.85); }
+      63% { opacity: 0.4; box-shadow: none; }
+      67% { opacity: 1; filter: brightness(1.2); box-shadow: 0 0 20px rgba(170,210,255,0.75); }
+      71% { opacity: 0.6; }
+      76% { opacity: 0.95; filter: brightness(1.05); box-shadow: 0 0 14px rgba(170,210,255,0.5); }
+    }
+    @keyframes l4-halo {
+      0%, 100% { opacity: 0.2; transform: scale(0.97); }
+      20% { opacity: 0.4; transform: scale(1.03); }
+      45% { opacity: 0.12; }
+      63% { opacity: 0.03; }
+      76% { opacity: 0.45; transform: scale(1.05); }
+    }
+
+    /* —— 5 бирюзовый люминесцент (в тон сайту) —— */
+    .l5::after {
+      content: "";
+      position: absolute;
+      inset: -7px;
+      border-radius: 18px;
+      background: radial-gradient(circle, rgba(61, 255, 224, 0.22), transparent 68%);
+      pointer-events: none;
+      animation: l5-halo 8s ease-in-out infinite;
+    }
+    .l5 .bars i { animation: l5-tube 8s ease-in-out infinite; }
+    @keyframes l5-tube {
+      0%, 100% {
+        opacity: 0.9;
+        background: #fff;
+        box-shadow: 0 0 10px rgba(61,255,224,0.35);
+        filter: brightness(1);
+      }
+      22% {
+        opacity: 1;
+        box-shadow: 0 0 16px rgba(61,255,224,0.55);
+        filter: brightness(1.08);
+      }
+      48% { opacity: 0.72; filter: brightness(0.88); box-shadow: 0 0 6px rgba(61,255,224,0.2); }
+      60% { opacity: 0.45; box-shadow: none; }
+      64% {
+        opacity: 1;
+        background: #d8fff8;
+        filter: brightness(1.15);
+        box-shadow: 0 0 20px rgba(61,255,224,0.7);
+      }
+      68% { opacity: 0.65; background: #fff; }
+      74% {
+        opacity: 1;
+        filter: brightness(1.1);
+        box-shadow: 0 0 16px rgba(61,255,224,0.55);
+      }
+    }
+    @keyframes l5-halo {
+      0%, 100% { opacity: 0.2; }
+      22% { opacity: 0.4; }
+      48% { opacity: 0.12; }
+      60% { opacity: 0.04; }
+      74% { opacity: 0.5; }
+    }
+
+    /* —— 6 старт лампы раз в цикл (самый редкий миг) —— */
+    .l6::after {
+      content: "";
+      position: absolute;
+      inset: -8px;
+      border-radius: 20px;
+      background: radial-gradient(circle, rgba(230, 245, 255, 0.25), transparent 70%);
+      pointer-events: none;
+      animation: l6-halo 12s ease-in-out infinite;
+    }
+    .l6 .bars i { animation: l6-tube 12s ease-in-out infinite; }
+    @keyframes l6-tube {
+      0%, 100% { opacity: 0.95; filter: brightness(1.02); box-shadow: 0 0 11px rgba(230,245,255,0.4); }
+      35% { opacity: 0.85; filter: brightness(0.95); box-shadow: 0 0 8px rgba(230,245,255,0.3); }
+      70% { opacity: 1; filter: brightness(1.08); box-shadow: 0 0 14px rgba(230,245,255,0.5); }
+      /* один мягкий «чирк» за весь цикл */
+      82% { opacity: 0.35; filter: brightness(0.55); box-shadow: none; }
+      84.5% { opacity: 1; filter: brightness(1.2); box-shadow: 0 0 18px rgba(230,245,255,0.7); }
+      87% { opacity: 0.7; }
+      90% { opacity: 1; filter: brightness(1.05); box-shadow: 0 0 12px rgba(230,245,255,0.45); }
+    }
+    @keyframes l6-halo {
+      0%, 100% { opacity: 0.28; }
+      35% { opacity: 0.18; }
+      70% { opacity: 0.38; }
+      82% { opacity: 0.05; }
+      90% { opacity: 0.42; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo, .demo::after, .bars i { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Люминесцентная лампа</h1>
+  <p class="lead">Мягкий свет, редкие «запуски» — без частого строба. Смотри и выбери номер.</p>
+  <div class="grid" id="grid"></div>
+  <div class="picked" id="picked">Выбор: пока нет</div>
+
+  <script>
+    const VARIANTS = [
+      { t: "Мягкий люминесцент", d: "~7.5 с: дыхание света + редкий мягкий запуск" },
+      { t: "Очень редко", d: "~11 с: почти только дыхание, миг в конце цикла" },
+      { t: "Тёплый", d: "Чуть желтоватый свет, как старая лампа" },
+      { t: "Холодный офисный", d: "Голубоватый холодный люминесцент" },
+      { t: "Бирюзовый", d: "В тон сайту, мягкий accent-ореол" },
+      { t: "Один чирк", d: "~12 с: почти ровный свет, один мягкий сбой за цикл" },
+    ];
+
+    const grid = document.getElementById("grid");
+    const picked = document.getElementById("picked");
+
+    VARIANTS.forEach((v, i) => {
+      const n = i + 1;
+      const card = document.createElement("article");
+      card.className = "card";
+      card.dataset.n = String(n);
+      card.innerHTML = `
+        <div class="card-num">#${n}</div>
+        <div class="card-title">${v.t}</div>
+        <p class="card-desc">${v.d}</p>
+        <div class="stage">
+          <div class="stage-fake">FUTURUM</div>
+          <button type="button" class="demo l${n}" aria-label="Демо ${n}">
+            <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>
+          </button>
+        </div>
+        <div class="actions">
+          <button type="button" class="pick" data-pick="${n}">Выбрать #${n}</button>
+        </div>`;
+      grid.appendChild(card);
+    });
+
+    grid.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-pick]");
+      if (!btn) return;
+      const n = btn.getAttribute("data-pick");
+      const v = VARIANTS[Number(n) - 1];
+      document.querySelectorAll(".card").forEach((c) => {
+        c.classList.toggle("is-picked", c.dataset.n === n);
+      });
+      picked.innerHTML = `Выбор: <strong>#${n}</strong> — ${v.t}. Напиши в чат: <strong>${n}</strong>`;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>FUTURUM · выбор картинок блоков</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #070a0f;
+      --card: #101820;
+      --line: #2a3848;
+      --text: #e8f2f8;
+      --mute: #8aa0b4;
+      --accent: #3ecfbe;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 500 15px/1.4 system-ui, sans-serif;
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 50% -10%, #143049 0%, var(--bg) 55%);
+      min-height: 100vh;
+      padding: 1.25rem;
+    }
+    h1 { margin: 0 0 0.35rem; font-size: 1.25rem; letter-spacing: 0.04em; }
+    p { margin: 0 0 1.25rem; color: var(--mute); }
+    h2 { margin: 1.5rem 0 0.75rem; font-size: 1rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0.85rem;
+    }
+    label.opt {
+      display: grid;
+      gap: 0.45rem;
+      padding: 0.55rem;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--card);
+      cursor: pointer;
+    }
+    label.opt:has(input:checked) {
+      border-color: color-mix(in srgb, var(--accent) 70%, var(--line));
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+    label.opt img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 10px;
+      display: block;
+      background: #000;
+    }
+    label.opt span {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+    }
+    .bar {
+      position: sticky;
+      bottom: 0.75rem;
+      margin-top: 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      align-items: center;
+      padding: 0.75rem 0.9rem;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: color-mix(in srgb, #0a121a 92%, transparent);
+      backdrop-filter: blur(10px);
+    }
+    button {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 0.55rem 1rem;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(135deg, #2f9f8e, #2a6fd4);
+      color: #fff;
+    }
+    button.ghost {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+    #status { color: var(--mute); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <h1>Картинки для блоков на главной</h1>
+  <p>Выбери по одному варианту для «Поиск предметов» и «Поиск по игре», затем нажми «Применить на главную».</p>
+
+  <h2>Поиск предметов</h2>
+  <div class="grid" id="shopGrid"></div>
+
+  <h2>Поиск по игре</h2>
+  <div class="grid" id="titlesGrid"></div>
+
+  <div class="bar">
+    <button type="button" id="pickBtn">Показать выбор</button>
+    <a class="ghost" href="./" style="padding:0.55rem 1rem;border-radius:999px;border:1px solid var(--line);color:inherit;text-decoration:none;font-weight:700;">Главная</a>
+    <span id="status">Отметь варианты и напиши в чат, например: предметы B, игра A</span>
+  </div>
+
+  <script>
+    const shop = [
+      { id: "now", file: "shop-now.jpg", label: "Сейчас" },
+      { id: "a", file: "shop-a.jpg", label: "A · витрина / крылатый кот" },
+      { id: "b", file: "shop-b.jpg", label: "B · голо-каталог" },
+      { id: "c", file: "shop-c.jpg", label: "C · ночной рынок" },
+    ];
+    const titles = [
+      { id: "now", file: "titles-now.jpg", label: "Сейчас" },
+      { id: "a", file: "titles-a.jpg", label: "A · эмблема над городом" },
+      { id: "b", file: "titles-b.jpg", label: "B · библиотека света" },
+      { id: "c", file: "titles-c.jpg", label: "C · аватар и образы" },
+    ];
+
+    function fill(gridId, name, items) {
+      const grid = document.getElementById(gridId);
+      items.forEach((it, i) => {
+        const lab = document.createElement("label");
+        lab.className = "opt";
+        lab.innerHTML = `<img src="./hub-opts/${it.file}" alt="" width="640" height="640" loading="lazy" /><span><input type="radio" name="${name}" value="${it.id}" ${i === 1 ? "checked" : ""} /> ${it.label}</span>`;
+        grid.appendChild(lab);
+      });
+    }
+
+    fill("shopGrid", "shop", shop);
+    fill("titlesGrid", "titles", titles);
+
+    document.getElementById("pickBtn").addEventListener("click", () => {
+      const s = document.querySelector('input[name="shop"]:checked')?.value || "?";
+      const t = document.querySelector('input[name="titles"]:checked')?.value || "?";
+      document.getElementById("status").textContent =
+        `Выбор: предметы ${s.toUpperCase()}, игра ${t.toUpperCase()} — напиши это в чат, поставлю на главную.`;
+    });
+  </script>
+</body>
+</html>

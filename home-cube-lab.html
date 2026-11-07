@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>FUTURUM · куб с живым сайтом (проверка)</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=181" />
+  <link rel="stylesheet" href="home-cube-lab.css?v=1" />
+</head>
+<body class="cube-lab" data-theme="dark" data-fx="flip">
+  <div class="atmosphere" aria-hidden="true">
+    <div class="atm-wash"></div>
+    <div class="atm-flow"></div>
+    <div class="grid"></div>
+  </div>
+
+  <header class="cube-top">
+    <a class="cube-btn" href="./">← Домой</a>
+    <div class="cube-top-main">
+      <strong>Куб → живой сайт внутри</strong>
+      <span>не картинка · два варианта · проверь сам</span>
+    </div>
+    <button type="button" class="cube-btn" id="replayBtn">Ещё раз</button>
+  </header>
+
+  <aside class="cube-picker">
+    <button type="button" class="cube-fx on" data-fx="flip" aria-pressed="true">
+      1 · Переворот куба
+      <small>Квадрат крутится. На обороте — живой магазин в грани куба.</small>
+    </button>
+    <button type="button" class="cube-fx" data-fx="door" aria-pressed="false">
+      2 · Дверь-куб
+      <small>Та же живая страница в грани, открытие как створка.</small>
+    </button>
+    <p class="cube-hint" id="hint">
+      На обороте не скриншот: iframe настоящего shop.html, обрезанный гранью куба.
+    </p>
+  </aside>
+
+  <main class="cube-stage">
+    <div class="cube-scene" id="scene">
+      <button type="button" class="cube" id="cube" data-src="./shop.html">
+        <span class="cube-inner" id="cubeInner">
+          <span class="cube-face cube-face-front">
+            <img src="./hub-shop.jpg" alt="" width="640" height="640" />
+            <span class="cube-face-copy">
+              <em>Демо</em>
+              <strong>Кликни</strong>
+              <span>переворот → сайт внутри</span>
+            </span>
+          </span>
+          <span class="cube-face cube-face-back" aria-hidden="true">
+            <iframe class="cube-live" id="live" title="Живой сайт" tabindex="-1"></iframe>
+            <span class="cube-glass"></span>
+          </span>
+        </span>
+      </button>
+    </div>
+    <p class="cube-note">Страница никуда не уходит — только проверка. Если внутри грани видишь поиск магазина (не картинку кота) — ок.</p>
+  </main>
+
+  <script src="home-cube-lab.js?v=1"></script>
+</body>
+</html>

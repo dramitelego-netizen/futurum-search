@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>FUTURUM · вид блока предметов</title>
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Rajdhani:wght@500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07090d;
+      --panel: #0e131a;
+      --line: rgba(90, 220, 200, 0.22);
+      --text: #e8eef5;
+      --mute: #8a96a8;
+      --accent: #3dffd0;
+      --safe-b: env(safe-area-inset-bottom, 0px);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: "Rajdhani", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(120% 70% at 50% -8%, rgba(61, 255, 208, 0.12), transparent 48%),
+        var(--bg);
+      padding: 0.85rem 0.85rem calc(1rem + var(--safe-b));
+    }
+    .wrap { width: min(100%, 980px); margin: 0 auto; display: grid; gap: 0.85rem; }
+    .head { text-align: center; display: grid; gap: 0.25rem; }
+    .brand {
+      margin: 0;
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(1.2rem, 4.5vw, 1.7rem);
+      letter-spacing: 0.08em;
+      color: var(--accent);
+    }
+    .sub { margin: 0; color: var(--mute); font-size: 0.9rem; line-height: 1.35; }
+    .tip {
+      margin: 0;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: color-mix(in srgb, var(--accent) 75%, var(--mute));
+    }
+
+    /* аккуратный segmented control */
+    .seg {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.3rem;
+      padding: 0.3rem;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel) 88%, transparent);
+    }
+    @media (max-width: 720px) {
+      .seg { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .seg-btn {
+      appearance: none;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--mute);
+      border-radius: 12px;
+      padding: 0.55rem 0.4rem;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      display: grid;
+      gap: 0.2rem;
+      justify-items: center;
+      transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
+    }
+    .seg-btn .ico {
+      width: 28px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      opacity: 0.85;
+    }
+    .seg-btn .ico svg {
+      width: 22px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .seg-btn small {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .seg-btn.on {
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+      box-shadow: 0 0 18px rgba(61, 255, 208, 0.12);
+    }
+    .seg-btn:active { transform: scale(0.97); }
+
+    .stage { display: grid; gap: 0.7rem; justify-items: center; }
+    .note {
+      margin: 0;
+      text-align: center;
+      color: var(--mute);
+      font-size: 0.78rem;
+      line-height: 1.35;
+      max-width: 34rem;
+    }
+    .note b { color: color-mix(in srgb, var(--accent) 80%, var(--mute)); }
+
+    .phone {
+      width: min(100%, 340px);
+      aspect-ratio: 9 / 19.2;
+      border-radius: 28px;
+      border: 2px solid color-mix(in srgb, var(--accent) 35%, #2a3340);
+      background: #06080c;
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.55);
+      overflow: hidden;
+      position: relative;
+    }
+    .phone::before {
+      content: "";
+      position: absolute;
+      top: 8px; left: 50%; transform: translateX(-50%);
+      width: 88px; height: 10px; border-radius: 999px;
+      background: #11161e; z-index: 20; pointer-events: none;
+    }
+    .ui {
+      position: absolute;
+      inset: 0;
+      padding: 22px 10px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      background:
+        radial-gradient(90% 40% at 50% 0%, rgba(61, 255, 208, 0.1), transparent 55%),
+        #06080c;
+      color: var(--text);
+      font-family: "Manrope", sans-serif;
+    }
+    .top {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .logo {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .search {
+      flex: 1;
+      height: 32px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--mute);
+      font: inherit;
+      font-size: 0.72rem;
+      padding: 0 0.7rem;
+      display: flex;
+      align-items: center;
+    }
+    .chips { display: flex; gap: 0.28rem; overflow: hidden; }
+    .chip {
+      flex: 0 0 auto;
+      padding: 0.22rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--mute);
+      font-size: 0.62rem;
+      font-weight: 700;
+    }
+    .chip.on {
+      color: var(--accent);
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+
+    .list {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      display: grid;
+      gap: 0.35rem;
+      align-content: start;
+      padding-bottom: 0.2rem;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .bnav {
+      margin-top: auto;
+      height: 54px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #0b1118;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      place-items: center;
+      color: var(--mute);
+      font-size: 0.55rem;
+      font-weight: 700;
+    }
+    .bnav span.on { color: var(--accent); }
+
+    /* ——— item cards base ——— */
+    .item {
+      appearance: none;
+      border: 1px solid rgba(61, 255, 208, 0.16);
+      background: linear-gradient(180deg, #16202b, #121a24);
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      width: 100%;
+      padding: 0;
+      overflow: hidden;
+    }
+    .item:active { transform: scale(0.985); opacity: 0.95; }
+    .th {
+      background-size: cover;
+      background-position: center;
+      background-color: #1a3348;
+    }
+    .t { font-weight: 800; line-height: 1.2; }
+    .m { color: var(--mute); line-height: 1.25; }
+    .tag {
+      font-size: 0.58rem;
+      font-weight: 800;
+      color: var(--accent);
+      padding: 0.16rem 0.35rem;
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      white-space: nowrap;
+    }
+
+    /* A: полоски (как сейчас) */
+    .layout-a .list { gap: 0.35rem; }
+    .layout-a .item {
+      display: grid;
+      grid-template-columns: 48px 1fr auto;
+      gap: 0.5rem;
+      align-items: center;
+      padding: 0.42rem;
+      border-radius: 14px;
+    }
+    .layout-a .th { width: 48px; height: 48px; border-radius: 12px; }
+    .layout-a .t { font-size: 0.8rem; }
+    .layout-a .m { font-size: 0.62rem; margin-top: 0.12rem; }
+
+    /* B: компактные полоски */
+    .layout-b .list { gap: 0.22rem; }
+    .layout-b .item {
+      display: grid;
+      grid-template-columns: 36px 1fr auto;
+      gap: 0.4rem;
+      align-items: center;
+      padding: 0.28rem 0.35rem;
+      border-radius: 10px;
+    }
+    .layout-b .th { width: 36px; height: 36px; border-radius: 8px; }
+    .layout-b .t { font-size: 0.72rem; }
+    .layout-b .m { font-size: 0.56rem; margin-top: 0.06rem; }
+    .layout-b .tag { font-size: 0.52rem; padding: 0.1rem 0.28rem; }
+
+    /* C: плитки 2 колонки */
+    .layout-c .list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.4rem;
+    }
+    .layout-c .item {
+      display: grid;
+      gap: 0.35rem;
+      padding: 0.45rem;
+      border-radius: 16px;
+      min-height: 8.4rem;
+    }
+    .layout-c .th {
+      width: 100%;
+      aspect-ratio: 1.15;
+      border-radius: 12px;
+    }
+    .layout-c .t { font-size: 0.74rem; }
+    .layout-c .m { font-size: 0.58rem; }
+    .layout-c .foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.25rem;
+      margin-top: auto;
+    }
+
+    /* D: крупные карточки — картинка сверху */
+    .layout-d .list { gap: 0.5rem; }
+    .layout-d .item {
+      display: grid;
+      border-radius: 18px;
+      overflow: hidden;
+    }
+    .layout-d .th {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      border-radius: 0;
+    }
+    .layout-d .body { padding: 0.55rem 0.65rem 0.7rem; display: grid; gap: 0.25rem; }
+    .layout-d .t { font-size: 0.9rem; }
+    .layout-d .m { font-size: 0.64rem; }
+    .layout-d .foot { display: flex; gap: 0.3rem; margin-top: 0.2rem; }
+
+    /* E: широкая полоса с большой картинкой слева */
+    .layout-e .list { gap: 0.4rem; }
+    .layout-e .item {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 0;
+      border-radius: 16px;
+      min-height: 88px;
+    }
+    .layout-e .th {
+      width: 92px;
+      height: 100%;
+      min-height: 88px;
+      border-radius: 0;
+    }
+    .layout-e .body {
+      padding: 0.55rem 0.6rem;
+      display: grid;
+      align-content: center;
+      gap: 0.25rem;
+    }
+    .layout-e .t { font-size: 0.82rem; }
+    .layout-e .m { font-size: 0.62rem; }
+
+    /* G: плотные мини-плитки 3 колонки */
+    .layout-g .list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.32rem;
+    }
+    .layout-g .item {
+      display: grid;
+      gap: 0.28rem;
+      padding: 0.35rem;
+      border-radius: 14px;
+      text-align: center;
+      justify-items: center;
+    }
+    .layout-g .th {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 11px;
+    }
+    .layout-g .t {
+      font-size: 0.58rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .layout-g .m, .layout-g .tag { display: none; }
+
+    .pick-btn {
+      appearance: none;
+      border: 0;
+      border-radius: 14px;
+      padding: 0.75rem 1rem;
+      width: min(100%, 340px);
+      font: inherit;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      color: #04120f;
+      background: linear-gradient(135deg, #5dffd8, #3dffd0);
+      box-shadow: 0 0 24px rgba(61, 255, 208, 0.25);
+    }
+    .pick-btn:active { transform: scale(0.98); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="head">
+      <h1 class="brand">FUTURUM</h1>
+      <p class="sub">Как показывать блок предметов: полоски, плитки или другой вид</p>
+      <p class="tip">Переключай кнопки · сравни в телефоне · потом «Выбрать этот»</p>
+    </header>
+
+    <div class="seg" id="seg" role="tablist" aria-label="Вид списка"></div>
+
+    <div class="stage">
+      <p class="note" id="desc"><b>A</b> — вертикальные полоски (как сейчас)</p>
+
+      <div class="phone">
+        <div class="ui" id="ui">
+          <div class="top">
+            <div class="logo">FUTURUM</div>
+            <div class="search">Крылья…</div>
+          </div>
+          <div class="chips">
+            <span class="chip on">Всё</span>
+            <span class="chip">Крылья</span>
+            <span class="chip">Титулы</span>
+          </div>
+          <div class="list" id="list"></div>
+          <div class="bnav" aria-hidden="true">
+            <span class="on">Поиск</span><span>Каталог</span><span>☆</span><span>Ещё</span>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="pick-btn" id="pick">Выбрать этот · A</button>
+    </div>
+  </div>
+
+  <script>
+    const META = {
+      A: {
+        title: "Полоски",
+        desc: "Вертикальные полоски — картинка слева, текст справа (как сейчас)",
+        ico: `<svg viewBox="0 0 24 18"><rect x="1.5" y="2" width="21" height="3.2" rx="1"/><rect x="1.5" y="7.4" width="21" height="3.2" rx="1"/><rect x="1.5" y="12.8" width="21" height="3.2" rx="1"/></svg>`,
+      },
+      B: {
+        title: "Компакт",
+        desc: "Плотные полоски — больше предметов на экран",
+        ico: `<svg viewBox="0 0 24 18"><rect x="1.5" y="1.5" width="21" height="2.4" rx="0.8"/><rect x="1.5" y="5.3" width="21" height="2.4" rx="0.8"/><rect x="1.5" y="9.1" width="21" height="2.4" rx="0.8"/><rect x="1.5" y="12.9" width="21" height="2.4" rx="0.8"/></svg>`,
+      },
+      C: {
+        title: "Плитки",
+        desc: "Плитки 2×2 — квадратные превью, удобно листать пальцем",
+        ico: `<svg viewBox="0 0 24 18"><rect x="1.5" y="1.5" width="9.5" height="6.5" rx="1.2"/><rect x="13" y="1.5" width="9.5" height="6.5" rx="1.2"/><rect x="1.5" y="10" width="9.5" height="6.5" rx="1.2"/><rect x="13" y="10" width="9.5" height="6.5" rx="1.2"/></svg>`,
+      },
+      D: {
+        title: "Карточки",
+        desc: "Крупные карточки — большая картинка сверху, текст снизу",
+        ico: `<svg viewBox="0 0 24 18"><rect x="3" y="1.2" width="18" height="8" rx="1.4"/><rect x="3" y="11" width="18" height="2" rx="0.8"/><rect x="3" y="14.4" width="12" height="1.8" rx="0.7"/></svg>`,
+      },
+      E: {
+        title: "Широкие",
+        desc: "Широкая полоса — большая картинка слева, описание справа",
+        ico: `<svg viewBox="0 0 24 18"><rect x="1.5" y="2" width="8" height="14" rx="1.4"/><rect x="11.5" y="4" width="11" height="2.2" rx="0.8"/><rect x="11.5" y="8" width="9" height="1.8" rx="0.7"/><rect x="11.5" y="11.5" width="7" height="1.8" rx="0.7"/></svg>`,
+      },
+      G: {
+        title: "Мини",
+        desc: "Мини-плитки 3 в ряд — много предметов сразу",
+        ico: `<svg viewBox="0 0 24 18"><rect x="1.2" y="2" width="6.2" height="6.2" rx="1"/><rect x="8.9" y="2" width="6.2" height="6.2" rx="1"/><rect x="16.6" y="2" width="6.2" height="6.2" rx="1"/><rect x="1.2" y="10" width="6.2" height="6.2" rx="1"/><rect x="8.9" y="10" width="6.2" height="6.2" rx="1"/><rect x="16.6" y="10" width="6.2" height="6.2" rx="1"/></svg>`,
+      },
+    };
+
+    const ITEMS = [
+      { name: "Крылья Кая", meta: "Крылья · событие", tag: "★", hue: "linear-gradient(135deg,#5a8cff,#2a4060 40%,#7a4dff)" },
+      { name: "Крылья Гермеса", meta: "Крылья · билет", tag: "·", hue: "linear-gradient(135deg,#ffc14d,#8a5a20 45%,#c47a2a)" },
+      { name: "Крылья роскоши", meta: "Крылья · лотерея", tag: "·", hue: "linear-gradient(135deg,#f0d24a,#6a4a18 50%,#b57cff)" },
+      { name: "Крылья ангела ночи", meta: "Крылья · магазин", tag: "★", hue: "linear-gradient(135deg,#2a1a40,#101828 40%,#6a3a8a)" },
+      { name: "Морская звезда любви", meta: "Крылья · колесо", tag: "·", hue: "linear-gradient(135deg,#4dffc8,#1a4050 45%,#4060a0)" },
+      { name: "Порхаю как бабочка", meta: "Титулы · 2 ОП", tag: "2", hue: "linear-gradient(135deg,#ff8ab8,#5a2a48 50%,#3dffd0)" },
+    ];
+
+    const keys = Object.keys(META);
+    let cur = "A";
+    const seg = document.getElementById("seg");
+    const ui = document.getElementById("ui");
+    const list = document.getElementById("list");
+    const desc = document.getElementById("desc");
+    const pick = document.getElementById("pick");
+
+    seg.innerHTML = keys.map((k) => `
+      <button type="button" class="seg-btn${k === "A" ? " on" : ""}" data-v="${k}" aria-pressed="${k === "A"}">
+        <span class="ico" aria-hidden="true">${META[k].ico}</span>
+        <small>${k} · ${META[k].title}</small>
+      </button>`).join("");
+
+    function itemHtml(it) {
+      return `<button type="button" class="item">
+        <div class="th" style="background-image:none;background:${it.hue}"></div>
+        <div class="body">
+          <div class="t">${it.name}</div>
+          <div class="m">${it.meta}</div>
+          <div class="foot"><span class="tag">${it.tag}</span></div>
+        </div>
+        <span class="tag">${it.tag}</span>
+      </button>`;
+    }
+
+    function show(v) {
+      cur = v;
+      ui.className = `ui layout-${v.toLowerCase()}`;
+      list.innerHTML = ITEMS.map(itemHtml).join("");
+      seg.querySelectorAll(".seg-btn").forEach((btn) => {
+        const on = btn.dataset.v === v;
+        btn.classList.toggle("on", on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      desc.innerHTML = `<b>${v}</b> — ${META[v].desc}`;
+      pick.textContent = `Выбрать этот · ${v}`;
+    }
+
+    seg.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-v]");
+      if (btn) show(btn.dataset.v);
+    });
+
+    pick.addEventListener("click", () => {
+      try { localStorage.setItem("futurum_items_layout", cur); } catch {}
+      pick.textContent = `Выбрано · ${cur} ✓`;
+      desc.innerHTML = `Запомнил вариант <b>${cur}</b>. Напиши в чат букву <b>${cur}</b> — внедрю в список предметов.`;
+    });
+
+    show("A");
+  </script>
+</body>
+</html>

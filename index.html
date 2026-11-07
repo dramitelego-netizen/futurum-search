@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q0H40YZ8PV"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-Q0H40YZ8PV');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>FUTURUM · Пара па — магазин и поиск по игре</title>
+  <meta
+    name="description"
+    content="FUTURUM для Пара па: поиск по магазину или справочник по игре — титулы, крылья, питомцы, одежда и другое."
+  />
+  <link rel="canonical" href="https://dramitelego-netizen.github.io/futurum-search/" />
+  <meta name="theme-color" content="#07090d" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ru_RU" />
+  <meta property="og:title" content="FUTURUM · Пара па — магазин и поиск по игре" />
+  <meta
+    property="og:description"
+    content="Два поиска: магазин Пара па и игровой справочник (титулы, крылья, питомцы…)."
+  />
+  <meta property="og:url" content="https://dramitelego-netizen.github.io/futurum-search/" />
+  <meta property="og:site_name" content="FUTURUM · Пара па" />
+  <meta property="og:image" content="https://dramitelego-netizen.github.io/futurum-search/og-image.png" />
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "FUTURUM · Пара па",
+      "url": "https://dramitelego-netizen.github.io/futurum-search/",
+      "description": "Неофициальный помощник Пара па: поиск магазина и справочник по игре.",
+      "inLanguage": "ru",
+      "potentialAction": [
+        {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://dramitelego-netizen.github.io/futurum-search/shop.html?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        },
+        {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://dramitelego-netizen.github.io/futurum-search/titles.html?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      ]
+    }
+  </script>
+  <link rel="icon" href="https://dramitelego-netizen.github.io/futurum-search/favicon-48.png" type="image/png" sizes="48x48" />
+  <link rel="icon" href="https://dramitelego-netizen.github.io/futurum-search/favicon-96.png" type="image/png" sizes="96x96" />
+  <link rel="icon" href="https://dramitelego-netizen.github.io/futurum-search/favicon.ico" sizes="any" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="https://dramitelego-netizen.github.io/futurum-search/favicon-96.png" sizes="180x180" />
+  <script>
+    (() => {
+      try {
+        const themes = ["dark", "light", "gray"];
+        const t = localStorage.getItem("futurum_theme");
+        document.documentElement.setAttribute("data-theme", themes.includes(t) ? t : "dark");
+        const bgs = ["vitrine", "aurora", "minimal", "signal"];
+        const b = localStorage.getItem("futurum_bg");
+        document.documentElement.setAttribute("data-bg", bgs.includes(b) ? b : "minimal");
+      } catch {
+        document.documentElement.setAttribute("data-theme", "dark");
+        document.documentElement.setAttribute("data-bg", "minimal");
+      }
+    })();
+  </script>
+  <style>
+    html { background: #05070a; }
+    html[data-theme="light"] { background: #f3f6f8; }
+    html[data-theme="gray"] { background: #5c616a; }
+    body { background: transparent; }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=190" />
+  <link rel="stylesheet" href="home.css?v=19" />
+  <link rel="stylesheet" href="edge-swap.css?v=3" />
+</head>
+<body class="home-page">
+  <div class="atmosphere" aria-hidden="true">
+    <div class="atm-wash"></div>
+    <div class="atm-flow"></div>
+    <div class="atm-flow atm-flow-b"></div>
+    <div class="atm-flow atm-flow-c"></div>
+    <div class="grid"></div>
+    <div class="glow glow-a"></div>
+    <div class="glow glow-b"></div>
+    <div class="scanlines"></div>
+  </div>
+
+  <main class="home-shell">
+    <header class="home-hero">
+      <h1 class="brand home-brand" data-text="FUTURUM" aria-label="FUTURUM">
+        <span class="brand-main">FUTURUM</span>
+      </h1>
+      <p class="home-lead">Пара па · выберите поиск</p>
+    </header>
+
+    <nav class="home-gates" aria-label="Разделы FUTURUM">
+      <a
+        class="home-gate"
+        id="gateShop"
+        href="./shop.html"
+        data-gate="shop"
+      >
+        <span class="home-gate-3d">
+          <span class="home-gate-face home-gate-face-front">
+            <span class="home-gate-media" aria-hidden="true">
+              <img src="./hub-shop.jpg" alt="" width="640" height="640" decoding="async" fetchpriority="high" />
+              <span class="home-gate-wash"></span>
+            </span>
+            <span class="home-gate-copy">
+              <span class="home-gate-kicker">Магазин</span>
+              <span class="home-gate-title">Поиск предметов</span>
+              <span class="home-gate-desc">Цены в монетах, скидки, id и каталог</span>
+            </span>
+          </span>
+        </span>
+      </a>
+
+      <div class="home-titles-col" aria-label="Поиск по игре">
+        <a class="home-gate home-gate-mini home-gate-mini-pc" href="./titles.html" data-gate="titles-pc">
+          <span class="home-gate-3d">
+            <span class="home-gate-face home-gate-face-front">
+              <span class="home-gate-media" aria-hidden="true">
+                <img src="./hub-titles-pc.jpg?v=1" alt="" width="640" height="640" decoding="async" fetchpriority="high" />
+                <span class="home-gate-wash"></span>
+              </span>
+              <span class="home-gate-device" aria-hidden="true">
+                <svg viewBox="0 0 48 48"><rect x="4" y="8" width="40" height="26" rx="3" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M16 40h16M24 34v6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+              </span>
+              <span class="home-gate-copy">
+                <span class="home-gate-kicker">Поиск по игре</span>
+                <span class="home-gate-title">Для компьютера</span>
+                <span class="home-gate-desc">Удобный каталог и большой экран</span>
+              </span>
+            </span>
+          </span>
+        </a>
+
+        <a class="home-gate home-gate-mini home-gate-mini-mob" href="./titles-m.html" data-gate="titles-m">
+          <span class="home-gate-3d">
+            <span class="home-gate-face home-gate-face-front">
+              <span class="home-gate-media" aria-hidden="true">
+                <img src="./hub-titles-m.jpg?v=1" alt="" width="640" height="640" decoding="async" />
+                <span class="home-gate-wash"></span>
+              </span>
+              <span class="home-gate-device" aria-hidden="true">
+                <svg viewBox="0 0 48 48"><rect x="14" y="4" width="20" height="40" rx="4" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="24" cy="36" r="1.6" fill="currentColor"/></svg>
+              </span>
+              <span class="home-gate-copy">
+                <span class="home-gate-kicker">Поиск по игре</span>
+                <span class="home-gate-title">Для телефона</span>
+                <span class="home-gate-desc">Кнопки внизу, удобно одной рукой</span>
+              </span>
+            </span>
+          </span>
+        </a>
+      </div>
+    </nav>
+
+    <p class="home-note">Неофициальный инструмент · не связан с администрацией Parapa</p>
+  </main>
+
+  <script>
+    // старые закладки /?q=… → поиск магазина
+    (() => {
+      try {
+        const q = new URLSearchParams(location.search).get("q");
+        if (q) location.replace("./shop.html?q=" + encodeURIComponent(q));
+      } catch {}
+    })();
+  </script>
+  <script src="home.js?v=22"></script>
+</body>
+</html>

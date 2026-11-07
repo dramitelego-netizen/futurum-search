@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>FUTURUM · лаборатория переходов v2</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=181" />
+  <link rel="stylesheet" href="home-fx-lab.css?v=7" />
+</head>
+<body class="fxlab" data-theme="dark" data-fx="glitch">
+  <div class="atmosphere" aria-hidden="true">
+    <div class="atm-wash"></div>
+    <div class="atm-flow"></div>
+    <div class="grid"></div>
+  </div>
+
+  <header class="fxlab-top">
+    <a class="fxlab-btn" href="./">← Домой</a>
+    <div class="fxlab-top-main">
+      <strong>Новые переходы</strong>
+      <span>кликни плитку · выбери эффект · страница не уходит</span>
+    </div>
+    <button type="button" class="fxlab-btn" id="replayBtn">Ещё раз</button>
+  </header>
+
+  <aside class="fxlab-picker" aria-label="Эффекты">
+    <p class="fxlab-label">Эффект</p>
+    <div class="fxlab-list" id="fxList"></div>
+    <p class="fxlab-hint" id="fxHint"></p>
+  </aside>
+
+  <main class="fxlab-stage">
+    <p class="fxlab-title" id="fxTitle">—</p>
+    <button type="button" class="fxlab-tile" id="tile">
+      <img src="./hub-shop.jpg" alt="" width="640" height="640" />
+      <span class="fxlab-tile-copy">
+        <em>Демо</em>
+        <strong>Кликни</strong>
+        <span>старая страница уходит → новая сзади</span>
+      </span>
+    </button>
+    <p class="fxlab-note">За плитой всегда живой магазин. Эффект только «снимает» текущий слой.</p>
+  </main>
+
+  <!-- слой назначения (живая страница) + слой «текущий экран», который разрушается -->
+  <div class="fxlab-portal" id="portal" hidden>
+    <iframe class="fxlab-dest" id="dest" title="Куда идём" tabindex="-1"></iframe>
+    <div class="fxlab-veil" id="veil" aria-hidden="true">
+      <canvas class="fxlab-canvas" id="fxCanvas"></canvas>
+      <div class="fxlab-shot" id="shot"></div>
+      <div class="fxlab-layer" id="fxLayer"></div>
+    </div>
+  </div>
+
+  <script src="home-fx-lab.js?v=8"></script>
+</body>
+</html>

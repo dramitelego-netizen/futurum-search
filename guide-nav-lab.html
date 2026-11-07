@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Варианты навигации гайда · FUTURUM</title>
+  <meta name="theme-color" content="#05070a" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #05070a;
+      --text: #e8eef7;
+      --ink: #e8eef7;
+      --mute: #7d8a9a;
+      --line: rgba(232, 238, 247, 0.1);
+      --panel: rgba(14, 18, 26, 0.72);
+      --panel-solid: rgba(10, 13, 18, 0.92);
+      --accent: #3dffe0;
+      --accent-2: #ff4d6d;
+      --accent-dim: rgba(61, 255, 224, 0.14);
+      --font: "Rajdhani", "Segoe UI", sans-serif;
+      --display: "Orbitron", "Bahnschrift", "Segoe UI", sans-serif;
+      --rail: 232px;
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      color: var(--text);
+      font-family: var(--font);
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      background: var(--bg);
+    }
+    body.menu-lock { overflow: hidden; }
+    button, input, select { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    h1, h2, p { margin: 0; }
+    :focus-visible {
+      outline: 2px solid color-mix(in srgb, var(--accent) 70%, transparent);
+      outline-offset: 2px;
+    }
+
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(ellipse 48% 36% at 8% 0%, rgba(61, 255, 224, 0.16), transparent 62%),
+        radial-gradient(ellipse 36% 32% at 96% 8%, rgba(255, 77, 109, 0.12), transparent 64%),
+        linear-gradient(180deg, #0a1016 0%, #05070a 46%);
+    }
+    .bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(232, 238, 247, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232, 238, 247, 0.045) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(180deg, #000 0%, transparent 78%);
+    }
+
+    .lab {
+      flex: 0 0 auto;
+      background: color-mix(in srgb, var(--panel-solid) 86%, transparent);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+    .frame { width: min(1200px, 100%); margin: 0 auto; }
+    .lab-inner { padding: 12px 16px 12px; }
+    .lab-kicker {
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .lab h1 {
+      margin: 2px 0 10px;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+    .lab-switch {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .lab-btn {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      text-align: left;
+      background: color-mix(in srgb, var(--panel) 55%, transparent);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 8px 10px;
+      min-width: 0;
+    }
+    .lab-btn.on {
+      border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent);
+    }
+    .lab-key {
+      font-family: var(--display);
+      width: 2rem;
+      height: 2rem;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: #070b10;
+      color: var(--accent);
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+      flex: 0 0 auto;
+      font-size: 0.85rem;
+    }
+    .lab-blurb {
+      font-size: 0.84rem;
+      line-height: 1.2;
+      color: var(--mute);
+      font-weight: 600;
+    }
+    .lab-btn.on .lab-blurb { color: var(--text); }
+    .lab-error {
+      margin-top: 8px;
+      color: var(--accent-2);
+      font-size: 0.85rem;
+      white-space: pre-wrap;
+    }
+
+    .stage {
+      width: min(1200px, 100%);
+      margin: 0 auto;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      padding: 12px 12px 12px;
+    }
+    .view { display: none; flex: 1; min-height: 0; min-width: 0; }
+    .view.on { display: flex; flex-direction: column; }
+
+    .app {
+      flex: 1;
+      min-height: 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--panel-solid) 90%, transparent);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+      position: relative;
+    }
+    .app::before {
+      content: "";
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent 42%, transparent 72%, var(--accent-2));
+      flex: 0 0 auto;
+    }
+
+    .brand-lock { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+    .brand-word {
+      font-family: var(--display);
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      font-size: 1.25rem;
+      line-height: 1;
+      background: linear-gradient(90deg, #3dffe0, #5ad0ff, #b8fff5, #3dffe0);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 0 12px rgba(61, 255, 224, 0.35));
+    }
+    .brand-guide {
+      font-family: var(--display);
+      font-size: 0.62rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+    .mock-tag {
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--accent-2);
+      border: 1px solid color-mix(in srgb, var(--accent-2) 45%, transparent);
+      background: color-mix(in srgb, var(--accent-2) 12%, transparent);
+      border-radius: 999px;
+      padding: 0.16rem 0.5rem;
+      white-space: nowrap;
+    }
+    .search {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      min-width: 0;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, #05070a 62%, transparent);
+      border-radius: 999px;
+      padding: 0 14px;
+    }
+    .search:focus-within {
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent);
+    }
+    .search input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      background: transparent;
+      outline: none;
+      font-size: 1rem;
+    }
+    .search input::placeholder { color: color-mix(in srgb, var(--mute) 85%, transparent); }
+
+    .hero {
+      display: flex;
+      align-items: center;
+      gap: 12px 16px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      flex: 0 0 auto;
+    }
+
+    .split-a {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: var(--rail) minmax(0, 1fr);
+    }
+    .rail {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: auto;
+      border-right: 1px solid var(--line);
+      background: color-mix(in srgb, #070b10 70%, transparent);
+      padding: 6px 0;
+    }
+    .rail-btn {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      width: 100%;
+      text-align: left;
+      padding: 8px 12px;
+      border: 0;
+      border-left: 2px solid transparent;
+      background: transparent;
+    }
+    .rail-btn.on {
+      border-left-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+    .rail-btn:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+    .code {
+      font-family: var(--display);
+      font-size: 0.58rem;
+      letter-spacing: 0.06em;
+      width: 1.85rem;
+      height: 1.85rem;
+      display: grid;
+      place-items: center;
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+      color: var(--accent);
+      border-radius: 6px;
+    }
+    .rail-label { display: block; font-weight: 700; line-height: 1.15; }
+    .rail-hint { display: block; color: var(--mute); font-size: 0.78rem; line-height: 1.2; }
+    .rail-count, .leaf-count, .g-count {
+      font-variant-numeric: tabular-nums;
+      color: var(--mute);
+      font-weight: 700;
+      font-size: 0.82rem;
+    }
+    .rail-btn.on .rail-count { color: var(--accent); }
+
+    .main-col {
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .subrow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .pill {
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel) 55%, transparent);
+      color: var(--mute);
+      padding: 0.32rem 0.7rem;
+      font-weight: 700;
+      font-size: 0.86rem;
+      line-height: 1.2;
+    }
+    .pill.on {
+      color: var(--text);
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+    }
+    .pill-n {
+      margin-left: 0.35rem;
+      font-variant-numeric: tabular-nums;
+      color: var(--accent);
+    }
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px 16px;
+      align-items: baseline;
+      flex-wrap: wrap;
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .crumb { font-weight: 700; }
+    .countline { color: var(--mute); font-size: 0.92rem; }
+    .countline strong {
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+    }
+    .work {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+    }
+    .hits {
+      list-style: none;
+      margin: 0;
+      padding: 8px;
+      overflow: auto;
+      min-height: 0;
+    }
+    .hit {
+      width: 100%;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      text-align: left;
+      padding: 8px 10px;
+      margin: 0 0 4px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      background: transparent;
+    }
+    .hit:hover { background: color-mix(in srgb, var(--panel) 80%, transparent); }
+    .hit.on {
+      border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+    .hit-name { display: block; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .hit-meta { display: block; color: var(--mute); font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .op {
+      width: 0.55rem;
+      height: 0.55rem;
+      border-radius: 50%;
+    }
+    .op-8 { background: #ff4d5e; box-shadow: 0 0 8px #ff4d5e; }
+    .op-4 { background: #ff9a3c; box-shadow: 0 0 8px #ff9a3c; }
+    .op-2 { background: #b57cff; box-shadow: 0 0 8px #b57cff; }
+    .op-1 { background: #f0d24a; box-shadow: 0 0 8px #f0d24a; }
+    .op-0 { background: #8a93a3; }
+    .op-c-8 { color: #ff4d5e; }
+    .op-c-4 { color: #ff9a3c; }
+    .op-c-2 { color: #b57cff; }
+    .op-c-1 { color: #f0d24a; }
+    .op-c-0 { color: #8a93a3; }
+    .hit-op { font-weight: 800; font-variant-numeric: tabular-nums; }
+    .empty, .more { color: var(--mute); padding: 12px 10px; }
+    .preview {
+      border-left: 1px solid var(--line);
+      padding: 14px 14px 18px;
+      overflow: auto;
+      min-height: 0;
+      background: color-mix(in srgb, var(--panel) 42%, transparent);
+    }
+    .pv-kicker {
+      color: var(--mute);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .pv-empty { color: var(--mute); }
+    .pv-name { font-size: 1.35rem; font-weight: 700; line-height: 1.15; margin-bottom: 10px; }
+    .pv-dl { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 6px 8px; margin: 0 0 12px; }
+    .pv-dl dt { color: var(--mute); }
+    .pv-dl dd { margin: 0; }
+    .pv-note { color: var(--mute); font-size: 0.9rem; line-height: 1.4; }
+
+    /* B */
+    .split-b {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      position: relative;
+    }
+    .side {
+      width: 260px;
+      flex: 0 0 260px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      border-right: 1px solid var(--line);
+      background: color-mix(in srgb, #070b10 72%, transparent);
+    }
+    .side.is-collapsed { width: 72px; flex-basis: 72px; }
+    .side-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .side-title {
+      font-family: var(--display);
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .text-btn {
+      margin-left: auto;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--mute);
+      border-radius: 999px;
+      padding: 0.2rem 0.55rem;
+      font-weight: 700;
+      font-size: 0.78rem;
+    }
+    .text-btn:hover { color: var(--text); border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
+    .side-close { display: none; }
+    .tree { overflow: auto; min-height: 0; flex: 1; padding: 6px 0 12px; }
+    .g-head, .leaf {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-align: left;
+      background: transparent;
+      border: 0;
+      padding: 8px 10px;
+      font-weight: 700;
+    }
+    .g-head:hover, .leaf:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+    .g-label { min-width: 0; }
+    .chev { color: var(--mute); margin-left: 4px; transition: transform 0.15s; }
+    .g-block:not(.open) .chev { transform: rotate(-90deg); }
+    .g-block:not(.open) .g-leaves { display: none; }
+    .g-block.is-miss, .leaf.is-miss { display: none; }
+    .leaf {
+      font-weight: 600;
+      color: var(--mute);
+      padding-left: 44px;
+    }
+    .leaf.on {
+      color: var(--text);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      box-shadow: inset 2px 0 0 var(--accent);
+    }
+    .leaf.on .leaf-count { color: var(--accent); }
+    .g-block.has-current > .g-head .g-label { color: var(--accent); }
+    .side.is-collapsed .g-label,
+    .side.is-collapsed .g-count,
+    .side.is-collapsed .chev,
+    .side.is-collapsed .g-leaves,
+    .side.is-collapsed .side-title,
+    .side.is-collapsed .tree-empty { display: none; }
+    .side.is-collapsed .g-head { justify-content: center; padding: 8px 0; }
+    .side.is-collapsed .side-head { justify-content: center; }
+    .side.is-collapsed .text-btn { margin-left: 0; }
+    .tree-empty { color: var(--mute); padding: 12px; }
+    .menu-btn {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel) 70%, transparent);
+      border-radius: 999px;
+      padding: 0.4rem 0.75rem;
+      font-weight: 700;
+      flex: 0 0 auto;
+    }
+    .bars { display: grid; gap: 4px; }
+    .bars i { display: block; width: 16px; height: 2px; background: var(--accent); }
+    .side-backdrop { display: none; }
+
+    /* C */
+    .hero-c {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+      padding: 14px 14px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand-row { display: flex; align-items: center; gap: 10px; }
+    .hero-c .search { min-height: 52px; border-radius: 14px; }
+    .hero-c .search input { font-size: 1.12rem; }
+    .modes { display: flex; gap: 6px; flex-wrap: wrap; }
+    .mode {
+      flex: 1 1 0;
+      min-width: 0;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel) 50%, transparent);
+      color: var(--mute);
+      padding: 0.45rem 0.6rem;
+      font-weight: 700;
+    }
+    .mode.on {
+      color: var(--text);
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+    }
+    .chiprow { display: flex; gap: 8px; align-items: flex-start; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; min-width: 0; }
+    .jump {
+      flex: 0 0 auto;
+      max-width: 240px;
+      border: 1px solid var(--line);
+      background: var(--panel-solid);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 0.4rem 1.8rem 0.4rem 0.7rem;
+      font-weight: 600;
+      appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, var(--accent) 50%), linear-gradient(135deg, var(--accent) 50%, transparent 50%);
+      background-position: calc(100% - 14px) 55%, calc(100% - 9px) 55%;
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
+    }
+    .c-body {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+    }
+    .c-body.is-idle { grid-template-columns: minmax(0, 1fr); }
+    .c-body.is-idle .c-panel { display: none; }
+    .c-main { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+    .intro {
+      padding: 8px 14px 0;
+      color: var(--mute);
+      font-size: 0.9rem;
+    }
+    .intro strong { color: var(--accent); font-variant-numeric: tabular-nums; }
+    .tiles {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+      gap: 10px;
+      align-content: start;
+      padding: 10px 12px 14px;
+    }
+    .tile {
+      text-align: left;
+      min-height: 112px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 12px 12px 10px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, transparent), transparent 42%),
+        color-mix(in srgb, var(--panel) 72%, transparent);
+    }
+    .tile:hover { border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); }
+    .tile.on {
+      border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent);
+    }
+    .tile-g {
+      color: var(--mute);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .tile-name { font-weight: 700; font-size: 1.05rem; line-height: 1.15; }
+    .tile-n {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      font-size: 1.35rem;
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .c-panel {
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid var(--line);
+      background: color-mix(in srgb, #070b10 45%, transparent);
+    }
+    .c-panel .hits { flex: 1; }
+    .c-panel .preview { border-left: 0; border-top: 1px solid var(--line); max-height: 210px; }
+
+    @media (max-width: 980px) {
+      .work { grid-template-columns: 1fr; }
+      .preview { display: none; border-left: 0; border-top: 1px solid var(--line); }
+      .preview.has-item { display: block; max-height: 240px; }
+      .c-body, .c-body.is-idle { grid-template-columns: 1fr; }
+      .c-panel { border-left: 0; border-top: 1px solid var(--line); }
+      .c-body:not(.is-idle) .c-panel { display: flex; order: -1; max-height: 46vh; }
+    }
+
+    @media (max-width: 860px) {
+      body { overflow: auto; height: auto; min-height: 100%; }
+      .stage { display: block; min-height: 0; }
+      .view.on { display: block; }
+      .app { display: flex; min-height: 70vh; overflow: hidden; }
+      .split-a { grid-template-columns: 1fr; grid-template-rows: auto minmax(280px, 1fr); }
+      .rail {
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        padding: 6px;
+        gap: 4px;
+      }
+      .rail-btn {
+        flex: 0 0 auto;
+        width: max-content;
+        grid-template-columns: auto auto auto;
+        white-space: nowrap;
+        border-left: 0;
+        border-bottom: 2px solid transparent;
+        border-radius: 10px;
+        padding: 8px 10px;
+      }
+      .rail-label { white-space: nowrap; }
+      .rail-btn.on { border-bottom-color: var(--accent); }
+      .rail-hint { display: none; }
+      .menu-btn { display: inline-flex; }
+      [data-b-collapse] { display: none !important; }
+      .side-close { display: inline-flex !important; }
+      .app-b .side,
+      .app-b .side.is-collapsed {
+        position: fixed;
+        z-index: 50;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: min(84vw, 320px) !important;
+        flex-basis: auto !important;
+        transform: translateX(-105%);
+        transition: transform 0.2s ease;
+        background: #0b1016;
+        box-shadow: 12px 0 40px rgba(0, 0, 0, 0.45);
+      }
+      .app-b .side.is-open { transform: none; }
+      .app-b .side.is-collapsed .g-label,
+      .app-b .side.is-collapsed .g-count,
+      .app-b .side.is-collapsed .chev,
+      .app-b .side.is-collapsed .side-title { display: initial; }
+      .app-b .side.is-collapsed .g-block.open .g-leaves { display: block; }
+      .app-b .side.is-collapsed .g-head { justify-content: flex-start; padding: 8px 10px; }
+      .side-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        background: rgba(0, 0, 0, 0.55);
+      }
+      .side-backdrop.is-on { display: block; }
+      .hero { flex-wrap: wrap; }
+      .hero .search { flex: 1 1 100%; }
+      .chiprow { flex-direction: column; }
+      .jump { max-width: none; width: 100%; }
+    }
+
+    @media (max-width: 720px) {
+      .lab-switch { grid-template-columns: 1fr; }
+      .lab-blurb { font-size: 0.86rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+  <header class="lab">
+    <div class="frame lab-inner">
+      <p class="lab-kicker">FUTURUM · локальные макеты</p>
+      <h1>Выбери вариант навигации гайда</h1>
+      <div class="lab-switch" role="tablist" aria-label="Вариант навигации">
+        <button type="button" class="lab-btn on" role="tab" id="tab-a" aria-selected="true" aria-controls="view-a" data-v="a">
+          <span class="lab-key">A</span>
+          <span class="lab-blurb">Семь групп слева, подкатегории — пилюли</span>
+        </button>
+        <button type="button" class="lab-btn" role="tab" id="tab-b" aria-selected="false" aria-controls="view-b" data-v="b">
+          <span class="lab-key">B</span>
+          <span class="lab-blurb">Герой с поиском и сворачиваемый каталог</span>
+        </button>
+        <button type="button" class="lab-btn" role="tab" id="tab-c" aria-selected="false" aria-controls="view-c" data-v="c">
+          <span class="lab-key">C</span>
+          <span class="lab-blurb">Режимы, чипы и плитки на свободном месте</span>
+        </button>
+      </div>
+      <p class="lab-error" id="lab-error" hidden></p>
+    </div>
+  </header>
+
+  <div class="stage">
+    <section class="view on" id="view-a" data-view="a" role="tabpanel" aria-labelledby="tab-a">
+      <div class="app app-a">
+        <header class="hero">
+          <div class="brand-lock">
+            <span class="brand-word">FUTURUM</span>
+            <span class="brand-guide">Guide</span>
+          </div>
+          <span class="mock-tag">вариант A</span>
+          <label class="search">
+            <input id="q-a" data-q="a" type="search" placeholder="Название или где получить…" autocomplete="off" spellcheck="false" />
+          </label>
+        </header>
+        <div class="split-a">
+          <nav class="rail" id="a-rail" aria-label="Группы справочника"></nav>
+          <div class="main-col">
+            <div class="subrow" id="a-subs" role="group" aria-label="Подкатегории"></div>
+            <div class="meta" id="a-meta"></div>
+            <div class="work">
+              <ul class="hits" id="a-hits" aria-label="Примеры записей"></ul>
+              <aside class="preview" id="a-preview" aria-live="polite"></aside>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-b" data-view="b" role="tabpanel" aria-labelledby="tab-b">
+      <div class="app app-b">
+        <header class="hero">
+          <button type="button" class="menu-btn" data-b-menu aria-expanded="false" aria-controls="b-side">
+            <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>
+            Каталог
+          </button>
+          <div class="brand-lock">
+            <span class="brand-word">FUTURUM</span>
+            <span class="brand-guide">Guide</span>
+          </div>
+          <span class="mock-tag">вариант B</span>
+          <label class="search">
+            <input id="q-b" data-q="b" type="search" placeholder="Поиск по каталогу…" autocomplete="off" spellcheck="false" />
+          </label>
+        </header>
+        <div class="split-b">
+          <div class="side-backdrop" id="b-backdrop" data-b-close></div>
+          <aside class="side" id="b-side" aria-label="Каталог разделов">
+            <div class="side-head">
+              <span class="side-title">Каталог</span>
+              <button type="button" class="text-btn" data-b-collapse aria-expanded="true">Свернуть</button>
+              <button type="button" class="text-btn side-close" data-b-close>Закрыть</button>
+            </div>
+            <div class="tree" id="b-tree"></div>
+            <p class="tree-empty" id="b-tree-empty" hidden>В каталоге нет такого</p>
+          </aside>
+          <div class="main-col">
+            <div class="meta" id="b-meta"></div>
+            <div class="work">
+              <ul class="hits" id="b-hits" aria-label="Примеры записей"></ul>
+              <aside class="preview" id="b-preview" aria-live="polite"></aside>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-c" data-view="c" role="tabpanel" aria-labelledby="tab-c">
+      <div class="app app-c">
+        <header class="hero-c">
+          <div class="brand-row">
+            <div class="brand-lock">
+              <span class="brand-word">FUTURUM</span>
+              <span class="brand-guide">Guide</span>
+            </div>
+            <span class="mock-tag">вариант C</span>
+          </div>
+          <label class="search">
+            <input id="q-c" data-q="c" type="search" placeholder="Найдите раздел или предмет…" autocomplete="off" spellcheck="false" />
+          </label>
+          <div class="modes" id="c-modes" role="group" aria-label="Режим"></div>
+          <div class="chiprow">
+            <div class="chips" id="c-chips" role="group" aria-label="Группы"></div>
+            <select class="jump" id="c-jump" aria-label="Быстрый переход"></select>
+          </div>
+        </header>
+        <div class="c-body is-idle" id="c-body">
+          <div class="c-main">
+            <p class="intro" id="c-intro"></p>
+            <div class="tiles" id="c-tiles"></div>
+          </div>
+          <aside class="c-panel" id="c-panel">
+            <div class="meta" id="c-meta"></div>
+            <ul class="hits" id="c-hits" aria-label="Примеры записей"></ul>
+            <div class="preview" id="c-preview" aria-live="polite"></div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const GROUPS = [
+      {
+        id: "status", code: "СТ", label: "Статус", hint: "титулы и прогресс",
+        sections: [
+          { id: "titles", label: "Титулы", count: 1284, names: ["Неоновый рассвет", "Хозяин паркета", "Тихий бит", "Звезда витрины", "Ночной дирижёр"] },
+          { id: "achievements", label: "Достижения", count: 96, names: ["Первый танец", "Сотня вечеров", "Коллекционер", "Без промаха", "Свет рампы"] },
+          { id: "gems", label: "Камни", count: 42, names: ["Бирюзовая искра", "Алый осколок", "Ночной кварц", "Пыль арены", "Сердце зала"] }
+        ]
+      },
+      {
+        id: "clothes", code: "ОД", label: "Одежда", hint: "одежда, обувь, причёски",
+        sections: [
+          { id: "event_clothes", label: "Одежда", count: 610, names: ["Куртка неона", "Платье арены", "Жилет сигнала", "Пальто полночи", "Топ витрины"] },
+          { id: "kids_clothes", label: "Детская", count: 188, names: ["Комбинезон искры", "Платье конфетти", "Худи двора", "Жилет смены", "Юбка карусели"] },
+          { id: "shoes", label: "Обувь", count: 240, names: ["Кроссовки бита", "Ботинки сцены", "Туфли витрины", "Сандалии лета", "Кеды орбиты"] },
+          { id: "hairstyles", label: "Прически", count: 173, names: ["Каре со вспышкой", "Хвост кометы", "Чёлка неона", "Волна заката", "Пучок арены"] }
+        ]
+      },
+      {
+        id: "accessories", code: "АК", label: "Аксессуары", hint: "то, что на персонаже",
+        sections: [
+          { id: "accessories", label: "Аксессуары", count: 305, names: ["Серьга пульса", "Чокер линии", "Цепь орбиты", "Брошь зала", "Ободок сигнала"] },
+          { id: "hand_decor", label: "Украшения", count: 94, names: ["Браслет бита", "Кольцо искры", "Перстень ночи", "Нить неона", "Знак сцены"] },
+          { id: "kids_masks", label: "Маски", count: 67, names: ["Маска арлекина", "Визор неона", "Полумаска бала", "Лисья тень", "Щит конфетти"] },
+          { id: "backpacks", label: "Рюкзаки", count: 81, names: ["Ранец орбиты", "Сумка смены", "Ранец неона", "Мешок туриста", "Пакет стикеров"] }
+        ]
+      },
+      {
+        id: "hands", code: "РК", label: "В руках", hint: "жезлы, зонты, букеты",
+        sections: [
+          { id: "wands", label: "Жезлы", count: 54, names: ["Жезл дирижёра", "Посох арены", "Искровой стержень", "Трость полночи", "Жезл витрины"] },
+          { id: "umbrellas", label: "Зонты", count: 39, names: ["Зонт полуночи", "Купол неона", "Зонт конфетти", "Тропический купол", "Прозрачный бит"] },
+          { id: "bouquets", label: "Букеты", count: 48, names: ["Букет искр", "Ночные розы", "Полевые огни", "Сухоцветы зала", "Белые пионы"] },
+          { id: "bows", label: "Лук", count: 22, names: ["Лук арены", "Искровой лук", "Лук охотника", "Короткий бит", "Лук витрины"] },
+          { id: "balloons", label: "Шарики", count: 31, names: ["Шар орбиты", "Связка неона", "Сердце сцены", "Прозрачный шар", "Шар конфетти"] },
+          { id: "toys", label: "Игрушки", count: 77, names: ["Мишка неона", "Кубик бита", "Йо-йо зала", "Ракета двора", "Кукла витрины"] }
+        ]
+      },
+      {
+        id: "companions", code: "КП", label: "Компаньоны", hint: "крылья, питомцы, транспорт",
+        sections: [
+          { id: "wings", label: "Крылья", count: 156, names: ["Крылья заката", "Контур неона", "Пепел арены", "Стеклянный размах", "Искры спины"] },
+          { id: "pets", label: "Питомцы", count: 203, names: ["Лис сигнала", "Кот орбиты", "Птица неона", "Щенок двора", "Сова полночи"] },
+          { id: "transport", label: "Транспорт", count: 118, names: ["Ховер бита", "Скутер витрины", "Доска орбиты", "Карета зала", "Байк неона"] },
+          { id: "forms", label: "Облики", count: 64, names: ["Облик диджея", "Тень арены", "Форма курьера", "Силуэт звезды", "Маскарадный след"] }
+        ]
+      },
+      {
+        id: "emotions", code: "ЭМ", label: "Эмоции", hint: "жесты и интерактивы",
+        sections: [
+          { id: "interactive", label: "Интерактив", count: 89, names: ["Жест приглашения", "Хлопок зала", "Поклон сцены", "Волна толпе", "Щелчок бита"] },
+          { id: "emotes", label: "Интерактивы", count: 142, names: ["Танец искр", "Синхрон двора", "Соло неона", "Пара арены", "Финал шоу"] },
+          { id: "amusements", label: "Развлечения", count: 35, names: ["Карусель", "Автоматы зала", "Фотобудка", "Сцена караоке", "Колесо огней"] }
+        ]
+      },
+      {
+        id: "card", code: "ВЗ", label: "Визитка", hint: "фон, рамка, стикеры",
+        sections: [
+          { id: "card_bg", label: "Фоны", count: 58, names: ["Фон неона", "Ночной город", "Зал славы", "Градиент бита", "Пустая сцена"] },
+          { id: "show_bg", label: "Шоу", count: 27, names: ["Занавес", "Прожектор", "Дым арены", "Неоновая сетка", "Финальный свет"] },
+          { id: "card_frame", label: "Рамки", count: 44, names: ["Рамка орбиты", "Тонкая бирюза", "Двойной контур", "Рамка арены", "Штамп витрины"] },
+          { id: "stickers", label: "Стикеры", count: 210, names: ["Молния", "Сердце бита", "Звезда неона", "Надпись вау", "Знак зала"] }
+        ]
+      }
+    ];
+
+    const MODES = [
+      { id: "all", label: "Все", title: "Все 28 разделов", groups: null },
+      { id: "look", label: "Образ", title: "Одежда, аксессуары, руки, компаньоны", groups: ["clothes", "accessories", "hands", "companions"] },
+      { id: "status", label: "Статус", title: "Титулы, достижения, эмоции", groups: ["status", "emotions"] },
+      { id: "card", label: "Визитка", title: "Фоны, шоу, рамки, стикеры", groups: ["card"] }
+    ];
+
+    const SOURCES = ["сезонное событие", "магазин образов", "достижение", "подарок друга", "зал славы", "квест площади", "витрина недели", "обмен стикеров"];
+
+    const state = {
+      v: "a",
+      a: { group: "status", section: "", q: "", active: null },
+      b: { section: "titles", q: "", active: null, collapsed: false, menu: false, open: new Set(["status"]) },
+      c: { mode: "all", chip: "", section: "", q: "", active: null }
+    };
+
+    const narrowQuery = window.matchMedia("(max-width: 860px)");
+    let selectMode = "";
+
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const fmt = (n) => new Intl.NumberFormat("ru-RU").format(n);
+    const sum = (g) => g.sections.reduce((a, s) => a + s.count, 0);
+    const sumGroups = (gs) => gs.reduce((a, g) => a + sum(g), 0);
+    const groupById = (id) => GROUPS.find((g) => g.id === id);
+    const findSection = (id) => {
+      for (const g of GROUPS) {
+        const s = g.sections.find((x) => x.id === id);
+        if (s) return { group: g, section: s };
+      }
+      return null;
+    };
+    function plural(n, one, few, many) {
+      const n10 = n % 10;
+      const n100 = n % 100;
+      if (n10 === 1 && n100 !== 11) return one;
+      if (n10 >= 2 && n10 <= 4 && (n100 < 12 || n100 > 14)) return few;
+      return many;
+    }
+    function itemsOf(section) {
+      return section.names.map((name, i) => ({
+        key: section.id + ":" + i,
+        name,
+        source: SOURCES[(i * 3 + section.count) % SOURCES.length],
+        op: [8, 4, 2, 1, 0][i % 5],
+        section
+      }));
+    }
+    function filterItems(list, q) {
+      const n = q.trim().toLowerCase();
+      if (!n) return list;
+      return list.filter((it) =>
+        it.name.toLowerCase().includes(n) ||
+        it.source.toLowerCase().includes(n) ||
+        it.section.label.toLowerCase().includes(n)
+      );
+    }
+    function groupsForMode(modeId) {
+      const mode = MODES.find((m) => m.id === modeId) || MODES[0];
+      if (!mode.groups) return GROUPS;
+      return GROUPS.filter((g) => mode.groups.includes(g.id));
+    }
+    function isNarrow() { return narrowQuery.matches; }
+
+    function renderMeta(el, catalog, examples, filtered, q, crumb) {
+      const shown = q.trim() ? filtered : examples;
+      const word = q.trim()
+        ? plural(shown, "совпадение", "совпадения", "совпадений") + " в примерах"
+        : plural(shown, "пример", "примера", "примеров");
+      el.innerHTML =
+        '<div class="crumb">' + esc(crumb) + "</div>" +
+        '<div class="countline"><strong>' + fmt(catalog) + "</strong> в базе · <strong>" + fmt(shown) + "</strong> " + esc(word) + "</div>";
+    }
+    function renderHits(el, items, active, attr) {
+      const shown = items.slice(0, 12);
+      if (!shown.length) {
+        el.innerHTML = '<li class="empty">Ничего не нашлось в примерах</li>';
+        return;
+      }
+      let html = shown.map((it) =>
+        '<li><button type="button" class="hit' + (it.key === active ? " on" : "") + '" ' + attr + '="' + esc(it.key) + '">' +
+          '<i class="op op-' + it.op + '" aria-hidden="true"></i>' +
+          '<span><span class="hit-name">' + esc(it.name) + "</span>" +
+          '<span class="hit-meta">' + esc(it.section.label) + " · " + esc(it.source) + "</span></span>" +
+          '<span class="hit-op op-c-' + it.op + '">' + it.op + "</span>" +
+        "</button></li>"
+      ).join("");
+      if (items.length > 12) {
+        html += '<li class="more">ещё ' + fmt(items.length - 12) + " в примерах — сузьте фильтр</li>";
+      }
+      el.innerHTML = html;
+    }
+    function renderPreview(el, item) {
+      if (!item) {
+        el.classList.remove("has-item");
+        el.innerHTML = '<p class="pv-empty">Выберите запись — здесь карточка</p>';
+        return;
+      }
+      const found = findSection(item.section.id);
+      el.classList.add("has-item");
+      el.innerHTML =
+        '<p class="pv-kicker">карточка макета</p>' +
+        '<h2 class="pv-name">' + esc(item.name) + "</h2>" +
+        '<dl class="pv-dl">' +
+          "<div><dt>Раздел</dt><dd>" + esc(item.section.label) + "</dd></div>" +
+          "<div><dt>Группа</dt><dd>" + esc(found ? found.group.label : "—") + "</dd></div>" +
+          "<div><dt>В базе</dt><dd>" + fmt(item.section.count) + "</dd></div>" +
+          "<div><dt>Где получить</dt><dd>" + esc(item.source) + "</dd></div>" +
+          "<div><dt>ОП</dt><dd>" + item.op + "</dd></div>" +
+        "</dl>" +
+        '<p class="pv-note">Заглушка макета: в гайде здесь описание и картинка.</p>';
+    }
+
+    function paintA() {
+      const g = groupById(state.a.group) || GROUPS[0];
+      state.a.group = g.id;
+      document.querySelectorAll("[data-a-group]").forEach((btn) => {
+        const on = btn.dataset.aGroup === g.id;
+        btn.classList.toggle("on", on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      const sec = g.sections.find((s) => s.id === state.a.section) || null;
+      if (state.a.section && !sec) state.a.section = "";
+      const subs = document.getElementById("a-subs");
+      subs.innerHTML = [
+        pill("data-a-sub", "", "Все", sum(g), !state.a.section),
+        ...g.sections.map((s) => pill("data-a-sub", s.id, s.label, s.count, s.id === state.a.section))
+      ].join("");
+      const pool = (sec ? [sec] : g.sections).flatMap(itemsOf);
+      const filtered = filterItems(pool, state.a.q);
+      if (state.a.active && !filtered.some((it) => it.key === state.a.active)) state.a.active = null;
+      renderMeta(
+        document.getElementById("a-meta"),
+        sec ? sec.count : sum(g),
+        pool.length,
+        filtered.length,
+        state.a.q,
+        sec ? g.label + " · " + sec.label : g.label + " · все подкатегории"
+      );
+      renderHits(document.getElementById("a-hits"), filtered, state.a.active, "data-a-hit");
+      renderPreview(document.getElementById("a-preview"), filtered.find((it) => it.key === state.a.active) || null);
+    }
+
+    function paintB() {
+      const narrow = isNarrow();
+      const q = state.b.q.trim().toLowerCase();
+      const collapsed = state.b.collapsed && !q && !narrow;
+      const side = document.getElementById("b-side");
+      side.classList.toggle("is-collapsed", collapsed);
+      side.classList.toggle("is-open", state.b.menu && narrow);
+      document.getElementById("b-backdrop").classList.toggle("is-on", state.b.menu && narrow);
+      document.body.classList.toggle("menu-lock", state.b.menu && narrow);
+      const menuBtn = document.querySelector("[data-b-menu]");
+      menuBtn.setAttribute("aria-expanded", state.b.menu && narrow ? "true" : "false");
+      const collapseBtn = document.querySelector("[data-b-collapse]");
+      collapseBtn.textContent = state.b.collapsed ? "»" : "Свернуть";
+      collapseBtn.setAttribute("aria-label", state.b.collapsed ? "Развернуть каталог" : "Свернуть каталог");
+      collapseBtn.setAttribute("aria-expanded", state.b.collapsed ? "false" : "true");
+
+      let any = false;
+      GROUPS.forEach((g) => {
+        const block = document.querySelector('[data-b-group="' + g.id + '"]');
+        const headMatch = !q || g.label.toLowerCase().includes(q);
+        let groupHit = false;
+        g.sections.forEach((s) => {
+          const leaf = block.querySelector('[data-b-section="' + s.id + '"]');
+          const ok = !q || headMatch || s.label.toLowerCase().includes(q) || s.names.some((n) => n.toLowerCase().includes(q));
+          leaf.classList.toggle("is-miss", !ok);
+          leaf.classList.toggle("on", s.id === state.b.section);
+          if (s.id === state.b.section) leaf.setAttribute("aria-current", "true");
+          else leaf.removeAttribute("aria-current");
+          if (ok) groupHit = true;
+        });
+        const open = state.b.open.has(g.id) || Boolean(q && groupHit);
+        block.classList.toggle("open", open);
+        block.classList.toggle("is-miss", !groupHit);
+        block.classList.toggle("has-current", g.sections.some((s) => s.id === state.b.section));
+        block.querySelector("[data-b-toggle]").setAttribute("aria-expanded", open ? "true" : "false");
+        if (groupHit) any = true;
+      });
+      document.getElementById("b-tree-empty").hidden = any;
+
+      const found = findSection(state.b.section) || findSection("titles");
+      state.b.section = found.section.id;
+      const pool = itemsOf(found.section);
+      const filtered = filterItems(pool, state.b.q);
+      if (state.b.active && !filtered.some((it) => it.key === state.b.active)) state.b.active = null;
+      renderMeta(
+        document.getElementById("b-meta"),
+        found.section.count,
+        pool.length,
+        filtered.length,
+        state.b.q,
+        found.group.label + " · " + found.section.label
+      );
+      renderHits(document.getElementById("b-hits"), filtered, state.b.active, "data-b-hit");
+      renderPreview(document.getElementById("b-preview"), filtered.find((it) => it.key === state.b.active) || null);
+    }
+
+    function visiblePairs() {
+      const q = state.c.q.trim().toLowerCase();
+      let gs = groupsForMode(state.c.mode);
+      if (state.c.chip) gs = gs.filter((g) => g.id === state.c.chip);
+      const pairs = [];
+      gs.forEach((g) => {
+        g.sections.forEach((s) => {
+          const ok = !q || g.label.toLowerCase().includes(q) || s.label.toLowerCase().includes(q) || s.names.some((n) => n.toLowerCase().includes(q));
+          if (ok) pairs.push({ group: g, section: s });
+        });
+      });
+      return pairs;
+    }
+
+    function ensureSelect() {
+      if (selectMode === state.c.mode) return;
+      selectMode = state.c.mode;
+      const sel = document.getElementById("c-jump");
+      const gs = groupsForMode(state.c.mode);
+      sel.innerHTML = '<option value="">Быстрый переход</option>' + gs.map((g) =>
+        '<optgroup label="' + esc(g.label) + '">' +
+        g.sections.map((s) => '<option value="' + s.id + '">' + esc(s.label) + " · " + fmt(s.count) + "</option>").join("") +
+        "</optgroup>"
+      ).join("");
+    }
+
+    function paintC() {
+      document.querySelectorAll("[data-c-mode]").forEach((btn) => {
+        const on = btn.dataset.cMode === state.c.mode;
+        btn.classList.toggle("on", on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      const modeGroups = groupsForMode(state.c.mode);
+      if (state.c.chip && !modeGroups.some((g) => g.id === state.c.chip)) state.c.chip = "";
+      const chips = document.getElementById("c-chips");
+      chips.innerHTML = [
+        pill("data-c-chip", "", "Все группы", sumGroups(modeGroups), !state.c.chip),
+        ...modeGroups.map((g) => pill("data-c-chip", g.id, g.label, sum(g), state.c.chip === g.id))
+      ].join("");
+
+      ensureSelect();
+      const jump = document.getElementById("c-jump");
+      if ([...jump.options].some((o) => o.value === state.c.section)) jump.value = state.c.section;
+      else jump.value = "";
+
+      const pairs = visiblePairs();
+      if (state.c.section && !pairs.some((p) => p.section.id === state.c.section)) state.c.section = "";
+      const tiles = document.getElementById("c-tiles");
+      tiles.innerHTML = pairs.length
+        ? pairs.map((p) =>
+          '<button type="button" class="tile' + (p.section.id === state.c.section ? " on" : "") + '" data-c-tile="' + p.section.id + '">' +
+            '<span class="tile-g">' + esc(p.group.label) + "</span>" +
+            '<span class="tile-name">' + esc(p.section.label) + "</span>" +
+            '<span class="tile-n">' + fmt(p.section.count) + "</span>" +
+          "</button>"
+        ).join("")
+        : '<p class="empty">Нет разделов по этому запросу</p>';
+
+      const modeCount = groupsForMode(state.c.mode).reduce((a, g) => a + g.sections.length, 0);
+      const shownCount = pairs.reduce((a, p) => a + p.section.count, 0);
+      document.getElementById("c-intro").innerHTML =
+        "<strong>" + fmt(pairs.length) + "</strong> " + plural(pairs.length, "плитка", "плитки", "плиток") +
+        " · <strong>" + fmt(shownCount) + "</strong> в базе" +
+        (pairs.length !== modeCount ? " · из " + fmt(modeCount) + " в режиме" : "");
+
+      const idle = !state.c.section && !state.c.chip && !state.c.q.trim();
+      document.getElementById("c-body").classList.toggle("is-idle", idle);
+
+      let pool = [];
+      let catalog = 0;
+      let crumb = "Примеры";
+      if (state.c.section) {
+        const found = findSection(state.c.section);
+        if (found) {
+          pool = itemsOf(found.section);
+          catalog = found.section.count;
+          crumb = found.group.label + " · " + found.section.label;
+        }
+      } else if (!idle) {
+        pool = pairs.flatMap((p) => itemsOf(p.section));
+        catalog = pairs.reduce((a, p) => a + p.section.count, 0);
+        const g = state.c.chip ? groupById(state.c.chip) : null;
+        crumb = g ? g.label + " · все подкатегории" : "Поиск · " + state.c.q.trim();
+      }
+      const filtered = filterItems(pool, state.c.q);
+      if (state.c.active && !filtered.some((it) => it.key === state.c.active)) state.c.active = null;
+      renderMeta(document.getElementById("c-meta"), catalog, pool.length, filtered.length, state.c.q, crumb);
+      renderHits(document.getElementById("c-hits"), filtered, state.c.active, "data-c-hit");
+      renderPreview(document.getElementById("c-preview"), filtered.find((it) => it.key === state.c.active) || null);
+    }
+
+    function pill(attr, id, label, count, on) {
+      return '<button type="button" class="pill' + (on ? " on" : "") + '" ' + attr + '="' + esc(id) + '" aria-pressed="' + (on ? "true" : "false") + '">' +
+        esc(label) + '<span class="pill-n">' + fmt(count) + "</span></button>";
+    }
+
+    function setVariant(v) {
+      if (!["a", "b", "c"].includes(v)) v = "a";
+      state.v = v;
+      document.querySelectorAll(".view").forEach((el) => {
+        const on = el.dataset.view === v;
+        el.classList.toggle("on", on);
+        if (!on) el.hidden = true;
+        else el.hidden = false;
+      });
+      document.querySelectorAll("[data-v]").forEach((el) => {
+        const on = el.dataset.v === v;
+        el.classList.toggle("on", on);
+        el.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      if (location.hash !== "#" + v) history.replaceState(null, "", "#" + v);
+      if (v !== "b" && state.b.menu) {
+        state.b.menu = false;
+        paintB();
+      }
+    }
+
+    function build() {
+      const ids = GROUPS.flatMap((g) => g.sections.map((s) => s.id));
+      if (new Set(ids).size !== 28) throw new Error("Ожидалось 28 разделов, собрано " + ids.length);
+
+      document.getElementById("a-rail").innerHTML = GROUPS.map((g) =>
+        '<button type="button" class="rail-btn" data-a-group="' + g.id + '">' +
+          '<span class="code">' + esc(g.code) + "</span>" +
+          '<span><span class="rail-label">' + esc(g.label) + "</span>" +
+          '<span class="rail-hint">' + esc(g.hint) + "</span></span>" +
+          '<span class="rail-count">' + fmt(sum(g)) + "</span>" +
+        "</button>"
+      ).join("");
+
+      document.getElementById("b-tree").innerHTML = GROUPS.map((g) =>
+        '<div class="g-block" data-b-group="' + g.id + '">' +
+          '<button type="button" class="g-head" data-b-toggle="' + g.id + '" title="' + esc(g.label) + '">' +
+            '<span class="code">' + esc(g.code) + "</span>" +
+            '<span class="g-label">' + esc(g.label) + "</span>" +
+            '<span class="g-count">' + fmt(sum(g)) + "</span>" +
+            '<span class="chev" aria-hidden="true">▾</span>' +
+          "</button>" +
+          '<div class="g-leaves">' +
+            g.sections.map((s) =>
+              '<button type="button" class="leaf" data-b-section="' + s.id + '">' +
+                "<span>" + esc(s.label) + "</span>" +
+                '<span class="leaf-count">' + fmt(s.count) + "</span>" +
+              "</button>"
+            ).join("") +
+          "</div>" +
+        "</div>"
+      ).join("");
+
+      document.getElementById("c-modes").innerHTML = MODES.map((m) =>
+        '<button type="button" class="mode" data-c-mode="' + m.id + '" title="' + esc(m.title) + '">' + esc(m.label) + "</button>"
+      ).join("");
+    }
+
+    function init() {
+      build();
+      const fromHash = (location.hash || "").replace("#", "");
+      if (["a", "b", "c"].includes(fromHash)) state.v = fromHash;
+      paintA();
+      paintB();
+      paintC();
+      setVariant(state.v);
+
+      document.body.addEventListener("click", (e) => {
+        const tab = e.target.closest("[data-v]");
+        if (tab) { setVariant(tab.dataset.v); return; }
+
+        const ag = e.target.closest("[data-a-group]");
+        if (ag) { state.a.group = ag.dataset.aGroup; state.a.section = ""; state.a.active = null; paintA(); return; }
+        const asub = e.target.closest("[data-a-sub]");
+        if (asub) { state.a.section = asub.dataset.aSub; state.a.active = null; paintA(); return; }
+        const ah = e.target.closest("[data-a-hit]");
+        if (ah) { state.a.active = ah.dataset.aHit; paintA(); return; }
+
+        if (e.target.closest("[data-b-menu]")) {
+          state.b.menu = !state.b.menu;
+          paintB();
+          return;
+        }
+        if (e.target.closest("[data-b-close]")) {
+          state.b.menu = false;
+          paintB();
+          return;
+        }
+        if (e.target.closest("[data-b-collapse]")) {
+          state.b.collapsed = !state.b.collapsed;
+          paintB();
+          return;
+        }
+        const bt = e.target.closest("[data-b-toggle]");
+        if (bt) {
+          const id = bt.dataset.bToggle;
+          if (state.b.collapsed && !isNarrow()) {
+            state.b.collapsed = false;
+            state.b.open.add(id);
+          } else if (state.b.open.has(id)) state.b.open.delete(id);
+          else state.b.open.add(id);
+          paintB();
+          return;
+        }
+        const bs = e.target.closest("[data-b-section]");
+        if (bs) {
+          state.b.section = bs.dataset.bSection;
+          state.b.active = null;
+          const owner = findSection(state.b.section);
+          if (owner) state.b.open.add(owner.group.id);
+          if (isNarrow()) state.b.menu = false;
+          paintB();
+          return;
+        }
+        const bh = e.target.closest("[data-b-hit]");
+        if (bh) { state.b.active = bh.dataset.bHit; paintB(); return; }
+
+        const mode = e.target.closest("[data-c-mode]");
+        if (mode) {
+          state.c.mode = mode.dataset.cMode;
+          state.c.chip = "";
+          state.c.section = "";
+          state.c.active = null;
+          selectMode = "";
+          paintC();
+          return;
+        }
+        const chip = e.target.closest("[data-c-chip]");
+        if (chip) {
+          state.c.chip = chip.dataset.cChip;
+          if (state.c.section) {
+            const owner = findSection(state.c.section);
+            if (state.c.chip && owner && owner.group.id !== state.c.chip) state.c.section = "";
+          }
+          state.c.active = null;
+          paintC();
+          return;
+        }
+        const tile = e.target.closest("[data-c-tile]");
+        if (tile) {
+          const id = tile.dataset.cTile;
+          state.c.section = state.c.section === id ? "" : id;
+          state.c.active = null;
+          paintC();
+          return;
+        }
+        const ch = e.target.closest("[data-c-hit]");
+        if (ch) { state.c.active = ch.dataset.cHit; paintC(); return; }
+      });
+
+      document.body.addEventListener("input", (e) => {
+        const key = e.target.dataset.q;
+        if (!key || !state[key]) return;
+        state[key].q = e.target.value;
+        state[key].active = null;
+        if (key === "a") paintA();
+        if (key === "b") paintB();
+        if (key === "c") paintC();
+      });
+
+      document.getElementById("c-jump").addEventListener("change", (e) => {
+        const id = e.target.value;
+        if (!id) {
+          state.c.section = "";
+          state.c.active = null;
+          paintC();
+          return;
+        }
+        const owner = findSection(id);
+        if (owner && state.c.chip && state.c.chip !== owner.group.id) state.c.chip = owner.group.id;
+        state.c.section = id;
+        state.c.active = null;
+        paintC();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && state.b.menu) {
+          state.b.menu = false;
+          paintB();
+        }
+      });
+
+      let resizeT = 0;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeT);
+        resizeT = setTimeout(paintB, 120);
+      });
+    }
+
+    try { init(); }
+    catch (err) {
+      const box = document.getElementById("lab-error");
+      box.hidden = false;
+      box.textContent = err && err.stack ? err.stack : String(err);
+    }
+  </script>
+</body>
+</html>

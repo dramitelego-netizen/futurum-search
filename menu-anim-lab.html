@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Меню — 20 анимаций</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07090d;
+      --panel: #12161e;
+      --ink: #e8eef7;
+      --mute: #7d8a9a;
+      --accent: #3dffe0;
+      --line: rgba(232, 238, 247, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Rajdhani", sans-serif;
+      background: radial-gradient(ellipse 70% 45% at 15% 0%, #0f1a1c, var(--bg));
+      color: var(--ink);
+      padding: 1.35rem clamp(1rem, 3vw, 2rem) 3rem;
+    }
+    h1 {
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin: 0 0 0.35rem;
+    }
+    .lead { color: var(--mute); margin: 0 0 1.2rem; max-width: 40rem; }
+    .grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .card {
+      background: color-mix(in srgb, var(--panel) 94%, black);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0.95rem 1rem 1.05rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .card.is-picked {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent);
+    }
+    .card-num {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+    }
+    .card-title { font-weight: 700; font-size: 1.05rem; }
+    .card-desc { margin: 0; color: var(--mute); font-size: 0.88rem; line-height: 1.35; }
+    .stage {
+      position: relative;
+      height: 7.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(ellipse 60% 50% at 70% 30%, rgba(61,255,224,0.07), transparent 60%),
+        #0a0e14;
+      overflow: hidden;
+    }
+    .stage-fake {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-content: center;
+      opacity: 0.22;
+      font-family: "Orbitron", sans-serif;
+      letter-spacing: 0.2em;
+      font-size: 0.8rem;
+      color: var(--accent);
+      pointer-events: none;
+    }
+    .actions { display: flex; gap: 0.5rem; margin-top: auto; }
+    button.pick {
+      font: inherit;
+      font-weight: 700;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+      background: color-mix(in srgb, var(--accent) 22%, transparent);
+      color: #041410;
+      padding: 0.4rem 0.9rem;
+      cursor: pointer;
+    }
+    .picked {
+      position: sticky;
+      bottom: 0.75rem;
+      margin-top: 1.2rem;
+      padding: 0.9rem 1rem;
+      border-radius: 12px;
+      border: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      color: var(--mute);
+      backdrop-filter: blur(8px);
+    }
+    .picked strong {
+      color: var(--accent);
+      font-family: "Orbitron", sans-serif;
+      letter-spacing: 0.06em;
+    }
+
+    /* базовая кнопка как на сайте */
+    .demo {
+      position: absolute;
+      top: 0.85rem;
+      left: 0.85rem;
+      width: 3.55rem;
+      height: 3.55rem;
+      border: 0;
+      border-radius: 13px;
+      background: transparent;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      color: #fff;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .bars {
+      display: grid;
+      gap: 0.45rem;
+      width: 1.75rem;
+      justify-items: start;
+      position: relative;
+      z-index: 1;
+    }
+    .bars i {
+      display: block;
+      width: 1.75rem;
+      height: 3px;
+      border-radius: 2px;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.35);
+    }
+    .bars i:nth-child(2) { width: 1.3rem; }
+
+    /* —— 1 soft ring (текущий вайб) —— */
+    .a1::after {
+      content: "";
+      position: absolute;
+      inset: 0.2rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.55);
+      animation: a1-ring 2.4s ease-out infinite;
+      pointer-events: none;
+    }
+    @keyframes a1-ring {
+      0% { transform: scale(0.88); opacity: 0.75; }
+      100% { transform: scale(1.4); opacity: 0; }
+    }
+
+    /* —— 2 double ring —— */
+    .a2::before, .a2::after {
+      content: "";
+      position: absolute;
+      inset: 0.15rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.5);
+      pointer-events: none;
+      animation: a2-ring 2.8s ease-out infinite;
+    }
+    .a2::after { animation-delay: 1.4s; }
+    @keyframes a2-ring {
+      0% { transform: scale(0.9); opacity: 0.7; }
+      100% { transform: scale(1.55); opacity: 0; }
+    }
+
+    /* —— 3 teal accent ring —— */
+    .a3::after {
+      content: "";
+      position: absolute;
+      inset: 0.15rem;
+      border-radius: 12px;
+      border: 1px solid var(--accent);
+      box-shadow: 0 0 12px rgba(61,255,224,0.35);
+      animation: a3-ring 2.2s ease-out infinite;
+      pointer-events: none;
+    }
+    @keyframes a3-ring {
+      0% { transform: scale(0.92); opacity: 0.9; }
+      100% { transform: scale(1.45); opacity: 0; }
+    }
+
+    /* —— 4 bars breathe width —— */
+    .a4 .bars i { animation: a4-breathe 2.2s ease-in-out infinite; }
+    .a4 .bars i:nth-child(2) { animation-delay: 0.15s; }
+    .a4 .bars i:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes a4-breathe {
+      0%, 100% { transform: scaleX(1); opacity: 1; }
+      50% { transform: scaleX(0.72); opacity: 0.75; }
+    }
+
+    /* —— 5 cascade wave —— */
+    .a5 .bars i { animation: a5-wave 1.6s ease-in-out infinite; transform-origin: left center; }
+    .a5 .bars i:nth-child(2) { animation-delay: 0.12s; }
+    .a5 .bars i:nth-child(3) { animation-delay: 0.24s; }
+    @keyframes a5-wave {
+      0%, 100% { transform: translateX(0); opacity: 1; }
+      40% { transform: translateX(4px); opacity: 0.65; }
+    }
+
+    /* —— 6 soft float —— */
+    .a6 { animation: a6-float 2.8s ease-in-out infinite; }
+    @keyframes a6-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    /* —— 7 glow breathe —— */
+    .a7 .bars i { animation: a7-glow 2.4s ease-in-out infinite; }
+    @keyframes a7-glow {
+      0%, 100% { box-shadow: 0 0 8px rgba(255,255,255,0.25); background: #fff; }
+      50% { box-shadow: 0 0 18px rgba(255,255,255,0.85); background: #fff; }
+    }
+
+    /* —— 8 corner ticks —— */
+    .a8::before, .a8::after {
+      content: "";
+      position: absolute;
+      width: 0.55rem;
+      height: 0.55rem;
+      border: 1.5px solid rgba(255,255,255,0.7);
+      pointer-events: none;
+      animation: a8-tick 1.8s ease-in-out infinite;
+    }
+    .a8::before { top: 0.35rem; left: 0.35rem; border-right: 0; border-bottom: 0; }
+    .a8::after { right: 0.35rem; bottom: 0.35rem; border-left: 0; border-top: 0; animation-delay: 0.9s; }
+    @keyframes a8-tick {
+      0%, 100% { opacity: 0.25; }
+      50% { opacity: 1; }
+    }
+
+    /* —— 9 dashed spin ring —— */
+    .a9::after {
+      content: "";
+      position: absolute;
+      inset: 0.1rem;
+      border-radius: 12px;
+      border: 1.5px dashed rgba(255,255,255,0.45);
+      animation: a9-spin 6s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes a9-spin { to { transform: rotate(360deg); } }
+
+    /* —— 10 orbiting dot —— */
+    .a10::after {
+      content: "";
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 8px rgba(255,255,255,0.8);
+      top: 50%;
+      left: 50%;
+      margin: -2.5px;
+      animation: a10-orbit 2.4s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes a10-orbit {
+      from { transform: rotate(0deg) translateX(1.55rem); }
+      to { transform: rotate(360deg) translateX(1.55rem); }
+    }
+
+    /* —— 11 scan line —— */
+    .a11::after {
+      content: "";
+      position: absolute;
+      left: 0.45rem;
+      right: 0.45rem;
+      height: 2px;
+      top: 0.55rem;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.85), transparent);
+      animation: a11-scan 2.2s ease-in-out infinite;
+      pointer-events: none;
+      border-radius: 2px;
+    }
+    @keyframes a11-scan {
+      0% { top: 0.55rem; opacity: 0; }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { top: calc(100% - 0.7rem); opacity: 0; }
+    }
+
+    /* —— 12 soft scale pulse —— */
+    .a12 { animation: a12-scale 2.6s ease-in-out infinite; }
+    @keyframes a12-scale {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+
+    /* —— 13 stagger fade —— */
+    .a13 .bars i { animation: a13-fade 1.8s ease-in-out infinite; }
+    .a13 .bars i:nth-child(2) { animation-delay: 0.2s; }
+    .a13 .bars i:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes a13-fade {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.25; }
+    }
+
+    /* —— 14 equalize —— */
+    .a14 .bars i { transition: none; animation: a14-eq 2.4s ease-in-out infinite; }
+    .a14 .bars i:nth-child(2) { animation-name: a14-eq-mid; }
+    @keyframes a14-eq {
+      0%, 100% { width: 1.75rem; }
+      50% { width: 1.45rem; }
+    }
+    @keyframes a14-eq-mid {
+      0%, 100% { width: 1.3rem; }
+      50% { width: 1.45rem; }
+    }
+
+    /* —— 15 neon flicker —— */
+    .a15 .bars i { animation: a15-flick 3.2s steps(2, end) infinite; }
+    @keyframes a15-flick {
+      0%, 88%, 100% { opacity: 1; box-shadow: 0 0 10px rgba(255,255,255,0.4); }
+      90% { opacity: 0.35; box-shadow: none; }
+      92% { opacity: 1; }
+      94% { opacity: 0.5; }
+      96% { opacity: 1; }
+    }
+
+    /* —— 16 ripple —— */
+    .a16::before, .a16::after {
+      content: "";
+      position: absolute;
+      inset: 0.35rem;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.45);
+      pointer-events: none;
+      animation: a16-rip 2.6s ease-out infinite;
+    }
+    .a16::after { animation-delay: 1.3s; }
+    @keyframes a16-rip {
+      0% { transform: scale(0.55); opacity: 0.7; }
+      100% { transform: scale(1.65); opacity: 0; }
+    }
+
+    /* —— 17 border draw —— */
+    .a17::after {
+      content: "";
+      position: absolute;
+      inset: 0.2rem;
+      border-radius: 12px;
+      border: 1.5px solid transparent;
+      border-top-color: rgba(255,255,255,0.8);
+      border-right-color: rgba(255,255,255,0.25);
+      animation: a17-draw 1.8s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes a17-draw { to { transform: rotate(360deg); } }
+
+    /* —— 18 tiny shake —— */
+    .a18 { animation: a18-shake 3.5s ease-in-out infinite; }
+    @keyframes a18-shake {
+      0%, 82%, 100% { transform: translate(0,0) rotate(0); }
+      84% { transform: translate(-1px, 0.5px) rotate(-1deg); }
+      86% { transform: translate(1px, -0.5px) rotate(1deg); }
+      88% { transform: translate(-0.5px, 0) rotate(0); }
+      90% { transform: translate(0,0); }
+    }
+
+    /* —— 19 signal blink top bar —— */
+    .a19 .bars i:nth-child(1) {
+      animation: a19-sig 1.4s ease-in-out infinite;
+    }
+    @keyframes a19-sig {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(255,255,255,0.3); }
+      50% { opacity: 0.2; box-shadow: none; }
+    }
+
+    /* —— 20 halo + shimmer —— */
+    .a20::after {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: 14px;
+      background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 65%);
+      animation: a20-halo 2.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .a20 .bars i { animation: a20-shim 2.5s ease-in-out infinite; }
+    .a20 .bars i:nth-child(2) { animation-delay: 0.12s; }
+    .a20 .bars i:nth-child(3) { animation-delay: 0.24s; }
+    @keyframes a20-halo {
+      0%, 100% { opacity: 0.25; transform: scale(0.92); }
+      50% { opacity: 0.85; transform: scale(1.05); }
+    }
+    @keyframes a20-shim {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.35); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo, .demo::before, .demo::after, .bars i {
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Кнопка меню — 20 анимаций</h1>
+  <p class="lead">Выбери номер — напиши его в чат. Все варианты крутятся сами, клик по кнопке ничего не ломает.</p>
+
+  <div class="grid" id="grid"></div>
+  <div class="picked" id="picked">Выбор: пока нет</div>
+
+  <script>
+    const VARIANTS = [
+      { t: "Мягкое кольцо", d: "Как сейчас: кольцо расширяется и гаснет" },
+      { t: "Двойное кольцо", d: "Два импульса с паузой — заметнее, но спокойно" },
+      { t: "Бирюзовое кольцо", d: "Акцент сайта: кольцо цвета accent" },
+      { t: "Дыхание линий", d: "Полоски чуть сжимаются по ширине" },
+      { t: "Волна", d: "Линии по очереди сдвигаются вправо" },
+      { t: "Парение", d: "Вся кнопка мягко поднимается-опускается" },
+      { t: "Свечение", d: "Белое свечение линий то сильнее, то слабее" },
+      { t: "Уголки", d: "Мигают угловые скобки рамки" },
+      { t: "Пунктир-вращение", d: "Пунктирная рамка медленно крутится" },
+      { t: "Орбита", d: "Точка бегает вокруг кнопки" },
+      { t: "Скан", d: "Тонкая линия проходит сверху вниз" },
+      { t: "Пульс размера", d: "Кнопка чуть увеличивается и возвращается" },
+      { t: "Мерцание линий", d: "Полоски по очереди тускнеют" },
+      { t: "Выравнивание", d: "Средняя линия догоняет остальные и обратно" },
+      { t: "Неон-фликер", d: "Редкое короткое мерцание, как лампочка" },
+      { t: "Круги-рябь", d: "Круговые волны из центра" },
+      { t: "Обвод рисуется", d: "Угол рамки крутится по кругу" },
+      { t: "Лёгкий тряс", d: "Редко почти незаметный shake" },
+      { t: "Сигнал сверху", d: "Мигает только верхняя полоска" },
+      { t: "Ореол + шиммер", d: "Мягкий ореол и лёгкий блеск линий" },
+    ];
+
+    const grid = document.getElementById("grid");
+    const picked = document.getElementById("picked");
+
+    VARIANTS.forEach((v, i) => {
+      const n = i + 1;
+      const card = document.createElement("article");
+      card.className = "card";
+      card.dataset.n = String(n);
+      card.innerHTML = `
+        <div class="card-num">#${n}</div>
+        <div class="card-title">${v.t}</div>
+        <p class="card-desc">${v.d}</p>
+        <div class="stage">
+          <div class="stage-fake">FUTURUM</div>
+          <button type="button" class="demo a${n}" aria-label="Демо ${n}">
+            <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>
+          </button>
+        </div>
+        <div class="actions">
+          <button type="button" class="pick" data-pick="${n}">Выбрать #${n}</button>
+        </div>`;
+      grid.appendChild(card);
+    });
+
+    grid.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-pick]");
+      if (!btn) return;
+      const n = btn.getAttribute("data-pick");
+      const v = VARIANTS[Number(n) - 1];
+      document.querySelectorAll(".card").forEach((c) => {
+        c.classList.toggle("is-picked", c.dataset.n === n);
+      });
+      picked.innerHTML = `Выбор: <strong>#${n}</strong> — ${v.t}. Напиши в чат: <strong>${n}</strong>`;
+    });
+  </script>
+</body>
+</html>

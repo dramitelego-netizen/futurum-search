@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Строка поиска — варианты</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07090d;
+      --panel: #12161e;
+      --ink: #e8eef7;
+      --mute: #7d8a9a;
+      --accent: #3dffe0;
+      --accent-2: #ff4d6d;
+      --line: rgba(232, 238, 247, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Rajdhani", sans-serif;
+      background:
+        radial-gradient(ellipse 70% 45% at 20% 0%, #0f1a1c, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 90% 10%, rgba(61, 255, 224, 0.06), transparent 50%),
+        var(--bg);
+      color: var(--ink);
+      padding: 1.35rem clamp(1rem, 3vw, 2rem) 3rem;
+    }
+    h1 {
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin: 0 0 0.35rem;
+    }
+    .lead {
+      color: var(--mute);
+      margin: 0 0 1.2rem;
+      max-width: 42rem;
+      line-height: 1.45;
+    }
+    .lead strong { color: var(--accent); }
+    .grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    }
+    .card {
+      background: color-mix(in srgb, var(--panel) 94%, black);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem 1.05rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .card.is-picked {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent);
+    }
+    .card-num {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+    }
+    .card-title { font-weight: 700; font-size: 1.08rem; }
+    .card-desc { margin: 0; color: var(--mute); font-size: 0.88rem; line-height: 1.35; }
+    .demo {
+      padding: 1rem 0.85rem;
+      border-radius: 12px;
+      background: #0a0c10;
+      border: 1px solid var(--line);
+      display: flex;
+      justify-content: center;
+    }
+    .demo.wide { padding: 1.1rem 1rem; }
+    .pick {
+      margin-top: auto;
+      align-self: flex-start;
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      color: var(--accent);
+      font: inherit;
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .pick:hover { background: color-mix(in srgb, var(--accent) 18%, transparent); }
+    .card.is-picked .pick {
+      background: var(--accent);
+      color: #041014;
+      border-color: var(--accent);
+    }
+    .footer-pick {
+      position: sticky;
+      bottom: 0.75rem;
+      margin-top: 1.5rem;
+      padding: 0.9rem 1rem;
+      border-radius: 14px;
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+      background: color-mix(in srgb, var(--panel) 92%, black);
+      backdrop-filter: blur(10px);
+      color: var(--mute);
+      font-size: 0.95rem;
+      z-index: 5;
+    }
+    .footer-pick strong { color: var(--accent); }
+
+    /* —— shared input base —— */
+    .sb {
+      width: min(100%, 420px);
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ink);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .sb::placeholder { color: var(--mute); opacity: 0.85; }
+    .wrap {
+      position: relative;
+      width: min(100%, 420px);
+      display: flex;
+      align-items: center;
+    }
+    .wrap .sb { width: 100%; }
+
+    /* 1 current-like */
+    .v1 .sb {
+      padding: 0.72rem 1rem;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel) 80%, transparent);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .v1 .sb:focus {
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+
+    /* 2 pill soft */
+    .v2 .sb {
+      padding: 0.75rem 1.25rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--ink) 4%, transparent);
+    }
+    .v2 .sb:focus {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 6%, transparent);
+    }
+
+    /* 3 underline only */
+    .v3 .sb {
+      padding: 0.65rem 0.15rem;
+      border: none;
+      border-bottom: 2px solid var(--line);
+      border-radius: 0;
+      background: transparent;
+    }
+    .v3 .sb:focus { border-bottom-color: var(--accent); }
+
+    /* 4 neon glow */
+    .v4 .sb {
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+      background: #080c10;
+      box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 18%, transparent);
+    }
+    .v4 .sb:focus {
+      box-shadow: 0 0 28px color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+
+    /* 5 with icon left */
+    .v5 .wrap::before {
+      content: "⌕";
+      position: absolute;
+      left: 0.85rem;
+      color: var(--accent);
+      font-size: 1.05rem;
+      pointer-events: none;
+      opacity: 0.85;
+    }
+    .v5 .sb {
+      padding: 0.75rem 1rem 0.75rem 2.35rem;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel) 85%, transparent);
+    }
+    .v5 .sb:focus { border-color: var(--accent); }
+
+    /* 6 icon + button */
+    .v6 .wrap { gap: 0; }
+    .v6 .sb {
+      flex: 1;
+      padding: 0.72rem 0.9rem 0.72rem 2.3rem;
+      border-radius: 12px 0 0 12px;
+      border: 1px solid var(--line);
+      border-right: none;
+      background: #0c1016;
+    }
+    .v6 .wrap::before {
+      content: "⌕";
+      position: absolute;
+      left: 0.8rem;
+      z-index: 1;
+      color: var(--mute);
+    }
+    .v6 .go {
+      padding: 0 1rem;
+      border-radius: 0 12px 12px 0;
+      border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+      background: color-mix(in srgb, var(--accent) 16%, transparent);
+      color: var(--accent);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* 7 glass */
+    .v7 .sb {
+      padding: 0.78rem 1.05rem;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(10px);
+    }
+    .v7 .sb:focus {
+      border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+      background: rgba(61, 255, 224, 0.06);
+    }
+
+    /* 8 thick border */
+    .v8 .sb {
+      padding: 0.7rem 1rem;
+      border-radius: 10px;
+      border: 2.5px solid color-mix(in srgb, var(--accent) 55%, transparent);
+      background: transparent;
+    }
+
+    /* 9 terminal */
+    .v9 .sb {
+      padding: 0.7rem 0.9rem;
+      border-radius: 6px;
+      border: 1px solid #1e3a36;
+      background: #040806;
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 0.92rem;
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .v9 .sb::placeholder { color: #3a6a62; }
+    .v9 .sb:focus { border-color: var(--accent); }
+
+    /* 10 double line */
+    .v10 .sb {
+      padding: 0.72rem 1rem;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      outline: 1px solid transparent;
+      outline-offset: 3px;
+      background: #0c1016;
+    }
+    .v10 .sb:focus {
+      border-color: var(--accent);
+      outline-color: color-mix(in srgb, var(--accent) 30%, transparent);
+    }
+
+    /* 11 floating label */
+    .v11 .wrap { display: block; }
+    .v11 .float {
+      position: absolute;
+      left: 0.95rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--mute);
+      font-size: 0.95rem;
+      font-weight: 600;
+      pointer-events: none;
+      transition: 0.15s;
+      background: #0a0c10;
+      padding: 0 0.25rem;
+    }
+    .v11 .sb {
+      padding: 0.85rem 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #0c1016;
+    }
+    .v11 .sb:focus + .float,
+    .v11 .sb:not(:placeholder-shown) + .float {
+      top: 0;
+      font-size: 0.72rem;
+      color: var(--accent);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .v11 .sb:focus { border-color: var(--accent); }
+    .v11 .sb::placeholder { color: transparent; }
+
+    /* 12 left accent bar */
+    .v12 .sb {
+      padding: 0.75rem 1rem;
+      border-radius: 4px 14px 14px 4px;
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--accent);
+      background: color-mix(in srgb, var(--panel) 80%, transparent);
+    }
+    .v12 .sb:focus {
+      background: color-mix(in srgb, var(--accent) 7%, transparent);
+    }
+
+    /* 13 soft fill */
+    .v13 .sb {
+      padding: 0.8rem 1.1rem;
+      border-radius: 14px;
+      border: none;
+      background: color-mix(in srgb, var(--ink) 8%, transparent);
+    }
+    .v13 .sb:focus {
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
+    }
+
+    /* 14 square sharp */
+    .v14 .sb {
+      padding: 0.75rem 1rem;
+      border-radius: 0;
+      border: 1px solid var(--line);
+      background: #0a0e14;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    }
+    .v14 .sb:focus { border-color: var(--accent); }
+
+    /* 15 dashed */
+    .v15 .sb {
+      padding: 0.72rem 1rem;
+      border-radius: 14px;
+      border: 1.5px dashed color-mix(in srgb, var(--accent) 35%, var(--line));
+      background: transparent;
+    }
+    .v15 .sb:focus {
+      border-style: solid;
+      border-color: var(--accent);
+    }
+
+    /* 16 big type */
+    .v16 .sb {
+      padding: 0.55rem 0.2rem;
+      border: none;
+      border-bottom: 1px solid var(--line);
+      border-radius: 0;
+      background: transparent;
+      font-family: "Orbitron", sans-serif;
+      font-size: 1.15rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .v16 .sb::placeholder {
+      text-transform: none;
+      letter-spacing: 0.04em;
+      font-size: 0.85rem;
+    }
+    .v16 .sb:focus { border-bottom-color: var(--accent); }
+
+    /* 17 dual tone */
+    .v17 .wrap {
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 10%, #0c1016), #0c1016 40%);
+    }
+    .v17 .sb {
+      padding: 0.75rem 1rem;
+      border: none;
+      background: transparent;
+    }
+
+    /* 18 chip tag */
+    .v18 .wrap {
+      gap: 0.45rem;
+      padding: 0.35rem 0.4rem 0.35rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #0c1016;
+    }
+    .v18 .tag {
+      flex-shrink: 0;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--accent) 15%, transparent);
+      color: var(--accent);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+    .v18 .sb {
+      border: none;
+      background: transparent;
+      padding: 0.4rem 0.5rem;
+      min-width: 0;
+    }
+
+    /* 19 inset deep */
+    .v19 .sb {
+      padding: 0.78rem 1rem;
+      border-radius: 14px;
+      border: 1px solid #000;
+      background: #05070a;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.03);
+    }
+    .v19 .sb:focus {
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.65), 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent);
+    }
+
+    /* 20 scan line */
+    .v20 .wrap::after {
+      content: "";
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      bottom: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.35;
+      pointer-events: none;
+    }
+    .v20 .sb {
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+    }
+    .v20 .sb:focus ~ .noop,
+    .v20 .wrap:focus-within::after { opacity: 1; }
+
+    /* 21 corners HUD */
+    .v21 .wrap::before,
+    .v21 .wrap::after {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border: 2px solid var(--accent);
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    .v21 .wrap::before {
+      top: 0; left: 0;
+      border-right: none;
+      border-bottom: none;
+    }
+    .v21 .wrap::after {
+      bottom: 0; right: 0;
+      border-left: none;
+      border-top: none;
+    }
+    .v21 .sb {
+      padding: 0.8rem 1.1rem;
+      border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+      border-radius: 2px;
+      background: color-mix(in srgb, var(--accent) 4%, transparent);
+    }
+
+    /* 22 pulse ring focus */
+    .v22 .sb {
+      padding: 0.75rem 1rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #0c1016;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .v22 .sb:focus {
+      border-color: var(--accent);
+      animation: pulse-ring 1.2s ease-out infinite;
+    }
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); }
+      100% { box-shadow: 0 0 0 12px transparent; }
+    }
+
+    /* 23 split placeholder look */
+    .v23 .wrap {
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #0c1016;
+      overflow: hidden;
+    }
+    .v23 .sb {
+      border: none;
+      background: transparent;
+      padding: 0.75rem 1rem;
+    }
+    .v23 .hint {
+      position: absolute;
+      right: 0.75rem;
+      color: var(--mute);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      pointer-events: none;
+      opacity: 0.55;
+    }
+    .v23 .wrap:focus-within .hint { opacity: 0; }
+
+    /* 24 sale accent */
+    .v24 .sb {
+      padding: 0.75rem 1rem;
+      border-radius: 14px;
+      border: 1px solid color-mix(in srgb, var(--accent-2) 35%, var(--line));
+      background: color-mix(in srgb, var(--accent-2) 6%, #0c1016);
+    }
+    .v24 .sb:focus {
+      border-color: var(--accent-2);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-2) 15%, transparent);
+    }
+
+    /* 25 minimal flat */
+    .v25 .sb {
+      padding: 0.6rem 0;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+    .v25 .sb:focus { color: var(--accent); }
+
+    /* 26 bordered capsule with clear */
+    .v26 .wrap {
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #0c1016;
+      padding-right: 0.35rem;
+    }
+    .v26 .sb {
+      border: none;
+      background: transparent;
+      padding: 0.7rem 0.5rem 0.7rem 1.1rem;
+    }
+    .v26 .clr {
+      width: 1.7rem;
+      height: 1.7rem;
+      border-radius: 999px;
+      border: none;
+      background: color-mix(in srgb, var(--ink) 8%, transparent);
+      color: var(--mute);
+      cursor: pointer;
+      font-size: 0.85rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .v26 .clr:hover { color: var(--ink); background: color-mix(in srgb, var(--accent) 15%, transparent); }
+
+    /* 27 stacked brand */
+    .v27 .wrap { flex-direction: column; align-items: stretch; gap: 0.35rem; }
+    .v27 .lab {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.16em;
+      color: var(--accent);
+    }
+    .v27 .sb {
+      padding: 0.55rem 0;
+      border: none;
+      border-bottom: 1px solid var(--line);
+      border-radius: 0;
+      background: transparent;
+    }
+    .v27 .sb:focus { border-bottom-color: var(--accent); }
+
+    /* 28 hex-ish bevel */
+    .v28 .sb {
+      padding: 0.78rem 1.15rem;
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+      border-radius: 8px;
+      background:
+        linear-gradient(#0c1016, #0c1016) padding-box,
+        linear-gradient(135deg, var(--accent), transparent 55%, var(--accent)) border-box;
+      border: 1px solid transparent;
+    }
+
+    /* 29 quiet current+ */
+    .v29 .sb {
+      padding: 0.78rem 1.05rem;
+      border-radius: 18px;
+      border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+      background: color-mix(in srgb, var(--panel) 70%, transparent);
+      transition: border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+    }
+    .v29 .sb:focus {
+      border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35), 0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+
+    /* 30 command K */
+    .v30 .wrap {
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #0c1016;
+      padding-right: 0.45rem;
+    }
+    .v30 .wrap::before {
+      content: "⌕";
+      margin-left: 0.85rem;
+      color: var(--mute);
+      flex-shrink: 0;
+    }
+    .v30 .sb {
+      border: none;
+      background: transparent;
+      padding: 0.72rem 0.65rem;
+    }
+    .v30 .kbd {
+      flex-shrink: 0;
+      padding: 0.15rem 0.4rem;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      color: var(--mute);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Строка поиска</h1>
+  <p class="lead">
+    Покликай поля, сравни вид и фокус. Когда понравится — нажми <strong>«Выбрать»</strong>
+    и напиши номер в чат.
+  </p>
+
+  <div class="grid" id="grid"></div>
+  <div class="footer-pick" id="chosen">Выбрано: <strong>пока ничего</strong></div>
+
+  <script>
+    const VARIANTS = [
+      { id: 1, title: "Сейчас (база)", desc: "Похоже на текущую: скругление + мягкая рамка." },
+      { id: 2, title: "Мягкая капсула", desc: "Полностью круглая «пилюля»." },
+      { id: 3, title: "Только линия", desc: "Минимум: подчёркивание снизу." },
+      { id: 4, title: "Неон-свечение", desc: "Бирюзовое свечение вокруг поля." },
+      { id: 5, title: "Иконка слева", desc: "Лупа внутри поля слева." },
+      { id: 6, title: "Поле + кнопка", desc: "Классический поиск с кнопкой «Найти»." },
+      { id: 7, title: "Стекло", desc: "Полупрозрачное glass-поле." },
+      { id: 8, title: "Толстая рамка", desc: "Яркая жирная обводка." },
+      { id: 9, title: "Терминал", desc: "Моноширинный «консольный» ввод." },
+      { id: 10, title: "Двойной контур", desc: "Рамка + внешний outline при фокусе." },
+      { id: 11, title: "Плавающий ярлык", desc: "Подпись уезжает вверх при вводе." },
+      { id: 12, title: "Акцент-полоса", desc: "Цветная полоска слева." },
+      { id: 13, title: "Мягкая заливка", desc: "Без рамки, только фон." },
+      { id: 14, title: "Срезанный угол", desc: "Геометрия в духе HUD." },
+      { id: 15, title: "Пунктир", desc: "Пунктирная рамка → сплошная в фокусе." },
+      { id: 16, title: "Крупный Orbitron", desc: "Крупный шрифт бренда." },
+      { id: 17, title: "Градиент-бок", desc: "Лёгкий бирюзовый градиент слева." },
+      { id: 18, title: "Чип + поле", desc: "Маленький тег SEARCH внутри." },
+      { id: 19, title: "Глубокий inset", desc: "Вдавленное «колодце»." },
+      { id: 20, title: "Scan-линия", desc: "Светящаяся линия снизу." },
+      { id: 21, title: "Углы HUD", desc: "Угловые маркеры как в интерфейсе." },
+      { id: 22, title: "Пульс-фокус", desc: "При фокусе мягко пульсирует." },
+      { id: 23, title: "Подсказка справа", desc: "Мелкая метка ENTER справа." },
+      { id: 24, title: "Sale-акцент", desc: "Розовая рамка в духе скидок." },
+      { id: 25, title: "Ультра-минимум", desc: "Почти только текст." },
+      { id: 26, title: "Капсула + очистка", desc: "Круглая с кнопкой ×." },
+      { id: 27, title: "Подпись сверху", desc: "Маленький SEARCH над линией." },
+      { id: 28, title: "Градиент-бордер", desc: "Рамка с диагональным градиентом." },
+      { id: 29, title: "Тихий lift", desc: "При фокусе чуть приподнимается." },
+      { id: 30, title: "Command style", desc: "Лупа + ⌘K как в приложениях." },
+    ];
+
+    function extra(v) {
+      if (v.id === 6) return `<button type="button" class="go">Найти</button>`;
+      if (v.id === 11) return `<span class="float">Название предмета</span>`;
+      if (v.id === 18) return `<span class="tag">SEARCH</span>`;
+      if (v.id === 23) return `<span class="hint">enter</span>`;
+      if (v.id === 26) return `<button type="button" class="clr" aria-label="Очистить">×</button>`;
+      if (v.id === 27) return `<span class="lab">SEARCH</span>`;
+      if (v.id === 30) return `<span class="kbd">⌘K</span>`;
+      return "";
+    }
+
+    function ph(v) {
+      if (v.id === 9) return "> найти предмет_";
+      if (v.id === 11) return " ";
+      if (v.id === 16) return "предмет";
+      return "Название предмета…";
+    }
+
+    const grid = document.getElementById("grid");
+    const chosen = document.getElementById("chosen");
+
+    VARIANTS.forEach((v) => {
+      const card = document.createElement("article");
+      card.className = `card v${v.id}`;
+      card.dataset.variant = String(v.id);
+      const ex = extra(v);
+      const orderFirst = v.id === 18 || v.id === 27 ? ex : "";
+      const orderLast = v.id === 18 || v.id === 27 ? "" : ex;
+      card.innerHTML = `
+        <span class="card-num">ВАРИАНТ ${v.id}</span>
+        <div class="card-title">${v.title}</div>
+        <p class="card-desc">${v.desc}</p>
+        <div class="demo wide">
+          <div class="wrap">
+            ${orderFirst}
+            <input class="sb" type="search" placeholder="${ph(v)}" autocomplete="off" spellcheck="false" />
+            ${orderLast}
+          </div>
+        </div>
+        <button type="button" class="pick">Выбрать</button>
+      `;
+      card.querySelector(".pick").addEventListener("click", () => {
+        document.querySelectorAll(".card").forEach((c) => c.classList.remove("is-picked"));
+        card.classList.add("is-picked");
+        chosen.innerHTML = `Выбрано: <strong>вариант ${v.id} — ${v.title}</strong>. Напиши в чат: <strong>${v.id}</strong>`;
+      });
+      const clr = card.querySelector(".clr");
+      if (clr) {
+        clr.addEventListener("click", () => {
+          const input = card.querySelector(".sb");
+          input.value = "";
+          input.focus();
+        });
+      }
+      grid.appendChild(card);
+    });
+  </script>
+</body>
+</html>

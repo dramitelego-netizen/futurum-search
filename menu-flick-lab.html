@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Меню — мигание</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07090d;
+      --panel: #12161e;
+      --ink: #e8eef7;
+      --mute: #7d8a9a;
+      --accent: #3dffe0;
+      --line: rgba(232, 238, 247, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Rajdhani", sans-serif;
+      background: radial-gradient(ellipse 70% 45% at 15% 0%, #0f1a1c, var(--bg));
+      color: var(--ink);
+      padding: 1.35rem clamp(1rem, 3vw, 2rem) 3rem;
+    }
+    h1 {
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin: 0 0 0.35rem;
+    }
+    .lead { color: var(--mute); margin: 0 0 1.2rem; max-width: 42rem; line-height: 1.4; }
+    .grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .card {
+      background: color-mix(in srgb, var(--panel) 94%, black);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0.95rem 1rem 1.05rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .card.is-picked {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent);
+    }
+    .card-num {
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+    }
+    .card-title { font-weight: 700; font-size: 1.05rem; }
+    .card-desc { margin: 0; color: var(--mute); font-size: 0.88rem; line-height: 1.35; }
+    .stage {
+      position: relative;
+      height: 8rem;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(ellipse 60% 50% at 70% 30%, rgba(61,255,224,0.07), transparent 60%),
+        #0a0e14;
+      overflow: hidden;
+    }
+    .stage-fake {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-content: center;
+      opacity: 0.2;
+      font-family: "Orbitron", sans-serif;
+      letter-spacing: 0.2em;
+      font-size: 0.8rem;
+      color: var(--accent);
+      pointer-events: none;
+    }
+    .actions { display: flex; gap: 0.5rem; margin-top: auto; }
+    button.pick {
+      font: inherit;
+      font-weight: 700;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+      background: color-mix(in srgb, var(--accent) 22%, transparent);
+      color: #041410;
+      padding: 0.4rem 0.9rem;
+      cursor: pointer;
+    }
+    .picked {
+      position: sticky;
+      bottom: 0.75rem;
+      margin-top: 1.2rem;
+      padding: 0.9rem 1rem;
+      border-radius: 12px;
+      border: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      color: var(--mute);
+      backdrop-filter: blur(8px);
+    }
+    .picked strong {
+      color: var(--accent);
+      font-family: "Orbitron", sans-serif;
+      letter-spacing: 0.06em;
+    }
+
+    .demo {
+      position: absolute;
+      top: 0.85rem;
+      left: 0.85rem;
+      width: 3.55rem;
+      height: 3.55rem;
+      border: 0;
+      border-radius: 13px;
+      background: transparent;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      color: #fff;
+    }
+    .bars {
+      display: grid;
+      gap: 0.45rem;
+      width: 1.75rem;
+      justify-items: start;
+      position: relative;
+      z-index: 1;
+    }
+    .bars i {
+      display: block;
+      width: 1.75rem;
+      height: 3px;
+      border-radius: 2px;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.35);
+    }
+    .bars i:nth-child(2) { width: 1.3rem; }
+
+    /* 1 — сильный тройной вспых */
+    .f1 .bars i { animation: f1 2.8s ease-in-out infinite; }
+    @keyframes f1 {
+      0%, 70%, 100% { opacity: 1; box-shadow: 0 0 10px rgba(255,255,255,0.35); filter: brightness(1); }
+      74% { opacity: 0.15; box-shadow: none; filter: brightness(0.4); }
+      78% { opacity: 1; filter: brightness(1.6); box-shadow: 0 0 22px rgba(255,255,255,0.9); }
+      82% { opacity: 0.2; }
+      86% { opacity: 1; filter: brightness(1.4); }
+      90% { opacity: 0.25; }
+      94% { opacity: 1; filter: brightness(1); }
+    }
+
+    /* 2 — линии мигают по очереди */
+    .f2 .bars i { animation: f2 2.2s ease-in-out infinite; }
+    .f2 .bars i:nth-child(2) { animation-delay: 0.18s; }
+    .f2 .bars i:nth-child(3) { animation-delay: 0.36s; }
+    @keyframes f2 {
+      0%, 55%, 100% { opacity: 1; box-shadow: 0 0 10px rgba(255,255,255,0.4); }
+      62% { opacity: 0; box-shadow: none; }
+      70% { opacity: 1; box-shadow: 0 0 20px rgba(255,255,255,0.95); }
+      78% { opacity: 0.15; }
+      86% { opacity: 1; }
+    }
+
+    /* 3 — хаотичный строб */
+    .f3 .bars i { animation: f3 3.4s linear infinite; }
+    @keyframes f3 {
+      0%, 60%, 100% { opacity: 1; filter: brightness(1); }
+      62% { opacity: 0.1; }
+      63% { opacity: 1; filter: brightness(1.8); }
+      64% { opacity: 0.2; }
+      65.5% { opacity: 1; }
+      67% { opacity: 0; }
+      68% { opacity: 1; filter: brightness(1.5); }
+      70% { opacity: 0.3; }
+      72% { opacity: 1; }
+      85% { opacity: 1; }
+      86% { opacity: 0.15; }
+      87% { opacity: 1; }
+    }
+
+    /* 4 — вспышка всей кнопки + ореол */
+    .f4 { animation: f4-btn 2.6s ease-in-out infinite; }
+    .f4::after {
+      content: "";
+      position: absolute;
+      inset: -4px;
+      border-radius: 16px;
+      background: radial-gradient(circle, rgba(255,255,255,0.35), transparent 70%);
+      opacity: 0;
+      pointer-events: none;
+      animation: f4-halo 2.6s ease-in-out infinite;
+    }
+    .f4 .bars i { animation: f4-bars 2.6s ease-in-out infinite; }
+    @keyframes f4-btn {
+      0%, 72%, 100% { transform: scale(1); }
+      78% { transform: scale(1.08); }
+      84% { transform: scale(0.97); }
+      90% { transform: scale(1.04); }
+      96% { transform: scale(1); }
+    }
+    @keyframes f4-halo {
+      0%, 72%, 100% { opacity: 0; }
+      78% { opacity: 1; }
+      90% { opacity: 0.4; }
+      96% { opacity: 0; }
+    }
+    @keyframes f4-bars {
+      0%, 72%, 100% { opacity: 1; }
+      76% { opacity: 0.2; }
+      80% { opacity: 1; filter: brightness(1.7); }
+      84% { opacity: 0.3; }
+      88% { opacity: 1; }
+    }
+
+    /* 5 — бирюзовый неон-блэкаут */
+    .f5 .bars i {
+      animation: f5 3s ease-in-out infinite;
+      box-shadow: 0 0 12px rgba(61,255,224,0.45);
+    }
+    @keyframes f5 {
+      0%, 68%, 100% {
+        opacity: 1;
+        background: #fff;
+        box-shadow: 0 0 12px rgba(61,255,224,0.4);
+      }
+      72% { opacity: 0; box-shadow: none; }
+      76% {
+        opacity: 1;
+        background: var(--accent);
+        box-shadow: 0 0 28px rgba(61,255,224,0.95);
+      }
+      80% { opacity: 0.15; background: #fff; }
+      84% {
+        opacity: 1;
+        background: var(--accent);
+        box-shadow: 0 0 22px rgba(61,255,224,0.8);
+      }
+      90% { opacity: 1; background: #fff; box-shadow: 0 0 12px rgba(255,255,255,0.4); }
+    }
+
+    /* 6 — Morse-подобное: длинно-коротко-коротко */
+    .f6 .bars i { animation: f6 3.6s linear infinite; }
+    @keyframes f6 {
+      0%, 55%, 100% { opacity: 1; }
+      58% { opacity: 0.1; }
+      66% { opacity: 1; filter: brightness(1.5); } /* длинный */
+      70% { opacity: 0.1; }
+      74% { opacity: 1; } /* короткий */
+      76% { opacity: 0.1; }
+      80% { opacity: 1; } /* короткий */
+      82% { opacity: 0.1; }
+      86% { opacity: 1; }
+    }
+
+    /* 7 — волна выключения сверху вниз */
+    .f7 .bars i { animation: f7 2.4s ease-in-out infinite; }
+    .f7 .bars i:nth-child(2) { animation-delay: 0.1s; }
+    .f7 .bars i:nth-child(3) { animation-delay: 0.2s; }
+    @keyframes f7 {
+      0%, 50%, 100% { opacity: 1; transform: scaleX(1); box-shadow: 0 0 10px rgba(255,255,255,0.35); }
+      58% { opacity: 0; transform: scaleX(0.4); box-shadow: none; }
+      66% { opacity: 1; transform: scaleX(1); box-shadow: 0 0 22px rgba(255,255,255,0.9); }
+      74% { opacity: 0.2; }
+      82% { opacity: 1; }
+    }
+
+    /* 8 — двойной блэкаут с паузой */
+    .f8 .bars i { animation: f8 3.2s ease-in-out infinite; }
+    @keyframes f8 {
+      0%, 40%, 100% { opacity: 1; filter: brightness(1); }
+      45% { opacity: 0; }
+      50% { opacity: 1; filter: brightness(1.8); box-shadow: 0 0 24px #fff; }
+      55% { opacity: 1; filter: brightness(1); }
+      72% { opacity: 0; }
+      78% { opacity: 1; filter: brightness(1.6); }
+      84% { opacity: 0.25; }
+      90% { opacity: 1; }
+    }
+
+    /* 9 — глитч: дергается + мигает */
+    .f9 { animation: f9-shake 2.8s ease-in-out infinite; }
+    .f9 .bars i { animation: f9-flick 2.8s steps(1, end) infinite; }
+    .f9 .bars i:nth-child(2) { animation-delay: 0.05s; }
+    .f9 .bars i:nth-child(3) { animation-delay: 0.1s; }
+    @keyframes f9-shake {
+      0%, 65%, 100% { transform: translate(0,0); }
+      68% { transform: translate(-2px, 1px); }
+      70% { transform: translate(2px, -1px); }
+      72% { transform: translate(-1px, 0); }
+      74% { transform: translate(1px, 1px); }
+      76% { transform: translate(0,0); }
+      88% { transform: translate(2px, 0); }
+      90% { transform: translate(-2px, 0); }
+      92% { transform: translate(0,0); }
+    }
+    @keyframes f9-flick {
+      0%, 65%, 100% { opacity: 1; }
+      67% { opacity: 0; }
+      69% { opacity: 1; }
+      71% { opacity: 0.2; }
+      73% { opacity: 1; }
+      87% { opacity: 0; }
+      89% { opacity: 1; }
+      91% { opacity: 0.3; }
+      93% { opacity: 1; }
+    }
+
+    /* 10 — медленное затухание + резкий вспых */
+    .f10 .bars i { animation: f10 3.5s ease-in-out infinite; }
+    @keyframes f10 {
+      0% { opacity: 1; filter: brightness(1); box-shadow: 0 0 10px rgba(255,255,255,0.35); }
+      55% { opacity: 0.25; filter: brightness(0.6); box-shadow: none; }
+      62% { opacity: 0.1; }
+      68% { opacity: 1; filter: brightness(2); box-shadow: 0 0 28px rgba(255,255,255,1); }
+      74% { opacity: 0.3; }
+      80% { opacity: 1; filter: brightness(1.3); }
+      88% { opacity: 1; filter: brightness(1); box-shadow: 0 0 10px rgba(255,255,255,0.35); }
+      100% { opacity: 1; }
+    }
+
+    /* 11 — кольцо + мигание линий */
+    .f11::after {
+      content: "";
+      position: absolute;
+      inset: 0.15rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.6);
+      animation: f11-ring 2.5s ease-out infinite;
+      pointer-events: none;
+    }
+    .f11 .bars i { animation: f11-bars 2.5s ease-in-out infinite; }
+    @keyframes f11-ring {
+      0%, 55% { transform: scale(0.9); opacity: 0; }
+      60% { opacity: 0.9; transform: scale(0.95); }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+    @keyframes f11-bars {
+      0%, 52%, 100% { opacity: 1; }
+      56% { opacity: 0.15; }
+      60% { opacity: 1; filter: brightness(1.6); box-shadow: 0 0 20px #fff; }
+      64% { opacity: 0.2; }
+      70% { opacity: 1; }
+    }
+
+    /* 12 — очень жирный строб пачками */
+    .f12 .bars i { animation: f12 4s linear infinite; }
+    @keyframes f12 {
+      0%, 50%, 100% { opacity: 1; filter: brightness(1); }
+      /* пачка 1 */
+      52% { opacity: 0; } 53% { opacity: 1; filter: brightness(1.8); }
+      54% { opacity: 0; } 55% { opacity: 1; }
+      56% { opacity: 0; } 57% { opacity: 1; filter: brightness(1.5); }
+      58% { opacity: 1; }
+      /* пауза */
+      70% { opacity: 1; }
+      /* пачка 2 — другая */
+      72% { opacity: 0; } 73.5% { opacity: 1; filter: brightness(2); }
+      75% { opacity: 0.15; } 76.5% { opacity: 1; }
+      78% { opacity: 0; } 80% { opacity: 1; }
+      82% { opacity: 0.2; } 84% { opacity: 1; filter: brightness(1); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo, .demo::after, .bars i { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Меню — крупное мигание</h1>
+  <p class="lead">Все варианты заметнее и разнообразнее, чем текущий неон. Выбери номер и напиши его в чат.</p>
+  <div class="grid" id="grid"></div>
+  <div class="picked" id="picked">Выбор: пока нет</div>
+
+  <script>
+    const VARIANTS = [
+      { t: "Тройной вспых", d: "Три ярких вспышки подряд после паузы" },
+      { t: "По очереди", d: "Каждая линия мигает со сдвигом — бежит вниз" },
+      { t: "Хаотичный строб", d: "Неровные короткие вспышки, разный ритм" },
+      { t: "Вспышка + ореол", d: "Кнопка пульсирует размером, вокруг свет" },
+      { t: "Бирюзовый блэкаут", d: "Гаснет и вспыхивает цветом accent" },
+      { t: "Морзе", d: "Длинно–коротко–коротко, как сигнал" },
+      { t: "Волна выкл", d: "Линии гаснут сверху вниз и вспыхивают" },
+      { t: "Двойной блэкаут", d: "Две разные серии миганий с паузой" },
+      { t: "Глитч", d: "Дёргается и резко мигает" },
+      { t: "Затухание → вспых", d: "Медленно тускнеет, потом резкий яркий пик" },
+      { t: "Кольцо + миг", d: "Кольцо + вспышка линий вместе" },
+      { t: "Пачки строба", d: "Самый жирный: две разные пачки вспышек" },
+    ];
+
+    const grid = document.getElementById("grid");
+    const picked = document.getElementById("picked");
+
+    VARIANTS.forEach((v, i) => {
+      const n = i + 1;
+      const card = document.createElement("article");
+      card.className = "card";
+      card.dataset.n = String(n);
+      card.innerHTML = `
+        <div class="card-num">#${n}</div>
+        <div class="card-title">${v.t}</div>
+        <p class="card-desc">${v.d}</p>
+        <div class="stage">
+          <div class="stage-fake">FUTURUM</div>
+          <button type="button" class="demo f${n}" aria-label="Демо ${n}">
+            <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>
+          </button>
+        </div>
+        <div class="actions">
+          <button type="button" class="pick" data-pick="${n}">Выбрать #${n}</button>
+        </div>`;
+      grid.appendChild(card);
+    });
+
+    grid.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-pick]");
+      if (!btn) return;
+      const n = btn.getAttribute("data-pick");
+      const v = VARIANTS[Number(n) - 1];
+      document.querySelectorAll(".card").forEach((c) => {
+        c.classList.toggle("is-picked", c.dataset.n === n);
+      });
+      picked.innerHTML = `Выбор: <strong>#${n}</strong> — ${v.t}. Напиши в чат: <strong>${n}</strong>`;
+    });
+  </script>
+</body>
+</html>

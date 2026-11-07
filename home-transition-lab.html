@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>FUTURUM · лаборатория переходов (локально)</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=181" />
+  <link rel="stylesheet" href="home-portal.css?v=1" />
+  <link rel="stylesheet" href="home-transition-lab.css?v=3" />
+</head>
+<body class="lab-page" data-theme="dark" data-bg="minimal">
+  <div class="atmosphere" aria-hidden="true">
+    <div class="atm-wash"></div>
+    <div class="atm-flow"></div>
+    <div class="atm-flow atm-flow-b"></div>
+    <div class="grid"></div>
+    <div class="scanlines"></div>
+  </div>
+
+  <header class="lab-top">
+    <a class="lab-back" href="./">← Домой</a>
+    <div class="lab-top-main">
+      <strong>Лаборатория переходов</strong>
+      <span>только локально · выбери эффект</span>
+    </div>
+    <button type="button" class="lab-replay" id="replayBtn">Ещё раз</button>
+  </header>
+
+  <aside class="lab-picker" aria-label="Эффекты">
+    <p class="lab-picker-label">Эффект</p>
+    <div class="lab-list" id="fxList" role="listbox"></div>
+    <p class="lab-hint" id="fxHint"></p>
+    <label class="lab-check">
+      <input type="checkbox" id="autoPreview" checked />
+      авто-превью iframe
+    </label>
+  </aside>
+
+  <main class="lab-stage">
+    <p class="lab-stage-title" id="fxTitle">—</p>
+    <div class="lab-gates home-gates" id="labGates">
+      <button type="button" class="home-gate" id="gateDemo" data-preview="./shop.html">
+        <span class="home-gate-3d">
+          <span class="home-gate-face home-gate-face-front">
+            <span class="home-gate-media" aria-hidden="true">
+              <img src="./hub-shop.jpg" alt="" width="640" height="640" />
+              <span class="home-gate-wash"></span>
+            </span>
+            <span class="home-gate-copy">
+              <span class="home-gate-kicker">Демо</span>
+              <span class="home-gate-title">Кликни плитку</span>
+              <span class="home-gate-desc">Смотри переход · магазин как превью</span>
+            </span>
+          </span>
+          <span class="home-gate-face home-gate-face-back" aria-hidden="true">
+            <iframe class="home-gate-preview" title="Превью" tabindex="-1"></iframe>
+            <span class="home-gate-glass"></span>
+          </span>
+        </span>
+      </button>
+    </div>
+    <p class="lab-note">Эффекты 1–3 — живое окно (настоящая страница). 4+ — старая карточка для сравнения. Страница никуда не уходит.</p>
+  </main>
+
+  <div class="home-portal-flash" id="flash" aria-hidden="true"></div>
+
+  <script src="home-portal.js?v=2"></script>
+  <script src="home-transition-lab.js?v=3"></script>
+</body>
+</html>

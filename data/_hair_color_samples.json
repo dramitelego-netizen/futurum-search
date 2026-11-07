@@ -1,0 +1,314 @@
+[
+  {
+    "name": "Королева красоты",
+    "icon": "https://parapa.ru/wiki/images/1/1b/5b21b318e3.png",
+    "desc": "Ты сногсшибательна!",
+    "colors": [
+      {
+        "label": "черный",
+        "url": "https://parapa.ru/wiki/images/1/15/A6d3aaa6d6123.png"
+      },
+      {
+        "label": "красный",
+        "url": "https://parapa.ru/wiki/images/4/4c/117bbb29d2_%281%29.png"
+      },
+      {
+        "label": "желтый",
+        "url": "https://parapa.ru/wiki/images/0/0b/B39c5774f112.png"
+      },
+      {
+        "label": "синий",
+        "url": "https://parapa.ru/wiki/images/f/f3/Af63ff15f612.png"
+      },
+      {
+        "label": "зеленый",
+        "url": "https://parapa.ru/wiki/images/2/2a/142b4bea54123.png"
+      },
+      {
+        "label": "сиреневый",
+        "url": "https://parapa.ru/wiki/images/5/5b/C15e919d8f14.png"
+      },
+      {
+        "label": "белый",
+        "url": "https://parapa.ru/wiki/images/3/30/94042b95f41258.png"
+      },
+      {
+        "label": "коричневый",
+        "url": "https://parapa.ru/wiki/images/4/43/9156098d58147.png"
+      }
+    ]
+  },
+  {
+    "name": "Дриада",
+    "icon": "https://parapa.ru/wiki/images/6/65/365e31bdb8.png",
+    "desc": "Околдует и заведет.",
+    "colors": [
+      {
+        "label": "черный",
+        "url": "https://parapa.ru/wiki/images/9/93/Eae4c877101245.png"
+      },
+      {
+        "label": "красный",
+        "url": "https://parapa.ru/wiki/images/1/14/Ffba5d0978144.png"
+      },
+      {
+        "label": "желтый",
+        "url": "https://parapa.ru/wiki/images/2/25/Bfd2db543d124.png"
+      },
+      {
+        "label": "синий",
+        "url": "https://parapa.ru/wiki/images/c/ca/6c38d86b01147.png"
+      },
+      {
+        "label": "зеленый",
+        "url": "https://parapa.ru/wiki/images/4/41/16973c8b6a12.png"
+      },
+      {
+        "label": "сиреневый",
+        "url": "https://parapa.ru/wiki/images/d/d2/2bfb7e1d7e0200.png"
+      },
+      {
+        "label": "белый",
+        "url": "https://parapa.ru/wiki/images/5/5e/02389f1af914.png"
+      },
+      {
+        "label": "коричневый",
+        "url": "https://parapa.ru/wiki/images/a/a4/7c4096932f011.png"
+      }
+    ]
+  },
+  {
+    "name": "Рианна",
+    "icon": "https://parapa.ru/wiki/images/e/e1/%D0%A0%D0%B8%D0%B0%D0%BD%D0%BD%D0%B0%D0%B8%D0%BE%D0%BA%D0%BD%D0%BA%D0%B0.png",
+    "desc": "Зачесанные назад волосы и выбритый висок смотрятся очень привлекательно.",
+    "colors": [
+      {
+        "label": "черный",
+        "url": "https://parapa.ru/wiki/images/0/0e/7a169da0ee.png"
+      },
+      {
+        "label": "красный",
+        "url": "https://parapa.ru/wiki/images/9/9a/Sdfghj.png"
+      },
+      {
+        "label": "желтый",
+        "url": "https://parapa.ru/wiki/images/4/45/Qwertyui.png"
+      },
+      {
+        "label": "синий",
+        "url": "https://parapa.ru/wiki/images/5/58/Uytrew.png"
+      },
+      {
+        "label": "зеленый",
+        "url": "https://parapa.ru/wiki/images/3/39/Oiuytre.png"
+      },
+      {
+        "label": "сиреневый",
+        "url": "https://parapa.ru/wiki/images/8/89/Nvfthgds.png"
+      },
+      {
+        "label": "белый",
+        "url": "https://parapa.ru/wiki/images/5/59/%3Blkjhgfd.png"
+      },
+      {
+        "label": "коричневый",
+        "url": "https://parapa.ru/wiki/images/5/59/Lkjhgfdsa2.png"
+      }
+    ]
+  },
+  {
+    "name": "Вечерняя укладка",
+    "icon": "https://parapa.ru/wiki/images/6/60/E69d54f1ba.png",
+    "desc": "Вечерняя укладка хороша в любое время суток!",
+    "colors": [
+      {
+        "label": "черный",
+        "url": "https://parapa.ru/wiki/images/d/da/278c01f12a123.png"
+      },
+      {
+        "label": "красный",
+        "url": "https://parapa.ru/wiki/images/8/8d/D25e240d04120.png"
+      },
+      {
+        "label": "желтый",
+        "url": "https://parapa.ru/wiki/images/a/ab/Bbc3519b48125.png"
+      },
+      {
+        "label": "синий",
+        "url": "https://parapa.ru/wiki/images/0/07/8e968a7da1120.png"
+      },
+      {
+        "label": "зеленый",
+        "url": "https://parapa.ru/wiki/images/c/c7/48d681c2a412.png"
+      },
+      {
+        "label": "сиреневый",
+        "url": "https://parapa.ru/wiki/images/d/d7/724bf9917b120.png"
+      },
+      {
+        "label": "белый",
+        "url": "https://parapa.ru/wiki/images/b/b4/58fd35d28b12.png"
+      },
+      {
+        "label": "коричневый",
+        "url": "https://parapa.ru/wiki/images/9/91/A768bd91d3147.png"
+      }
+    ]
+  },
+  {
+    "name": "Двойной пучок",
+    "icon": "https://parapa.ru/wiki/images/9/99/6bd037a147.png",
+    "desc": "Прическа для косплея.",
+    "colors": [
+      {
+        "label": "черный",
+        "url": "https://parapa.ru/wiki/images/e/e9/52dffa8724120.png"
+      },
+      {
+        "label": "красный",
+        "url": "https://parapa.ru/wiki/images/6/6e/2ecfe0fab9120.png"
+      },
+      {
+        "label": "желтый",
+        "url": "https://parapa.ru/wiki/images/9/91/Ae6840413912.png"
+      },
+      {
+        "label": "синий",
+        "url": "https://parapa.ru/wiki/images/3/38/30be77376812.png"
+      },
+      {
+        "label": "зеленый",
+        "url": "https://parapa.ru/wiki/images/7/72/73285f418b120.png"
+      },
+      {
+        "label": "сиреневый",
+        "url": "https://parapa.ru/wiki/images/6/67/F8decfe1ed111.png"
+      },
+      {
+        "label": "белый",
+        "url": "https://parapa.ru/wiki/images/d/d2/Ffdcdb0fac111.png"
+      },
+      {
+        "label": "коричневый",
+        "url": "https://parapa.ru/wiki/images/4/4d/Eb0280f7db200.png"
+      }
+    ]
+  },
+  {
+    "name": "Рога Асура",
+    "icon": "https://parapa.ru/wiki/images/f/f3/7a0b1bfae3.png",
+    "desc": "Милые демонические рожки.",
+    "colors": [
+      {
+        "label": "черный",
+        "url": "https://parapa.ru/wiki/images/c/c4/0fa0554c8e120.png"
+      },
+      {
+        "label": "красный",
+        "url": "https://parapa.ru/wiki/images/9/99/F01d721d9014.png"
+      },
+      {
+        "label": "желтый",
+        "url": "https://parapa.ru/wiki/images/4/48/2aaef4bc2112.png"
+      },
+      {
+        "label": "синий",
+        "url": "https://parapa.ru/wiki/images/3/33/0593536ae1120.png"
+      },
+      {
+        "label": "зеленый",
+        "url": "https://parapa.ru/wiki/images/9/9b/4e6a533bd9120.png"
+      },
+      {
+        "label": "сиреневый",
+        "url": "https://parapa.ru/wiki/images/c/c9/439e678e3a120.png"
+      },
+      {
+        "label": "белый",
+        "url": "https://parapa.ru/wiki/images/f/f3/21cc775fba14.png"
+      },
+      {
+        "label": "коричневый",
+        "url": "https://parapa.ru/wiki/images/d/d7/188f2ba2e212.png"
+      }
+    ]
+  },
+  {
+    "name": "Алисия",
+    "icon": "https://parapa.ru/wiki/images/1/1c/C7a7ad4ddf.png",
+    "desc": "Волосы украшает изящная тиара.",
+    "colors": [
+      {
+        "label": "черный",
+        "url": "https://parapa.ru/wiki/images/2/2e/0379e71918.png"
+      },
+      {
+        "label": "красный",
+        "url": "https://parapa.ru/wiki/images/4/47/8b218e1b7a.png"
+      },
+      {
+        "label": "желтый",
+        "url": "https://parapa.ru/wiki/images/a/a5/A04c9763f6.png"
+      },
+      {
+        "label": "синий",
+        "url": "https://parapa.ru/wiki/images/f/f3/8fdeee0b89.png"
+      },
+      {
+        "label": "зеленый",
+        "url": "https://parapa.ru/wiki/images/c/c7/E39f32996d.png"
+      },
+      {
+        "label": "сиреневый",
+        "url": "https://parapa.ru/wiki/images/1/1c/Bc6eb4e111.png"
+      },
+      {
+        "label": "белый",
+        "url": "https://parapa.ru/wiki/images/a/a2/35506a187e.png"
+      },
+      {
+        "label": "коричневый",
+        "url": "https://parapa.ru/wiki/images/d/dc/89f8d29ea9.png"
+      }
+    ]
+  },
+  {
+    "name": "Адина",
+    "icon": "https://parapa.ru/wiki/images/f/f2/%D0%90%D0%B4%D0%B8%D0%BD%D0%B0%D0%B8%D0%BA%D0%BE%D0%BD%D0%BA%D0%B0.png",
+    "desc": "Длинные вьющиеся локоны, собранные в высокую конструкцию. Из прически выбиваются две гипертрофированно длинные пряди.",
+    "colors": [
+      {
+        "label": "черный",
+        "url": "https://parapa.ru/wiki/images/b/b4/01404e7168.png"
+      },
+      {
+        "label": "красный",
+        "url": "https://parapa.ru/wiki/images/c/c1/3b59957a16.png"
+      },
+      {
+        "label": "желтый",
+        "url": "https://parapa.ru/wiki/images/1/16/16c3145e20.png"
+      },
+      {
+        "label": "синий",
+        "url": "https://parapa.ru/wiki/images/1/1c/Bf313703a4.png"
+      },
+      {
+        "label": "зеленый",
+        "url": "https://parapa.ru/wiki/images/8/81/B198eca91e.png"
+      },
+      {
+        "label": "сиреневый",
+        "url": "https://parapa.ru/wiki/images/2/29/A19e4d2a56.png"
+      },
+      {
+        "label": "белый",
+        "url": "https://parapa.ru/wiki/images/8/8c/A81de6eb99.png"
+      },
+      {
+        "label": "коричневый",
+        "url": "https://parapa.ru/wiki/images/9/9f/876b4e9fd1.png"
+      }
+    ]
+  }
+]

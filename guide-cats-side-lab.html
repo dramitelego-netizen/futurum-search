@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Категории рядом с каталогом · FUTURUM lab</title>
+  <meta name="theme-color" content="#05070a" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #05070a;
+      --text: #e8eef7;
+      --mute: #7d8a9a;
+      --line: rgba(232, 238, 247, 0.1);
+      --panel: rgba(14, 18, 26, 0.72);
+      --panel-solid: rgba(10, 13, 18, 0.94);
+      --accent: #3dffe0;
+      --accent-2: #ff4d6d;
+      --font: "Rajdhani", "Segoe UI", sans-serif;
+      --display: "Orbitron", "Bahnschrift", sans-serif;
+      --side: 236px;
+      --cats: 188px;
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      color: var(--text);
+      font-family: var(--font);
+      font-weight: 500;
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse 48% 36% at 8% 0%, rgba(61, 255, 224, 0.14), transparent 62%),
+        radial-gradient(ellipse 36% 32% at 96% 8%, rgba(255, 77, 109, 0.1), transparent 64%),
+        linear-gradient(180deg, #0a1016 0%, #05070a 46%);
+    }
+    button, input { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    h1, h2, p { margin: 0; }
+    :focus-visible {
+      outline: 2px solid color-mix(in srgb, var(--accent) 70%, transparent);
+      outline-offset: 2px;
+    }
+
+    .frame { width: min(1180px, 100%); margin: 0 auto; padding: 16px 14px 48px; }
+    .kicker {
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    h1 {
+      margin: 4px 0 6px;
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+    .lead {
+      color: var(--mute);
+      font-size: 0.95rem;
+      line-height: 1.4;
+      margin-bottom: 14px;
+      max-width: 42rem;
+    }
+    .lead a { color: var(--accent); }
+
+    .switch {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .tab {
+      text-align: left;
+      background: color-mix(in srgb, var(--panel) 55%, transparent);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 9px 11px;
+      min-width: 0;
+    }
+    .tab.on {
+      border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+    .tab-key {
+      font-family: var(--display);
+      color: var(--accent);
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+    }
+    .tab-blurb {
+      display: block;
+      margin-top: 3px;
+      font-size: 0.8rem;
+      color: var(--mute);
+      font-weight: 600;
+      line-height: 1.25;
+    }
+    .tab.on .tab-blurb { color: var(--text); }
+
+    .desk {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--panel-solid) 90%, transparent);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+      min-height: 560px;
+      display: flex;
+      flex-direction: column;
+    }
+    .desk-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      flex: 0 0 auto;
+    }
+    .brand {
+      font-family: var(--display);
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      font-size: 0.95rem;
+      background: linear-gradient(90deg, #3dffe0, #5ad0ff, #b8fff5);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .search {
+      flex: 1;
+      min-width: 0;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel) 70%, transparent);
+      border-radius: 999px;
+      padding: 0.42rem 0.9rem;
+      color: var(--mute);
+      font-size: 0.9rem;
+    }
+    .desk-body {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      position: relative;
+    }
+
+    /* —— shared catalog / cats pieces —— */
+    .side {
+      width: var(--side);
+      flex: 0 0 var(--side);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      border-right: 1px solid var(--line);
+      background: color-mix(in srgb, #070b10 68%, transparent);
+    }
+    .side-head {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 0.6rem;
+      border-bottom: 1px solid var(--line);
+      flex: 0 0 auto;
+    }
+    .side-title {
+      font-family: var(--display);
+      font-size: 0.64rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .side-btn {
+      margin-left: auto;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--mute);
+      border-radius: 999px;
+      padding: 0.16rem 0.48rem;
+      font-weight: 700;
+      font-size: 0.72rem;
+    }
+    .tree { overflow: auto; min-height: 0; flex: 1; padding: 0.3rem 0 0.55rem; }
+    .g-head, .leaf {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin: 0;
+      text-align: left;
+      background: transparent;
+      border: 0;
+      padding: 0.42rem 0.55rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .g-head:hover, .leaf:hover {
+      background: color-mix(in srgb, var(--accent) 7%, transparent);
+    }
+    .g-code {
+      font-family: var(--display);
+      font-size: 0.5rem;
+      letter-spacing: 0.04em;
+      width: 1.55rem;
+      height: 1.55rem;
+      display: grid;
+      place-items: center;
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+      color: var(--accent);
+      border-radius: 6px;
+      flex: 0 0 auto;
+    }
+    .g-label { min-width: 0; flex: 1; font-size: 0.9rem; }
+    .count {
+      font-variant-numeric: tabular-nums;
+      color: var(--mute);
+      font-weight: 700;
+      font-size: 0.74rem;
+    }
+    .leaf {
+      font-weight: 600;
+      color: var(--mute);
+      padding-left: 2.35rem;
+      font-size: 0.86rem;
+    }
+    .leaf.on {
+      color: var(--text);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      box-shadow: inset 2px 0 0 var(--accent);
+    }
+    .leaf.on .count { color: var(--accent); }
+
+    .cats {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      min-width: 0;
+    }
+    .cats-head {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.5rem 0.55rem;
+      border-bottom: 1px solid var(--line);
+      flex: 0 0 auto;
+    }
+    .cats-title {
+      font-family: var(--display);
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .more {
+      margin-left: auto;
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 0.18rem 0.5rem;
+      font-weight: 700;
+      font-size: 0.7rem;
+    }
+    .more.on {
+      background: color-mix(in srgb, var(--accent) 18%, transparent);
+      color: var(--text);
+    }
+    .buckets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.28rem;
+      padding: 0.45rem 0.5rem 0.2rem;
+      flex: 0 0 auto;
+    }
+    .bucket, .src {
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel) 55%, transparent);
+      border-radius: 999px;
+      padding: 0.22rem 0.5rem;
+      font-weight: 700;
+      font-size: 0.74rem;
+      color: var(--mute);
+      white-space: nowrap;
+    }
+    .bucket.on, .src.on {
+      color: var(--text);
+      border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+    .bucket .n, .src .n {
+      margin-left: 0.22rem;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+    .sources {
+      overflow: auto;
+      min-height: 0;
+      flex: 1;
+      padding: 0.35rem 0.45rem 0.55rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.28rem;
+    }
+    .src {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.35rem;
+      width: 100%;
+      border-radius: 10px;
+      text-align: left;
+      white-space: normal;
+      line-height: 1.2;
+      padding: 0.38rem 0.5rem;
+    }
+    .src-name { min-width: 0; }
+
+    .main {
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 0.55rem 0.7rem 0.65rem;
+    }
+    .crumb {
+      margin: 0 0 0.35rem;
+      color: var(--mute);
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    .crumb strong { color: var(--text); }
+    .stage {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(220px, 0.9fr);
+      gap: 0.65rem;
+      overflow: hidden;
+    }
+    .results, .preview {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--panel) 70%, transparent);
+      min-height: 0;
+      overflow: auto;
+    }
+    .results { padding: 0.35rem; }
+    .row {
+      display: grid;
+      grid-template-columns: 2.2rem minmax(0, 1fr);
+      gap: 0.45rem;
+      align-items: center;
+      padding: 0.32rem 0.4rem;
+      border-radius: 8px;
+    }
+    .row.on {
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent);
+    }
+    .thumb {
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 7px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(145deg, rgba(61,255,224,0.12), transparent 60%),
+        #0c1218;
+    }
+    .row-name { font-weight: 700; font-size: 0.86rem; line-height: 1.2; }
+    .row-sub { color: var(--mute); font-size: 0.72rem; }
+    .preview {
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+    .prev-top {
+      display: grid;
+      grid-template-columns: 88px minmax(0, 1fr);
+      gap: 0.65rem;
+      align-items: start;
+    }
+    .prev-img {
+      width: 88px;
+      height: 88px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(145deg, rgba(61,255,224,0.14), transparent 55%),
+        #0c1218;
+    }
+    .prev-title { font-weight: 700; font-size: 1.05rem; line-height: 1.25; }
+    .prev-meta {
+      margin-top: 0.35rem;
+      display: inline-flex;
+      flex-direction: column;
+      gap: 0.08rem;
+      padding: 0.28rem 0.5rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      width: fit-content;
+    }
+    .prev-meta span { font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); font-weight: 700; }
+    .prev-meta b { font-size: 0.82rem; }
+    .prev-field span {
+      display: block;
+      font-size: 0.58rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--mute);
+      font-weight: 700;
+      margin-bottom: 0.12rem;
+    }
+    .prev-field p { font-size: 0.86rem; line-height: 1.35; color: color-mix(in srgb, var(--text) 88%, transparent); }
+
+    .note {
+      margin-top: 12px;
+      color: var(--mute);
+      font-size: 0.86rem;
+      line-height: 1.4;
+    }
+    .note b { color: var(--text); font-weight: 700; }
+
+    /* ========== A: две колонки рядом ========== */
+    .view-a .rail {
+      display: flex;
+      min-height: 0;
+      flex: 0 0 auto;
+      border-right: 1px solid var(--line);
+    }
+    .view-a .side { border-right: 1px solid var(--line); }
+    .view-a .cats {
+      width: var(--cats);
+      flex: 0 0 var(--cats);
+      background: color-mix(in srgb, #081018 72%, transparent);
+    }
+    .view-a .buckets { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .view-a .buckets::-webkit-scrollbar { display: none; }
+
+    /* ========== B: узкая икон-рейка ========== */
+    .view-b .rail {
+      display: flex;
+      min-height: 0;
+      flex: 0 0 auto;
+      border-right: 1px solid var(--line);
+      position: relative;
+    }
+    .view-b .side { border-right: 1px solid var(--line); }
+    .view-b .icon-rail {
+      width: 52px;
+      flex: 0 0 52px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.28rem;
+      padding: 0.45rem 0.3rem;
+      background: color-mix(in srgb, #081018 72%, transparent);
+      border-right: 1px solid var(--line);
+    }
+    .view-b .icon-btn {
+      display: grid;
+      gap: 0.08rem;
+      place-items: center;
+      border: 1px solid transparent;
+      background: transparent;
+      border-radius: 10px;
+      padding: 0.35rem 0.15rem;
+      color: var(--mute);
+      font-weight: 700;
+      font-size: 0.58rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      line-height: 1.05;
+    }
+    .view-b .icon-btn i {
+      width: 1.35rem;
+      height: 1.35rem;
+      border-radius: 7px;
+      border: 1px solid var(--line);
+      display: grid;
+      place-items: center;
+      font-style: normal;
+      font-size: 0.68rem;
+      color: var(--accent);
+      background: color-mix(in srgb, var(--panel) 60%, transparent);
+    }
+    .view-b .icon-btn.on {
+      color: var(--text);
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+    .view-b .icon-btn.on i {
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent);
+    }
+    .view-b .fly {
+      position: absolute;
+      left: calc(var(--side) + 52px);
+      top: 0;
+      bottom: 0;
+      width: 210px;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      background: color-mix(in srgb, var(--panel-solid) 96%, transparent);
+      border-right: 1px solid var(--line);
+      box-shadow: 12px 0 28px rgba(0, 0, 0, 0.28);
+      transform: translateX(-8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.16s ease, transform 0.16s ease;
+    }
+    .view-b .fly.open {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+    .view-b .fly-head {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 0.6rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .view-b .fly-close {
+      margin-left: auto;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--mute);
+      border-radius: 8px;
+      width: 1.7rem;
+      height: 1.7rem;
+    }
+
+    /* ========== C: один сайдбар, каталог сверху / фильтры снизу ========== */
+    .view-c .side {
+      width: 268px;
+      flex-basis: 268px;
+    }
+    .view-c .side-stack {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      flex: 1;
+    }
+    .view-c .tree { flex: 1.15; }
+    .view-c .cats {
+      flex: 0.95;
+      border-top: 1px solid var(--line);
+      background: color-mix(in srgb, #081018 55%, transparent);
+      min-height: 0;
+    }
+    .view-c .buckets {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.28rem;
+    }
+    .view-c .bucket {
+      border-radius: 9px;
+      justify-content: space-between;
+      display: flex;
+      width: 100%;
+      text-align: left;
+    }
+
+    /* ========== D: вкладки в шапке сайдбара ========== */
+    .view-d .side {
+      width: 268px;
+      flex-basis: 268px;
+    }
+    .view-d .mode-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.3rem;
+      padding: 0.45rem 0.5rem;
+      border-bottom: 1px solid var(--line);
+      flex: 0 0 auto;
+    }
+    .view-d .mode-tab {
+      border: 1px solid var(--line);
+      background: transparent;
+      border-radius: 9px;
+      padding: 0.35rem 0.4rem;
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: var(--mute);
+    }
+    .view-d .mode-tab.on {
+      color: var(--text);
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+    .view-d .panel { display: none; flex: 1; min-height: 0; flex-direction: column; }
+    .view-d .panel.on { display: flex; }
+    .view-d .cats { flex: 1; }
+    .view-d .buckets {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      gap: 0.28rem;
+    }
+    .view-d .bucket {
+      width: 100%;
+      border-radius: 9px;
+      display: flex;
+      justify-content: space-between;
+      text-align: left;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 900px) {
+      .switch { grid-template-columns: 1fr 1fr; }
+      .stage { grid-template-columns: 1fr; }
+      .view-a .cats { width: 160px; flex-basis: 160px; }
+      .view-c .side, .view-d .side { width: 220px; flex-basis: 220px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="kicker">Локальная лаборатория</p>
+    <h1>Категории рядом с каталогом</h1>
+    <p class="lead">
+      Четыре варианта, как убрать фильтры источника из шапки и поставить их
+      аккуратно рядом с каталогом. Только локально —
+      <a href="./titles.html">боевой гайд</a> не трогаем.
+    </p>
+
+    <div class="switch" role="tablist" aria-label="Варианты">
+      <button type="button" class="tab on" data-view="a" aria-selected="true">
+        <span class="tab-key">A</span>
+        <span class="tab-blurb">Две колонки: каталог + фильтры</span>
+      </button>
+      <button type="button" class="tab" data-view="b" aria-selected="false">
+        <span class="tab-key">B</span>
+        <span class="tab-blurb">Узкая икон-рейка + выезд</span>
+      </button>
+      <button type="button" class="tab" data-view="c" aria-selected="false">
+        <span class="tab-key">C</span>
+        <span class="tab-blurb">Один сайдбар: сверху / снизу</span>
+      </button>
+      <button type="button" class="tab" data-view="d" aria-selected="false">
+        <span class="tab-key">D</span>
+        <span class="tab-blurb">Вкладки «Каталог / Фильтры»</span>
+      </button>
+    </div>
+
+    <div class="desk" id="desk">
+      <div class="desk-top">
+        <div class="brand">FUTURUM</div>
+        <div class="search">Поиск по каталогу…</div>
+      </div>
+      <div class="desk-body" id="body"></div>
+    </div>
+
+    <p class="note" id="note"></p>
+  </div>
+
+  <script>
+    const BUCKETS = [
+      { id: "all", label: "Все", short: "Все", icon: "∗", n: 197 },
+      { id: "shop", label: "Магазин", short: "Маг", icon: "М", n: 42 },
+      { id: "wheel", label: "Колёса", short: "Кол", icon: "К", n: 58 },
+      { id: "event", label: "События", short: "Соб", icon: "С", n: 61 },
+      { id: "ticket", label: "Билеты", short: "Бил", icon: "Б", n: 18 },
+      { id: "other", label: "Другое", short: "Др", icon: "Д", n: 18 },
+    ];
+
+    const SOURCES = [
+      { id: "", name: "Все источники", n: 197 },
+      { id: "wheel_star", name: "Колесо «Звёздное небо»", n: 24 },
+      { id: "wheel_night", name: "Колесо ночи", n: 16 },
+      { id: "event_newyear", name: "Новый год 2025", n: 21 },
+      { id: "event_spring", name: "Весенний фестиваль", n: 14 },
+      { id: "shop_premium", name: "Премиум-магазин", n: 19 },
+      { id: "ticket_gold", name: "Золотой билет", n: 9 },
+      { id: "other_promo", name: "Промо / подарок", n: 11 },
+    ];
+
+    const TREE = [
+      {
+        code: "СТ", label: "Статус",
+        leaves: [
+          { id: "titles", label: "Титулы", n: 1051 },
+          { id: "ach", label: "Достижения", n: 376 },
+        ],
+      },
+      {
+        code: "КП", label: "Компаньоны", open: true,
+        leaves: [
+          { id: "wings", label: "Крылья", n: 197, on: true },
+          { id: "pets", label: "Питомцы", n: 312 },
+          { id: "transport", label: "Транспорт", n: 88 },
+        ],
+      },
+      {
+        code: "ОД", label: "Одежда",
+        leaves: [
+          { id: "clothes", label: "Одежда", n: 2325 },
+        ],
+      },
+    ];
+
+    const ROWS = [
+      { name: "Ангелы и демоны", sub: "Крылья · События", on: true },
+      { name: "Ангельские крылья", sub: "Крылья · Магазин" },
+      { name: "Крылья теней", sub: "Крылья · Колёса" },
+      { name: "Крылья звездного неба", sub: "Крылья · Колёса" },
+      { name: "Феникс рассвета", sub: "Крылья · Билеты" },
+      { name: "Лунный шёлк", sub: "Крылья · Другое" },
+    ];
+
+    const NOTES = {
+      a: "<b>A</b> — каталог и фильтры двумя колонками рядом. Всё видно сразу, удобно на широком ПК, чуть шире левый блок.",
+      b: "<b>B</b> — рядом с каталогом тонкая рейка типов. Список источников выезжает поверх, когда нужен. Самый компактный.",
+      c: "<b>C</b> — один сайдбар: сверху разделы, снизу типы и источники. Не расширяет ширину, всё в одном месте.",
+      d: "<b>D</b> — вкладки «Каталог» / «Фильтры» в том же сайдбаре. Минимум места, но фильтры не видны одновременно с деревом.",
+    };
+
+    const state = {
+      view: (location.hash.replace("#", "") || "a").toLowerCase(),
+      bucket: "all",
+      source: "",
+      mode: "catalog", // for D
+      flyOpen: false,
+    };
+    if (!"abcd".includes(state.view)) state.view = "a";
+
+    const body = document.getElementById("body");
+    const note = document.getElementById("note");
+
+    function esc(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function treeHtml() {
+      return TREE.map((g) => `
+        <div>
+          <button type="button" class="g-head">
+            <span class="g-code">${esc(g.code)}</span>
+            <span class="g-label">${esc(g.label)}</span>
+            <span class="count">${g.leaves.reduce((a, l) => a + l.n, 0)}</span>
+          </button>
+          ${g.open ? g.leaves.map((l) => `
+            <button type="button" class="leaf${l.on ? " on" : ""}">
+              <span class="g-label">${esc(l.label)}</span>
+              <span class="count">${l.n}</span>
+            </button>
+          `).join("") : ""}
+        </div>
+      `).join("");
+    }
+
+    function bucketsHtml(opts = {}) {
+      const { grid = false, short = false } = opts;
+      return BUCKETS.map((b) => `
+        <button type="button" class="bucket${state.bucket === b.id ? " on" : ""}" data-bucket="${esc(b.id)}">
+          ${esc(short ? b.short : b.label)}<span class="n">${b.n}</span>
+        </button>
+      `).join("");
+    }
+
+    function sourcesHtml() {
+      return SOURCES.map((s) => `
+        <button type="button" class="src${state.source === s.id ? " on" : ""}" data-source="${esc(s.id)}">
+          <span class="src-name">${esc(s.name)}</span>
+          <span class="n">${s.n}</span>
+        </button>
+      `).join("");
+    }
+
+    function mainHtml() {
+      return `
+        <div class="main">
+          <p class="crumb">Компаньоны · <strong>Крылья</strong> · 197</p>
+          <section class="stage">
+            <div class="results">
+              ${ROWS.map((r) => `
+                <div class="row${r.on ? " on" : ""}">
+                  <div class="thumb" aria-hidden="true"></div>
+                  <div>
+                    <div class="row-name">${esc(r.name)}</div>
+                    <div class="row-sub">${esc(r.sub)}</div>
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+            <aside class="preview">
+              <div class="prev-top">
+                <div class="prev-img" aria-hidden="true"></div>
+                <div>
+                  <div class="prev-title">Ангелы и демоны</div>
+                  <div class="prev-meta"><span>Раздел</span><b>Крылья</b></div>
+                </div>
+              </div>
+              <div class="prev-field">
+                <span>Как получить</span>
+                <p>Событие · нужны крылья теней или небесные крылья.</p>
+              </div>
+            </aside>
+          </section>
+        </div>
+      `;
+    }
+
+    function renderA() {
+      return `
+        <div class="rail">
+          <aside class="side">
+            <div class="side-head">
+              <span class="side-title">Каталог</span>
+              <button type="button" class="side-btn">Свернуть</button>
+            </div>
+            <div class="tree">${treeHtml()}</div>
+          </aside>
+          <aside class="cats" aria-label="Фильтры источника">
+            <div class="cats-head">
+              <span class="cats-title">Источник</span>
+              <button type="button" class="more">Подробные</button>
+            </div>
+            <div class="buckets">${bucketsHtml({ short: true })}</div>
+            <div class="sources">${sourcesHtml()}</div>
+          </aside>
+        </div>
+        ${mainHtml()}
+      `;
+    }
+
+    function renderB() {
+      return `
+        <div class="rail">
+          <aside class="side">
+            <div class="side-head">
+              <span class="side-title">Каталог</span>
+              <button type="button" class="side-btn">Свернуть</button>
+            </div>
+            <div class="tree">${treeHtml()}</div>
+          </aside>
+          <div class="icon-rail" role="group" aria-label="Тип источника">
+            ${BUCKETS.map((b) => `
+              <button type="button" class="icon-btn${state.bucket === b.id ? " on" : ""}" data-bucket="${esc(b.id)}" title="${esc(b.label)}">
+                <i>${esc(b.icon)}</i>
+                ${esc(b.short)}
+              </button>
+            `).join("")}
+            <button type="button" class="icon-btn${state.flyOpen ? " on" : ""}" data-fly="1" title="Список источников">
+              <i>≡</i>
+              ещё
+            </button>
+          </div>
+          <div class="fly${state.flyOpen ? " open" : ""}" aria-hidden="${state.flyOpen ? "false" : "true"}">
+            <div class="fly-head">
+              <span class="cats-title">Источники</span>
+              <button type="button" class="fly-close" data-fly-close="1" aria-label="Закрыть">✕</button>
+            </div>
+            <div class="sources">${sourcesHtml()}</div>
+          </div>
+        </div>
+        ${mainHtml()}
+      `;
+    }
+
+    function renderC() {
+      return `
+        <aside class="side">
+          <div class="side-head">
+            <span class="side-title">Каталог</span>
+            <button type="button" class="side-btn">Свернуть</button>
+          </div>
+          <div class="side-stack">
+            <div class="tree">${treeHtml()}</div>
+            <aside class="cats" aria-label="Фильтры источника">
+              <div class="cats-head">
+                <span class="cats-title">Источник</span>
+                <button type="button" class="more">Подробные</button>
+              </div>
+              <div class="buckets">${bucketsHtml({ short: true })}</div>
+              <div class="sources">${sourcesHtml()}</div>
+            </aside>
+          </div>
+        </aside>
+        ${mainHtml()}
+      `;
+    }
+
+    function renderD() {
+      return `
+        <aside class="side">
+          <div class="side-head">
+            <span class="side-title">Навигация</span>
+            <button type="button" class="side-btn">Свернуть</button>
+          </div>
+          <div class="mode-tabs" role="tablist">
+            <button type="button" class="mode-tab${state.mode === "catalog" ? " on" : ""}" data-mode="catalog">Каталог</button>
+            <button type="button" class="mode-tab${state.mode === "filters" ? " on" : ""}" data-mode="filters">Фильтры</button>
+          </div>
+          <div class="panel${state.mode === "catalog" ? " on" : ""}">
+            <div class="tree">${treeHtml()}</div>
+          </div>
+          <div class="panel cats${state.mode === "filters" ? " on" : ""}" aria-label="Фильтры источника">
+            <div class="cats-head">
+              <span class="cats-title">Источник</span>
+              <button type="button" class="more">Подробные</button>
+            </div>
+            <div class="buckets">${bucketsHtml()}</div>
+            <div class="sources">${sourcesHtml()}</div>
+          </div>
+        </aside>
+        ${mainHtml()}
+      `;
+    }
+
+    function syncTabs() {
+      document.querySelectorAll(".tab").forEach((t) => {
+        const on = t.dataset.view === state.view;
+        t.classList.toggle("on", on);
+        t.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      note.innerHTML = NOTES[state.view] || "";
+      location.replace("#" + state.view);
+    }
+
+    function render() {
+      body.className = "desk-body view-" + state.view;
+      const map = { a: renderA, b: renderB, c: renderC, d: renderD };
+      body.innerHTML = (map[state.view] || renderA)();
+      syncTabs();
+    }
+
+    document.querySelector(".switch").addEventListener("click", (e) => {
+      const tab = e.target.closest(".tab");
+      if (!tab) return;
+      state.view = tab.dataset.view;
+      if (state.view !== "b") state.flyOpen = false;
+      if (state.view !== "d") state.mode = "catalog";
+      render();
+    });
+
+    body.addEventListener("click", (e) => {
+      const bucket = e.target.closest("[data-bucket]");
+      if (bucket) {
+        state.bucket = bucket.dataset.bucket;
+        if (state.view === "b") state.flyOpen = true;
+        render();
+        return;
+      }
+      const src = e.target.closest("[data-source]");
+      if (src) {
+        state.source = src.dataset.source;
+        render();
+        return;
+      }
+      if (e.target.closest("[data-fly]")) {
+        state.flyOpen = !state.flyOpen;
+        render();
+        return;
+      }
+      if (e.target.closest("[data-fly-close]")) {
+        state.flyOpen = false;
+        render();
+        return;
+      }
+      const mode = e.target.closest("[data-mode]");
+      if (mode) {
+        state.mode = mode.dataset.mode;
+        render();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
