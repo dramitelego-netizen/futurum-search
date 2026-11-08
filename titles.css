@@ -1178,6 +1178,40 @@ body.guide-page.is-stage .shell {
   text-align: center;
 }
 
+.result-more-wrap {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  justify-content: center;
+  padding: 0.85rem 0.5rem 1.1rem;
+}
+
+.result-more-btn {
+  appearance: none;
+  margin: 0;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.result-more-btn:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.result-more-btn.result-more-all {
+  background: transparent;
+  color: var(--mute);
+  border-color: var(--line);
+}
+
 .preview-empty {
   color: var(--mute);
   padding: 1rem 0.5rem;

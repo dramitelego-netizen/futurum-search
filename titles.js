@@ -3126,8 +3126,9 @@ function isTitleItem(it) {
 }
 
 /** При текстовом поиске смотрим весь справочник, не только открытый раздел */
-/** Сколько строк реально рисуем в списке (остальное только в счётчике) */
-const LIST_RENDER_CAP = 160;
+/** Порциями рисуем список; в разделе без поиска — сразу все */
+const LIST_RENDER_PAGE = 240;
+let listRenderLimit = LIST_RENDER_PAGE;
 
 function guideSearchPool(q) {
   if (!q) return state.items;
@@ -4978,6 +4979,7 @@ function filterAndSort() {
         : "";
     }
   }
+  listRenderLimit = LIST_RENDER_PAGE;
   filterGuideTreeByQuery(state.query);
   renderList();
   if (state.activeId != null) {
@@ -4999,7 +5001,10 @@ function renderList() {
   }
   const globalSearch = Boolean(norm(state.query));
   const total = state.list.length;
-  const visible = state.list.slice(0, LIST_RENDER_CAP);
+  // В разделе без поиска — все позиции; при поиске — порциями с «Показать ещё»
+  if (!globalSearch) listRenderLimit = Math.max(listRenderLimit, total);
+  const limit = Math.min(total, listRenderLimit);
+  const visible = state.list.slice(0, limit);
   const rows = visible
     .map((it) => {
       const sec = itemSectionOf(it);
@@ -5060,11 +5065,17 @@ function renderList() {
       </li>`;
     })
     .join("");
+  const left = total - limit;
   const more =
-    total > LIST_RENDER_CAP
-      ? `<li class="result-empty result-more">Показаны первые ${LIST_RENDER_CAP} из ${fmtCount(
-          total
-        )} · уточните запрос</li>`
+    left > 0
+      ? `<li class="result-more-wrap">
+          <button type="button" class="result-more-btn" data-list-more="page">Показать ещё ${fmtCount(
+            Math.min(LIST_RENDER_PAGE, left)
+          )}</button>
+          <button type="button" class="result-more-btn result-more-all" data-list-more="all">Все ${fmtCount(
+            total
+          )}</button>
+        </li>`
       : "";
   els.list.innerHTML = rows + more;
   syncThumbCarousel();
@@ -5809,6 +5820,15 @@ function bindUi() {
   });
 
   els.list?.addEventListener("click", (e) => {
+    const moreBtn = e.target.closest("[data-list-more]");
+    if (moreBtn) {
+      const mode = moreBtn.dataset.listMore || "page";
+      const total = state.list.length;
+      if (mode === "all") listRenderLimit = total;
+      else listRenderLimit = Math.min(total, listRenderLimit + LIST_RENDER_PAGE);
+      renderList();
+      return;
+    }
     const btn = e.target.closest(".result");
     if (!btn) return;
     const id = Number(btn.dataset.id);
