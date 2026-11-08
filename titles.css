@@ -5854,9 +5854,13 @@ body.guide-page.guide-layout-mobile .results > li {
   list-style: none;
 }
 
-body.guide-page.guide-layout-mobile .ttl-result.result,
-body.guide-page.guide-layout-mobile .ttl-result.has-img,
-body.guide-page.guide-layout-mobile .ttl-result.has-op {
+/* Полоски A/B — только для этих видов; C/D/E/G не трогаем */
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .ttl-result.result,
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .ttl-result.has-img,
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .ttl-result.has-op,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .ttl-result.result,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .ttl-result.has-img,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .ttl-result.has-op {
   display: grid;
   grid-template-columns: 34px minmax(0, 1fr);
   gap: 0.4rem;
@@ -5873,9 +5877,12 @@ body.guide-page.guide-layout-mobile .ttl-result.has-op {
   -webkit-tap-highlight-color: transparent;
 }
 
-body.guide-page.guide-layout-mobile .ttl-result.result:active,
-body.guide-page.guide-layout-mobile .ttl-result.active,
-body.guide-page.guide-layout-mobile .ttl-result.has-op.active {
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .ttl-result.result:active,
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .ttl-result.active,
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .ttl-result.has-op.active,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .ttl-result.result:active,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .ttl-result.active,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .ttl-result.has-op.active {
   background: color-mix(in srgb, var(--ttl-op, var(--accent, #3dffd0)) 16%, transparent);
   outline: 1px solid color-mix(in srgb, var(--ttl-op, var(--accent, #3dffd0)) 40%, transparent);
   outline-offset: -1px;
@@ -5884,14 +5891,17 @@ body.guide-page.guide-layout-mobile .ttl-result.has-op.active {
   transform: scale(0.985);
 }
 
-body.guide-page.guide-layout-mobile .result-thumb-frame,
-body.guide-page.guide-layout-mobile .ttl-swatch {
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .result-thumb-frame,
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .ttl-swatch,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .result-thumb-frame,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .ttl-swatch {
   width: 34px;
   height: 34px;
   border-radius: 8px;
 }
 
-body.guide-page.guide-layout-mobile .result-main {
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .result-main,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .result-main {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-areas:
@@ -5903,11 +5913,13 @@ body.guide-page.guide-layout-mobile .result-main {
   min-width: 0;
 }
 
-body.guide-page.guide-layout-mobile .result-row-top {
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .result-row-top,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .result-row-top {
   display: contents;
 }
 
-body.guide-page.guide-layout-mobile .result-name {
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .result-name,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .result-name {
   grid-area: name;
   min-width: 0;
   font-size: 0.74rem;
@@ -5918,7 +5930,8 @@ body.guide-page.guide-layout-mobile .result-name {
   text-overflow: ellipsis;
 }
 
-body.guide-page.guide-layout-mobile .result-meta {
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .result-meta,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .result-meta {
   grid-area: meta;
   min-width: 0;
   flex-wrap: nowrap;
@@ -5926,7 +5939,8 @@ body.guide-page.guide-layout-mobile .result-meta {
   gap: 0.25rem;
 }
 
-body.guide-page.guide-layout-mobile .result-sub {
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .result-sub,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .result-sub {
   font-size: 0.58rem;
   line-height: 1.2;
   white-space: nowrap;
@@ -5934,7 +5948,8 @@ body.guide-page.guide-layout-mobile .result-sub {
   text-overflow: ellipsis;
 }
 
-body.guide-page.guide-layout-mobile .ttl-op-badge {
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .ttl-op-badge,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .ttl-op-badge {
   grid-area: op;
   align-self: center;
   justify-self: end;
@@ -7185,7 +7200,21 @@ html[data-bg="minimal"] body.guide-page.guide-layout-mobile .guide-mob-panel-bra
 body.guide-page.guide-layout-mobile .items-view {
   order: 2;
   margin-left: auto;
-  max-width: min(68vw, 15.2rem);
+  max-width: min(72vw, 16.5rem);
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  gap: 0.12rem;
+  overflow: visible;
+}
+
+body.guide-page.guide-layout-mobile .items-view-btn {
+  width: 1.62rem;
+  height: 1.55rem;
+}
+
+body.guide-page.guide-layout-mobile .items-view-btn svg {
+  width: 0.9rem;
+  height: 0.9rem;
 }
 
 body.guide-page.guide-layout-mobile .results-toolbar-sorts {
@@ -7329,6 +7358,17 @@ html[data-items-view="A"] .result-sub {
 
 html[data-items-view="A"] .result-meta {
   flex-wrap: nowrap !important;
+}
+
+html[data-items-view="A"] .result-row-top,
+html[data-items-view="B"] .result-row-top {
+  min-width: 0;
+  max-width: 100%;
+}
+
+html[data-items-view="A"] .ttl-op-badge,
+html[data-items-view="B"] .ttl-op-badge {
+  flex: 0 0 auto;
 }
 
 /* B: компакт */
@@ -7740,31 +7780,27 @@ html[data-items-view="G"] .ttl-op-badge {
 html[data-items-view="G"] .ttl-op-num { font-size: 0.58rem !important; }
 html[data-items-view="G"] .ttl-op-unit { font-size: 0.42rem !important; }
 
-/* мобильный layout не ломает плитки/карточки */
-html[data-items-view="C"] body.guide-page.guide-layout-mobile .result-main,
-html[data-items-view="D"] body.guide-page.guide-layout-mobile .result-main,
-html[data-items-view="E"] body.guide-page.guide-layout-mobile .result-main,
-html[data-items-view="G"] body.guide-page.guide-layout-mobile .result-main {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) !important;
-  grid-template-areas: none !important;
+/* «Показать ещё» на всю ширину сетки */
+html[data-items-view="C"] .result-more-wrap,
+html[data-items-view="D"] .result-more-wrap,
+html[data-items-view="G"] .result-more-wrap {
+  grid-column: 1 / -1;
+  width: 100%;
 }
 
-html[data-items-view="C"] body.guide-page.guide-layout-mobile .result-row-top,
-html[data-items-view="D"] body.guide-page.guide-layout-mobile .result-row-top,
-html[data-items-view="E"] body.guide-page.guide-layout-mobile .result-row-top,
-html[data-items-view="G"] body.guide-page.guide-layout-mobile .result-row-top {
-  display: flex !important;
-}
-
-html[data-items-view="C"] body.guide-page.guide-layout-mobile .result-name,
-html[data-items-view="D"] body.guide-page.guide-layout-mobile .result-name,
-html[data-items-view="E"] body.guide-page.guide-layout-mobile .result-name,
-html[data-items-view="G"] body.guide-page.guide-layout-mobile .result-name {
-  white-space: normal !important;
-  display: -webkit-box !important;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+/* бейджи/шоп не раздувают узкие плитки */
+html[data-items-view="C"] .result-ach-badge,
+html[data-items-view="C"] .result-fuzzy,
+html[data-items-view="D"] .result-ach-badge,
+html[data-items-view="D"] .result-fuzzy,
+html[data-items-view="E"] .result-ach-badge,
+html[data-items-view="E"] .result-fuzzy {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 html[data-items-view="A"] body.guide-page.guide-layout-mobile .ttl-result.result,
@@ -7775,6 +7811,48 @@ html[data-items-view="B"] body.guide-page.guide-layout-mobile .ttl-result.has-im
 html[data-items-view="B"] body.guide-page.guide-layout-mobile .ttl-result.has-op {
   max-width: 100%;
   overflow: hidden !important;
+}
+
+/* C/D/E/G на мобилке: явные размеры, без конфликта с полосками */
+html[data-items-view="C"] body.guide-page.guide-layout-mobile .ttl-result.result,
+html[data-items-view="C"] body.guide-page.guide-layout-mobile .ttl-result.has-img,
+html[data-items-view="C"] body.guide-page.guide-layout-mobile .ttl-result.has-op,
+html[data-items-view="D"] body.guide-page.guide-layout-mobile .ttl-result.result,
+html[data-items-view="D"] body.guide-page.guide-layout-mobile .ttl-result.has-img,
+html[data-items-view="D"] body.guide-page.guide-layout-mobile .ttl-result.has-op,
+html[data-items-view="E"] body.guide-page.guide-layout-mobile .ttl-result.result,
+html[data-items-view="E"] body.guide-page.guide-layout-mobile .ttl-result.has-img,
+html[data-items-view="E"] body.guide-page.guide-layout-mobile .ttl-result.has-op,
+html[data-items-view="G"] body.guide-page.guide-layout-mobile .ttl-result.result,
+html[data-items-view="G"] body.guide-page.guide-layout-mobile .ttl-result.has-img,
+html[data-items-view="G"] body.guide-page.guide-layout-mobile .ttl-result.has-op {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--ttl-op, var(--accent, #3dffd0)) 18%, transparent),
+    0 6px 16px rgba(0, 0, 0, 0.14) !important;
+  transform: none;
+}
+
+html[data-items-view="E"] body.guide-page.guide-layout-mobile .ttl-result.result,
+html[data-items-view="E"] body.guide-page.guide-layout-mobile .ttl-result.has-img,
+html[data-items-view="E"] body.guide-page.guide-layout-mobile .ttl-result.has-op {
+  grid-template-columns: 4.6rem minmax(0, 1fr) !important;
+  height: 4.6rem !important;
+  min-height: 4.6rem !important;
+  max-height: 4.6rem !important;
+}
+
+html[data-items-view="E"] body.guide-page.guide-layout-mobile .result-thumb-frame,
+html[data-items-view="E"] body.guide-page.guide-layout-mobile .ttl-swatch {
+  width: 4.6rem !important;
+  height: 4.6rem !important;
+  min-height: 4.6rem !important;
+  max-height: 4.6rem !important;
+}
+
+@media (max-width: 380px) {
+  html[data-items-view="G"] .results {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 900px) {
