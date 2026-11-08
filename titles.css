@@ -8000,13 +8000,35 @@ body.guide-page.guide-layout-mobile .guide-mob-chip.on {
   background: color-mix(in srgb, #3dffd0 14%, transparent);
 }
 
-body.guide-page.guide-layout-mobile .ttl-result.result,
-body.guide-page.guide-layout-mobile .ttl-result.has-img,
-body.guide-page.guide-layout-mobile .ttl-result.has-op {
+/* polish только для полосок A/B — не перебиваем плитки C/D/E/G */
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .ttl-result.result,
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .ttl-result.has-img,
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .ttl-result.has-op,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .ttl-result.result,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .ttl-result.has-img,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .ttl-result.has-op {
   border: 1px solid rgba(61, 255, 208, 0.14) !important;
   background: linear-gradient(180deg, #17212c, #121a24) !important;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18) !important;
+  box-shadow:
+    inset 2px 0 0 var(--ttl-op, var(--accent, #3dffd0)),
+    0 8px 18px rgba(0, 0, 0, 0.18) !important;
   transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+html[data-items-view="C"] body.guide-page.guide-layout-mobile .ttl-result.result,
+html[data-items-view="C"] body.guide-page.guide-layout-mobile .ttl-result.has-img,
+html[data-items-view="C"] body.guide-page.guide-layout-mobile .ttl-result.has-op,
+html[data-items-view="D"] body.guide-page.guide-layout-mobile .ttl-result.result,
+html[data-items-view="D"] body.guide-page.guide-layout-mobile .ttl-result.has-img,
+html[data-items-view="D"] body.guide-page.guide-layout-mobile .ttl-result.has-op,
+html[data-items-view="E"] body.guide-page.guide-layout-mobile .ttl-result.result,
+html[data-items-view="E"] body.guide-page.guide-layout-mobile .ttl-result.has-img,
+html[data-items-view="E"] body.guide-page.guide-layout-mobile .ttl-result.has-op,
+html[data-items-view="G"] body.guide-page.guide-layout-mobile .ttl-result.result,
+html[data-items-view="G"] body.guide-page.guide-layout-mobile .ttl-result.has-img,
+html[data-items-view="G"] body.guide-page.guide-layout-mobile .ttl-result.has-op {
+  border: 1px solid rgba(61, 255, 208, 0.12) !important;
+  transition: transform 0.12s ease, border-color 0.15s ease;
 }
 
 body.guide-page.guide-layout-mobile .result-thumb-frame {
