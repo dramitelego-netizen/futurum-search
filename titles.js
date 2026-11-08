@@ -721,20 +721,17 @@ function setMobileTab(tab, { fromClick } = {}) {
   paintMobileChrome();
 }
 
-/** Превью разделов для свёрнутой группы (B2) */
-function sectionPeeksHtml(sections, max = 3) {
+/** Превью всех разделов свёрнутой группы (B2) — без обрезки «+N» */
+function sectionPeeksHtml(sections) {
   const list = Array.isArray(sections) ? sections : [];
-  const shown = list.slice(0, max);
-  const extra = list.length - shown.length;
-  const chips = shown
+  if (!list.length) return "";
+  const chips = list
     .map(
       (sec) =>
         `<span class="guide-g-peek">${escapeHtml(SECTION_TITLE[sec] || sec)}</span>`
     )
     .join("");
-  const more =
-    extra > 0 ? `<span class="guide-g-peek guide-g-peek-more">+${extra}</span>` : "";
-  return `<span class="guide-g-peeks" aria-hidden="true">${chips}${more}</span>`;
+  return `<span class="guide-g-peeks" aria-hidden="true">${chips}</span>`;
 }
 
 function renderMobCatalog() {
@@ -779,7 +776,7 @@ function renderMobCatalog() {
         <span class="guide-mob-acc-ico" aria-hidden="true">${meta.icon}</span>
         <span class="guide-mob-acc-text">
           <span class="t">${escapeHtml(g.label)}</span>
-          ${sectionPeeksHtml(g.sections, 3)}
+          ${sectionPeeksHtml(g.sections)}
         </span>
         <span class="guide-mob-acc-side">
           <span class="n">${fmtCount(groupCount(g))}</span>
@@ -4476,7 +4473,7 @@ function buildGuideTree() {
         <span class="guide-g-ico" aria-hidden="true">${gMeta.icon}</span>
         <span class="guide-g-label">
           <span class="guide-g-label-t">${escapeHtml(g.label)}</span>
-          ${sectionPeeksHtml(g.sections, 3)}
+          ${sectionPeeksHtml(g.sections)}
         </span>
         <span class="guide-g-count">${fmtCount(groupCount(g))}</span>
         <span class="guide-g-chev" aria-hidden="true">▾</span>
