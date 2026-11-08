@@ -488,7 +488,10 @@ const mobileUi = {
   tab: "home",
   sheetOpen: false,
   sheetTall: false,
+  /** @deprecated drill-down; accordion B2 использует catalogOpen */
   catalogGroup: null,
+  /** id открытой группы в мобильном accordion */
+  catalogOpen: null,
   favs: loadFavorites(),
 };
 
@@ -718,83 +721,99 @@ function setMobileTab(tab, { fromClick } = {}) {
   paintMobileChrome();
 }
 
-function mobCatRowHtml({ id, title, desc, count, color, icon, kind, on }) {
-  return `<button type="button" class="guide-mob-cat-row${on ? " on" : ""}" style="--cat:${color}" data-mob-cat-kind="${escapeHtml(
-    kind
-  )}" data-mob-cat-id="${escapeHtml(id)}">
-    <span class="guide-mob-cat-ico" aria-hidden="true">${icon}</span>
-    <span class="guide-mob-cat-text"><span class="t">${escapeHtml(title)}</span><span class="d">${escapeHtml(
-      desc
-    )}</span></span>
-    <span class="guide-mob-cat-side">
-      <span class="n">${fmtCount(count)}</span>
-      <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
-    </span>
-  </button>`;
+/** Превью разделов для свёрнутой группы (B2) */
+function sectionPeeksHtml(sections, max = 3) {
+  const list = Array.isArray(sections) ? sections : [];
+  const shown = list.slice(0, max);
+  const extra = list.length - shown.length;
+  const chips = shown
+    .map(
+      (sec) =>
+        `<span class="guide-g-peek">${escapeHtml(SECTION_TITLE[sec] || sec)}</span>`
+    )
+    .join("");
+  const more =
+    extra > 0 ? `<span class="guide-g-peek guide-g-peek-more">+${extra}</span>` : "";
+  return `<span class="guide-g-peeks" aria-hidden="true">${chips}${more}</span>`;
 }
 
 function renderMobCatalog() {
   if (!els.guideMobCatList) return;
-  const groupId = mobileUi.catalogGroup;
-  const group = groupId ? groupById(groupId) : null;
+  if (els.guideMobCatBack) els.guideMobCatBack.hidden = true;
+  if (els.guideMobCatTitle) els.guideMobCatTitle.textContent = "Каталог";
+  els.guideMobCatList.classList.remove("is-sections");
+  els.guideMobCatList.classList.add("is-accordion");
 
-  if (els.guideMobCatBack) els.guideMobCatBack.hidden = !group;
-  if (els.guideMobCatTitle) els.guideMobCatTitle.textContent = group ? group.label : "Каталог";
-  els.guideMobCatList?.classList.toggle("is-sections", Boolean(group));
-
-  if (!group) {
-    if (els.guideMobCatTotal) {
-      els.guideMobCatTotal.textContent = "";
-      els.guideMobCatTotal.hidden = true;
-    }
-    els.guideMobCatList.innerHTML = GUIDE_GROUPS.map((g) => {
-      const meta = MOB_GROUP_META[g.id] || MOB_GROUP_META.status;
-      const on = state.group === g.id;
-      return mobCatRowHtml({
-        id: g.id,
-        title: g.label,
-        desc: g.hint || "",
-        count: groupCount(g),
-        color: meta.color,
-        icon: meta.icon,
-        kind: "group",
-        on,
-      });
-    }).join("");
-    return;
+  if (!mobileUi.catalogOpen) {
+    mobileUi.catalogOpen = state.group || GUIDE_GROUPS[0]?.id || null;
   }
 
-  const groupMeta = MOB_GROUP_META[group.id] || MOB_GROUP_META.status;
   if (els.guideMobCatTotal) {
     els.guideMobCatTotal.hidden = false;
-    els.guideMobCatTotal.textContent = `${fmtCount(groupCount(group))} · ${group.sections.length} разделов`;
+    els.guideMobCatTotal.textContent = `${GUIDE_GROUPS.length} групп · превью разделов`;
   }
-  els.guideMobCatList.innerHTML = group.sections
-    .map((sec) => {
-      const on = state.section === sec;
-      const meta = MOB_SECTION_META[sec] || groupMeta;
-      return mobCatRowHtml({
-        id: sec,
-        title: SECTION_TITLE[sec] || sec,
-        desc: SECTION_HINT[sec] || group.hint || group.label,
-        count: sectionCount(sec),
-        color: meta.color,
-        icon: meta.icon,
-        kind: "section",
-        on,
-      });
-    })
-    .join("");
+
+  els.guideMobCatList.innerHTML = GUIDE_GROUPS.map((g) => {
+    const meta = MOB_GROUP_META[g.id] || MOB_GROUP_META.status;
+    const open = mobileUi.catalogOpen === g.id;
+    const current = state.group === g.id;
+    const leaves = g.sections
+      .map((sec) => {
+        const on = sec === state.section;
+        const sMeta = MOB_SECTION_META[sec] || meta;
+        return `<button type="button" class="guide-mob-acc-sec${on ? " on" : ""}" data-mob-cat-kind="section" data-mob-cat-id="${escapeHtml(
+          sec
+        )}" style="--cat:${sMeta.color}">
+          <span class="guide-mob-acc-sec-ico" aria-hidden="true">${sMeta.icon}</span>
+          <span class="guide-mob-acc-sec-t">${escapeHtml(SECTION_TITLE[sec] || sec)}</span>
+          <span class="guide-mob-acc-sec-n">${fmtCount(sectionCount(sec))}</span>
+        </button>`;
+      })
+      .join("");
+    return `<div class="guide-mob-acc${open ? " open" : ""}${current ? " has-current" : ""}" data-group="${escapeHtml(
+      g.id
+    )}" style="--cat:${meta.color}">
+      <button type="button" class="guide-mob-acc-head" data-mob-cat-kind="group" data-mob-cat-id="${escapeHtml(
+        g.id
+      )}" aria-expanded="${open ? "true" : "false"}">
+        <span class="guide-mob-acc-ico" aria-hidden="true">${meta.icon}</span>
+        <span class="guide-mob-acc-text">
+          <span class="t">${escapeHtml(g.label)}</span>
+          ${sectionPeeksHtml(g.sections, 3)}
+        </span>
+        <span class="guide-mob-acc-side">
+          <span class="n">${fmtCount(groupCount(g))}</span>
+          <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+        </span>
+      </button>
+      <div class="guide-mob-acc-body">${leaves}</div>
+    </div>`;
+  }).join("");
 }
 
 function openMobCatalogGroup(groupId) {
-  mobileUi.catalogGroup = groupId;
+  if (!groupId) return;
+  const g = groupById(groupId);
+  if (g?.sections?.length === 1) {
+    pickMobCatalogSection(g.sections[0]);
+    return;
+  }
+  mobileUi.catalogOpen = mobileUi.catalogOpen === groupId ? null : groupId;
   renderMobCatalog();
+  if (mobileUi.catalogOpen) {
+    requestAnimationFrame(() => {
+      els.guideMobCatList
+        ?.querySelector(`.guide-mob-acc[data-group="${mobileUi.catalogOpen}"]`)
+        ?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    });
+  }
 }
 
 function pickMobCatalogSection(section) {
   if (!section) return;
   leaveLanding();
+  const g = groupForSection(section);
+  if (g) mobileUi.catalogOpen = g.id;
   if (section !== state.section) setSection(section, { keepQuery: true });
   else {
     applySectionPool();
@@ -1576,6 +1595,11 @@ function morphReqWord(word) {
   // ед.ч. согласование с «крыло» почти не встречается; ого/его — для «цвета»
   if (/ого$/.test(w) && w.length >= 6) return w.replace(/ого$/, "ый");
   if (/его$/.test(w) && w.length >= 6) return w.replace(/его$/, "ий");
+  // тв.п. ед.: «световым трициклом» → «световой трицикл»
+  if (/овым$/.test(w) && w.length >= 6) return w.replace(/овым$/, "овой");
+  if (/евым$/.test(w) && w.length >= 6) return w.replace(/евым$/, "евой");
+  if (/ым$/.test(w) && w.length >= 5) return w.replace(/ым$/, "ый");
+  if (/им$/.test(w) && w.length >= 5) return w.replace(/им$/, "ий");
   return w;
 }
 
@@ -1611,6 +1635,8 @@ function morphReqText(s) {
     .replace(/скрипки/g, "скрипка")
     .replace(/роялем/g, "рояль")
     .replace(/рояля/g, "рояль")
+    .replace(/трициклом|трицикла|трицикле|трициклу/g, "трицикл")
+    .replace(/универсума|универсумом|универсуме/g, "универсум")
     .replace(/[!?.,;:…]+/g, " ")
     .replace(/\s+/g, " ")
     .trim()
@@ -1626,6 +1652,32 @@ function reqEndingOk(after) {
   return /^(а|у|ом|ем|ами|ах|ов|ев|ей|и|ы|е|я|ю|ка|ой|ым|ого|ому|ыми|ными)\b/.test(
     after
   );
+}
+
+/** Детская версия предмета (малыши) — не путать со взрослой в требованиях достижений */
+function isKidGuideItem(it) {
+  if (!it) return false;
+  const name = String(it.name || "");
+  const wiki = String(it.wiki || "");
+  if (/^детск/i.test(name) || /\bдетск(?:ие|ая|ий|ое|их)\b/i.test(name)) return true;
+  // wiki: …/Детские_… или percent-encoded Детские
+  if (/Детск/i.test(wiki) || /%D0%94%D0%B5%D1%82%D1%81%D0%BA/i.test(wiki)) return true;
+  const gender =
+    (Array.isArray(it.characteristics)
+      ? it.characteristics.find((c) => /пол/i.test(String(c.label || "")))?.value
+      : "") || "";
+  if (/девочек|мальчиков/i.test(gender) && !/девушек|парней/i.test(gender)) return true;
+  // описание: игнор шапки «другие значения, см. Детская…» у взрослой статьи
+  const desc = String(it.description || "")
+    .replace(/у этого термина существуют и другие значения[^.]*\./gi, " ")
+    .trim();
+  if (/\bдетск(?:ие|ая|ий|ое|их|ого|ому)\b/i.test(desc)) return true;
+  return false;
+}
+
+function achTextWantsKids(raw, hay) {
+  const t = `${String(raw || "")} ${String(hay || "")}`.toLowerCase();
+  return /детск|малыш|реб[её]нк|для\s+малыш/.test(t);
 }
 
 function buildReqCatalog() {
@@ -1650,6 +1702,7 @@ function buildReqCatalog() {
       image: it.image || "",
       imageUrl: it.imageUrl || "",
       series: seriesKeyFromName(it.name),
+      kid: isKidGuideItem(it),
     };
     pushAlias(it.name, entry, 8);
     const stripped = stripReqParens(it.name);
@@ -1657,8 +1710,8 @@ function buildReqCatalog() {
     for (const q of extractQuotedParts(it.name)) {
       pushAlias(q, entry, q.length >= 6 ? 12 : 2);
     }
-    // «Крылья X» → также ищем «X» только если X длинный (Кая, Велиара…)
-    const m = /^крылья\s+(.+)$/i.exec(stripped);
+    // «Крылья X» / «Детские крылья X» → также ищем «X» если длинный
+    const m = /^(?:детские\s+)?крылья\s+(.+)$/i.exec(stripped);
     if (m && morphReqText(m[1]).length >= 5) pushAlias(m[1], entry, -5);
     // «Крылья светлого и темного духа» → отдельно «крылья светлого» / «крылья темного духа»
     if (m && /\s+и\s+/i.test(m[1])) {
@@ -1684,6 +1737,55 @@ function buildReqCatalog() {
   achRequiresIndex = null;
 }
 
+function pushAchRequireLink(map, section, itemId, ach) {
+  if (!section || itemId == null || !ach) return;
+  const id = Number(itemId);
+  if (!Number.isFinite(id)) return;
+  // не линкуем детские предметы, если достижение про взрослых (и наоборот)
+  const it =
+    section === "titles"
+      ? state.titles.find((x) => Number(x.id) === id)
+      : state.wiki.find((x) => x.kind === section && Number(x.id) === id);
+  if (it && isKidGuideItem(it) && !achTextWantsKids(ach.description || "", "")) return;
+  const key = `${section}:${id}`;
+  let arr = map.get(key);
+  if (!arr) {
+    arr = [];
+    map.set(key, arr);
+  }
+  if (arr.some((a) => a.id === ach.id)) return;
+  arr.push({
+    id: ach.id,
+    name: ach.name,
+    image: ach.image || "",
+    imageUrl: ach.imageUrl || "",
+    category: ach.category || "",
+  });
+}
+
+/** По note предмета «нужен для значка X» → привязка к достижению X */
+function linkItemsFromBadgeNotes(map, achs) {
+  const byName = new Map();
+  for (const ach of achs) {
+    const n = morphReqText(ach.name);
+    if (n.length >= 3) byName.set(n, ach);
+  }
+  const noteRe = /значок\s+[«"«]?([^»"».,;:]+)/gi;
+  const pool = [...(state.titles || []), ...(state.wiki || [])];
+  for (const it of pool) {
+    if (!it || it.kind === "achievements") continue;
+    const blob = `${it.note || ""} ${it.description || ""}`;
+    if (!/значок/i.test(blob)) continue;
+    noteRe.lastIndex = 0;
+    let m;
+    while ((m = noteRe.exec(blob))) {
+      const ach = byName.get(morphReqText(m[1]));
+      if (!ach) continue;
+      pushAchRequireLink(map, itemSectionOf(it), it.id, ach);
+    }
+  }
+}
+
 /** Индекс: какой предмет нужен для каких достижений (для карточки предмета и списка) */
 function buildAchRequiresIndex() {
   if (!reqCatalog) buildReqCatalog();
@@ -1693,23 +1795,20 @@ function buildAchRequiresIndex() {
     const reqs = findAchievementRequires(ach.description, ach.name);
     for (const r of reqs) {
       for (const item of r.items || []) {
-        const key = `${r.section}:${item.id}`;
-        let arr = map.get(key);
-        if (!arr) {
-          arr = [];
-          map.set(key, arr);
-        }
-        if (arr.some((a) => a.id === ach.id)) continue;
-        arr.push({
-          id: ach.id,
-          name: ach.name,
-          image: ach.image || "",
-          imageUrl: ach.imageUrl || "",
-          category: ach.category || "",
-        });
+        pushAchRequireLink(map, r.section, item.id, ach);
       }
     }
+    // Явные ссылки с вики (itemId) — добивают то, что морфология текста пропускает
+    for (const L of ach.descriptionLinks || []) {
+      if (L.kind !== "item" || L.itemId == null || !L.section) continue;
+      pushAchRequireLink(map, L.section, L.itemId, ach);
+    }
+    for (const L of ach.characteristicsLinks || []) {
+      if (L.kind !== "item" || L.itemId == null || !L.section) continue;
+      pushAchRequireLink(map, L.section, L.itemId, ach);
+    }
   }
+  linkItemsFromBadgeNotes(map, achs);
   for (const arr of map.values()) {
     arr.sort((a, b) => String(a.name).localeCompare(String(b.name), "ru"));
   }
@@ -1759,10 +1858,26 @@ function findAchievementRequires(description, selfName = "") {
 
   const hay = morphReqText(raw);
   const selfNorm = morphReqText(selfName);
+  const wantsKids = achTextWantsKids(raw, hay);
   const used = new Uint8Array(hay.length);
   const hits = [];
 
+  const allowEntry = (entry) => {
+    if (!entry) return false;
+    if (entry.kid && !wantsKids) return false;
+    if (wantsKids && !entry.kid) {
+      // если в каталоге есть детская версия той же серии — берём только её
+      const series = entry.series || morphReqText(stripReqParens(entry.name));
+      const hasKidTwin = reqCatalog.aliases.some(
+        (a) => a.entry.kid && a.entry.section === entry.section && a.entry.series === series
+      );
+      if (hasKidTwin) return false;
+    }
+    return true;
+  };
+
   const tryMark = (pos, len, aliasObj) => {
+    if (!allowEntry(aliasObj.entry)) return false;
     for (let i = pos; i < pos + len; i++) if (used[i]) return false;
     const before = pos === 0 ? " " : hay[pos - 1];
     const after = hay.slice(pos + len);
@@ -1809,11 +1924,12 @@ function findAchievementRequires(description, selfName = "") {
 
     const candidates = reqCatalog.aliases.filter(
       (a) =>
-        a.alias === q ||
-        a.alias.includes(` ${q}`) ||
-        a.alias.endsWith(q) ||
-        a.alias.includes(q) ||
-        a.entry.series === q
+        allowEntry(a.entry) &&
+        (a.alias === q ||
+          a.alias.includes(` ${q}`) ||
+          a.alias.endsWith(q) ||
+          a.alias.includes(q) ||
+          a.entry.series === q)
     );
     if (!candidates.length) continue;
     candidates.sort(
@@ -1841,6 +1957,7 @@ function findAchievementRequires(description, selfName = "") {
       if (seen.has(key)) continue;
       if (c.entry.section !== bestSection) continue;
       if (c.entry.series !== series && !c.alias.includes(q)) continue;
+      if (!allowEntry(c.entry)) continue;
       seen.add(key);
       hits.push({
         score: c.weight + 20,
@@ -1869,6 +1986,7 @@ function findAchievementRequires(description, selfName = "") {
       };
       groups.set(gkey, g);
     }
+    if (!allowEntry(e)) continue;
     g.score = Math.max(g.score, h.score);
     const ik = e.id;
     if (!g.seen.has(ik)) {
@@ -3914,7 +4032,10 @@ function detailStatsHtml(it, { isTitle = false, isAch = false } = {}) {
     else if (cat && cat !== it.kindLabel && !ALICE_SOURCE_RE.test(cat)) {
       bits.push(detailStatHtml("Тип", cat));
     }
-    if (it.hasAchievement) bits.push(detailStatHtml("Значок", "есть"));
+    // «Значок: есть» — по реальной привязке к достижениям, не только по флагу вики
+    if (!isAch && (achievementsForItem(it).length || it.hasAchievement)) {
+      bits.push(detailStatHtml("Значок", "есть"));
+    }
   }
   const html = bits.filter(Boolean).join("");
   return html ? `<div class="ttl-detail-stats">${html}</div>` : "";
@@ -4348,12 +4469,15 @@ function buildGuideTree() {
       .join("");
     return `<div class="guide-g-block${open ? " open" : ""}${current ? " has-current" : ""}" data-group="${escapeHtml(
       g.id
-    )}">
+    )}" style="--cat:${gMeta.color}">
       <button type="button" class="guide-g-head" data-toggle-group="${escapeHtml(g.id)}" title="${escapeHtml(
       g.hint || g.label
     )}" style="--cat:${gMeta.color}">
         <span class="guide-g-ico" aria-hidden="true">${gMeta.icon}</span>
-        <span class="guide-g-label">${escapeHtml(g.label)}</span>
+        <span class="guide-g-label">
+          <span class="guide-g-label-t">${escapeHtml(g.label)}</span>
+          ${sectionPeeksHtml(g.sections, 3)}
+        </span>
         <span class="guide-g-count">${fmtCount(groupCount(g))}</span>
         <span class="guide-g-chev" aria-hidden="true">▾</span>
       </button>
@@ -4454,11 +4578,13 @@ function filterGuideTreeByQuery(q) {
 function updateSectionUi() {
   state.group = groupForSection(state.section).id;
   navUi.openGroups.add(state.group);
+  if (!mobileUi.catalogOpen) mobileUi.catalogOpen = state.group;
   buildGuideTree();
   paintGuideSideChrome();
   filterGuideTreeByQuery(state.query);
   updateGuideCrumb();
   paintMobChips();
+  if (mobileUi.tab === "catalog") renderMobCatalog();
 }
 
 function setGuideMenu(on) {
@@ -5395,11 +5521,6 @@ function bindUi() {
     const kind = row.dataset.mobCatKind;
     const id = row.dataset.mobCatId;
     if (kind === "group") {
-      const g = groupById(id);
-      if (g?.sections?.length === 1) {
-        pickMobCatalogSection(g.sections[0]);
-        return;
-      }
       openMobCatalogGroup(id);
       return;
     }
@@ -5407,6 +5528,7 @@ function bindUi() {
   });
 
   els.guideMobCatBack?.addEventListener("click", () => {
+    mobileUi.catalogOpen = state.group || GUIDE_GROUPS[0]?.id || null;
     mobileUi.catalogGroup = null;
     renderMobCatalog();
   });
@@ -5456,7 +5578,8 @@ function bindUi() {
         pickMobCatalogSection(g.sections[0]);
         return;
       }
-      mobileUi.catalogGroup = gid;
+      mobileUi.catalogOpen = gid;
+      mobileUi.catalogGroup = null;
       setMobileTab("catalog", { fromClick: true });
       return;
     }

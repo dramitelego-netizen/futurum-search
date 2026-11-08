@@ -6930,7 +6930,7 @@
           "value": "вечно"
         }
       ],
-      "hasAchievement": false,
+      "hasAchievement": true,
       "characteristicsLinks": [
         {
           "text": "Полет",
@@ -9016,8 +9016,8 @@
       ],
       "id": 408,
       "image": "data/wiki_img/Fadfce2bec.png",
-      "lookImageUrl": "https://parapa.ru/wiki/images/f/f7/Img.png",
-      "lookImage": "data/wiki_img/Img.png"
+      "lookImageUrl": "https://parapa.ru/wiki/images/5/58/89d20a652f.png",
+      "lookImage": "data/wiki_img/89d20a652f.png"
     },
     {
       "kind": "wings",
@@ -9237,7 +9237,7 @@
           "value": "7 дней, 30 дней, вечно"
         }
       ],
-      "hasAchievement": false,
+      "hasAchievement": true,
       "characteristicsLinks": [
         {
           "text": "Полет",
@@ -10865,7 +10865,7 @@
           "value": "вечно"
         }
       ],
-      "hasAchievement": false,
+      "hasAchievement": true,
       "characteristicsLinks": [
         {
           "text": "Полет",
@@ -11160,8 +11160,8 @@
       ],
       "id": 428,
       "image": "data/wiki_img/8f40e7e47c.png",
-      "lookImageUrl": "https://parapa.ru/wiki/images/a/a0/9e5660e09049418716ffca0b46d4d893.png",
-      "lookImage": "data/wiki_img/9e5660e09049418716ffca0b46d4d893.png"
+      "lookImageUrl": "https://parapa.ru/wiki/images/b/b5/1562a6b810.png",
+      "lookImage": "data/wiki_img/1562a6b810.png"
     },
     {
       "kind": "wings",
@@ -14384,8 +14384,8 @@
       ],
       "id": 462,
       "image": "data/wiki_img/431bf2e557.png",
-      "lookImageUrl": "https://parapa.ru/wiki/images/6/6a/%D0%AB%D0%B2%D0%B0%D0%BF%D1%80%D0%BE%D0%BB%D0%B4%D0%BB%D0%BE%D1%80%D0%BF.png",
-      "lookImage": "data/wiki_img/Ывапролдлорп.png"
+      "lookImageUrl": "https://parapa.ru/wiki/images/e/e5/D6f3a8dba1.png",
+      "lookImage": "data/wiki_img/D6f3a8dba1.png"
     },
     {
       "kind": "wings",
@@ -15089,8 +15089,8 @@
       ],
       "id": 469,
       "image": "data/wiki_img/F224ed0222.png",
-      "lookImageUrl": "https://parapa.ru/wiki/images/a/a2/38e69d05dd791e41c5e299416f6d8a6c.png",
-      "lookImage": "data/wiki_img/38e69d05dd791e41c5e299416f6d8a6c.png"
+      "lookImageUrl": "https://parapa.ru/wiki/images/e/eb/Abc2f5a42a.png",
+      "lookImage": "data/wiki_img/Abc2f5a42a.png"
     },
     {
       "kind": "wings",
@@ -15266,7 +15266,7 @@
           "value": "7 дней, 30 дней, вечно"
         }
       ],
-      "hasAchievement": false,
+      "hasAchievement": true,
       "characteristicsLinks": [
         {
           "text": "Полет",
@@ -20908,7 +20908,7 @@
           "value": "1 день, вечно"
         }
       ],
-      "hasAchievement": false,
+      "hasAchievement": true,
       "characteristicsLinks": [
         {
           "text": "аура",
@@ -20938,8 +20938,8 @@
       ],
       "id": 531,
       "image": "data/wiki_img/40e829eab311.png",
-      "lookImageUrl": "https://parapa.ru/wiki/images/c/c6/Launch_2015-01-03_16-22-54-10.png",
-      "lookImage": "data/wiki_img/Launch_2015-01-03_16-22-54-10.png",
+      "lookImageUrl": "https://parapa.ru/wiki/images/c/c0/Cc46d0b218.png",
+      "lookImage": "data/wiki_img/Cc46d0b218.png",
       "lookVariants": [
         {
           "label": "вид",
@@ -22651,7 +22651,7 @@
           "value": "1 день, вечно"
         }
       ],
-      "hasAchievement": false,
+      "hasAchievement": true,
       "characteristicsLinks": [
         {
           "text": "Полет",
@@ -22812,7 +22812,7 @@
     {
       "kind": "wings",
       "kindLabel": "Крылья",
-      "name": "Крылья \"Барокко\"",
+      "name": "Детские крылья \"Барокко\"",
       "description": "У этого термина существуют и другие значения, см. Крылья Барокко детск.",
       "source": "Юбилейное Колесо удачи, билет \"Ностальгия\"",
       "note": "Анимация: да · Полёт: да · Аура: нет · Пол: для девочек, для мальчиков · Срок: 1 день, вечно",
@@ -22935,7 +22935,7 @@
     {
       "kind": "wings",
       "kindLabel": "Крылья",
-      "name": "Крылья звездной бездны",
+      "name": "Детские крылья звездной бездны",
       "description": "Фантастические крылья.",
       "source": "Большое Колесо удачи, билет \"Большая удача!\", розыгрыш \"Счастливая запись",
       "note": "Анимация: да · Полёт: да · Аура: нет · Пол: для девочек, для мальчиков · Срок: 1 день, вечно",
@@ -23005,7 +23005,7 @@
     {
       "kind": "wings",
       "kindLabel": "Крылья",
-      "name": "Крылья красочных снов",
+      "name": "Детские крылья красочных снов",
       "description": "Эти яркие крылья наверняка понравятся твоему ребенку.",
       "source": "Чертово Колесо удачи, билет \"Дольче вита\"",
       "note": "Анимация: да · Полёт: да · Аура: нет · Пол: для девочек, для мальчиков · Срок: вечно",
@@ -23350,7 +23350,7 @@
     {
       "kind": "wings",
       "kindLabel": "Крылья",
-      "name": "Крылья универсума",
+      "name": "Детские крылья универсума",
       "description": "У этого термина существуют и другие значения, см. Крылья универсума детск.",
       "source": "Юбилейное Колесо удачи",
       "note": "Анимация: да · Полёт: да · Аура: нет · Пол: для девочек, для мальчиков · Срок: 1 день, вечно",
@@ -23410,7 +23410,7 @@
     {
       "kind": "wings",
       "kindLabel": "Крылья",
-      "name": "Крылья чародея",
+      "name": "Детские крылья чародея",
       "description": "Что ни говори, а в чувстве стиля чародею не откажешь.",
       "source": "Новогоднее Колесо удачи, билет \"Хвост кометы\"",
       "note": "Анимация: нет · Полёт: нет · Аура: нет · Пол: для девочек, для мальчиков · Срок: 1 день, вечно",
@@ -28035,7 +28035,7 @@
           "value": "вечно"
         }
       ],
-      "hasAchievement": false,
+      "hasAchievement": true,
       "id": 752,
       "image": "data/wiki_img/F413a99fa4.png",
       "characteristicsLinks": [
@@ -34727,7 +34727,7 @@
           "value": "7 дней, вечно"
         }
       ],
-      "hasAchievement": false,
+      "hasAchievement": true,
       "id": 862,
       "image": "data/wiki_img/92c3e3fad5.png",
       "characteristicsLinks": [
@@ -35982,7 +35982,7 @@
           "value": "вечно"
         }
       ],
-      "hasAchievement": false,
+      "hasAchievement": true,
       "id": 883,
       "image": "data/wiki_img/E0f95d235d.png",
       "characteristicsLinks": [
@@ -37967,7 +37967,7 @@
           "value": "Нет"
         }
       ],
-      "hasAchievement": false,
+      "hasAchievement": true,
       "id": 913,
       "image": "data/wiki_img/34373a7e4b.png",
       "characteristicsLinks": [
@@ -38008,7 +38008,7 @@
           "value": "Нет"
         }
       ],
-      "hasAchievement": false,
+      "hasAchievement": true,
       "id": 914,
       "image": "data/wiki_img/E16e217e3c.png",
       "characteristicsLinks": [
@@ -38116,7 +38116,7 @@
     {
       "kind": "transport",
       "kindLabel": "Транспорт",
-      "name": "Космобайк",
+      "name": "Детский космобайк",
       "description": "Космический транспорт.",
       "source": "колесо удачи \"Волшебная зима\", событие \"Волшебная зима\"",
       "note": "Чтобы подсадить к малышу пассажира, кликните на чужого ребенка правой кнопкой мыши и нажмите \"Пригласить на интерактив\".; Чтобы подсадить своего малыша к другому, кликните на чужого ребенка правой кнопкой мыши и нажмите \"Записаться на интерактив\".; Невозможно посадить чужих детей на детский транспорт в локациях \"Стадион\" и \"Секция\".",
@@ -38157,7 +38157,7 @@
     {
       "kind": "transport",
       "kindLabel": "Транспорт",
-      "name": "Котоход",
+      "name": "Детский котоход",
       "description": "1.1010000100111E+71 · Для обмена нужно 500 полумесяцев",
       "source": "Сувенир в форме полумесяца. Лучше не думать, откуда гончая его взяла. Этот предмет можно обменять на подарки у Алисы. Способ получения: событие \"Огненная гончая\" (1), (2)., Алиса (обмен подарков)",
       "note": "Для обмена нужно 300 полумесяцев. · Для обмена нужно Желтый котоход: 500 полумесяцев (Алиса)",
@@ -38231,7 +38231,7 @@
     {
       "kind": "transport",
       "kindLabel": "Транспорт",
-      "name": "Мини-мобиль \"О2\"",
+      "name": "Детский мини-мобиль \"О2\"",
       "description": "У этого термина существуют и другие значения, см. Детский мини мобиль О2.",
       "source": "акция \"Юбилейное колесо удачи\", билет \"Ностальгия\"",
       "note": "Чтобы подсадить к малышу пассажира, кликните на чужого ребенка правой кнопкой мыши и нажмите \"Пригласить на интерактив\".; Чтобы подсадить своего малыша к другому, кликните на чужого ребенка правой кнопкой мыши и нажмите \"Записаться на интерактив\".; Невозможно посадить чужих детей на детский транспорт в локациях \"Стадион\" и \"Секция\".",
@@ -38272,7 +38272,7 @@
     {
       "kind": "transport",
       "kindLabel": "Транспорт",
-      "name": "Миникар",
+      "name": "Детский миникар",
       "description": "Транспортное средство для ребенка.",
       "source": "акция \"Звездное колесо удачи\", событие \"Турнир в Скайлайте\", билет \"Счастливый день\", Алиса (обмен подарков)",
       "note": "Мест: одно · Срок: вечно · Аура: Нет · Для обмена нужно 5 элитных карт",
@@ -38319,7 +38319,7 @@
     {
       "kind": "transport",
       "kindLabel": "Транспорт",
-      "name": "Надувной круг",
+      "name": "Детский надувной круг",
       "description": "С таким - не утонешь!",
       "source": "карта \"Летнее колесо удачи\"",
       "note": "Мест: одно · Срок: 1 день, вечно · Аура: Нет",
@@ -38394,7 +38394,7 @@
     {
       "kind": "transport",
       "kindLabel": "Транспорт",
-      "name": "Парящая радуга",
+      "name": "Детская парящая радуга",
       "description": "Оседлай радугу и отправляйся в путешествие! · Для обмена требуется 3000 фруктовых леденцов",
       "source": "Эти леденцы можно обменять у Алисы (обмен подарков) на различные подарки. Приобрести можно: в событии \"Охота на чертенка\" или из лотерейного билета \"Волшебная радуга\"., Алиса (обмен подарков)",
       "note": "Для обмена нужно 3000 фруктовых леденцов. · Чтобы подсадить к малышу пассажира, кликните на чужого ребенка правой кнопкой мыши и нажмите \"Пригласить на интерактив\".; Чтобы подсадить своего малыша к другому, кликните на чужого ребенка правой кнопкой мыши и нажмите \"Записаться на интерактив\".; Невозможно посадить чужих детей на детский транспорт в локациях \"Стадион\" и \"Секция\".",
@@ -38435,7 +38435,7 @@
     {
       "kind": "transport",
       "kindLabel": "Транспорт",
-      "name": "Самокат",
+      "name": "Детский самокат",
       "description": "Яркий и удобный самокат. · Для обмена нужно 2 элитных карты",
       "source": "акция \"Звездное колесо удачи\", билет \"Солнышко\", Алиса (обмен подарков)",
       "note": "Мест: одно · Срок: вечно · Аура: Нет · Для обмена нужно 2 элитных карты",
@@ -38475,7 +38475,7 @@
     {
       "kind": "transport",
       "kindLabel": "Транспорт",
-      "name": "Санки",
+      "name": "Детские санки",
       "description": "Любишь кататься? Люби и возить!",
       "source": "онлайн-магазин; билет \"Морозные узоры\"",
       "note": "Стоимость: 555 мнт · Чтобы подсадить к малышу пассажира, кликните на чужого ребенка правой кнопкой мыши и нажмите \"Пригласить на интерактив\".; Чтобы подсадить своего малыша к другому, кликните на чужого ребенка правой кнопкой мыши и нажмите \"Записаться на интерактив\".; Невозможно посадить чужих детей на детский транспорт в локациях \"Стадион\" и \"Секция\".",
@@ -38521,7 +38521,7 @@
     {
       "kind": "transport",
       "kindLabel": "Транспорт",
-      "name": "Световой трицикл",
+      "name": "Детский световой трицикл",
       "description": "У этого термина существуют и другие значения, см. Детский световой трицикл 2.",
       "source": "акция \"Юбилейное колесо удачи\", билет \"Ностальгия\"",
       "note": "Чтобы подсадить к малышу пассажира, кликните на чужого ребенка правой кнопкой мыши и нажмите \"Пригласить на интерактив\".; Чтобы подсадить своего малыша к другому, кликните на чужого ребенка правой кнопкой мыши и нажмите \"Записаться на интерактив\".; Невозможно посадить чужих детей на детский транспорт в локациях \"Стадион\" и \"Секция\".",
@@ -38847,7 +38847,7 @@
     {
       "kind": "transport",
       "kindLabel": "Транспорт",
-      "name": "Цветочный велосипед",
+      "name": "Детский цветочный велосипед",
       "description": "У этого термина существуют и другие значения, см. Детский цветочный велосипед 2.",
       "source": "акция \"Большое колесо удачи\", билет \"Большая удача!\"",
       "note": "Чтобы подсадить к малышу пассажира, кликните на чужого ребенка правой кнопкой мыши и нажмите \"Пригласить на интерактив\".; Чтобы подсадить своего малыша к другому, кликните на чужого ребенка правой кнопкой мыши и нажмите \"Записаться на интерактив\".; Невозможно посадить чужих детей на детский транспорт в локациях \"Стадион\" и \"Секция\".",
@@ -38963,7 +38963,7 @@
     {
       "kind": "transport",
       "kindLabel": "Транспорт",
-      "name": "Электромобиль \"WJ\"",
+      "name": "Детский электромобиль \"WJ\"",
       "description": "Мини-электромобиль в стиле \"ретро\".",
       "source": "событие \"Подарки к покупкам\" (1), (2), (3), (4)",
       "note": "Мест: одно · Срок: вечно · Аура: Нет",
@@ -41322,7 +41322,8 @@
       "slot": "Украшения для головы",
       "id": 977,
       "image": "data/wiki_img/B6e3d3b9f1.png",
-      "lookImage": "data/wiki_img/8119712757.png"
+      "lookImage": "data/wiki_img/8119712757.png",
+      "hasAchievement": true
     },
     {
       "kind": "accessories",
@@ -99812,7 +99813,8 @@
           "href": "https://parapa.ru/forums/showthread.php?t=111205",
           "kind": "event"
         }
-      ]
+      ],
+      "hasAchievement": true
     },
     {
       "kind": "interactive",
@@ -101044,7 +101046,8 @@
           "title": "Алиса обмен подарков",
           "kind": "other"
         }
-      ]
+      ],
+      "hasAchievement": true
     },
     {
       "kind": "interactive",
@@ -101259,7 +101262,8 @@
           "title": "Колесо удачи",
           "kind": "event"
         }
-      ]
+      ],
+      "hasAchievement": true
     },
     {
       "kind": "interactive",
@@ -121155,7 +121159,8 @@
       ],
       "id": 2618,
       "image": "data/wiki_img/Лук.png",
-      "lookImage": "data/wiki_img/C5wNQZ.png"
+      "lookImage": "data/wiki_img/C5wNQZ.png",
+      "hasAchievement": true
     },
     {
       "kind": "amusements",
@@ -125368,7 +125373,7 @@
     {
       "kind": "amusements",
       "kindLabel": "Развлечения",
-      "name": "Кресло \"Заяц\"",
+      "name": "Детское кресло \"Заяц\"",
       "description": "Кресло в виде мультяшного зайца.",
       "source": "акция \"Волшебное колесо удачи\"",
       "note": "Анимация: нет · Аура: нет · Мест: одно · Срок: вечно",
@@ -125416,7 +125421,7 @@
     {
       "kind": "amusements",
       "kindLabel": "Развлечения",
-      "name": "Кресло-яйцо",
+      "name": "Детское кресло-яйцо",
       "description": "Кресло-яйцо для маленького цыпленка.",
       "source": "Колесо Фортуны \"Возвращение мечты\"",
       "note": "Анимация: нет · Аура: нет · Мест: одно · Срок: вечно",
@@ -147656,7 +147661,8 @@
       "lookImageUrl": "https://parapa.ru/wiki/images/7/79/81e285b61c.png",
       "id": 3649,
       "image": "data/wiki_img/81e285b61c.png",
-      "lookImage": "data/wiki_img/81e285b61c.png"
+      "lookImage": "data/wiki_img/81e285b61c.png",
+      "hasAchievement": true
     },
     {
       "kind": "event_clothes",
@@ -156033,7 +156039,8 @@
       "lookImageUrl": "https://parapa.ru/wiki/images/8/8e/Launch2016-07-1201-47-01-69194ae.png",
       "id": 4144,
       "image": "data/wiki_img/Launch2016-07-1201-47-01-69194ae.png",
-      "lookImage": "data/wiki_img/Launch2016-07-1201-47-01-69194ae.png"
+      "lookImage": "data/wiki_img/Launch2016-07-1201-47-01-69194ae.png",
+      "hasAchievement": true
     },
     {
       "kind": "event_clothes",
@@ -156927,7 +156934,8 @@
       "lookImageUrl": "https://parapa.ru/wiki/images/e/e5/Белый_ж.png",
       "id": 4196,
       "image": "data/wiki_img/Белый_ж.png",
-      "lookImage": "data/wiki_img/Белый_ж.png"
+      "lookImage": "data/wiki_img/Белый_ж.png",
+      "hasAchievement": true
     },
     {
       "kind": "event_clothes",
@@ -157227,7 +157235,8 @@
       "lookImageUrl": "https://parapa.ru/wiki/images/0/04/Белый_Графоманка.png",
       "id": 4216,
       "image": "data/wiki_img/Белый_Графоманка.png",
-      "lookImage": "data/wiki_img/Белый_Графоманка.png"
+      "lookImage": "data/wiki_img/Белый_Графоманка.png",
+      "hasAchievement": true
     },
     {
       "kind": "event_clothes",
@@ -157283,7 +157292,8 @@
       ],
       "id": 4224,
       "image": "data/wiki_img/Белый_графом.png",
-      "lookImage": "data/wiki_img/Белый_графом.png"
+      "lookImage": "data/wiki_img/Белый_графом.png",
+      "hasAchievement": true
     },
     {
       "kind": "event_clothes",
@@ -159207,7 +159217,8 @@
       "lookImageUrl": "https://parapa.ru/wiki/images/2/2b/Лавьоль_белый.png",
       "id": 4351,
       "image": "data/wiki_img/Лавьоль_белый.png",
-      "lookImage": "data/wiki_img/Лавьоль_белый.png"
+      "lookImage": "data/wiki_img/Лавьоль_белый.png",
+      "hasAchievement": true
     },
     {
       "kind": "event_clothes",
@@ -159949,7 +159960,8 @@
       "lookImageUrl": "https://parapa.ru/wiki/images/3/3b/Бельмонт_розовый.png",
       "id": 4392,
       "image": "data/wiki_img/Бельмонт_розовый.png",
-      "lookImage": "data/wiki_img/Бельмонт_розовый.png"
+      "lookImage": "data/wiki_img/Бельмонт_розовый.png",
+      "hasAchievement": true
     },
     {
       "kind": "event_clothes",
