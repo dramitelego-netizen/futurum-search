@@ -271,12 +271,13 @@
   line-height: 1.15;
 }
 
-/* B2: все разделы группы — без обрезки */
+/* B2: все разделы группы — ровная сетка 2 колонки, ничего не прячем */
 .guide-g-peeks {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.22rem;
-  align-items: stretch;
+  width: 100%;
+  min-width: 0;
 }
 
 .guide-g-block.open .guide-g-peeks {
@@ -288,19 +289,22 @@
 }
 
 .guide-g-peek {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
   font-size: 0.6rem;
   font-weight: 650;
   line-height: 1.25;
   color: var(--mute);
-  padding: 0.14rem 0.4rem;
-  border-radius: 999px;
+  padding: 0.16rem 0.36rem;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.045);
   border: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
-  max-width: 100%;
+  text-align: center;
   white-space: normal;
-  overflow: visible;
-  text-overflow: unset;
   overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .guide-g-peek-more {
@@ -4836,14 +4840,14 @@ body.guide-page.guide-layout-mobile .shell {
   }
 
   body.guide-page.guide-layout-mobile .guide-mob-chips:not([hidden]) {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.28rem;
-    overflow-x: auto;
-    scrollbar-width: none;
+    overflow: visible;
     width: 100%;
     max-width: 100%;
     padding: 0.05rem 0 0.1rem;
-    -webkit-overflow-scrolling: touch;
+    box-sizing: border-box;
   }
 
   body.guide-page.guide-layout-mobile .guide-mob-chips::-webkit-scrollbar {
@@ -4852,15 +4856,21 @@ body.guide-page.guide-layout-mobile .shell {
 
   .guide-mob-chip {
     appearance: none;
-    flex: 0 0 auto;
-    padding: 0.28rem 0.58rem;
-    border-radius: 999px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 0.32rem 0.4rem;
+    border-radius: 10px;
     border: 1px solid var(--line, rgba(90, 220, 200, 0.22));
     background: transparent;
     color: var(--mute, #8a96a8);
     font: inherit;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
   }
@@ -5742,18 +5752,25 @@ body.guide-page.guide-layout-mobile.guide-brand-hero-on #q::placeholder {
 }
 
 body.guide-page.guide-layout-mobile .guide-mob-chips:not([hidden]) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.28rem;
   min-width: 0;
   max-width: 100%;
   padding: 0;
   margin: 0;
-  overscroll-behavior-x: contain;
+  overflow: visible;
 }
 
 body.guide-page.guide-layout-mobile .guide-mob-chip {
-  padding: 0.22rem 0.52rem;
-  font-size: 0.68rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0.3rem 0.4rem;
+  font-size: 0.66rem;
   line-height: 1.2;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 body.guide-page.guide-layout-mobile .guide-side,
@@ -6742,7 +6759,7 @@ body.guide-page.guide-layout-mobile .guide-mob-cat-list.is-accordion {
 body.guide-page.guide-layout-mobile .guide-mob-acc {
   border: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
   border-radius: 14px;
-  overflow: hidden;
+  overflow: visible;
   background:
     linear-gradient(120deg, color-mix(in srgb, var(--cat, var(--accent)) 10%, transparent), transparent 58%),
     rgba(255, 255, 255, 0.03);
@@ -6807,16 +6824,25 @@ body.guide-page.guide-layout-mobile .guide-mob-acc-text .t {
 }
 
 body.guide-page.guide-layout-mobile .guide-mob-acc .guide-g-peeks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.2rem;
+  width: 100%;
 }
 
 body.guide-page.guide-layout-mobile .guide-mob-acc .guide-g-peek {
-  font-size: 0.62rem;
-  padding: 0.12rem 0.36rem;
+  font-size: 0.6rem;
+  padding: 0.14rem 0.3rem;
 }
 
 body.guide-page.guide-layout-mobile .guide-mob-acc.open .guide-g-peeks {
   display: none;
+}
+
+/* в открытой группе все подкатегории списком — ровные ряды */
+body.guide-page.guide-layout-mobile .guide-mob-acc.open .guide-mob-acc-body {
+  display: grid;
+  grid-template-columns: 1fr;
 }
 
 body.guide-page.guide-layout-mobile .guide-mob-acc-side {
