@@ -1254,17 +1254,35 @@ function absRemoteUrl(url) {
   return u;
 }
 
+/** wiki_img/foo.png → look_img/foo.webp (или .gif), иначе guide_img */
+function mapWikiImgToDeployPack(rel, { hq = false } = {}) {
+  const m = String(rel || "").match(/^data\/wiki_img\/(.+)$/i);
+  if (!m) return rel;
+  const base = m[1].split("/").pop() || "";
+  if (!base) return rel;
+  const stem = base.replace(/\.[^.]+$/, "");
+  const ext = (base.match(/\.[^.]+$/) || [""])[0].toLowerCase();
+  if (hq) {
+    // карточка/зум: look_img (деплойный HQ WebP), локально — оригинал wiki_img
+    if (!isSlimPagesHost()) return `data/wiki_img/${base}`;
+    return `data/look_img/${stem}.webp`;
+  }
+  return `data/guide_img/${base}`;
+}
+
 function localImgPath(path, opts) {
   const p = String(path || "").trim();
   if (!p) return "";
   let rel = p.replace(/^\.\//, "").replace(/^\/+/, "");
-  // Список всегда берёт лёгкую копию guide_img (max 256px).
-  // Карточка и зум — оригинал wiki_img, если пак лежит рядом (локально).
-  // На Pages полного wiki_img нет, поэтому там остаётся guide_img.
-  const keepFull = Boolean(opts && opts.hq) && !isSlimPagesHost();
-  if (!keepFull && /^data\/wiki_img\//i.test(rel)) {
-    const base = rel.split("/").pop();
-    if (base) rel = `data/guide_img/${base}`;
+  // Список → guide_img; карточка/зум → look_img на Pages / wiki_img локально
+  const hq = Boolean(opts && opts.hq);
+  if (/^data\/wiki_img\//i.test(rel)) {
+    rel = mapWikiImgToDeployPack(rel, { hq });
+  } else if (hq && /^data\/guide_img\//i.test(rel) && isSlimPagesHost()) {
+    // если в данных уже guide_img, для HQ берём look_img/*.webp
+    const base = rel.split("/").pop() || "";
+    const stem = base.replace(/\.[^.]+$/, "");
+    rel = `data/look_img/${stem}.webp`;
   }
   if (isSlimPagesHost() && /^data\//i.test(rel)) {
     const enc = rel

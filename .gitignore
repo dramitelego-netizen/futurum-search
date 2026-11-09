@@ -22,8 +22,8 @@ data/update_and_push.log
 data/watch_catalog.log
 data/watch_state.json
 
-# Полный кэш вики (~ГБ) только локально. На сайт идут:
-# data/img (товары), data/title_img (титулы), data/guide_img (значки гида).
+# Полный кэш вики (~6ГБ PNG) только локально — не коммитим.
+# На сайт: data/img, title_img, guide_img (список) + data/look_img (карточка/зум HQ).
 data/wiki_img/
 
 # local temp scripts

@@ -1,5 +1,5 @@
-# GitHub Pages: товары (data/img) + титулы (data/title_img) + значки гида (data/guide_img)
-# всегда в артефакте. Полный data/wiki_img (~ГБ) не деплоим.
+# GitHub Pages: data/img + title_img + guide_img + look_img (HQ для карточки/зума).
+# Полный data/wiki_img (~6ГБ) в git не храним, но если папка есть в артефакте — НЕ удаляем.
 name: Deploy Pages
 
 on:
@@ -32,6 +32,7 @@ jobs:
           test -d data/img
           test -d data/title_img
           test -d data/guide_img
+          test -d data/look_img
           python3 - <<'PY'
           import json, sys
           from pathlib import Path
@@ -79,18 +80,14 @@ jobs:
           )
           PY
 
-      - name: Drop oversized local-only caches from artifact
+      - name: Drop local scrape junk from artifact (do NOT delete image packs)
         run: |
           set -e
-          # Полный кэш вики только локально; на сайт идут data/guide_img + data/img + data/title_img
-          if [ -d data/wiki_img ]; then
-            du -sh data/wiki_img || true
-            rm -rf data/wiki_img
-          fi
+          # Раньше тут удаляли data/wiki_img — больше не трогаем картиночные паки.
           rm -f data/watch_catalog.log data/scrape.log || true
           rm -f data/_wiki_page_*.html data/_wiki_*.html data/_gift_*.html 2>/dev/null || true
           echo "Keeping image packs:"
-          du -sh data/img data/title_img data/guide_img 2>/dev/null || true
+          du -sh data/img data/title_img data/guide_img data/look_img data/wiki_img 2>/dev/null || true
           du -sh . || true
 
       - name: Setup Pages
