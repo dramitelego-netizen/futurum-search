@@ -1786,7 +1786,7 @@ function achievementsForItem(it) {
 
 /** Собрать индекс достижений по требованию (карточка / бейджи) */
 function ensureAchIndex() {
-  if (achRequiresIndex || achIndexReady) return;
+  if (achRequiresIndex || achIndexReady || achIndexBuilding) return;
   achIndexBuilding = true;
   try {
     buildReqCatalog();
@@ -1808,9 +1808,9 @@ function scheduleAchIndexBuild() {
     }
   };
   if (typeof requestIdleCallback === "function") {
-    requestIdleCallback(run, { timeout: 1800 });
+    requestIdleCallback(run, { timeout: 2500 });
   } else {
-    setTimeout(run, 120);
+    setTimeout(run, 200);
   }
 }
 
@@ -1844,7 +1844,7 @@ function quoteContextBoost(raw, quoteText, section) {
 }
 
 function findAchievementRequires(description, selfName = "") {
-  ensureAchIndex();
+  // НЕ вызывать ensureAchIndex здесь — иначе рекурсия из buildAchRequiresIndex и зависание вкладки
   if (!reqCatalog) buildReqCatalog();
   const raw = String(description || "").trim();
   if (!raw) return [];
