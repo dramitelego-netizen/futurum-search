@@ -5017,12 +5017,16 @@ function renderList() {
         ? `<span class="ttl-op-badge ${opClass(it.op)}" title="${escapeHtml(opLabel(it.op))}"><span class="ttl-op-num">${opN}</span><span class="ttl-op-unit">ОП</span></span>`
         : "";
       const shopHtml = shopBadgeHtml(itemShopOffers(it), "result-shop ttl-req-shop");
-      const achN = !title && sec !== "achievements" ? achievementsForItem(it).length : 0;
-      const achHtml = achN
-        ? `<span class="result-ach-badge" title="Нужен для ${achN} ${
-            achN === 1 ? "достижения" : achN < 5 ? "достижений" : "достижений"
-          }">★ ${achN}</span>`
-        : "";
+      const isAchRow = sec === "achievements";
+      const achN = !title && !isAchRow ? achievementsForItem(it).length : 0;
+      // предметы → «★ N» (нужны для достижения); сами достижения → золотая метка «Достижение»
+      const achHtml = isAchRow
+        ? `<span class="result-ach-badge result-ach-kind" title="Достижение">★ Достижение</span>`
+        : achN
+          ? `<span class="result-ach-badge" title="Нужен для ${achN} ${
+              achN === 1 ? "достижения" : achN < 5 ? "достижений" : "достижений"
+            }">★ ${achN}</span>`
+          : "";
       const rank = state.rankMeta?.get(guideItemRankKey(it));
       const fuzzyHtml =
         rank?.fuzzy && rank.tier >= 4

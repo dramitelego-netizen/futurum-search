@@ -2798,6 +2798,15 @@ a.ttl-mark-link:hover {
   flex: 0 0 auto;
 }
 
+/* сама запись-достижение в поиске/списке */
+.result-ach-badge.result-ach-kind {
+  padding: 0.07rem 0.4rem;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  background: linear-gradient(135deg, #ffd978, #e8a23a 55%, #d4892a);
+  box-shadow: 0 0 0 1px color-mix(in srgb, #f0c35a 45%, transparent);
+}
+
 .result-fuzzy {
   display: inline-flex;
   align-items: center;
