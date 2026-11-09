@@ -709,7 +709,7 @@ function setMobileTab(tab, { fromClick } = {}) {
     els.list?.closest(".results-panel")?.scrollTo?.(0, 0);
     els.list?.scrollTo?.(0, 0);
     closeMobileSheet();
-    els.q?.focus?.({ preventScroll: true });
+    // на телефоне не фокусируем поиск сами — иначе вылезает клавиатура
     return;
   }
   if (next === "catalog" && mobileUi.tab !== "catalog") {
@@ -770,6 +770,14 @@ function openMobCatalogGroup(groupId) {
   renderMobCatalog();
 }
 
+function blurGuideSearch() {
+  try {
+    if (els.q && document.activeElement === els.q) els.q.blur();
+  } catch {
+    /* ignore */
+  }
+}
+
 function pickMobCatalogSection(section) {
   if (!section) return;
   leaveLanding();
@@ -783,6 +791,7 @@ function pickMobCatalogSection(section) {
   }
   mobileUi.catalogGroup = null;
   setMobileTab("home");
+  blurGuideSearch();
 }
 
 function openMobileSheet() {
@@ -5681,7 +5690,6 @@ function bindUi() {
   els.guideMobFocusFilters?.addEventListener("click", () => {
     setMobileTab("home");
     els.opPills?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    els.q?.focus?.({ preventScroll: true });
   });
 
   els.guideLandingCatalog?.addEventListener("click", () => openLandingCatalog());
