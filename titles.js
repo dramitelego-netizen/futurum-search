@@ -5019,14 +5019,15 @@ function renderList() {
       const shopHtml = shopBadgeHtml(itemShopOffers(it), "result-shop ttl-req-shop");
       const isAchRow = sec === "achievements";
       const achN = !title && !isAchRow ? achievementsForItem(it).length : 0;
-      // предметы → «★ N» (нужны для достижения); сами достижения → золотая метка «Достижение»
-      const achHtml = isAchRow
+      // предметы → «★ N» в meta; сами достижения → золотая «Достижение» у названия
+      const achNeedHtml = achN
+        ? `<span class="result-ach-badge" title="Нужен для ${achN} ${
+            achN === 1 ? "достижения" : achN < 5 ? "достижений" : "достижений"
+          }">★ ${achN}</span>`
+        : "";
+      const achKindHtml = isAchRow
         ? `<span class="result-ach-badge result-ach-kind" title="Достижение">★ Достижение</span>`
-        : achN
-          ? `<span class="result-ach-badge" title="Нужен для ${achN} ${
-              achN === 1 ? "достижения" : achN < 5 ? "достижений" : "достижений"
-            }">★ ${achN}</span>`
-          : "";
+        : "";
       const rank = state.rankMeta?.get(guideItemRankKey(it));
       const fuzzyHtml =
         rank?.fuzzy && rank.tier >= 4
@@ -5037,18 +5038,23 @@ function renderList() {
             <span class="result-name${opTone}">${escapeHtml(it.name)}</span>
             ${badge}
           </span>`
-        : `<span class="result-name">${escapeHtml(it.name)}</span>`;
+        : isAchRow
+          ? `<span class="result-row-top">
+            <span class="result-name">${escapeHtml(it.name)}</span>
+            ${achKindHtml}
+          </span>`
+          : `<span class="result-name">${escapeHtml(it.name)}</span>`;
       return `
       <li>
-        <button type="button" class="result ttl-result${pair.src || !title ? " has-img" : ""}${title ? " has-op" : ""}${opTone}${active}${
-          rank?.fuzzy ? " is-fuzzy" : ""
-        }" data-id="${it.id}" data-section="${escapeHtml(sec)}">
+        <button type="button" class="result ttl-result${pair.src || !title ? " has-img" : ""}${title ? " has-op" : ""}${
+          isAchRow ? " is-ach" : ""
+        }${opTone}${active}${rank?.fuzzy ? " is-fuzzy" : ""}" data-id="${it.id}" data-section="${escapeHtml(sec)}">
           ${thumb}
           <span class="result-main">
             ${nameBlock}
             <span class="result-meta">
               ${fuzzyHtml}
-              ${achHtml}
+              ${achNeedHtml}
               ${shopHtml}
               ${meta ? `<span class="result-sub">${escapeHtml(meta)}</span>` : ""}
             </span>

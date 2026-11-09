@@ -2798,13 +2798,35 @@ a.ttl-mark-link:hover {
   flex: 0 0 auto;
 }
 
-/* сама запись-достижение в поиске/списке */
+/* сама запись-достижение в поиске/списке — у названия, как ОП у титулов */
 .result-ach-badge.result-ach-kind {
   padding: 0.07rem 0.4rem;
   letter-spacing: 0.04em;
   text-transform: none;
   background: linear-gradient(135deg, #ffd978, #e8a23a 55%, #d4892a);
   box-shadow: 0 0 0 1px color-mix(in srgb, #f0c35a 45%, transparent);
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.ttl-result.is-ach .result-row-top {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.ttl-result.is-ach .result-row-top .result-name {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+/* даже в мини-сетке G золотая метка достижения остаётся */
+html[data-items-view="G"] .result-ach-badge.result-ach-kind {
+  display: inline-flex !important;
+  font-size: 0.5rem;
+  padding: 0.05rem 0.28rem;
 }
 
 .result-fuzzy {
@@ -6139,6 +6161,22 @@ html[data-items-view="B"] body.guide-page.guide-layout-mobile .result-main {
 html[data-items-view="A"] body.guide-page.guide-layout-mobile .result-row-top,
 html[data-items-view="B"] body.guide-page.guide-layout-mobile .result-row-top {
   display: contents;
+}
+
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .ttl-result.is-ach .result-row-top,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .ttl-result.is-ach .result-row-top {
+  display: flex;
+  grid-area: name;
+  align-items: center;
+  gap: 0.28rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .ttl-result.is-ach .result-ach-kind,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .ttl-result.is-ach .result-ach-kind {
+  font-size: 0.52rem;
+  padding: 0.05rem 0.28rem;
 }
 
 html[data-items-view="A"] body.guide-page.guide-layout-mobile .result-name,
