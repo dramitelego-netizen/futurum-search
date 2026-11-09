@@ -186,59 +186,128 @@
 .guide-seg-btn {
   appearance: none;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.28rem;
   width: 100%;
-  min-height: 2.45rem;
+  min-height: 0;
   margin: 0;
-  padding: 0.42rem 0.28rem;
-  border-radius: 11px;
-  border: 1px solid color-mix(in srgb, var(--line) 92%, transparent);
-  background: transparent;
+  padding: 0.4rem 0.28rem 0.38rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
+  background:
+    linear-gradient(165deg, color-mix(in srgb, var(--cat, var(--accent)) 14%, transparent), transparent 62%),
+    color-mix(in srgb, var(--panel-solid, #0b1016) 55%, transparent);
   color: var(--mute);
   font: inherit;
-  font-size: 0.7rem;
+  font-size: 0.66rem;
   font-weight: 700;
   line-height: 1.15;
   text-align: center;
   cursor: pointer;
   overflow-wrap: normal;
   word-break: keep-all;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease, transform 0.12s ease;
 }
 
 .guide-seg-btn:hover {
   color: var(--text);
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  border-color: color-mix(in srgb, var(--cat, var(--accent)) 42%, var(--line));
 }
 
 .guide-seg-btn.on {
   color: #04140f;
-  background: var(--accent);
+  background:
+    linear-gradient(165deg, color-mix(in srgb, var(--accent) 92%, #fff), var(--accent));
   border-color: transparent;
   font-weight: 800;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
 [data-theme="light"] .guide-seg-btn.on {
   color: #f4fffc;
 }
 
+[data-theme="light"] .guide-seg-btn {
+  background:
+    linear-gradient(165deg, color-mix(in srgb, var(--cat, var(--accent)) 12%, transparent), transparent 62%),
+    color-mix(in srgb, #fff 72%, transparent);
+}
+
+[data-theme="light"] .guide-seg-ico:not(.is-art) {
+  background:
+    radial-gradient(120% 120% at 30% 20%, color-mix(in srgb, var(--cat, var(--accent)) 28%, #fff), transparent 55%),
+    color-mix(in srgb, var(--cat, var(--accent)) 10%, #fff);
+  border-color: color-mix(in srgb, var(--cat, var(--accent)) 24%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
 .guide-seg-ico {
-  display: none;
+  display: grid;
+  place-items: center;
+  width: 2.55rem;
+  height: 2.55rem;
+  border-radius: 12px;
+  flex: 0 0 auto;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 120% at 28% 18%, color-mix(in srgb, var(--cat, var(--accent)) 34%, transparent), transparent 58%),
+    color-mix(in srgb, var(--cat, var(--accent)) 14%, rgba(0, 0, 0, 0.28));
+  border: 1px solid color-mix(in srgb, var(--cat, var(--accent)) 32%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 12%, transparent);
+}
+
+.guide-seg-ico.is-art {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 13px;
+}
+
+.guide-seg-ico.is-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: inherit;
+}
+
+.guide-seg-btn.on .guide-seg-ico:not(.is-art) {
+  background:
+    radial-gradient(120% 120% at 30% 20%, rgba(255, 255, 255, 0.28), transparent 55%),
+    rgba(4, 20, 15, 0.16);
+  border-color: rgba(4, 20, 15, 0.18);
+  box-shadow: none;
+}
+
+.guide-seg-btn.on .guide-seg-ico.is-art {
+  outline: 2px solid color-mix(in srgb, #04140f 35%, transparent);
+  outline-offset: -2px;
 }
 
 .guide-seg-ico svg {
-  width: 1.05rem;
-  height: 1.05rem;
+  width: 1.32rem;
+  height: 1.32rem;
   display: block;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.7;
+  stroke-width: 1.65;
   stroke-linecap: round;
   stroke-linejoin: round;
+  color: color-mix(in srgb, var(--cat, var(--accent)) 82%, #fff);
+}
+
+.guide-seg-btn.on .guide-seg-ico svg {
+  color: #04140f;
 }
 
 .guide-seg-label {
   display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .guide-sheet {
@@ -544,16 +613,20 @@
 }
 
 .guide-side.is-collapsed .guide-seg-btn {
-  width: 2.45rem;
-  height: 2.45rem;
+  width: 2.55rem;
+  height: 2.55rem;
   min-height: 0;
-  padding: 0;
-  border-radius: 10px;
+  padding: 0.2rem;
+  border-radius: 11px;
+  gap: 0;
 }
 
 .guide-side.is-collapsed .guide-seg-ico {
   display: grid;
   place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
 }
 
 .guide-side-modes {
@@ -8377,13 +8450,20 @@ body.guide-page.guide-layout-mobile .guide-mob-cat-list.is-segmented .guide-seg 
 }
 
 body.guide-page.guide-layout-mobile .guide-mob-cat-list.is-segmented .guide-seg-btn {
-  min-height: 1.95rem;
+  min-height: 0;
   height: auto;
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 700;
-  padding: 0.28rem 0.18rem;
-  border-radius: 9px;
-  line-height: 1.15;
+  padding: 0.32rem 0.16rem 0.3rem;
+  border-radius: 11px;
+  line-height: 1.1;
+  gap: 0.22rem;
+}
+
+body.guide-page.guide-layout-mobile .guide-mob-cat-list.is-segmented .guide-seg-ico {
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 11px;
 }
 
 body.guide-page.guide-layout-mobile .guide-mob-cat-list.is-segmented .guide-sheet {
@@ -8472,13 +8552,23 @@ body.guide-page.guide-layout-mobile .guide-mob-chips.is-sections .guide-mob-chip
 /* desktop sidebar: keep segmented, slightly tighter so it doesn't dominate */
 .guide-side .guide-seg {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.32rem;
+  gap: 0.36rem;
   padding-bottom: 0.4rem;
 }
 .guide-side .guide-seg-btn {
-  min-height: 2.1rem;
+  min-height: 0;
   font-size: 0.68rem;
-  padding: 0.35rem 0.3rem;
+  padding: 0.42rem 0.35rem 0.4rem;
+  gap: 0.3rem;
+}
+.guide-side .guide-seg-ico {
+  width: 2.55rem;
+  height: 2.55rem;
+}
+.guide-side.is-collapsed .guide-seg-ico {
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 8px;
 }
 .guide-side .guide-sheet-kicker {
   margin: 0.2rem 0.1rem 0.05rem;

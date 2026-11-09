@@ -404,6 +404,30 @@ const ICO = {
   chat: '<svg viewBox="0 0 24 24"><path d="M5 6.5h14v9.2H9.2L5 19v-3.3V6.5z"/><path d="M8.5 10h7"/><path d="M8.5 13h4.5"/></svg>',
 };
 
+/** Уникальные нарисованные иконки групп (data/nav_ico) */
+const NAV_GROUP_ART = {
+  status: "status",
+  clothes: "clothes",
+  accessories: "accessories",
+  hands: "hands",
+  companions: "companions",
+  emotions: "emotions",
+  card: "card",
+};
+
+function navGroupArtSrc(groupId) {
+  const key = NAV_GROUP_ART[groupId];
+  if (!key) return "";
+  const rel = `data/nav_ico/${key}.webp`;
+  if (isSlimPagesHost()) {
+    return `${location.origin}${siteRootPrefix()}${rel
+      .split("/")
+      .map((seg) => encodeURIComponent(seg))
+      .join("/")}`;
+  }
+  return `./${rel}`;
+}
+
 const MOB_GROUP_META = {
   status: { color: "var(--op8)", icon: ICO.medal },
   clothes: { color: "var(--op4)", icon: ICO.shirt },
@@ -4507,13 +4531,19 @@ function guideSegButtonsHtml(activeId, { mob } = {}) {
   return GUIDE_GROUPS.map((g) => {
     const on = g.id === activeId;
     const gMeta = MOB_GROUP_META[g.id] || MOB_GROUP_META.status;
+    const art = navGroupArtSrc(g.id);
+    const visual = art
+      ? `<span class="guide-seg-ico is-art" aria-hidden="true"><img src="${escapeHtml(
+          art
+        )}" alt="" width="40" height="40" loading="lazy" decoding="async" /></span>`
+      : `<span class="guide-seg-ico" aria-hidden="true">${gMeta.icon}</span>`;
     const attrs = mob
       ? `data-mob-cat-kind="group" data-mob-cat-id="${escapeHtml(g.id)}"`
       : `data-guide-group="${escapeHtml(g.id)}"`;
     return `<button type="button" class="guide-seg-btn${on ? " on" : ""}" role="tab" aria-selected="${
       on ? "true" : "false"
-    }" title="${escapeHtml(g.hint || g.label)}" ${attrs}>
-      <span class="guide-seg-ico" aria-hidden="true">${gMeta.icon}</span>
+    }" title="${escapeHtml(g.hint || g.label)}" style="--cat:${gMeta.color}" ${attrs}>
+      ${visual}
       <span class="guide-seg-label">${escapeHtml(g.label)}</span>
     </button>`;
   }).join("");
