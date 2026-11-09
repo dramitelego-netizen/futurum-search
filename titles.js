@@ -674,31 +674,24 @@ function paintMobileChrome() {
 function paintMobChips() {
   const host = els.guideMobChips;
   if (!host) return;
-  if (!isGuideNarrow() || mobileUi.tab !== "home") {
+  // На лендинге группы живут во вкладке «Каталог». Под поиском — только разделы текущей группы.
+  if (!isGuideNarrow() || mobileUi.tab !== "home" || state.landing) {
     host.hidden = true;
     host.innerHTML = "";
+    host.classList.remove("is-sections");
     return;
   }
-  host.hidden = false;
-
-  if (state.landing) {
-    host.innerHTML = GUIDE_GROUPS.map((g) => {
-      const on = state.group === g.id ? " on" : "";
-      return `<button type="button" class="guide-mob-chip${on}" data-mob-chip-group="${escapeHtml(g.id)}">${escapeHtml(
-        g.label
-      )}</button>`;
-    }).join("");
-    return;
-  }
-
   const g = groupForSection(state.section) || GUIDE_GROUPS[0];
+  host.hidden = false;
+  host.classList.add("is-sections");
+  host.setAttribute("aria-label", `Разделы: ${g.label}`);
   host.innerHTML = g.sections
     .map((sec) => {
       const on = state.section === sec ? " on" : "";
       const label = SECTION_TITLE[sec] || sec;
-      return `<button type="button" class="guide-mob-chip${on}" data-mob-chip-section="${escapeHtml(sec)}">${escapeHtml(
-        label
-      )}</button>`;
+      return `<button type="button" class="guide-mob-chip${on}" data-mob-chip-section="${escapeHtml(sec)}"${
+        on ? ' aria-current="true"' : ""
+      }>${escapeHtml(label)}</button>`;
     })
     .join("");
 }
@@ -715,6 +708,7 @@ function setMobileTab(tab, { fromClick } = {}) {
   }
   if (next === "catalog" && mobileUi.tab !== "catalog") {
     mobileUi.catalogGroup = null;
+    mobileUi.catalogOpen = state.group || GUIDE_GROUPS[0]?.id || null;
   }
   mobileUi.tab = next;
   if (next === "home" || next === "catalog") closeMobileSheet();
@@ -738,72 +732,36 @@ function renderMobCatalog() {
   if (!els.guideMobCatList) return;
   if (els.guideMobCatBack) els.guideMobCatBack.hidden = true;
   if (els.guideMobCatTitle) els.guideMobCatTitle.textContent = "Каталог";
-  els.guideMobCatList.classList.remove("is-sections");
-  els.guideMobCatList.classList.add("is-accordion");
+  els.guideMobCatList.classList.remove("is-sections", "is-accordion");
+  els.guideMobCatList.classList.add("is-segmented");
 
   if (!mobileUi.catalogOpen) {
     mobileUi.catalogOpen = state.group || GUIDE_GROUPS[0]?.id || null;
   }
+  const g = groupById(mobileUi.catalogOpen) || GUIDE_GROUPS[0];
+  if (g) mobileUi.catalogOpen = g.id;
 
   if (els.guideMobCatTotal) {
     els.guideMobCatTotal.hidden = false;
-    els.guideMobCatTotal.textContent = `${GUIDE_GROUPS.length} групп · превью разделов`;
+    els.guideMobCatTotal.textContent = g ? `${g.label}` : "Каталог";
   }
 
-  els.guideMobCatList.innerHTML = GUIDE_GROUPS.map((g) => {
-    const meta = MOB_GROUP_META[g.id] || MOB_GROUP_META.status;
-    const open = mobileUi.catalogOpen === g.id;
-    const current = state.group === g.id;
-    const leaves = g.sections
-      .map((sec) => {
-        const on = sec === state.section;
-        const sMeta = MOB_SECTION_META[sec] || meta;
-        return `<button type="button" class="guide-mob-acc-sec${on ? " on" : ""}" data-mob-cat-kind="section" data-mob-cat-id="${escapeHtml(
-          sec
-        )}" style="--cat:${sMeta.color}">
-          <span class="guide-mob-acc-sec-ico" aria-hidden="true">${sMeta.icon}</span>
-          <span class="guide-mob-acc-sec-t">${escapeHtml(SECTION_TITLE[sec] || sec)}</span>
-          <span class="guide-mob-acc-sec-n">${fmtCount(sectionCount(sec))}</span>
-        </button>`;
-      })
-      .join("");
-    return `<div class="guide-mob-acc${open ? " open" : ""}${current ? " has-current" : ""}" data-group="${escapeHtml(
-      g.id
-    )}" style="--cat:${meta.color}">
-      <button type="button" class="guide-mob-acc-head" data-mob-cat-kind="group" data-mob-cat-id="${escapeHtml(
-        g.id
-      )}" aria-expanded="${open ? "true" : "false"}">
-        <span class="guide-mob-acc-ico" aria-hidden="true">${meta.icon}</span>
-        <span class="guide-mob-acc-text">
-          <span class="t">${escapeHtml(g.label)}</span>
-          ${sectionPeeksHtml(g.sections)}
-        </span>
-        <span class="guide-mob-acc-side">
-          <span class="n">${fmtCount(groupCount(g))}</span>
-          <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
-        </span>
-      </button>
-      <div class="guide-mob-acc-body">${leaves}</div>
-    </div>`;
-  }).join("");
+  els.guideMobCatList.innerHTML = `<div class="guide-seg" role="tablist" aria-label="Группы">${guideSegButtonsHtml(
+    g?.id,
+    { mob: true }
+  )}</div>${guideSheetHtml(g, { mob: true })}`;
 }
 
 function openMobCatalogGroup(groupId) {
   if (!groupId) return;
   const g = groupById(groupId);
-  if (g?.sections?.length === 1) {
+  if (!g) return;
+  if (g.sections?.length === 1) {
     pickMobCatalogSection(g.sections[0]);
     return;
   }
-  mobileUi.catalogOpen = mobileUi.catalogOpen === groupId ? null : groupId;
+  mobileUi.catalogOpen = groupId;
   renderMobCatalog();
-  if (mobileUi.catalogOpen) {
-    requestAnimationFrame(() => {
-      els.guideMobCatList
-        ?.querySelector(`.guide-mob-acc[data-group="${mobileUi.catalogOpen}"]`)
-        ?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-    });
-  }
 }
 
 function pickMobCatalogSection(section) {
@@ -4445,43 +4403,58 @@ function buildCategoryPills() {
   paintGuideSideChrome();
 }
 
+function guideSegButtonsHtml(activeId, { mob } = {}) {
+  return GUIDE_GROUPS.map((g) => {
+    const on = g.id === activeId;
+    const gMeta = MOB_GROUP_META[g.id] || MOB_GROUP_META.status;
+    const attrs = mob
+      ? `data-mob-cat-kind="group" data-mob-cat-id="${escapeHtml(g.id)}"`
+      : `data-guide-group="${escapeHtml(g.id)}"`;
+    return `<button type="button" class="guide-seg-btn${on ? " on" : ""}" role="tab" aria-selected="${
+      on ? "true" : "false"
+    }" title="${escapeHtml(g.hint || g.label)}" ${attrs}>
+      <span class="guide-seg-ico" aria-hidden="true">${gMeta.icon}</span>
+      <span class="guide-seg-label">${escapeHtml(g.label)}</span>
+    </button>`;
+  }).join("");
+}
+
+function guideSectionLeafHtml(sec, groupMeta, { mob } = {}) {
+  const on = sec === state.section;
+  const label = SECTION_TITLE[sec] || sec;
+  const sMeta = MOB_SECTION_META[sec] || groupMeta;
+  const attrs = mob
+    ? `data-mob-cat-kind="section" data-mob-cat-id="${escapeHtml(sec)}"`
+    : `data-section="${escapeHtml(sec)}"`;
+  return `<button type="button" class="guide-leaf${on ? " on" : ""}" ${attrs}${
+    on ? ' aria-current="true"' : ""
+  } style="--cat:${sMeta.color}">
+    <span class="guide-leaf-ico" aria-hidden="true">${sMeta.icon}</span>
+    <span class="guide-leaf-text">${escapeHtml(label)}</span>
+    <span class="guide-leaf-count">${fmtCount(sectionCount(sec))}</span>
+  </button>`;
+}
+
+function guideSheetHtml(group, { mob } = {}) {
+  if (!group) return "";
+  const gMeta = MOB_GROUP_META[group.id] || MOB_GROUP_META.status;
+  const leaves = group.sections.map((sec) => guideSectionLeafHtml(sec, gMeta, { mob })).join("");
+  return `<div class="guide-sheet" role="tabpanel" aria-label="${escapeHtml(group.label)}" data-sheet-group="${escapeHtml(
+    group.id
+  )}">
+    <p class="guide-sheet-kicker">${escapeHtml(group.label)}</p>
+    <div class="guide-sheet-list">${leaves}</div>
+    <p class="guide-sheet-empty" hidden>В этой группе нет совпадений</p>
+  </div>`;
+}
+
 function buildGuideTree() {
   if (!els.guideTree) return;
-  els.guideTree.innerHTML = GUIDE_GROUPS.map((g) => {
-    const open = navUi.openGroups.has(g.id) || g.id === state.group;
-    const current = g.id === state.group;
-    const gMeta = MOB_GROUP_META[g.id] || MOB_GROUP_META.status;
-    const leaves = g.sections
-      .map((sec) => {
-        const on = sec === state.section;
-        const label = SECTION_TITLE[sec] || sec;
-        const sMeta = MOB_SECTION_META[sec] || gMeta;
-        return `<button type="button" class="guide-leaf${on ? " on" : ""}" data-section="${escapeHtml(
-          sec
-        )}"${on ? ' aria-current="true"' : ""} style="--cat:${sMeta.color}">
-          <span class="guide-leaf-ico" aria-hidden="true">${sMeta.icon}</span>
-          <span class="guide-leaf-text">${escapeHtml(label)}</span>
-          <span class="guide-leaf-count">${fmtCount(sectionCount(sec))}</span>
-        </button>`;
-      })
-      .join("");
-    return `<div class="guide-g-block${open ? " open" : ""}${current ? " has-current" : ""}" data-group="${escapeHtml(
-      g.id
-    )}" style="--cat:${gMeta.color}">
-      <button type="button" class="guide-g-head" data-toggle-group="${escapeHtml(g.id)}" title="${escapeHtml(
-      g.hint || g.label
-    )}" style="--cat:${gMeta.color}">
-        <span class="guide-g-ico" aria-hidden="true">${gMeta.icon}</span>
-        <span class="guide-g-label">
-          <span class="guide-g-label-t">${escapeHtml(g.label)}</span>
-          ${sectionPeeksHtml(g.sections)}
-        </span>
-        <span class="guide-g-count">${fmtCount(groupCount(g))}</span>
-        <span class="guide-g-chev" aria-hidden="true">▾</span>
-      </button>
-      <div class="guide-g-leaves">${leaves}</div>
-    </div>`;
-  }).join("");
+  const g = groupById(state.group) || GUIDE_GROUPS[0];
+  els.guideTree.classList.add("is-segmented");
+  els.guideTree.innerHTML = `<div class="guide-seg" role="tablist" aria-label="Группы">${guideSegButtonsHtml(
+    g?.id
+  )}</div>${guideSheetHtml(g)}`;
 }
 
 function updateGuideCrumb() {
@@ -4546,30 +4519,45 @@ function paintGuideSideChrome() {
   }
 }
 
+function guideGroupMatchesQuery(group, query) {
+  if (!group) return false;
+  if (!query) return true;
+  if (norm(group.label).includes(query) || norm(group.hint || "").includes(query)) return true;
+  return group.sections.some((sec) => norm(SECTION_TITLE[sec] || sec).includes(query));
+}
+
 function filterGuideTreeByQuery(q) {
   if (!els.guideTree) return;
   const query = norm(q);
   let any = false;
+  const active = groupById(state.group) || GUIDE_GROUPS[0];
   GUIDE_GROUPS.forEach((g) => {
-    const block = els.guideTree.querySelector(`[data-group="${g.id}"]`);
-    if (!block) return;
-    const headMatch = !query || norm(g.label).includes(query) || norm(g.hint).includes(query);
-    let groupHit = false;
-    g.sections.forEach((sec) => {
-      const leaf = block.querySelector(`[data-section="${sec}"]`);
+    const btn = els.guideTree.querySelector(`[data-guide-group="${g.id}"]`);
+    if (!btn) return;
+    const hit = guideGroupMatchesQuery(g, query);
+    const keep = !query || hit || g.id === state.group;
+    btn.classList.toggle("is-miss", !keep);
+    btn.classList.toggle("on", g.id === state.group);
+    btn.setAttribute("aria-selected", g.id === state.group ? "true" : "false");
+    if (hit || !query) any = true;
+  });
+  if (active) {
+    const headMatch = !query || norm(active.label).includes(query) || norm(active.hint || "").includes(query);
+    let sheetHit = !query;
+    active.sections.forEach((sec) => {
+      const leaf = els.guideTree.querySelector(`.guide-sheet [data-section="${sec}"]`);
       if (!leaf) return;
       const label = SECTION_TITLE[sec] || sec;
       const ok = !query || headMatch || norm(label).includes(query);
       leaf.classList.toggle("is-miss", !ok);
-      if (ok) groupHit = true;
+      if (ok) sheetHit = true;
     });
-    const forceOpen = Boolean(query && groupHit) || g.id === state.group;
-    if (forceOpen) navUi.openGroups.add(g.id);
-    block.classList.toggle("open", navUi.openGroups.has(g.id) || forceOpen);
-    block.classList.toggle("is-miss", Boolean(query) && !groupHit);
-    block.classList.toggle("has-current", g.id === state.group);
-    if (groupHit || !query) any = true;
-  });
+    const sheetEmpty = els.guideTree.querySelector(".guide-sheet-empty");
+    if (sheetEmpty) {
+      const othersHit = GUIDE_GROUPS.some((g) => g.id !== active.id && guideGroupMatchesQuery(g, query));
+      sheetEmpty.hidden = !query || sheetHit || !othersHit;
+    }
+  }
   if (els.guideTreeEmpty) els.guideTreeEmpty.hidden = !query || any;
 }
 
@@ -5674,14 +5662,12 @@ function bindUi() {
   });
 
   els.guideTree?.addEventListener("click", (e) => {
-    const toggle = e.target.closest("[data-toggle-group]");
-    if (toggle) {
+    const groupBtn = e.target.closest("[data-guide-group]");
+    if (groupBtn) {
       e.preventDefault();
-      toggleGuideGroup(toggle.dataset.toggleGroup);
-      // на узкой полосе (свёрнутый каталог) клик по коду группы открывает раздел
-      if (navUi.collapsed && !isGuideDrawerViewport()) {
-        setGroup(toggle.dataset.toggleGroup, { keepQuery: true });
-      }
+      const gid = groupBtn.dataset.guideGroup;
+      if (!gid || gid === state.group) return;
+      setGroup(gid, { keepQuery: true });
       return;
     }
     const leaf = e.target.closest(".guide-leaf[data-section]");
