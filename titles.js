@@ -30,6 +30,12 @@ const ITEMS_VIEW_ALIASES = {
 const THUMB_CAROUSEL_MS = 2800;
 const THUMB_CAROUSEL_MAX = 6;
 let thumbCarouselTimer = null;
+/** Версия JSON-паков — бамп при выкладке data/*.json, чтобы сбросить кэш браузера */
+const DATA_CACHE_VER = "14";
+const LIST_RENDER_PAGE = 240;
+let listRenderLimit = LIST_RENDER_PAGE;
+let achIndexReady = false;
+let achIndexBuilding = false;
 const SORT_KEY = "futurum_titles_sort";
 const SECTION_KEY = "futurum_guide_section";
 const COST_CURRENCY_KEY = "futurum_guide_cost_currency";
@@ -1772,9 +1778,40 @@ function buildAchRequiresIndex() {
 
 function achievementsForItem(it) {
   if (!it || it.kind === "achievements") return [];
-  if (!achRequiresIndex) buildAchRequiresIndex();
+  ensureAchIndex();
+  if (!achRequiresIndex) return [];
   const sec = itemSectionOf(it);
   return achRequiresIndex.get(`${sec}:${it.id}`) || [];
+}
+
+/** Собрать индекс достижений по требованию (карточка / бейджи) */
+function ensureAchIndex() {
+  if (achRequiresIndex || achIndexReady) return;
+  achIndexBuilding = true;
+  try {
+    buildReqCatalog();
+    buildAchRequiresIndex();
+    achIndexReady = true;
+  } finally {
+    achIndexBuilding = false;
+  }
+}
+
+/** Отложить сборку с критического пути первого списка */
+function scheduleAchIndexBuild() {
+  if (achRequiresIndex || achIndexReady || achIndexBuilding) return;
+  const run = () => {
+    if (achRequiresIndex || achIndexReady || achIndexBuilding) return;
+    ensureAchIndex();
+    if (els.list?.querySelector(".ttl-result") && state.list.length) {
+      renderList();
+    }
+  };
+  if (typeof requestIdleCallback === "function") {
+    requestIdleCallback(run, { timeout: 1800 });
+  } else {
+    setTimeout(run, 120);
+  }
 }
 
 function contextKindBoost(hay, pos, section) {
@@ -1807,6 +1844,7 @@ function quoteContextBoost(raw, quoteText, section) {
 }
 
 function findAchievementRequires(description, selfName = "") {
+  ensureAchIndex();
   if (!reqCatalog) buildReqCatalog();
   const raw = String(description || "").trim();
   if (!raw) return [];
@@ -3084,10 +3122,6 @@ function isTitleItem(it) {
 }
 
 /** При текстовом поиске смотрим весь справочник, не только открытый раздел */
-/** Порциями рисуем список; в разделе без поиска — сразу все */
-const LIST_RENDER_PAGE = 240;
-let listRenderLimit = LIST_RENDER_PAGE;
-
 function guideSearchPool(q) {
   if (!q) return state.items;
   // 1 символ → почти весь каталог; не раздуваем DOM и не тормозим ввод
@@ -3159,9 +3193,8 @@ function itemShowcasePairs(it) {
 
   const sec = itemSectionOf(it);
   if (sec === "titles") {
-    // скрин текста титула (не общий игровой значок)
-    add(itemImgPair(it));
-    return out.slice(0, THUMB_CAROUSEL_MAX);
+    // в списке — лёгкий общий значок; полный title_img 800×600 только в карточке/зуме
+    return [];
   }
 
   // Картинки только из локальных packs (guide_img / data/img). Parapa не используем.
@@ -3211,7 +3244,17 @@ function syncThumbCarousel() {
         if (s.classList.contains("is-on")) cur = i;
       });
       const next = (cur + 1 + slides.length) % slides.length;
-      slides.forEach((s, i) => s.classList.toggle("is-on", i === next));
+      slides.forEach((s, i) => {
+        const on = i === next;
+        if (on) {
+          const pending = s.getAttribute("data-src");
+          if (pending && (!s.getAttribute("src") || s.src.startsWith("data:"))) {
+            s.setAttribute("src", pending);
+            s.removeAttribute("data-src");
+          }
+        }
+        s.classList.toggle("is-on", on);
+      });
     });
   }, THUMB_CAROUSEL_MS);
 }
@@ -3220,13 +3263,17 @@ function syncThumbCarousel() {
 function resultThumbHtml(it, { title = false } = {}) {
   const showcase = itemShowcasePairs(it);
   if (showcase.length) {
+    // src только у видимого слайда — остальные подгружаем при смене кадра
     const slides = showcase
-      .map(
-        (p, i) =>
-          `<img class="result-thumb result-thumb-slide${i === 0 ? " is-on" : ""}" src="${escapeHtml(
-            p.src
-          )}" alt="" loading="lazy" decoding="async"${imgFbAttr(p.fb)} />`
-      )
+      .map((p, i) => {
+        const on = i === 0;
+        const srcAttr = on
+          ? `src="${escapeHtml(p.src)}"`
+          : `data-src="${escapeHtml(p.src)}" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="`;
+        return `<img class="result-thumb result-thumb-slide${on ? " is-on" : ""}" ${srcAttr} alt="" loading="lazy" decoding="async"${imgFbAttr(
+          p.fb
+        )} />`;
+      })
       .join("");
     const cls =
       showcase.length > 1 ? "result-thumb-frame result-thumb-carousel" : "result-thumb-frame";
@@ -4742,8 +4789,9 @@ function lightStem(word) {
 /**
  * Оценка токена по строке поиска.
  * tier: 0 точное, 1 основа, 2 префикс, 3 вхождение, 4 опечатка, 5 слабо
+ * allowTypo: Левенштейн только если нет точного/префиксного совпадения
  */
-function fuzzyTokenScore(token, hay, words) {
+function fuzzyTokenScore(token, hay, words, { allowTypo = true } = {}) {
   if (!token || !hay) return { score: -1, tier: 9 };
   if (hay === token) return { score: 100, tier: 0 };
 
@@ -4776,24 +4824,24 @@ function fuzzyTokenScore(token, hay, words) {
   }
   if (hay.includes(token)) take(52, 3);
 
-  // опечатка: 1 буква (короткие слова) или до 2 (длиннее)
-  if (token.length >= 3) {
-    const maxDist = token.length <= 4 ? 1 : token.length <= 7 ? 1 : 2;
-    for (const w of wds) {
-      if (Math.abs(w.length - token.length) > maxDist) continue;
-      if (tokenStem.length >= 3 && lightStem(w) === tokenStem) continue;
-      const d = editDistance(token, w, maxDist);
-      if (d > 0 && d <= maxDist) take(40 - d * 10, 4);
-    }
+  // уже есть точное/префикс/вхождение — опечатки не считаем
+  if (best.tier <= 3 || !allowTypo || token.length < 3) return best;
+
+  const maxDist = token.length <= 4 ? 1 : token.length <= 7 ? 1 : 2;
+  for (const w of wds) {
+    if (Math.abs(w.length - token.length) > maxDist) continue;
+    if (tokenStem.length >= 3 && lightStem(w) === tokenStem) continue;
+    const d = editDistance(token, w, maxDist);
+    if (d > 0 && d <= maxDist) take(40 - d * 10, 4);
   }
   return best;
 }
 
-function scoreGuideTokenForms(forms, hay, words) {
+function scoreGuideTokenForms(forms, hay, words, opts) {
   let best = { score: -1, tier: 9 };
   let viaSynonym = false;
   for (const f of forms) {
-    const part = fuzzyTokenScore(f, hay, words);
+    const part = fuzzyTokenScore(f, hay, words, opts);
     if (part.score > best.score || (part.score === best.score && part.tier < best.tier)) {
       best = part;
       viaSynonym = f !== forms[0];
@@ -4802,7 +4850,7 @@ function scoreGuideTokenForms(forms, hay, words) {
   return { ...best, viaSynonym };
 }
 
-function scoreGuideItem(it, tokens) {
+function scoreGuideItem(it, tokens, { allowTypo = true } = {}) {
   if (!tokens.length) return { score: -1, fuzzy: false, tier: 9 };
   const name = norm(it.name || "");
   const nameWords = name.split(" ").filter(Boolean);
@@ -4814,10 +4862,11 @@ function scoreGuideItem(it, tokens) {
 
   for (const t of tokens) {
     const forms = expandGuideToken(t);
-    let hit = scoreGuideTokenForms(forms, name, nameWords);
+    // опечатки — только по имени; описание/источник без Левенштейна
+    let hit = scoreGuideTokenForms(forms, name, nameWords, { allowTypo });
     let fromExtra = false;
     if (hit.score < 0) {
-      const d = scoreGuideTokenForms(forms, hay, words);
+      const d = scoreGuideTokenForms(forms, hay, words, { allowTypo: false });
       if (d.score > 0) {
         hit = { score: d.score * 0.45, tier: Math.max(d.tier, 5), viaSynonym: d.viaSynonym };
         fromExtra = true;
@@ -4866,40 +4915,58 @@ function filterAndSort() {
   const ranked = [];
   const rankMeta = new Map();
 
-  for (const it of pool) {
+  const passItem = (it, allowTypo) => {
     const sec = itemSectionOf(it);
     const title = sec === "titles";
     if (state.op !== "") {
-      if (!title) continue;
-      if (String(it.op) !== state.op) continue;
+      if (!title) return null;
+      if (String(it.op) !== state.op) return null;
     }
     const src = itemSourceName(it);
-    // узкие фильтры раздела — только если не глобальный текстовый поиск
     if (!globalSearch) {
       if (state.category) {
-        if (src !== state.category) continue;
+        if (src !== state.category) return null;
       } else if (!title && state.sourceBucket && state.sourceBucket !== "all") {
-        if (classifySource(src || "other") !== state.sourceBucket) continue;
+        if (classifySource(src || "other") !== state.sourceBucket) return null;
       }
       if (!title && state.costCurrency && !itemHasCostCurrency(it, state.costCurrency)) {
-        continue;
+        return null;
       }
     } else if (state.costCurrency && !title && !itemHasCostCurrency(it, state.costCurrency)) {
-      continue;
+      return null;
     }
 
     let score = 1;
     let fuzzy = false;
     let tier = 0;
     if (tokens.length) {
-      const hit = scoreGuideItem(it, tokens);
-      if (hit.score < 0) continue;
+      const hit = scoreGuideItem(it, tokens, { allowTypo });
+      if (hit.score < 0) return null;
       score = hit.score;
       fuzzy = hit.fuzzy;
       tier = hit.tier;
     }
-    ranked.push(it);
-    rankMeta.set(guideItemRankKey(it), { score, fuzzy, tier });
+    return { it, score, fuzzy, tier };
+  };
+
+  // 1) точные/префиксные совпадения без опечаток
+  for (const it of pool) {
+    const hit = passItem(it, false);
+    if (!hit) continue;
+    ranked.push(hit.it);
+    rankMeta.set(guideItemRankKey(hit.it), hit);
+  }
+  // 2) опечатки — только если точных мало (дорогой Левенштейн)
+  if (tokens.length && ranked.length < 16) {
+    const have = new Set(ranked.map((it) => guideItemRankKey(it)));
+    for (const it of pool) {
+      const key = guideItemRankKey(it);
+      if (have.has(key)) continue;
+      const hit = passItem(it, true);
+      if (!hit || hit.tier < 4) continue;
+      ranked.push(hit.it);
+      rankMeta.set(key, hit);
+    }
   }
 
   ranked.sort((a, b) => {
@@ -4989,8 +5056,7 @@ function renderList() {
   }
   const globalSearch = Boolean(norm(state.query));
   const total = state.list.length;
-  // В разделе без поиска — все позиции; при поиске — порциями с «Показать ещё»
-  if (!globalSearch) listRenderLimit = Math.max(listRenderLimit, total);
+  // и раздел, и поиск — порциями (не собираем 1000+ строк DOM сразу)
   const limit = Math.min(total, listRenderLimit);
   const visible = state.list.slice(0, limit);
   const rows = visible
@@ -5833,10 +5899,11 @@ function bindUi() {
 }
 
 async function loadData() {
+  const v = DATA_CACHE_VER;
   const [titlesRes, wikiRes, shopRes] = await Promise.all([
-    fetch("./data/titles.json", { cache: "no-store" }),
-    fetch("./data/wiki_items.json", { cache: "no-store" }),
-    fetch("./data/items.json", { cache: "no-store" }),
+    fetch(`./data/titles.json?v=${v}`, { cache: "force-cache" }),
+    fetch(`./data/wiki_items.json?v=${v}`, { cache: "force-cache" }),
+    fetch(`./data/items.json?v=${v}`, { cache: "force-cache" }),
   ]);
   if (!titlesRes.ok) throw new Error("titles.json " + titlesRes.status);
   const titlesData = await titlesRes.json();
@@ -5887,8 +5954,6 @@ async function init() {
     return;
   }
 
-  buildReqCatalog();
-  buildAchRequiresIndex();
   applySectionPool();
   buildCategoryPills();
   updateSectionUi();
@@ -5908,6 +5973,9 @@ async function init() {
   if (!state.landing && Number.isFinite(id) && id > 0 && state.items.some((it) => it.id === id)) {
     selectItem(id);
   }
+
+  // индекс «предмет → достижения» не блокирует первый список
+  scheduleAchIndexBuild();
 
   // авто-выбор источника картинок не блокирует UI; после ручного клика больше не трогаем
   void maybeAutoPickImgSrc();
