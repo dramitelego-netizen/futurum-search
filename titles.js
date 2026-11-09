@@ -30,8 +30,8 @@ const ITEMS_VIEW_ALIASES = {
 const THUMB_CAROUSEL_MS = 2800;
 const THUMB_CAROUSEL_MAX = 6;
 let thumbCarouselTimer = null;
-/** Версия JSON-паков — бамп при выкладке data/*.json, чтобы сбросить кэш браузера */
-const DATA_CACHE_VER = "14";
+/** Версия JSON-паков — ОБЯЗАТЕЛЬНО бамп при выкладке data/*.json (иначе браузер держит старый кэш) */
+const DATA_CACHE_VER = "15";
 const LIST_RENDER_PAGE = 240;
 let listRenderLimit = LIST_RENDER_PAGE;
 let achIndexReady = false;
@@ -1778,13 +1778,16 @@ function buildAchRequiresIndex() {
 
 function achievementsForItem(it) {
   if (!it || it.kind === "achievements") return [];
-  ensureAchIndex();
-  if (!achRequiresIndex) return [];
+  // список не должен синхронно собирать индекс (~200мс) — только читаем готовый
+  if (!achRequiresIndex) {
+    scheduleAchIndexBuild();
+    return [];
+  }
   const sec = itemSectionOf(it);
   return achRequiresIndex.get(`${sec}:${it.id}`) || [];
 }
 
-/** Собрать индекс достижений по требованию (карточка / бейджи) */
+/** Собрать индекс достижений по требованию (карточка) */
 function ensureAchIndex() {
   if (achRequiresIndex || achIndexReady || achIndexBuilding) return;
   achIndexBuilding = true;
@@ -1797,7 +1800,7 @@ function ensureAchIndex() {
   }
 }
 
-/** Отложить сборку с критического пути первого списка */
+/** Отложить сборку с критического пути первого списка / смены раздела */
 function scheduleAchIndexBuild() {
   if (achRequiresIndex || achIndexReady || achIndexBuilding) return;
   const run = () => {
@@ -1805,6 +1808,13 @@ function scheduleAchIndexBuild() {
     ensureAchIndex();
     if (els.list?.querySelector(".ttl-result") && state.list.length) {
       renderList();
+    }
+    if (state.activeId != null) {
+      const cur =
+        state.items.find((x) => x.id === state.activeId) ||
+        state.wiki.find((x) => x.id === state.activeId) ||
+        state.titles.find((x) => x.id === state.activeId);
+      if (cur) renderDetail(cur);
     }
   };
   if (typeof requestIdleCallback === "function") {
@@ -4824,10 +4834,11 @@ function fuzzyTokenScore(token, hay, words, { allowTypo = true } = {}) {
   }
   if (hay.includes(token)) take(52, 3);
 
-  // уже есть точное/префикс/вхождение — опечатки не считаем
-  if (best.tier <= 3 || !allowTypo || token.length < 3) return best;
+  // уже есть точное/префикс/вхождение — опечатки не считаем;
+  // короткие токены (<4) дают слишком много ложных «похоже»
+  if (best.tier <= 3 || !allowTypo || token.length < 4) return best;
 
-  const maxDist = token.length <= 4 ? 1 : token.length <= 7 ? 1 : 2;
+  const maxDist = token.length <= 7 ? 1 : 2;
   for (const w of wds) {
     if (Math.abs(w.length - token.length) > maxDist) continue;
     if (tokenStem.length >= 3 && lightStem(w) === tokenStem) continue;
@@ -4956,16 +4967,23 @@ function filterAndSort() {
     ranked.push(hit.it);
     rankMeta.set(guideItemRankKey(hit.it), hit);
   }
-  // 2) опечатки — только если точных мало (дорогой Левенштейн)
-  if (tokens.length && ranked.length < 16) {
+  // 2) опечатки — только если точных мало, токены ≥4 букв, лимит результатов
+  const typoOk =
+    tokens.length > 0 &&
+    ranked.length < 12 &&
+    tokens.every((t) => String(t).length >= 4);
+  if (typoOk) {
     const have = new Set(ranked.map((it) => guideItemRankKey(it)));
+    let typoAdded = 0;
     for (const it of pool) {
+      if (typoAdded >= 40) break;
       const key = guideItemRankKey(it);
       if (have.has(key)) continue;
       const hit = passItem(it, true);
       if (!hit || hit.tier < 4) continue;
       ranked.push(hit.it);
       rankMeta.set(key, hit);
+      typoAdded += 1;
     }
   }
 
@@ -5188,6 +5206,10 @@ function selectItem(id, section) {
     findGuideItem(id, section) ||
     state.list.find((x) => Number(x.id) === Number(id)) ||
     null;
+  // клик по карточке — можно дособрать индекс синхронно; список этого не делает
+  if (it && itemSectionOf(it) !== "titles") {
+    ensureAchIndex();
+  }
   highlightActive();
   renderDetail(it);
   syncUrl();
@@ -5900,10 +5922,11 @@ function bindUi() {
 
 async function loadData() {
   const v = DATA_CACHE_VER;
+  // cache: default — браузер кэширует по ?v=, но может перепроверить; не «навечно» как force-cache
   const [titlesRes, wikiRes, shopRes] = await Promise.all([
-    fetch(`./data/titles.json?v=${v}`, { cache: "force-cache" }),
-    fetch(`./data/wiki_items.json?v=${v}`, { cache: "force-cache" }),
-    fetch(`./data/items.json?v=${v}`, { cache: "force-cache" }),
+    fetch(`./data/titles.json?v=${v}`, { cache: "default" }),
+    fetch(`./data/wiki_items.json?v=${v}`, { cache: "default" }),
+    fetch(`./data/items.json?v=${v}`, { cache: "default" }),
   ]);
   if (!titlesRes.ok) throw new Error("titles.json " + titlesRes.status);
   const titlesData = await titlesRes.json();
