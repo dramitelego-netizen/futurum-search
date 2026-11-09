@@ -1254,12 +1254,15 @@ function absRemoteUrl(url) {
   return u;
 }
 
-function localImgPath(path) {
+function localImgPath(path, opts) {
   const p = String(path || "").trim();
   if (!p) return "";
   let rel = p.replace(/^\.\//, "").replace(/^\/+/, "");
-  // Полный data/wiki_img (~ГБ) в Pages не деплоим — всегда отдаём копию из data/guide_img.
-  if (/^data\/wiki_img\//i.test(rel)) {
+  // Список всегда берёт лёгкую копию guide_img (max 256px).
+  // Карточка и зум — оригинал wiki_img, если пак лежит рядом (локально).
+  // На Pages полного wiki_img нет, поэтому там остаётся guide_img.
+  const keepFull = Boolean(opts && opts.hq) && !isSlimPagesHost();
+  if (!keepFull && /^data\/wiki_img\//i.test(rel)) {
     const base = rel.split("/").pop();
     if (base) rel = `data/guide_img/${base}`;
   }
@@ -1274,14 +1277,23 @@ function localImgPath(path) {
 }
 
 /** Выбрать src + запасной путь (для onerror). Картинки только локальные packs. */
-function pickImgSources(localPath, remoteUrl) {
-  const local = localImgPath(localPath);
+function pickImgSources(localPath, remoteUrl, opts) {
+  const hq = Boolean(opts && opts.hq);
+  const local = localImgPath(localPath, { hq });
   const remote = absRemoteUrl(remoteUrl); // parapa → ""
+  const light = hq ? localImgPath(localPath) : "";
+  const lightFb = light && local && light !== local ? light : "";
   // Даже в режиме «вики» не уходим на parapa: remote почти всегда пуст.
   if (preferRemoteImages() && remote) {
-    return { src: remote || local, fb: remote && local && remote !== local ? local : "" };
+    return {
+      src: remote || local,
+      fb: remote && local && remote !== local ? local : lightFb,
+    };
   }
-  return { src: local || remote, fb: local && remote && local !== remote ? remote : "" };
+  return {
+    src: local || remote,
+    fb: local && remote && local !== remote ? remote : lightFb,
+  };
 }
 
 function imgFbAttr(fb) {
@@ -2963,8 +2975,8 @@ function openReqPeek(section, id, query, extras = {}) {
     it?.kindLabel ||
     (section === "titles" ? "Титул" : SECTION_TITLE[section] || section);
   const name = it?.name || query || "Предмет";
-  const pair = it ? itemImgPair(it) : { src: "", fb: "" };
-  const lookPair = it ? itemLookPair(it) : { src: "", fb: "" };
+  const pair = it ? itemImgPair(it, { hq: true }) : { src: "", fb: "" };
+  const lookPair = it ? itemLookPair(it, { hq: true }) : { src: "", fb: "" };
   const src = lookPair.src || pair.src;
   const fb = lookPair.src ? lookPair.fb : pair.fb;
   const colors = Array.isArray(extras.colors) ? extras.colors.filter(Boolean) : [];
@@ -3170,13 +3182,14 @@ function titleBadgeSrc() {
     : "./data/title_img/3d077203ce.png";
 }
 
-function itemImgPair(it) {
+function itemImgPair(it, opts) {
   if (!it) return { src: "", fb: "" };
-  const own = pickImgSources(it.image || "", it.imageUrl || "");
+  const hq = Boolean(opts && opts.hq);
+  const own = pickImgSources(it.image || "", it.imageUrl || "", { hq });
   if (own.src) return own;
   const offers = itemShopOffers(it);
   for (const o of offers) {
-    const p = pickImgSources(o.imageLocal || "", o.image || "");
+    const p = pickImgSources(o.imageLocal || "", o.image || "", { hq });
     if (p.src) return p;
   }
   return { src: "", fb: "" };
@@ -3306,14 +3319,15 @@ function titleShotSrc(it) {
   return itemImgSrc(it);
 }
 
-function itemLookPair(it) {
+function itemLookPair(it, opts) {
   if (!it) return { src: "", fb: "" };
-  const badge = itemImgPair(it);
-  const own = pickImgSources(it.lookImage || "", "");
+  const hq = Boolean(opts && opts.hq);
+  const badge = itemImgPair(it, { hq });
+  const own = pickImgSources(it.lookImage || "", "", { hq });
   if (own.src) return { src: own.src, fb: own.fb || badge.src || "" };
   const offers = itemShopOffers(it);
   for (const o of offers) {
-    const p = pickImgSources(o.lookLocal || "", "");
+    const p = pickImgSources(o.lookLocal || "", "", { hq });
     if (p.src) return { src: p.src, fb: p.fb || badge.src || "" };
   }
   return badge;
@@ -3333,11 +3347,12 @@ function detailProductSrc(it) {
   return itemImgSrc(it);
 }
 
+/** Картинка карточки и зума: полный файл, не значок списка. */
 function detailProductPair(it) {
   if (!it) return { src: "", fb: "" };
-  const look = itemLookPair(it);
+  const look = itemLookPair(it, { hq: true });
   if (look.src) return look;
-  return itemImgPair(it);
+  return itemImgPair(it, { hq: true });
 }
 
 /** Класс размера: фоны/рамки сильно ужимаем, чтобы не растягивали карточку */
@@ -3349,9 +3364,9 @@ function lookImgClass(it) {
   return "wiki-look-img";
 }
 
-function lookVariantPair(v) {
+function lookVariantPair(v, opts) {
   if (!v) return { src: "", fb: "" };
-  return pickImgSources(v.image || "", "");
+  return pickImgSources(v.image || "", "", { hq: Boolean(opts && opts.hq) });
 }
 
 function lookVariantSrc(v) {
@@ -3582,7 +3597,7 @@ function lookMediaHtml(it) {
     }
     if (firstShown < 0) firstShown = 0;
     const active = variants[firstShown];
-    const activePair = lookVariantPair(active);
+    const activePair = lookVariantPair(active, { hq: true });
     const colorLabel = lookCaption(active, it);
     const zoom = zoomImgHtml(
       activePair.src,
@@ -3594,6 +3609,7 @@ function lookMediaHtml(it) {
     const swatches = variants
       .map((v, i) => {
         const pair = lookVariantPair(v);
+        const hqPair = lookVariantPair(v, { hq: true });
         const g = variantGender(v);
         const color = variantColorLabel(v, it.name);
         let lab = lookCaption(v, it);
@@ -3604,8 +3620,8 @@ function lookMediaHtml(it) {
         return `<button type="button" class="ttl-look-swatch${i === firstShown ? " on" : ""}${
           other ? " is-other-gender" : ""
         }" data-gender="${escapeHtml(g)}" data-color="${escapeHtml(color)}" data-look-src="${escapeHtml(
-          pair.src
-        )}" data-look-fb="${escapeHtml(pair.fb || "")}" data-look-label="${escapeHtml(lab)}" title="${escapeHtml(
+          hqPair.src
+        )}" data-look-fb="${escapeHtml(hqPair.fb || pair.src || "")}" data-look-label="${escapeHtml(lab)}" title="${escapeHtml(
           lab
         )}" aria-label="${escapeHtml(lab)}">
           <img src="${escapeHtml(pair.src)}" alt="" loading="lazy" decoding="async"${imgFbAttr(pair.fb)} />
@@ -3625,7 +3641,7 @@ function lookMediaHtml(it) {
           .map((g) => {
             const mine = variants.filter((v) => variantGender(v) === g && !/^анимац/i.test(v.label || ""));
             const pic = mine[0] || variants.find((v) => variantGender(v) === g) || variants[0];
-            const pair = lookVariantPair(pic);
+            const pair = lookVariantPair(pic, { hq: true });
             const cap = lookCaption(pic, it);
             const on = g === activeGender;
             const word = genderWord(g);
@@ -5350,7 +5366,9 @@ function renderDetail(it) {
   const stats = detailStatsHtml(it, { isTitle: titleItem, isAch });
 
   if (titleItem) {
-    const shotPair = itemImgPair(it);
+    // свой скрин 800×600; общего значка в карточке нет, пока есть своя картинка
+    const ownShot = itemImgPair(it);
+    const shotPair = ownShot.src ? ownShot : { src: titleBadgeSrc(), fb: "" };
     const topImg = shotPair.src
       ? zoomImgHtml(shotPair.src, it.name, "wiki-look-img", shotPair.fb)
       : "";
@@ -5377,7 +5395,7 @@ function renderDetail(it) {
     return;
   }
 
-  const iconPair = itemImgPair(it);
+  const iconPair = itemImgPair(it, { hq: true });
   const img = zoomImgHtml(iconPair.src, it.name, "wiki-detail-img", iconPair.fb);
   const topImg = isAch ? img : lookMediaHtml(it);
   const topClass = !topImg ? " no-thumb" : hasColorLooks ? " has-look-colors" : " has-look";
