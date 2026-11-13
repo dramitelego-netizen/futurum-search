@@ -3360,41 +3360,96 @@ function itemShowcasePairs(it) {
   return out.slice(0, THUMB_CAROUSEL_MAX);
 }
 
+let thumbCarouselIo = null;
+const thumbCarouselVisible = new Set();
+
 function stopThumbCarousel() {
   if (thumbCarouselTimer) {
     clearInterval(thumbCarouselTimer);
     thumbCarouselTimer = null;
   }
+  if (thumbCarouselIo) {
+    thumbCarouselIo.disconnect();
+    thumbCarouselIo = null;
+  }
+  thumbCarouselVisible.clear();
+}
+
+/** Показать слайд только после load — иначе на мобилке мигает весь список */
+function showThumbSlide(frame, nextIdx) {
+  const slides = [...frame.querySelectorAll(".result-thumb-slide")];
+  if (!slides.length) return;
+  const next = slides[((nextIdx % slides.length) + slides.length) % slides.length];
+  if (!next) return;
+  const apply = () => {
+    slides.forEach((s, i) => s.classList.toggle("is-on", s === next));
+  };
+  const pending = next.getAttribute("data-src");
+  if (pending && (!next.getAttribute("src") || String(next.src || "").startsWith("data:"))) {
+    const done = () => {
+      next.removeEventListener("load", done);
+      next.removeEventListener("error", done);
+      apply();
+    };
+    next.addEventListener("load", done);
+    next.addEventListener("error", done);
+    next.removeAttribute("data-src");
+    next.setAttribute("src", pending);
+    if (next.complete) done();
+    return;
+  }
+  apply();
+}
+
+function advanceThumbFrame(frame) {
+  if (!frame?.isConnected) return;
+  const slides = frame.querySelectorAll(".result-thumb-slide");
+  if (slides.length < 2) return;
+  let cur = -1;
+  slides.forEach((s, i) => {
+    if (s.classList.contains("is-on")) cur = i;
+  });
+  showThumbSlide(frame, cur + 1);
 }
 
 function syncThumbCarousel() {
   stopThumbCarousel();
   if (!els.list) return;
-  const frames = els.list.querySelectorAll(".result-thumb-carousel");
+  const frames = [...els.list.querySelectorAll(".result-thumb-carousel")];
   if (!frames.length) return;
+
+  // мобильный список: автосмена всех миниатюр сразу → мигает весь список
+  if (document.body.classList.contains("guide-layout-mobile")) return;
+
+  const root = els.list.closest(".results") || els.list.parentElement || null;
+  thumbCarouselIo = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) thumbCarouselVisible.add(e.target);
+        else thumbCarouselVisible.delete(e.target);
+      }
+    },
+    { root, rootMargin: "48px 0px", threshold: 0.15 }
+  );
+  const now = Date.now();
+  frames.forEach((frame, i) => {
+    frame.dataset.carouselAt = String(now + (i % 8) * 350 + (i % 3) * 120);
+    thumbCarouselIo.observe(frame);
+  });
+
   thumbCarouselTimer = setInterval(() => {
-    frames.forEach((frame) => {
-      if (!frame.isConnected) return;
-      const slides = frame.querySelectorAll(".result-thumb-slide");
-      if (slides.length < 2) return;
-      let cur = -1;
-      slides.forEach((s, i) => {
-        if (s.classList.contains("is-on")) cur = i;
-      });
-      const next = (cur + 1 + slides.length) % slides.length;
-      slides.forEach((s, i) => {
-        const on = i === next;
-        if (on) {
-          const pending = s.getAttribute("data-src");
-          if (pending && (!s.getAttribute("src") || s.src.startsWith("data:"))) {
-            s.setAttribute("src", pending);
-            s.removeAttribute("data-src");
-          }
-        }
-        s.classList.toggle("is-on", on);
-      });
+    const t = Date.now();
+    thumbCarouselVisible.forEach((frame) => {
+      if (!frame.isConnected) {
+        thumbCarouselVisible.delete(frame);
+        return;
+      }
+      const at = Number(frame.dataset.carouselAt || 0);
+      if (t < at) return;
+      frame.dataset.carouselAt = String(t + THUMB_CAROUSEL_MS);
+      advanceThumbFrame(frame);
     });
-  }, THUMB_CAROUSEL_MS);
+  }, 400);
 }
 
 /** В любом виде: реальные картинки если есть, иначе значок */

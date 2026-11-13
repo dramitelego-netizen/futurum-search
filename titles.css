@@ -7665,6 +7665,9 @@ html[data-bg="minimal"] body.guide-page.guide-layout-mobile .guide-mob-panel-bra
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  /* absolute-слайды не дают высоту — фиксируем кадр, без прыжка списка */
+  min-height: 2.75rem;
+  contain: layout paint;
 }
 
 .result-thumb-carousel .result-thumb-slide {
@@ -7677,6 +7680,16 @@ html[data-bg="minimal"] body.guide-page.guide-layout-mobile .guide-mob-panel-bra
   opacity: 0;
   transition: opacity 0.75s ease;
   pointer-events: none;
+  /* не дергаем layout при decode */
+  content-visibility: auto;
+}
+
+body.guide-page.guide-layout-mobile .results > li {
+  contain: layout paint;
+}
+
+body.guide-page.guide-layout-mobile .result-thumb-carousel .result-thumb-slide {
+  transition: none;
 }
 
 .result-thumb-carousel .result-thumb-slide.is-on {
