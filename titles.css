@@ -8596,3 +8596,91 @@ body.guide-page.guide-layout-mobile .guide-mob-chips.is-sections .guide-mob-chip
 .guide-side .guide-sheet-list .guide-leaf {
   padding: 0.5rem 0.58rem;
 }
+
+/* Мобильный поиск: ровная строка, без «прыжка» из-за line-height / webkit search */
+body.guide-page.guide-layout-mobile .guide-hero-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  gap: 0.5rem !important;
+  min-height: 40px;
+}
+body.guide-page.guide-layout-mobile.guide-brand-hero-on .guide-hero-row {
+  display: block !important;
+  min-height: 0;
+}
+body.guide-page.guide-layout-mobile .guide-mob-logo {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center;
+  height: 40px !important;
+  margin: 0 !important;
+  line-height: 1 !important;
+  flex: 0 0 auto;
+}
+body.guide-page.guide-layout-mobile.guide-brand-hero-on .guide-mob-logo {
+  display: none !important;
+}
+body.guide-page.guide-layout-mobile .search-wrap {
+  display: flex !important;
+  align-items: center !important;
+  flex: 1 1 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+body.guide-page.guide-layout-mobile.guide-brand-hero-on .search-wrap {
+  width: 100% !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  max-height: 44px !important;
+  border-radius: 16px !important;
+}
+body.guide-page.guide-layout-mobile .guide-hero-row #q,
+body.guide-page.guide-layout-mobile #q {
+  display: block !important;
+  width: 100% !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+  margin: 0 !important;
+  padding: 0 0.9rem !important;
+  border: 0 !important;
+  border-radius: inherit !important;
+  line-height: normal !important;
+  font-size: 0.82rem !important;
+  text-align: left !important;
+  box-sizing: border-box !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  vertical-align: middle;
+}
+body.guide-page.guide-layout-mobile.guide-brand-hero-on .guide-hero-row #q,
+body.guide-page.guide-layout-mobile.guide-brand-hero-on #q {
+  height: 44px !important;
+  min-height: 44px !important;
+  max-height: 44px !important;
+  text-align: center !important;
+  font-size: 0.86rem !important;
+}
+body.guide-page.guide-layout-mobile #q::placeholder {
+  line-height: normal !important;
+}
+body.guide-page.guide-layout-mobile #q::-webkit-search-decoration,
+body.guide-page.guide-layout-mobile #q::-webkit-search-cancel-button,
+body.guide-page.guide-layout-mobile #q::-webkit-search-results-button,
+body.guide-page.guide-layout-mobile #q::-webkit-search-results-decoration {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  display: none !important;
+}

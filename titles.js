@@ -802,23 +802,60 @@ function blurGuideSearch() {
   }
 }
 
-/** На телефоне поле поиска readonly, пока пользователь сам не ткнёт — иначе ОС может открыть клавиатуру */
+/** На телефоне блокируем клавиатуру до явного тапа по строке поиска */
 function guardMobileSearchKeyboard() {
   if (!els.q || !isGuideNarrow()) return;
   if (els.q.dataset.kbGuard === "1") return;
   els.q.dataset.kbGuard = "1";
-  els.q.setAttribute("readonly", "readonly");
-  const unlock = () => {
-    els.q.removeAttribute("readonly");
-    els.q.removeEventListener("pointerdown", unlock);
-    els.q.removeEventListener("touchstart", unlock);
+  let locked = true;
+  const lock = () => {
+    locked = true;
+    els.q.setAttribute("readonly", "readonly");
+    els.q.setAttribute("inputmode", "none");
+    els.q.blur();
   };
-  els.q.addEventListener("pointerdown", unlock, { passive: true });
-  els.q.addEventListener("touchstart", unlock, { passive: true });
-  // если фокус всё же прилетел без тапа — сразу снять
+  const unlock = () => {
+    if (!locked) return;
+    locked = false;
+    els.q.removeAttribute("readonly");
+    els.q.setAttribute("inputmode", "search");
+  };
+  lock();
+  // тап по полю — только тогда разрешаем клавиатуру
+  els.q.addEventListener(
+    "pointerdown",
+    () => {
+      unlock();
+    },
+    { passive: true }
+  );
+  els.q.addEventListener(
+    "touchstart",
+    () => {
+      unlock();
+    },
+    { passive: true }
+  );
+  // любой автофокус ОС/браузера — сразу снять
+  els.q.addEventListener("focus", () => {
+    if (locked) {
+      requestAnimationFrame(() => els.q.blur());
+    }
+  });
+  document.addEventListener(
+    "visibilitychange",
+    () => {
+      if (document.visibilityState === "visible" && locked) blurGuideSearch();
+    },
+    { passive: true }
+  );
   requestAnimationFrame(() => blurGuideSearch());
-  setTimeout(blurGuideSearch, 120);
-  setTimeout(blurGuideSearch, 400);
+  setTimeout(blurGuideSearch, 50);
+  setTimeout(blurGuideSearch, 200);
+  setTimeout(blurGuideSearch, 600);
+  setTimeout(() => {
+    if (locked) blurGuideSearch();
+  }, 1200);
 }
 
 function pickMobCatalogSection(section) {
@@ -6071,6 +6108,11 @@ async function init() {
   applyImgSrcMode(storedImgSrcMode(), { persist: false });
   applyItemsView(storedItemsView(), { persist: false });
   syncGuideLayoutMode();
+  // сразу, до загрузки данных — иначе на телефоне успевает вылезти клавиатура
+  if (isGuideNarrow()) {
+    blurGuideSearch();
+    guardMobileSearchKeyboard();
+  }
   bindUi();
   try {
     await loadData();
