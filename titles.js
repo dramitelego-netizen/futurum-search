@@ -3100,7 +3100,7 @@ function openReqPeek(section, id, query, extras = {}) {
   const peekStack = itemInfoStackHtml(it, {
     isTitle: isPeekTitle,
     isAch: isPeekAch,
-    hideVariants: Array.isArray(it?.lookVariants) && it.lookVariants.filter((v) => lookVariantSrc(v)).length >= 2,
+    hideVariants: hasDistinctLookColors(it),
     shopOffers: isPeekAch ? [] : shopOffers,
     reqs: peekReqs.reqs,
     reqsHtml: peekReqs.html
@@ -4264,10 +4264,28 @@ function noteSectionsHtml(it, { hideVariants = false } = {}) {
           `<p class="ttl-info-text">${wear.map((w) => renderWikiLinks(w, noteLinks)).join(" · ")}</p>`
         )
       : "",
-    leftoverFacts.length ? factsBodyHtml(leftoverFacts, noteLinks) : "",
+    leftoverFacts.length
+      ? infoSection("Свойства", factsBodyHtml(leftoverFacts, noteLinks), "ttl-info-stats")
+      : "",
     costs.length ? infoSection("Стоимость", costBodyHtml(costs, noteLinks)) : "",
     variants.length ? infoSection("Варианты", variantsBodyHtml(variants)) : "",
   ].join("");
+}
+
+/** Цветной hero только если есть реальные цвета в подписях или в «где получить» (≥2). */
+function hasDistinctLookColors(it) {
+  const variants = Array.isArray(it?.lookVariants) ? it.lookVariants : [];
+  const withSrc = variants.filter((v) => lookVariantSrc(v) && !/^анимац/i.test(String(v?.label || "")));
+  if (withSrc.length < 2) return false;
+  const labels = new Set(
+    withSrc
+      .map((v) => norm(variantColorLabel(v, it?.name) || ""))
+      .filter((l) => l && l !== "вид" && !/^анимац/.test(l))
+  );
+  if (labels.size >= 2) return true;
+  const src = displaySource(it) || String(it?.source || "");
+  const colorRows = parseSourceColorRows(src).filter((r) => r.color && r.color !== "Прочее");
+  return colorRows.length >= 2;
 }
 
 /** Текст «где получить» без повтора группы, раздела, «Примечание:» и фразы про Алису */
@@ -5599,11 +5617,7 @@ function renderDetail(it) {
       ? state.titlesMeta?.source || "https://parapa.ru/wiki/index.php/%D0%A2%D0%B8%D1%82%D1%83%D0%BB"
       : state.wikiMeta?.source || "https://parapa.ru/wiki/");
   const isAch = !titleItem && (it.kind === "achievements" || state.section === "achievements");
-  const hasColorLooks =
-    !titleItem &&
-    !isAch &&
-    Array.isArray(it.lookVariants) &&
-    it.lookVariants.filter((v) => lookVariantSrc(v)).length >= 2;
+  const hasColorLooks = !titleItem && !isAch && hasDistinctLookColors(it);
   const view = detailViewItem(it);
   const shownName = (it.genderNames && it.genderNames[preferredGender(it)]) || it.name;
   const reqPack = isAch ? renderAchievementRequires(it.description, it.name) : { html: "", reqs: [] };

@@ -2548,7 +2548,8 @@ a.ttl-mark-link:hover {
   overflow-wrap: anywhere;
 }
 .ttl-cost-bit {
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
   max-width: 100%;
 }
 .ttl-cost-bit b {
@@ -4578,9 +4579,10 @@ body.guide-req-peek-open {
     }
   }
 
-  /* цвета: hero сверху, мета скроллится — не режем .ttl-info */
+  /* цвета: один скролл у всей карточки — мета не в узком 208px окне */
   body.guide-page.is-stage .ttl-detail.ttl-detail-colors {
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   body.guide-page.is-stage .ttl-detail-colors .ttl-info,
@@ -4607,12 +4609,12 @@ body.guide-req-peek-open {
 
   body.guide-page.is-stage .ttl-detail-top.has-look-colors .ttl-look-stage {
     height: auto;
-    min-height: 140px;
-    max-height: min(46vh, 340px);
+    min-height: 120px;
+    max-height: min(34vh, 260px);
   }
 
   body.guide-page.is-stage .ttl-detail-top.has-look-colors .wiki-look-img {
-    max-height: min(42vh, 300px) !important;
+    max-height: min(32vh, 240px) !important;
     height: auto !important;
     width: auto !important;
     max-width: 100% !important;
@@ -4620,19 +4622,21 @@ body.guide-req-peek-open {
     object-position: center center !important;
   }
 
-  /* текст сразу под шапкой, без дыр; скролл только у мета-блока */
+  /* текст сразу под шапкой; скролл у .ttl-detail, не у узкой меты */
   body.guide-page.is-stage .ttl-detail-meta {
     display: grid;
     gap: 0.5rem;
     align-content: start;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     min-height: 0;
-    overflow: auto;
+    overflow: visible;
     padding-right: 0.15rem;
   }
 
   body.guide-page.is-stage .ttl-detail-colors .ttl-detail-meta {
     gap: 0.4rem;
+    flex: 0 0 auto;
+    overflow: visible;
   }
 
   body.guide-page.is-stage .ttl-detail-colors .ttl-field {
