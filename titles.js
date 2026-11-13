@@ -3676,6 +3676,7 @@ function applyGenderChoice(wrap, genderBtn) {
     swatches.forEach((el) => el.classList.remove("on"));
   }
   if (activeBtn) syncGenderMeta(activeBtn);
+  syncSourceCurrentFromLook(wrap);
 }
 
 function applySwatchChoice(wrap, swatch) {
@@ -3690,6 +3691,7 @@ function applySwatchChoice(wrap, swatch) {
     const genderBtn = setGenderToggle(wrap, g);
     if (genderBtn) syncGenderMeta(genderBtn);
   }
+  syncSourceCurrentFromLook(wrap);
 }
 
 /** Картинка товара слева от названия (без отдельного огромного блока) */
@@ -4065,14 +4067,145 @@ function characteristicsSectionHtml(it) {
 }
 
 function costBodyHtml(lines, links) {
-  const rows = lines
-    .map((line) => {
-      if (links && links.length) return `<li>${renderWikiLinks(line, links)}</li>`;
-      const safe = escapeHtml(line);
-      return `<li>${safe.replace(/\(([^)]+)\)/g, '<b class="ttl-price-bit">($1)</b>')}</li>`;
-    })
+  // плотный вид: «7д · 1200 мнт · 30д · 2400 мнт · ∞ · 7200 мнт»
+  const bits = [];
+  for (const line of lines || []) {
+    const raw = String(line || "").trim();
+    if (!raw) continue;
+    const m = raw.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+    let label = m ? m[1].trim() : raw;
+    const price = m ? m[2].trim() : "";
+    label = label
+      .replace(/^на\s+/i, "")
+      .replace(/\s*дней?/i, "д")
+      .replace(/навечно|вечно/i, "∞");
+    if (price) {
+      bits.push(
+        `<span class="ttl-cost-bit">${escapeHtml(label)} <b>${escapeHtml(price)}</b></span>`
+      );
+    } else if (links && links.length) {
+      bits.push(`<span class="ttl-cost-bit">${renderWikiLinks(raw, links)}</span>`);
+    } else {
+      bits.push(`<span class="ttl-cost-bit">${escapeHtml(raw)}</span>`);
+    }
+  }
+  if (!bits.length) return "";
+  return `<p class="ttl-cost-inline">${bits.join('<span class="ttl-cost-dot" aria-hidden="true">·</span>')}</p>`;
+}
+
+const SOURCE_COLOR_HINT =
+  /^(чёрн|черн|бел|золот|розов|син|мятн|красн|фиолет|зелён|зелен|сер|серебр|оранж|жёлт|желт|коричн|голуб|бирюз|лилов|изумруд|алы|бежев|тёмн|темн|светл|пупрпур|разноцвет|голд|white|black|pink|blue|red|green|gold)/i;
+
+function tidySourceColor(c) {
+  return String(c || "")
+    .replace(/\s*крылья$/i, "")
+    .replace(/["«»]/g, "")
+    .trim()
+    .replace(/^(.)/u, (ch) => ch.toUpperCase());
+}
+
+/** «Чёрные крылья: ТЦ; Розовые: акция…» → [{color, src}] */
+function parseSourceColorRows(source) {
+  const raw = String(source || "").replace(/\s+/g, " ").trim();
+  if (!raw) return [];
+  const chunks = raw.split(/\s*;\s*/).map((s) => s.trim()).filter(Boolean);
+  const out = [];
+  for (const ch of chunks) {
+    const mMulti = ch.match(/^(.+?)\s*крылья\s*:\s*(.+)$/i);
+    if (mMulti) {
+      const left = mMulti[1].replace(/^автообмен:\s*/i, "").trim();
+      let src = mMulti[2].trim();
+      if (/^автообмен/i.test(mMulti[1])) src = `автообмен: ${src}`;
+      const colors = left.split(/\s*,\s*/).map((x) => x.trim()).filter(Boolean);
+      if (colors.length > 1) {
+        colors.forEach((c) => out.push({ color: tidySourceColor(c), src }));
+        continue;
+      }
+    }
+    const m =
+      ch.match(/^((?:автообмен:\s*)?.+?)\s*крылья\s*:\s*(.+)$/i) ||
+      ch.match(/^([^:]{1,48}):\s*(.+)$/);
+    if (m) {
+      let color = m[1].replace(/^автообмен:\s*/i, "").trim();
+      let src = m[2].trim();
+      if (/^автообмен/i.test(m[1])) src = `автообмен: ${src}`;
+      if (/^(стоимость|примечание|для|можно|нельзя)/i.test(color)) continue;
+      if (!SOURCE_COLOR_HINT.test(color) && !/крыл/i.test(m[0])) {
+        out.push({ color: "Прочее", src: ch });
+        continue;
+      }
+      out.push({ color: tidySourceColor(color), src });
+      continue;
+    }
+    out.push({ color: "Прочее", src: ch });
+  }
+  const map = new Map();
+  for (const r of out) {
+    const k = norm(r.color);
+    if (!map.has(k)) map.set(k, { ...r });
+    else {
+      const cur = map.get(k);
+      if (!norm(cur.src).includes(norm(r.src))) cur.src += "; " + r.src;
+    }
+  }
+  return [...map.values()].filter((r) => r.color && r.src);
+}
+
+function matchSourceRowForColor(rows, color) {
+  const c = String(color || "").trim().toLowerCase();
+  if (!c || !rows?.length) return rows?.[0] || null;
+  const exact = rows.find((r) => r.color.toLowerCase() === c);
+  if (exact) return exact;
+  const stem = c.slice(0, 4);
+  return rows.find((r) => r.color.toLowerCase().startsWith(stem)) || rows[0];
+}
+
+function sourceWhereBodyHtml(sourceText, links, it) {
+  const rows = parseSourceColorRows(sourceText);
+  if (rows.length < 2) {
+    return `<p class="ttl-info-text" data-detail-source>${renderWikiLinks(sourceText, links)}</p>`;
+  }
+  let activeColor = "";
+  const variants = Array.isArray(it?.lookVariants) ? it.lookVariants : [];
+  if (variants.length) {
+    const first = variants.find((v) => lookVariantSrc(v) && !/^анимац/i.test(v.label || "")) || variants[0];
+    activeColor = variantColorLabel(first, it?.name) || "";
+  }
+  const cur = matchSourceRowForColor(rows, activeColor) || rows[0];
+  const rest = rows.length;
+  const list = rows
+    .map(
+      (r) =>
+        `<div class="ttl-src-row" data-src-color="${escapeHtml(r.color)}"><span class="ttl-src-color">${escapeHtml(
+          r.color
+        )}</span><p class="ttl-src-text">${renderWikiLinks(r.src, links)}</p></div>`
+    )
     .join("");
-  return `<ul class="ttl-cost-list">${rows}</ul>`;
+  return `<div class="ttl-src" data-src-panel>
+    <p class="ttl-src-current" data-src-current><b data-src-cur-color>${escapeHtml(
+      cur.color
+    )}</b> — <span data-src-cur-text>${renderWikiLinks(cur.src, links)}</span></p>
+    <button type="button" class="ttl-src-more" data-src-more aria-expanded="false">Ещё ${rest} цветов ▾</button>
+    <div class="ttl-src-rows" data-src-rows hidden>${list}</div>
+  </div>`;
+}
+
+function syncSourceCurrentFromLook(wrap) {
+  const panel = els.detail?.querySelector("[data-src-panel]");
+  if (!panel || !wrap) return;
+  const color = wrap.dataset.activeColor || "";
+  const rows = [...panel.querySelectorAll(".ttl-src-row")];
+  if (!rows.length) return;
+  const hit =
+    rows.find((r) => (r.dataset.srcColor || "").toLowerCase() === color.toLowerCase()) ||
+    rows.find((r) => (r.dataset.srcColor || "").toLowerCase().startsWith(color.toLowerCase().slice(0, 4))) ||
+    rows[0];
+  if (!hit) return;
+  rows.forEach((r) => r.classList.toggle("on", r === hit));
+  const curColor = panel.querySelector("[data-src-cur-color]");
+  const curText = panel.querySelector("[data-src-cur-text]");
+  if (curColor) curColor.textContent = hit.dataset.srcColor || "";
+  if (curText) curText.innerHTML = hit.querySelector(".ttl-src-text")?.innerHTML || "";
 }
 
 /**
@@ -4214,10 +4347,7 @@ function itemInfoStackHtml(it, opt = {}) {
     opt.beforeHtml || "",
     characteristicsSectionHtml(item),
     sourceText
-      ? infoSection(
-          "Где получить",
-          `<p class="ttl-info-text" data-detail-source>${renderWikiLinks(sourceText, item.sourceLinks)}</p>`
-        )
+      ? infoSection("Где получить", sourceWhereBodyHtml(sourceText, item.sourceLinks, item), "ttl-info-source")
       : "",
     descBody
       ? infoSection(
@@ -5855,6 +5985,20 @@ function bindUi() {
       e.stopPropagation();
       const wrap = genderBtn.closest(".ttl-look-variants");
       if (wrap) applyGenderChoice(wrap, genderBtn);
+      return;
+    }
+    const srcMore = e.target.closest("[data-src-more]");
+    if (srcMore && els.detail.contains(srcMore)) {
+      e.preventDefault();
+      e.stopPropagation();
+      const panel = srcMore.closest("[data-src-panel]");
+      const rows = panel?.querySelector("[data-src-rows]");
+      if (!rows) return;
+      const open = rows.hasAttribute("hidden");
+      rows.toggleAttribute("hidden", !open);
+      srcMore.setAttribute("aria-expanded", open ? "true" : "false");
+      const n = panel.querySelectorAll(".ttl-src-row").length;
+      srcMore.textContent = open ? "Свернуть ▴" : `Ещё ${n} цветов ▾`;
       return;
     }
     const swatch = e.target.closest(".ttl-look-swatch");
