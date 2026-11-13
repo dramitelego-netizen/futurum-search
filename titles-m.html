@@ -14,13 +14,13 @@
   <title>Пара па — мобильный гид | FUTURUM</title>
   <meta
     name="description"
-    content="Отдельный поиск по игре Пара па (не магазин): титулы, крылья, питомцы, транспорт, одежда и другие предметы из вики."
+    content="Справочник по игре Пара па: титулы, крылья, питомцы, транспорт, одежда и другие предметы из вики."
   />
   <link rel="canonical" href="https://dramitelego-netizen.github.io/futurum-search/titles-m.html" />
   <meta name="theme-color" content="#07090d" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="ru_RU" />
-  <meta property="og:title" content="Пара па — поиск по игре (титулы) | FUTURUM" />
+  <meta property="og:title" content="Пара па — гид по игре | FUTURUM" />
   <meta
     property="og:description"
     content="Отдельный поиск по Пара па: титулы, ОП и скрины. Не магазин — игровой справочник."
@@ -109,7 +109,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=190" />
-  <link rel="stylesheet" href="titles.css?v=145" />
+  <link rel="stylesheet" href="titles.css?v=146" />
   <link rel="stylesheet" href="edge-swap.css?v=3" />
   <script>
     (() => {
@@ -178,9 +178,9 @@
         </div>
         <div class="side-menu-row">
           <span class="side-menu-label">Картинки <span class="img-src-mode-hint" id="imgSrcHint">авто</span></span>
-          <button type="button" class="img-src-switch" id="imgSrcToggle" role="switch" aria-checked="false" aria-label="Источник картинок авто: гид" title="Авто: гид · нажми — выбрать вручную">
+          <button type="button" class="img-src-switch" id="imgSrcToggle" role="switch" aria-checked="false" aria-label="Источник картинок авто: сайт" title="Авто: сайт · нажми — выбрать вручную">
             <span class="img-src-switch-track" aria-hidden="true">
-              <span class="img-src-switch-label img-src-local">гид</span>
+              <span class="img-src-switch-label img-src-local">сайт</span>
               <span class="img-src-switch-label img-src-remote">вики</span>
               <span class="img-src-switch-knob"></span>
             </span>
@@ -193,7 +193,7 @@
         <nav class="side-nav-grid" aria-label="Разделы">
           <a class="side-nav-btn" href="./" title="Магазин или поиск по игре">
             <span class="side-nav-btn-title">Домой</span>
-            <span class="side-nav-btn-desc">Старт</span>
+            <span class="side-nav-btn-desc">Выбор раздела</span>
           </a>
           <a class="side-nav-btn" href="./shop.html" data-edge="left" title="Цены, скидки, id предметов">
             <span class="side-nav-btn-title">Магазин</span>
@@ -203,9 +203,9 @@
             <span class="side-nav-btn-title">Каталог</span>
             <span class="side-nav-btn-desc">Список</span>
           </a>
-          <a class="side-nav-btn on" href="./titles-m.html" aria-current="page" title="Титулы и справочник">
+          <a class="side-nav-btn on" href="./titles-m.html" aria-current="page" title="Справочник по игре">
             <span class="side-nav-btn-title">Гид</span>
-            <span class="side-nav-btn-desc">Титулы</span>
+            <span class="side-nav-btn-desc">По игре</span>
           </a>
         </nav>
       </div>
@@ -220,7 +220,7 @@
         </h1>
         <p class="brand-sub is-appear" data-text="Guide" aria-hidden="false">Guide</p>
       </div>
-      <p class="seo-kicker">Пара па · поиск по игре · не магазин</p>
+      <p class="seo-kicker">Пара па · гид по игре</p>
       <p class="seo-intro">
         Справочник <strong>Пара па</strong>: титулы, крылья, питомцы, одежда и другое.
         <a href="./">Домой</a> · <a href="./shop.html">магазин</a> · <a href="./catalog.html">каталог</a>
@@ -234,7 +234,7 @@
         <span class="guide-mob-logo" aria-hidden="true">FUTURUM</span>
         <button type="button" class="guide-catalog-btn" id="guideCatalogBtn" aria-expanded="false" aria-controls="guideSide">
           <span class="guide-catalog-bars" aria-hidden="true"><i></i><i></i><i></i></span>
-          Каталог
+          Разделы
         </button>
         <div class="search-wrap">
           <input
@@ -264,12 +264,12 @@
         </div>
       </aside>
 
-      <p class="hint" id="hint">Поиск или фильтр · <span id="ttlTotal">0</span></p>
+      <p class="hint" id="hint"><span id="ttlTotal">0</span> записей · поиск или фильтр</p>
 
       <div class="guide-landing" id="guideLanding" hidden>
-        <h2 class="guide-landing-title">Найди предмет или титул</h2>
-        <p class="guide-landing-text">Каталог разделов или поиск по названию — отдельно от магазина</p>
-        <button type="button" class="guide-landing-btn" id="guideLandingCatalog">Открыть каталог</button>
+        <h2 class="guide-landing-title">Что искать в игре</h2>
+        <p class="guide-landing-text">Разделы или строка поиска</p>
+        <button type="button" class="guide-landing-btn" id="guideLandingCatalog">Открыть разделы</button>
       </div>
       <div class="guide-landing-quick" id="guideLandingQuick" hidden>
         <button type="button" class="guide-landing-quick-btn" data-mob-tab="fav">
@@ -283,15 +283,15 @@
 
     <div class="guide-split guide-split-b">
       <div class="guide-side-backdrop" id="guideSideBackdrop" hidden></div>
-      <aside class="guide-side" id="guideSide" aria-label="Навигация гайда">
+      <aside class="guide-side" id="guideSide" aria-label="Навигация гида">
         <div class="guide-side-head">
           <span class="guide-side-title">Навигация</span>
           <button type="button" class="guide-side-text" id="guideSideCollapse" aria-expanded="true">Свернуть</button>
           <button type="button" class="guide-side-text guide-side-close" id="guideSideClose">Закрыть</button>
         </div>
-        <div class="guide-side-modes" id="guideSideModes" role="tablist" aria-label="Режим сайдбара">
+        <div class="guide-side-modes" id="guideSideModes" role="tablist" aria-label="Разделы или фильтры">
           <button type="button" class="guide-side-mode on" id="sideModeCatalog" data-side-mode="catalog" role="tab" aria-selected="true">
-            Каталог
+            Разделы
           </button>
           <button type="button" class="guide-side-mode" id="sideModeFilters" data-side-mode="filters" role="tab" aria-selected="false">
             Фильтры
@@ -300,14 +300,14 @@
         </div>
         <div class="guide-side-panel is-on" id="guideSideCatalog" role="tabpanel" data-side-panel="catalog">
           <div class="guide-tree" id="guideTree"></div>
-          <p class="guide-tree-empty" id="guideTreeEmpty" hidden>В каталоге нет такого</p>
+          <p class="guide-tree-empty" id="guideTreeEmpty" hidden>Нет такого раздела</p>
         </div>
         <div class="guide-side-panel" id="guideSideFilters" role="tabpanel" data-side-panel="filters" hidden>
           <div class="guide-cat-d" id="guideCatD" hidden>
             <div class="guide-cat-top">
               <span class="guide-cat-side-label">Источник</span>
               <button type="button" class="guide-cat-more" id="catMoreToggle" aria-expanded="false" aria-controls="catDetailPanel" hidden>
-                Подробные
+                Ещё источники
               </button>
             </div>
             <div class="search-filters-row guide-cat-buckets" id="catBuckets" role="group" aria-label="Тип источника"></div>
@@ -315,12 +315,12 @@
             <div class="guide-cat-detail" id="catDetailPanel" hidden>
               <div class="guide-cat-detail-head">
                 <input type="search" class="guide-cat-detail-q" id="catDetailQ" placeholder="Найти событие, колесо, билет…" autocomplete="off" spellcheck="false" />
-                <button type="button" class="guide-cat-detail-close" id="catDetailClose" aria-label="Закрыть подробные">✕</button>
+                <button type="button" class="guide-cat-detail-close" id="catDetailClose" aria-label="Закрыть">✕</button>
               </div>
-              <div class="guide-cat-detail-list" id="catDetailList" role="listbox" aria-label="Подробные источники"></div>
+              <div class="guide-cat-detail-list" id="catDetailList" role="listbox" aria-label="Ещё источники"></div>
             </div>
           </div>
-          <p class="guide-filters-empty" id="guideFiltersEmpty" hidden>В этом разделе нет типов источника</p>
+          <p class="guide-filters-empty" id="guideFiltersEmpty" hidden>В этом разделе нечего фильтровать</p>
         </div>
       </aside>
       <div class="guide-main">
@@ -385,13 +385,13 @@
   <div class="guide-mob-panel" id="guideMobCatalog" hidden data-mob-panel="catalog">
     <div class="guide-mob-panel-brand">
       <div class="guide-mob-panel-brand-mark">FUTURUM</div>
-      <p class="guide-mob-panel-brand-sub" id="guideMobCatTitle">Каталог</p>
+      <p class="guide-mob-panel-brand-sub" id="guideMobCatTitle">Разделы</p>
     </div>
     <div class="guide-mob-panel-head">
       <button type="button" class="guide-mob-cat-back" id="guideMobCatBack" hidden aria-label="Назад">←</button>
       <span class="guide-mob-panel-sub" id="guideMobCatTotal">разделы гида</span>
     </div>
-    <div class="guide-mob-cat-list" id="guideMobCatList" role="listbox" aria-label="Каталог разделов"></div>
+    <div class="guide-mob-cat-list" id="guideMobCatList" role="listbox" aria-label="Разделы гида"></div>
   </div>
   <div class="guide-mob-panel" id="guideMobFav" hidden data-mob-panel="fav">
     <div class="guide-mob-panel-brand">
@@ -409,9 +409,9 @@
       <span class="guide-bnav-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16.5 16.5L21 21"/></svg></span>
       <span class="guide-bnav-lbl">Поиск</span>
     </button>
-    <button type="button" data-mob-tab="catalog" data-mob-label="Каталог" aria-label="Каталог">
+    <button type="button" data-mob-tab="catalog" data-mob-label="Разделы" aria-label="Разделы">
       <span class="guide-bnav-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></span>
-      <span class="guide-bnav-lbl">Каталог</span>
+      <span class="guide-bnav-lbl">Разделы</span>
     </button>
     <button type="button" data-mob-tab="fav" data-mob-label="Избранное" aria-label="Избранное">
       <span class="guide-bnav-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3.8l2.2 4.5 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L4.8 9l5-.7L12 3.8z"/></svg></span>
@@ -420,16 +420,16 @@
     </button>
   </nav>
 
-  <a class="edge-neon edge-neon-left" href="./shop.html" data-edge="left" aria-label="Перейти к поиску предметов">
+  <a class="edge-neon edge-neon-left" href="./shop.html" data-edge="left" aria-label="Перейти в магазин">
     <span class="edge-neon-glow" aria-hidden="true"></span>
-    <span class="edge-neon-label">Поиск предметов</span>
+    <span class="edge-neon-label">Магазин</span>
   </a>
-  <a class="edge-neon edge-neon-right" href="./shop.html" data-edge="right" aria-label="Перейти к поиску предметов">
+  <a class="edge-neon edge-neon-right" href="./shop.html" data-edge="right" aria-label="Перейти в магазин">
     <span class="edge-neon-glow" aria-hidden="true"></span>
-    <span class="edge-neon-label">Поиск предметов</span>
+    <span class="edge-neon-label">Магазин</span>
   </a>
 
-  <script src="titles.js?v=145" defer></script>
+  <script src="titles.js?v=146" defer></script>
   <script src="edge-swap.js?v=3" defer></script>
 </body>
 </html>

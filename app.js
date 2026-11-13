@@ -696,7 +696,7 @@ function syncIdHint(raw) {
       hint.title = `Нет #${state.linkItemId} — ближайший #${near.item.id}`;
     } else {
       hint.textContent = "нет в каталоге";
-      hint.title = `Товар #${state.linkItemId} пока нет в каталоге`;
+      hint.title = `Товара #${state.linkItemId} нет в каталоге`;
     }
     wrap?.classList.add("has-id-miss");
   } else {
@@ -1362,7 +1362,7 @@ function previewEmptyHtml() {
   if (!tokenize(state.query).length) {
     if (state.showFavs && state.showSale) tip = "Избранное со скидкой";
     else if (state.showFavs) tip = "Выберите из избранного";
-    else if (state.showSale) tip = "Выберите скидку";
+    else if (state.showSale) tip = "Выберите из скидок";
   }
   return `
     <div class="preview-empty">

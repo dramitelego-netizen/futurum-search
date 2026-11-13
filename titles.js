@@ -761,7 +761,7 @@ function sectionPeeksHtml(sections) {
 function renderMobCatalog() {
   if (!els.guideMobCatList) return;
   if (els.guideMobCatBack) els.guideMobCatBack.hidden = true;
-  if (els.guideMobCatTitle) els.guideMobCatTitle.textContent = "Каталог";
+  if (els.guideMobCatTitle) els.guideMobCatTitle.textContent = "Разделы";
   els.guideMobCatList.classList.remove("is-sections", "is-accordion");
   els.guideMobCatList.classList.add("is-segmented");
 
@@ -773,7 +773,7 @@ function renderMobCatalog() {
 
   if (els.guideMobCatTotal) {
     els.guideMobCatTotal.hidden = false;
-    els.guideMobCatTotal.textContent = g ? `${g.label}` : "Каталог";
+    els.guideMobCatTotal.textContent = g ? `${g.label}` : "Разделы";
   }
 
   els.guideMobCatList.innerHTML = `<div class="guide-seg" role="tablist" aria-label="Группы">${guideSegButtonsHtml(
@@ -944,7 +944,7 @@ function renderMobFavorites() {
   if (!els.guideMobFavList) return;
   paintFavBadge();
   if (!mobileUi.favs.length) {
-    els.guideMobFavList.innerHTML = `<li class="guide-mob-fav-empty">Пока пусто — открой карточку и нажми ☆</li>`;
+    els.guideMobFavList.innerHTML = `<li class="guide-mob-fav-empty">Пусто. Открой карточку → ☆</li>`;
     return;
   }
   const rows = mobileUi.favs
@@ -972,7 +972,7 @@ function renderMobFavorites() {
     })
     .filter(Boolean)
     .join("");
-  els.guideMobFavList.innerHTML = rows || `<li class="guide-mob-fav-empty">Сохранённые позиции недоступны</li>`;
+  els.guideMobFavList.innerHTML = rows || `<li class="guide-mob-fav-empty">Избранное не загрузилось</li>`;
 }
 
 function loadSort() {
@@ -1203,15 +1203,15 @@ function applyImgSrcMode(mode, { refresh = false, persist = true, manual = false
   if (els.imgSrcToggle) {
     const remote = m === "remote";
     const locked = isImgSrcManual();
-    const srcLabel = remote ? "вики" : "гид";
+    const srcLabel = remote ? "вики" : "сайт";
     els.imgSrcToggle.setAttribute("aria-checked", remote ? "true" : "false");
     els.imgSrcToggle.title = locked
       ? remote
-        ? "Вручную: вики · нажми — гид"
-        : "Вручную: гид · нажми — вики"
+        ? "Вручную: вики · нажми — сайт"
+        : "Вручную: сайт · нажми — вики"
       : remote
         ? "Авто: вики (быстрее у вас) · нажми — выбрать вручную"
-        : "Авто: гид (быстрее у вас) · нажми — выбрать вручную";
+        : "Авто: сайт (быстрее у вас) · нажми — выбрать вручную";
     els.imgSrcToggle.setAttribute(
       "aria-label",
       locked ? `Источник картинок вручную: ${srcLabel}` : `Источник картинок авто: ${srcLabel}`
@@ -2149,7 +2149,7 @@ function findAchievementRequires(description, selfName = "") {
     if (g.items.length > 1) {
       const n = g.items.length;
       const word = n % 10 === 1 && n % 100 !== 11 ? "вариант" : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? "варианта" : "вариантов";
-      metaParts.push(`${n} ${word} в гайде`);
+      metaParts.push(`${n} ${word} в гиде`);
     }
     return {
       section: g.section,
@@ -2896,7 +2896,7 @@ function aliceExchangeHtml(it) {
   const body = `${
     cost
       ? `<p class="ttl-info-text">${escapeHtml(cost)}</p>`
-      : `<p class="ttl-info-text">Предмет есть в обмене подарков.</p>`
+      : `<p class="ttl-info-text">Можно обменять у Алисы</p>`
   }<a class="ttl-wiki-link" href="${ALICE_WIKI_URL}" target="_blank" rel="noopener noreferrer">Страница обмена →</a>`;
   return infoSection("Обмен у Алисы", body, "ttl-info-alice");
 }
@@ -4126,7 +4126,7 @@ function noteSectionsHtml(it, { hideVariants = false } = {}) {
           `<p class="ttl-info-text">${wear.map((w) => renderWikiLinks(w, noteLinks)).join(" · ")}</p>`
         )
       : "",
-    leftoverFacts.length ? infoSection("Свойства", factsBodyHtml(leftoverFacts, noteLinks)) : "",
+    leftoverFacts.length ? factsBodyHtml(leftoverFacts, noteLinks) : "",
     costs.length ? infoSection("Стоимость", costBodyHtml(costs, noteLinks)) : "",
     variants.length ? infoSection("Варианты", variantsBodyHtml(variants)) : "",
   ].join("");
@@ -4181,7 +4181,7 @@ function detailStatsHtml(it, { isTitle = false, isAch = false } = {}) {
     }
     // «Значок: есть» — по реальной привязке к достижениям, не только по флагу вики
     if (!isAch && (achievementsForItem(it).length || it.hasAchievement)) {
-      bits.push(detailStatHtml("Значок", "есть"));
+      bits.push(detailStatHtml("Значок", "да"));
     }
   }
   const html = bits.filter(Boolean).join("");
@@ -4241,10 +4241,10 @@ function itemInfoStackHtml(it, opt = {}) {
       )}" target="_blank" rel="noopener noreferrer">На вики Parapa →</a>`
     : "";
   if (!sections && !wiki) {
-    return `<p class="ttl-info-empty">На вики не написано, откуда это берётся.</p>`;
+    return `<p class="ttl-info-empty">Откуда взять — не указано</p>`;
   }
   const hint = !sections
-    ? `<p class="ttl-info-empty">На вики не написано, откуда это берётся.</p>`
+    ? `<p class="ttl-info-empty">Откуда взять — не указано</p>`
     : "";
   return `<div class="ttl-info">${hint}${sections}${wiki}</div>`;
 }
@@ -4278,7 +4278,7 @@ function applySectionPool() {
     const label = SECTION_LABEL[state.section] || "записей";
     const base = els.hint.childNodes[0];
     // keep structure: text + span#ttlTotal + rest via rebuild
-    els.hint.innerHTML = `Поиск или фильтр · <span id="ttlTotal">${state.items.length}</span> ${escapeHtml(label)}`;
+    els.hint.innerHTML = `<span id="ttlTotal">${state.items.length}</span> ${escapeHtml(label)} · поиск или фильтр`;
     els.total = document.getElementById("ttlTotal");
   }
   if (els.q) {
@@ -4414,7 +4414,7 @@ function paintCatDetail() {
   if (els.catMoreToggle) {
     els.catMoreToggle.classList.toggle("on", open);
     els.catMoreToggle.setAttribute("aria-expanded", open ? "true" : "false");
-    els.catMoreToggle.textContent = open ? "Скрыть" : "Подробные";
+    els.catMoreToggle.textContent = open ? "Скрыть" : "Ещё источники";
   }
   els.guideCatD?.classList.toggle("is-detail", open);
   if (els.catDetailPanel) els.catDetailPanel.hidden = !open;
@@ -4554,7 +4554,7 @@ function buildCategoryPills() {
   all.className = "filter-pill" + (state.category ? "" : " on");
   all.dataset.category = "";
   all.setAttribute("aria-pressed", state.category ? "false" : "true");
-  all.textContent = useBuckets && state.sourceBucket !== "all" ? "Все в типе" : "Все источники";
+  all.textContent = useBuckets && state.sourceBucket !== "all" ? "Все в группе" : "Все источники";
   frag.appendChild(all);
 
   const shown = [...compact];
@@ -4695,7 +4695,7 @@ function paintGuideSideChrome() {
     els.sideModeFilters.disabled = !navUi.filtersAvailable;
     els.sideModeFilters.title = navUi.filtersAvailable
       ? "Фильтры источника"
-      : "В этом разделе нет типов источника";
+      : "В этом разделе нечего фильтровать";
   }
   if (els.sideModeFiltersDot) {
     const active = navUi.filtersAvailable && filtersAreActive();
@@ -5245,8 +5245,8 @@ function renderList() {
       const achN = !title && !isAchRow ? achievementsForItem(it).length : 0;
       // предметы → «★ N» в meta; сами достижения → золотая «Достижение» у названия
       const achNeedHtml = achN
-        ? `<span class="result-ach-badge" title="Нужен для ${achN} ${
-            achN === 1 ? "достижения" : achN < 5 ? "достижений" : "достижений"
+        ? `<span class="result-ach-badge" title="Нужен в ${achN} ${
+            achN === 1 ? "достижении" : achN < 5 ? "достижениях" : "достижениях"
           }">★ ${achN}</span>`
         : "";
       const achKindHtml = isAchRow

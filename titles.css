@@ -4720,7 +4720,7 @@ html[data-img-src-manual="1"] .img-src-mode-hint {
 .img-src-switch-track {
   position: relative;
   display: block;
-  width: 96px;
+  width: 104px;
   height: 38px;
   border-radius: 999px;
   border: 1px solid var(--line);

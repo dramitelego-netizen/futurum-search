@@ -526,7 +526,7 @@ function showDetail(item) {
           </table>
           ${
             series.length < 2
-              ? `<p class="cat-history-empty">Пока одна точка — дополнится при обновлении каталога</p>`
+              ? `<p class="cat-history-empty">Пока одно значение. Дополнится при обновлении</p>`
               : ""
           }`
             : `<p class="cat-history-empty">История цены начнёт копиться при обновлении каталога</p>`
@@ -586,7 +586,7 @@ function renderList() {
               </span>
             </span>
           </button>
-          <button type="button" class="cat-fav${fav ? " on" : ""}" data-fav="${item.id}" aria-pressed="${fav ? "true" : "false"}" aria-label="Избранное">★</button>
+          <button type="button" class="cat-fav${fav ? " on" : ""}" data-fav="${item.id}" aria-pressed="${fav ? "true" : "false"}" aria-label="${fav ? "Убрать из избранного" : "В избранное"}">★</button>
         </div>
       </li>`;
     })
