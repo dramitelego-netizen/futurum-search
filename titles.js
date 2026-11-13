@@ -3909,6 +3909,11 @@ function itemCostSortKey(it, preferredCurrency = "") {
  * «Стоимость: Вечно (72 мнт) / 30 дней…» → строки вертикально,
  * даже если в данных нет переносов.
  */
+const DAY_PRICE_RE =
+  /(?:на\s+)?(?:вечно|навсегда|навечно|\d+\s*дн(?:я|ей|ь)?)\s*\([^)]+\)/gi;
+const FLAT_PRICE_RE = /(\d[\d\s]*)\s*(мнт|днс|очк(?:ов|и)?)/i;
+
+/** Разбор «Стоимость: …» → плотные строки для costBodyHtml */
 function parseCostLines(text) {
   let body = String(text || "")
     .replace(/^стоимость:\s*/i, "")
@@ -3916,39 +3921,78 @@ function parseCostLines(text) {
     .trim();
   if (!body) return [];
 
-  let lines = body
-    .split(/\n+/)
+  // убрать хвост после · (примечания в note)
+  body = body.split(/\s·\s/)[0].trim();
+
+  const out = [];
+  const pushDayChunk = (chunk, shop) => {
+    const c = String(chunk || "").trim();
+    if (!c) return;
+    if (shop) out.push(`${shop}: ${c}`);
+    else out.push(c);
+  };
+
+  const parseSegment = (seg) => {
+    const s = String(seg || "").replace(/\s+/g, " ").trim();
+    if (!s) return;
+    const dayMatches = [...s.matchAll(DAY_PRICE_RE)];
+    if (dayMatches.length) {
+      let shop = "";
+      const head = s.slice(0, dayMatches[0].index).trim().replace(/[:：]\s*$/, "");
+      // «ТЦ: на 7 дней…» / «Крылья … бабочки на 7 дней…»
+      if (head && head.length <= 64) shop = head.replace(/\s+/g, " ");
+      dayMatches.forEach((m, i) => pushDayChunk(m[0], i === 0 ? shop : ""));
+      // хвост после дней: «; Онлайн-магазин: 1500 мнт» уже в других сегментах
+      return;
+    }
+
+    // «2000 мнт (белый), 1800 мнт (темно-коричневый)»
+    const colorPrices = [...s.matchAll(/(\d[\d\s]*)\s*(мнт|днс|очк(?:ов|и)?)\s*\(([^)]+)\)/gi)];
+    if (colorPrices.length >= 1 && colorPrices.length === (s.match(/\(/g) || []).length) {
+      colorPrices.forEach((m) => {
+        out.push(`${m[3].trim()}: ${m[1].replace(/\s+/g, "")} ${m[2].toLowerCase()}`);
+      });
+      return;
+    }
+
+    // «Черный, белый: 6500 мнт» / «Магазин: 7000 мнт» / «бабочки – 2500 мнт»
+    const labeled =
+      s.match(/^(.{1,80}?)\s*:\s*(\d[\d\s]*\s*(?:мнт|днс|очк(?:ов|и)?))\s*$/i) ||
+      s.match(/^(.{1,80}?)\s*[–—-]\s*(\d[\d\s]*\s*(?:мнт|днс|очк(?:ов|и)?))\s*$/i);
+    if (labeled) {
+      out.push(`${labeled[1].trim()}: ${labeled[2].replace(/\s+/g, " ").trim()}`);
+      return;
+    }
+
+    if (FLAT_PRICE_RE.test(s)) out.push(s);
+  };
+
+  // сегменты по ; — разные магазины / цвета
+  const segs = body
+    .split(/\s*;\s*/)
     .map((s) => s.trim())
     .filter(Boolean);
-
-  if (lines.length === 1) {
-    const one = lines[0];
-    // «на 7 дней (150 мнт) / на 30 дней (250 мнт) / навечно (500 мнт)»
-    const slashParts = one
+  if (segs.length > 1) {
+    segs.forEach(parseSegment);
+  } else {
+    // «на 7 дней (…) / на 30 дней (…)»
+    const slashParts = body
       .split(/\s*\/\s*/)
       .map((s) => s.trim())
       .filter(Boolean);
-    if (slashParts.length > 1 && slashParts.every((p) => /\([^)]+\)/.test(p))) {
-      lines = slashParts;
+    if (
+      slashParts.length > 1 &&
+      slashParts.every((p) => /(?:вечно|навсегда|навечно|\d+\s*дн)/i.test(p) || FLAT_PRICE_RE.test(p))
+    ) {
+      slashParts.forEach(parseSegment);
     } else {
-      const matches = [
-        ...one.matchAll(
-          /(?:на\s+)?(?:вечно|навсегда|навечно|\d+\s*дн(?:я|ей|ь)?)\s*\([^)]+\)/gi
-        ),
-      ];
-      const chunks = matches.map((m) => m[0].trim());
-      if (chunks.length > 1) {
-        let rest = one;
-        for (const m of matches) {
-          rest = rest.replace(m[0], " ");
-        }
-        rest = rest.replace(/^[,\s;·]+|[,\s;·]+$/g, "").replace(/\s+/g, " ").trim();
-        lines = rest ? [...chunks, rest] : chunks;
-      }
+      parseSegment(body);
     }
   }
 
-  return lines.map((s) => s.replace(/\s+/g, " ").trim()).filter(Boolean);
+  // если ничего не вышло — вернуть как есть
+  if (!out.length && body) return [body.replace(/\s+/g, " ").trim()];
+  return out.map((s) => s.replace(/\s+/g, " ").trim()).filter(Boolean);
 }
 
 function noteListBlock(lines, sublabel = "") {
@@ -4081,24 +4125,69 @@ function characteristicsSectionHtml(it) {
   return infoSection("Характеристики", factsBodyHtml(facts, links), "ttl-info-stats");
 }
 
+function shortCostLabel(label) {
+  let lab = String(label || "").trim();
+  lab = lab
+    .replace(/^на\s+/i, "")
+    .replace(/\s*дней?/i, "д")
+    .replace(/навечно|вечно|навсегда/i, "∞")
+    .replace(/^онлайн-?магазин$/i, "онлайн")
+    .replace(/^торговый центр$/i, "ТЦ");
+  // длинные списки цветов: «Черный, белый» → как есть, но без «крылья»
+  lab = lab.replace(/\s*крылья\s+/gi, " ").replace(/\s+/g, " ").trim();
+  if (lab.length > 28) lab = lab.slice(0, 26).trim() + "…";
+  return lab;
+}
+
 function costBodyHtml(lines, links) {
-  // плотный вид: «7д · 1200 мнт · 30д · 2400 мнт · ∞ · 7200 мнт»
+  // плотный вид: «7д · 150 мнт · ТЦ 7д · 250 мнт · белый · 2000 мнт»
   const bits = [];
   for (const line of lines || []) {
     const raw = String(line || "").trim();
     if (!raw) continue;
+
+    // «ТЦ: на 7 дней (250 мнт)» / «белый: 2000 мнт»
+    const labeled = raw.match(/^(.{1,80}?):\s*(.+)$/);
+    if (labeled) {
+      const shop = shortCostLabel(labeled[1]);
+      const rest = labeled[2].trim();
+      const day = rest.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+      if (day) {
+        const term = shortCostLabel(day[1]);
+        const price = day[2].trim();
+        const left = [shop, term].filter(Boolean).join(" ");
+        bits.push(
+          `<span class="ttl-cost-bit">${escapeHtml(left)} <b>${escapeHtml(price)}</b></span>`
+        );
+        continue;
+      }
+      if (FLAT_PRICE_RE.test(rest)) {
+        bits.push(
+          `<span class="ttl-cost-bit">${escapeHtml(shop)} <b>${escapeHtml(rest)}</b></span>`
+        );
+        continue;
+      }
+    }
+
     const m = raw.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
-    let label = m ? m[1].trim() : raw;
-    const price = m ? m[2].trim() : "";
-    label = label
-      .replace(/^на\s+/i, "")
-      .replace(/\s*дней?/i, "д")
-      .replace(/навечно|вечно/i, "∞");
-    if (price) {
+    if (m) {
+      const label = shortCostLabel(m[1]);
+      const price = m[2].trim();
       bits.push(
         `<span class="ttl-cost-bit">${escapeHtml(label)} <b>${escapeHtml(price)}</b></span>`
       );
-    } else if (links && links.length) {
+      continue;
+    }
+
+    const flat = raw.match(/^(\d[\d\s]*)\s*(мнт|днс|очк(?:ов|и)?)\s*$/i);
+    if (flat) {
+      bits.push(
+        `<span class="ttl-cost-bit"><b>${escapeHtml(flat[1].replace(/\s+/g, "") + " " + flat[2].toLowerCase())}</b></span>`
+      );
+      continue;
+    }
+
+    if (links && links.length) {
       bits.push(`<span class="ttl-cost-bit">${renderWikiLinks(raw, links)}</span>`);
     } else {
       bits.push(`<span class="ttl-cost-bit">${escapeHtml(raw)}</span>`);
