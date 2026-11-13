@@ -3923,13 +3923,29 @@ function parseCostLines(text) {
 
   if (lines.length === 1) {
     const one = lines[0];
-    // «на 7 дней (150 мнт), на 30 дней (250 мнт), навечно (500 мнт)»
-    const chunks = [
-      ...one.matchAll(
-        /(?:на\s+)?(?:вечно|навсегда|навечно|\d+\s*дн(?:я|ей|ь)?)\s*\([^)]+\)/gi
-      ),
-    ].map((m) => m[0].trim());
-    if (chunks.length > 1) lines = chunks;
+    // «на 7 дней (150 мнт) / на 30 дней (250 мнт) / навечно (500 мнт)»
+    const slashParts = one
+      .split(/\s*\/\s*/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (slashParts.length > 1 && slashParts.every((p) => /\([^)]+\)/.test(p))) {
+      lines = slashParts;
+    } else {
+      const matches = [
+        ...one.matchAll(
+          /(?:на\s+)?(?:вечно|навсегда|навечно|\d+\s*дн(?:я|ей|ь)?)\s*\([^)]+\)/gi
+        ),
+      ];
+      const chunks = matches.map((m) => m[0].trim());
+      if (chunks.length > 1) {
+        let rest = one;
+        for (const m of matches) {
+          rest = rest.replace(m[0], " ");
+        }
+        rest = rest.replace(/^[,\s;·]+|[,\s;·]+$/g, "").replace(/\s+/g, " ").trim();
+        lines = rest ? [...chunks, rest] : chunks;
+      }
+    }
   }
 
   return lines.map((s) => s.replace(/\s+/g, " ").trim()).filter(Boolean);
@@ -4093,7 +4109,7 @@ function costBodyHtml(lines, links) {
 }
 
 const SOURCE_COLOR_HINT =
-  /^(чёрн|черн|бел|золот|розов|син|мятн|красн|фиолет|зелён|зелен|сер|серебр|оранж|жёлт|желт|коричн|голуб|бирюз|лилов|изумруд|алы|бежев|тёмн|темн|светл|пупрпур|разноцвет|голд|white|black|pink|blue|red|green|gold)/i;
+  /^(чёрн|черн|бел|золот|розов|син|мятн|красн|фиолет|зелён|зелен|сер|серебр|оранж|жёлт|желт|коричн|голуб|бирюз|лилов|изумруд|алы|бежев|тёмн|темн|светл|пурпур|пупрпур|разноцвет|голд|white|black|pink|blue|red|green|gold)/i;
 
 function tidySourceColor(c) {
   return String(c || "")
