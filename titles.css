@@ -5381,13 +5381,24 @@ body.guide-page.guide-layout-mobile .shell {
     z-index: 65;
   }
 
-  body.guide-page.guide-layout-mobile .hero {
+  /* компактная шапка: чуть вправо от кнопки меню; лендинг — симметрично */
+  body.guide-page.guide-layout-mobile:not(.guide-brand-hero-on) .hero {
     padding-left: 0.15rem;
   }
+  body.guide-page.guide-layout-mobile.guide-brand-hero-on .hero,
+  body.guide-page.guide-layout-mobile.guide-landing .hero {
+    padding-left: 0;
+    padding-right: 0;
+  }
 
-  body.guide-page.guide-layout-mobile .guide-hero-row,
-  body.guide-page.guide-layout-mobile.guide-landing .guide-hero-row {
+  /* отступ под кнопку меню только в компактной шапке (лого + поиск в ряд) */
+  body.guide-page.guide-layout-mobile:not(.guide-brand-hero-on) .guide-hero-row {
     padding-left: 3.15rem;
+  }
+  body.guide-page.guide-layout-mobile.guide-brand-hero-on .guide-hero-row,
+  body.guide-page.guide-layout-mobile.guide-landing .guide-hero-row {
+    padding-left: 0;
+    padding-right: 0;
   }
 
   /* фильтры ОП снова в шапке — «Ещё» убрали, меню сбоку */
@@ -8607,10 +8618,26 @@ body.guide-page.guide-layout-mobile .guide-hero-row {
   margin: 0 !important;
   gap: 0.5rem !important;
   min-height: 40px;
+  box-sizing: border-box !important;
 }
-body.guide-page.guide-layout-mobile.guide-brand-hero-on .guide-hero-row {
+body.guide-page.guide-layout-mobile.guide-brand-hero-on .hero,
+body.guide-page.guide-layout-mobile.guide-landing .hero {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+body.guide-page.guide-layout-mobile.guide-brand-hero-on .guide-hero-row,
+body.guide-page.guide-layout-mobile.guide-landing .guide-hero-row {
   display: block !important;
   min-height: 0;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+body.guide-page.guide-layout-mobile.guide-brand-hero-on .search-wrap,
+body.guide-page.guide-layout-mobile.guide-landing .search-wrap {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 body.guide-page.guide-layout-mobile .guide-mob-logo {
   display: inline-flex !important;
