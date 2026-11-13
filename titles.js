@@ -183,8 +183,8 @@ const GUIDE_GROUPS = [
     id: "clothes",
     code: "ОД",
     label: "Одежда",
-    hint: "костюмы, обувь, причёски",
-    sections: ["event_clothes", "kids_clothes", "shoes", "hairstyles"],
+    hint: "костюмы, крылья, образы, обувь",
+    sections: ["event_clothes", "kids_clothes", "wings", "forms", "shoes", "hairstyles"],
   },
   {
     id: "accessories",
@@ -204,8 +204,8 @@ const GUIDE_GROUPS = [
     id: "companions",
     code: "СП",
     label: "Спутники",
-    hint: "крылья, питомцы, транспорт",
-    sections: ["wings", "pets", "transport", "forms"],
+    hint: "питомцы и транспорт",
+    sections: ["pets", "transport"],
   },
   {
     id: "emotions",
