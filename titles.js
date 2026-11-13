@@ -3923,14 +3923,13 @@ function parseCostLines(text) {
 
   if (lines.length === 1) {
     const one = lines[0];
-    // Вечно (… мнт) 30 дней (… мнт) 7 дней (… мнт) в одну строку
-    const chunks = one.match(
-      /(?:вечно|навсегда|навечно|\d+\s*дн(?:я|ей|ь)?)\s*\([^)]+\)/gi
-    );
-    if (chunks && chunks.length > 1) {
-      const head = one.slice(0, one.search(chunks[0])).trim().replace(/[:：]\s*$/, "");
-      lines = head ? [head, ...chunks.map((s) => s.trim())] : chunks.map((s) => s.trim());
-    }
+    // «на 7 дней (150 мнт), на 30 дней (250 мнт), навечно (500 мнт)»
+    const chunks = [
+      ...one.matchAll(
+        /(?:на\s+)?(?:вечно|навсегда|навечно|\d+\s*дн(?:я|ей|ь)?)\s*\([^)]+\)/gi
+      ),
+    ].map((m) => m[0].trim());
+    if (chunks.length > 1) lines = chunks;
   }
 
   return lines.map((s) => s.replace(/\s+/g, " ").trim()).filter(Boolean);
@@ -4162,7 +4161,9 @@ function matchSourceRowForColor(rows, color) {
 
 function sourceWhereBodyHtml(sourceText, links, it) {
   const rows = parseSourceColorRows(sourceText);
-  if (rows.length < 2) {
+  // панель цветов только если ≥2 настоящих цвета (не «Прочее» / «ТЦ; …»)
+  const colorRows = rows.filter((r) => r.color && r.color !== "Прочее");
+  if (colorRows.length < 2) {
     return `<p class="ttl-info-text" data-detail-source>${renderWikiLinks(sourceText, links)}</p>`;
   }
   let activeColor = "";
@@ -4171,9 +4172,9 @@ function sourceWhereBodyHtml(sourceText, links, it) {
     const first = variants.find((v) => lookVariantSrc(v) && !/^анимац/i.test(v.label || "")) || variants[0];
     activeColor = variantColorLabel(first, it?.name) || "";
   }
-  const cur = matchSourceRowForColor(rows, activeColor) || rows[0];
-  const rest = rows.length;
-  const list = rows
+  const cur = matchSourceRowForColor(colorRows, activeColor) || colorRows[0];
+  const rest = colorRows.length;
+  const list = colorRows
     .map(
       (r) =>
         `<div class="ttl-src-row" data-src-color="${escapeHtml(r.color)}"><span class="ttl-src-color">${escapeHtml(

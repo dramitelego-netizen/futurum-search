@@ -2469,13 +2469,13 @@ a.ttl-mark-link:hover {
   min-width: 0;
 }
 
-/* Один столбик сведений: компактно, без вылезания текста */
+/* Один столбик сведений: высота по контенту, скролл у .ttl-detail-meta */
 .ttl-info {
   display: flex;
   flex-direction: column;
   min-width: 0;
   max-width: 100%;
-  overflow: hidden;
+  overflow: visible;
   border-top: 1px solid var(--line);
 }
 
@@ -2518,7 +2518,7 @@ a.ttl-mark-link:hover {
   max-width: 100%;
   display: grid;
   gap: 0.2rem;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .ttl-info-text {
@@ -2536,6 +2536,10 @@ a.ttl-mark-link:hover {
 /* стоимость: плотная строка */
 .ttl-cost-inline {
   margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.1rem 0;
   font-family: "Rajdhani", sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
@@ -2545,6 +2549,7 @@ a.ttl-mark-link:hover {
 }
 .ttl-cost-bit {
   white-space: nowrap;
+  max-width: 100%;
 }
 .ttl-cost-bit b {
   color: var(--accent);
@@ -4570,9 +4575,14 @@ body.guide-req-peek-open {
     }
   }
 
-  /* цвета: одинаковый hero, мета занимает остаток */
+  /* цвета: hero сверху, мета скроллится — не режем .ttl-info */
   body.guide-page.is-stage .ttl-detail.ttl-detail-colors {
     overflow: hidden;
+  }
+
+  body.guide-page.is-stage .ttl-detail-colors .ttl-info,
+  body.guide-page.is-stage .ttl-detail-colors .ttl-info-body {
+    overflow: visible;
   }
 
   body.guide-page.is-stage .ttl-detail-top.has-look-colors {
