@@ -1919,6 +1919,41 @@ function ensureAchIndex() {
   }
 }
 
+/** Вписать ★ N в уже отрисованный список — без innerHTML wipe (мигание картинок) */
+function patchAchBadgesInList() {
+  if (!els.list || !state.list?.length) return;
+  const byKey = new Map(state.list.map((it) => [`${itemSectionOf(it)}:${it.id}`, it]));
+  els.list.querySelectorAll(".ttl-result").forEach((btn) => {
+    const id = Number(btn.dataset.id);
+    const sec = btn.dataset.section || "";
+    if (!Number.isFinite(id) || sec === "titles" || sec === "achievements") return;
+    const it = byKey.get(`${sec}:${id}`) || findGuideItem(id, sec);
+    if (!it) return;
+    const achN = achievementsForItem(it).length;
+    const meta = btn.querySelector(".result-meta");
+    if (!meta) return;
+    let badge = meta.querySelector(".result-ach-badge:not(.result-ach-kind)");
+    if (!achN) {
+      badge?.remove();
+      return;
+    }
+    const title = `Нужен в ${achN} ${achN === 1 ? "достижении" : achN < 5 ? "достижениях" : "достижениях"}`;
+    const label = `★ ${achN}`;
+    if (badge) {
+      badge.title = title;
+      badge.textContent = label;
+    } else {
+      badge = document.createElement("span");
+      badge.className = "result-ach-badge";
+      badge.title = title;
+      badge.textContent = label;
+      const fuzzy = meta.querySelector(".result-fuzzy");
+      if (fuzzy?.nextSibling) meta.insertBefore(badge, fuzzy.nextSibling);
+      else meta.insertBefore(badge, meta.firstChild);
+    }
+  });
+}
+
 /** Отложить сборку с критического пути первого списка / смены раздела */
 function scheduleAchIndexBuild() {
   if (achRequiresIndex || achIndexReady || achIndexBuilding) return;
@@ -1926,7 +1961,7 @@ function scheduleAchIndexBuild() {
     if (achRequiresIndex || achIndexReady || achIndexBuilding) return;
     ensureAchIndex();
     if (els.list?.querySelector(".ttl-result") && state.list.length) {
-      renderList();
+      patchAchBadgesInList();
     }
     if (state.activeId != null) {
       const cur =
@@ -3454,7 +3489,11 @@ function syncThumbCarousel() {
 
 /** В любом виде: реальные картинки если есть, иначе значок */
 function resultThumbHtml(it, { title = false } = {}) {
-  const showcase = itemShowcasePairs(it);
+  let showcase = itemShowcasePairs(it);
+  // мобильный список: только первый кадр — без GIF-заглушек и автосмены
+  if (showcase.length && document.body.classList.contains("guide-layout-mobile")) {
+    showcase = showcase.slice(0, 1);
+  }
   if (showcase.length) {
     // src только у видимого слайда — остальные подгружаем при смене кадра
     const slides = showcase

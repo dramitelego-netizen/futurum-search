@@ -7680,12 +7680,21 @@ html[data-bg="minimal"] body.guide-page.guide-layout-mobile .guide-mob-panel-bra
   opacity: 0;
   transition: opacity 0.75s ease;
   pointer-events: none;
-  /* не дергаем layout при decode */
-  content-visibility: auto;
 }
 
 body.guide-page.guide-layout-mobile .results > li {
   contain: layout paint;
+}
+
+/* A/B: фиксированный квадрат миниатюры — без прыжка строк */
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .result-thumb-frame,
+html[data-items-view="A"] body.guide-page.guide-layout-mobile .ttl-swatch,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .result-thumb-frame,
+html[data-items-view="B"] body.guide-page.guide-layout-mobile .ttl-swatch {
+  width: 34px !important;
+  height: 34px !important;
+  aspect-ratio: auto !important;
+  min-height: 34px;
 }
 
 body.guide-page.guide-layout-mobile .result-thumb-carousel .result-thumb-slide {
