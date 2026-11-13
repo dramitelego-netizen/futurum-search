@@ -1369,6 +1369,26 @@ body.guide-page.is-stage .shell {
   image-rendering: auto;
 }
 
+/* скрин титула — текст целиком, не кропаем как одежду */
+.result-thumb-frame.is-title-shot {
+  width: 4.6rem;
+  height: 3.35rem;
+  background: #0a0f14;
+}
+.result-thumb-frame.is-title-shot .result-thumb {
+  object-fit: contain;
+  object-position: center;
+}
+html[data-items-view] .result-thumb-frame.is-title-shot {
+  aspect-ratio: 4 / 3;
+  height: auto;
+  width: 100%;
+  max-width: 100%;
+}
+html[data-items-view] .result-thumb-frame.is-title-shot .result-thumb {
+  object-fit: contain;
+}
+
 .result-main {
   display: grid;
   gap: 0.22rem;

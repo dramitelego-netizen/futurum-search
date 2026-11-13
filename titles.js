@@ -802,6 +802,25 @@ function blurGuideSearch() {
   }
 }
 
+/** На телефоне поле поиска readonly, пока пользователь сам не ткнёт — иначе ОС может открыть клавиатуру */
+function guardMobileSearchKeyboard() {
+  if (!els.q || !isGuideNarrow()) return;
+  if (els.q.dataset.kbGuard === "1") return;
+  els.q.dataset.kbGuard = "1";
+  els.q.setAttribute("readonly", "readonly");
+  const unlock = () => {
+    els.q.removeAttribute("readonly");
+    els.q.removeEventListener("pointerdown", unlock);
+    els.q.removeEventListener("touchstart", unlock);
+  };
+  els.q.addEventListener("pointerdown", unlock, { passive: true });
+  els.q.addEventListener("touchstart", unlock, { passive: true });
+  // если фокус всё же прилетел без тапа — сразу снять
+  requestAnimationFrame(() => blurGuideSearch());
+  setTimeout(blurGuideSearch, 120);
+  setTimeout(blurGuideSearch, 400);
+}
+
 function pickMobCatalogSection(section) {
   if (!section) return;
   leaveLanding();
@@ -897,9 +916,9 @@ function renderMobFavorites() {
       if (!it) return "";
       const sec = itemSectionOf(it) || f.section;
       const title = sec === "titles";
-      const pair = title ? { src: titleBadgeSrc(), fb: "" } : itemImgPair(it);
+      const pair = title ? titleThumbPair(it) : itemImgPair(it);
       const thumb = pair.src
-        ? `<span class="result-thumb-frame"><img class="result-thumb" src="${escapeHtml(
+        ? `<span class="result-thumb-frame${title ? " is-title-shot" : ""}"><img class="result-thumb" src="${escapeHtml(
             pair.src
           )}" alt="" loading="lazy" decoding="async"${imgFbAttr(pair.fb)} /></span>`
         : `<span class="result-thumb-frame result-thumb-empty" aria-hidden="true"></span>`;
@@ -3233,6 +3252,13 @@ function titleBadgeSrc() {
     : "./data/title_img/3d077203ce.png";
 }
 
+/** Скрин титула в списке; если своего нет — общий значок */
+function titleThumbPair(it) {
+  const own = itemImgPair(it);
+  if (own.src) return own;
+  return { src: titleBadgeSrc(), fb: "" };
+}
+
 function itemImgPair(it, opts) {
   if (!it) return { src: "", fb: "" };
   const hq = Boolean(opts && opts.hq);
@@ -3267,8 +3293,9 @@ function itemShowcasePairs(it) {
 
   const sec = itemSectionOf(it);
   if (sec === "titles") {
-    // в списке — лёгкий общий значок; полный title_img 800×600 только в карточке/зуме
-    return [];
+    // своя картинка титула в списке; без неё — общий значок через resultThumbHtml
+    const own = itemImgPair(it);
+    return own.src ? [{ src: own.src, fb: own.fb || "" }] : [];
   }
 
   // Картинки только из локальных packs (guide_img / data/img). Parapa не используем.
@@ -3349,14 +3376,17 @@ function resultThumbHtml(it, { title = false } = {}) {
         )} />`;
       })
       .join("");
+    const titleCls = title || itemSectionOf(it) === "titles" ? " is-title-shot" : "";
     const cls =
-      showcase.length > 1 ? "result-thumb-frame result-thumb-carousel" : "result-thumb-frame";
+      showcase.length > 1
+        ? `result-thumb-frame result-thumb-carousel${titleCls}`
+        : `result-thumb-frame${titleCls}`;
     return `<span class="${cls}" data-count="${showcase.length}">${slides}</span>`;
   }
 
-  const badgePair = title ? { src: titleBadgeSrc(), fb: "" } : itemImgPair(it);
+  const badgePair = title ? titleThumbPair(it) : itemImgPair(it);
   if (badgePair.src) {
-    return `<span class="result-thumb-frame"><img class="result-thumb" src="${escapeHtml(
+    return `<span class="result-thumb-frame${title ? " is-title-shot" : ""}"><img class="result-thumb" src="${escapeHtml(
       badgePair.src
     )}" alt="" loading="lazy" decoding="async"${imgFbAttr(badgePair.fb)} /></span>`;
   }
@@ -5165,8 +5195,8 @@ function renderList() {
             : sec === "accessories"
               ? [slotShort(it.slot), it.source].filter(Boolean).join(" · ")
               : [it.source, it.kindLabel].filter(Boolean).join(" · ");
-      // реальные картинки если есть, иначе значок — во всех видах и категориях
-      const pair = title ? { src: titleBadgeSrc(), fb: "" } : itemImgPair(it);
+      // титулы: своя картинка если есть, иначе общий значок
+      const pair = title ? titleThumbPair(it) : itemImgPair(it);
       const thumb = resultThumbHtml(it, { title });
       const opN = title ? Number(it.op) || 0 : 0;
       const opTone = title ? ` ${opClass(it.op)}` : "";
@@ -5731,8 +5761,10 @@ function bindUi() {
       return;
     }
     if (e.target.closest("#guideLandingSearch")) {
+      leaveLanding();
       setMobileTab("home", { fromClick: true });
-      els.q?.focus?.({ preventScroll: false });
+      // не фокусируем поле — иначе сразу вылезает клавиатура
+      blurGuideSearch();
     }
   });
 
@@ -6069,6 +6101,12 @@ async function init() {
   filterAndSort();
   if (!state.landing && Number.isFinite(id) && id > 0 && state.items.some((it) => it.id === id)) {
     selectItem(id);
+  }
+
+  // телефон: не открывать клавиатуру при заходе на гид
+  if (isGuideNarrow()) {
+    blurGuideSearch();
+    guardMobileSearchKeyboard();
   }
 
   // индекс «предмет → достижения» не блокирует первый список
