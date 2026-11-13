@@ -2610,6 +2610,9 @@ a.ttl-mark-link:hover {
   display: grid;
   gap: 0.2rem;
 }
+.ttl-src-rows[hidden] {
+  display: none !important;
+}
 .ttl-src-row {
   display: grid;
   grid-template-columns: 5rem minmax(0, 1fr);

@@ -4173,7 +4173,7 @@ function sourceWhereBodyHtml(sourceText, links, it) {
     activeColor = variantColorLabel(first, it?.name) || "";
   }
   const cur = matchSourceRowForColor(colorRows, activeColor) || colorRows[0];
-  const rest = colorRows.length;
+  const moreCount = Math.max(0, colorRows.length - 1);
   const list = colorRows
     .map(
       (r) =>
@@ -4186,7 +4186,11 @@ function sourceWhereBodyHtml(sourceText, links, it) {
     <p class="ttl-src-current" data-src-current><b data-src-cur-color>${escapeHtml(
       cur.color
     )}</b> — <span data-src-cur-text>${renderWikiLinks(cur.src, links)}</span></p>
-    <button type="button" class="ttl-src-more" data-src-more aria-expanded="false">Ещё ${rest} цветов ▾</button>
+    ${
+      moreCount
+        ? `<button type="button" class="ttl-src-more" data-src-more aria-expanded="false">Ещё ${moreCount} ▾</button>`
+        : ""
+    }
     <div class="ttl-src-rows" data-src-rows hidden>${list}</div>
   </div>`;
 }
@@ -5998,8 +6002,8 @@ function bindUi() {
       const open = rows.hasAttribute("hidden");
       rows.toggleAttribute("hidden", !open);
       srcMore.setAttribute("aria-expanded", open ? "true" : "false");
-      const n = panel.querySelectorAll(".ttl-src-row").length;
-      srcMore.textContent = open ? "Свернуть ▴" : `Ещё ${n} цветов ▾`;
+      const n = Math.max(0, panel.querySelectorAll(".ttl-src-row").length - 1);
+      srcMore.textContent = open ? "Свернуть ▴" : `Ещё ${n} ▾`;
       return;
     }
     const swatch = e.target.closest(".ttl-look-swatch");
