@@ -249,6 +249,7 @@ body.is-portal-dive {
 }
 
 body.is-portal-dive .home-hero,
+body.is-portal-dive .home-dock,
 body.is-portal-dive .home-note {
   animation: home-dive-away 0.75s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
@@ -485,11 +486,13 @@ body.is-portal-dive .atmosphere {
   .home-brand.brand,
   .home-lead,
   .home-gates,
+  .home-dock,
   .home-note,
   .home-gate-3d,
   .home-gate.is-diving .home-gate-3d,
   .home-portal-flash.is-on,
   body.is-portal-dive .home-hero,
+  body.is-portal-dive .home-dock,
   body.is-portal-dive .home-note,
   body.is-portal-dive .home-gate:not(.is-diving),
   body.is-portal-dive .atmosphere {
@@ -618,5 +621,170 @@ body.is-portal-dive .atmosphere {
 
   .home-gate-mini .home-gate-copy {
     padding: 0.65rem 0.7rem 0.75rem;
+  }
+}
+
+/* ——— док промо под плитками ——— */
+.home-dock {
+  --dock-shelf-top: color-mix(in srgb, var(--accent) 16%, transparent);
+  --dock-shelf-mid: color-mix(in srgb, var(--panel-solid, #0a0d12) 72%, transparent);
+  --dock-shelf-edge: color-mix(in srgb, var(--accent) 34%, var(--line));
+  --dock-shelf-shine: color-mix(in srgb, #fff 14%, transparent);
+  --dock-glow: color-mix(in srgb, var(--accent) 20%, transparent);
+  --dock-badge-ring: color-mix(in srgb, var(--accent) 42%, var(--line));
+
+  position: relative;
+  width: min(15.25rem, 90%);
+  margin: 0.5rem auto 0;
+  min-height: 3.75rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  padding: 0 2.55rem 0 0.95rem;
+  animation: home-rise 0.85s ease-out 0.4s both;
+}
+
+html[data-theme="light"] .home-dock {
+  --dock-shelf-top: color-mix(in srgb, var(--accent) 12%, #fff);
+  --dock-shelf-mid: color-mix(in srgb, #ffffff 88%, var(--panel));
+  --dock-shelf-edge: color-mix(in srgb, var(--accent) 28%, var(--line));
+  --dock-shelf-shine: color-mix(in srgb, #fff 70%, transparent);
+  --dock-glow: color-mix(in srgb, var(--accent) 14%, transparent);
+  --dock-badge-ring: color-mix(in srgb, var(--accent) 36%, var(--line));
+}
+
+html[data-theme="gray"] .home-dock {
+  --dock-shelf-top: color-mix(in srgb, var(--accent) 14%, transparent);
+  --dock-shelf-mid: color-mix(in srgb, var(--panel-solid, #4a4e56) 88%, transparent);
+  --dock-shelf-edge: color-mix(in srgb, var(--accent) 30%, var(--line));
+  --dock-shelf-shine: color-mix(in srgb, #fff 10%, transparent);
+  --dock-glow: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.home-dock::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: -0.4rem;
+  height: 1rem;
+  background: radial-gradient(ellipse 70% 100% at 50% 0%, var(--dock-glow), transparent 72%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.home-dock-shelf {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.12rem;
+  z-index: 1;
+  border-radius: 0 0 16px 16px;
+  background: linear-gradient(
+    180deg,
+    var(--dock-shelf-top) 0%,
+    var(--dock-shelf-mid) 42%,
+    color-mix(in srgb, var(--bg) 55%, var(--dock-shelf-mid)) 100%
+  );
+  border: 1px solid var(--dock-shelf-edge);
+  border-top-color: color-mix(in srgb, var(--accent) 45%, var(--dock-shelf-shine));
+  box-shadow:
+    inset 0 1px 0 var(--dock-shelf-shine),
+    0 0 0 1px color-mix(in srgb, var(--ink) 8%, transparent) inset,
+    0 12px 24px color-mix(in srgb, var(--shadow, #000) 55%, transparent);
+  clip-path: polygon(4.5% 0, 95.5% 0, 100% 100%, 0 100%);
+  pointer-events: none;
+}
+
+.home-dock-rail {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 1.1rem;
+  height: 1px;
+  z-index: 2;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--accent) 50%, transparent) 24%,
+    color-mix(in srgb, var(--accent-2, #ff4d6d) 22%, transparent) 50%,
+    color-mix(in srgb, var(--accent) 50%, transparent) 76%,
+    transparent 100%
+  );
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+html[data-theme="light"] .home-dock-rail {
+  opacity: 0.55;
+}
+
+.home-dock-item {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  color: inherit;
+  outline: none;
+  transform: translateY(-0.58rem);
+}
+
+.home-dock-badge {
+  width: clamp(2.7rem, 9vw, 3.2rem);
+  height: clamp(2.7rem, 9vw, 3.2rem);
+  border-radius: 15px;
+  overflow: hidden;
+  border: 1px solid var(--dock-badge-ring);
+  background: color-mix(in srgb, var(--panel-solid, #0a0d12) 80%, #000);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--ink) 8%, transparent) inset,
+    0 0 22px var(--dock-glow),
+    0 8px 16px color-mix(in srgb, var(--shadow, #000) 40%, transparent);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+html[data-theme="light"] .home-dock-badge {
+  background: #fff;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--ink) 6%, transparent) inset,
+    0 0 18px var(--dock-glow),
+    0 8px 14px color-mix(in srgb, var(--shadow) 55%, transparent);
+}
+
+.home-dock-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.02);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.home-dock-item:hover .home-dock-badge,
+.home-dock-item:focus-visible .home-dock-badge {
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 16%, transparent) inset,
+    0 0 26px color-mix(in srgb, var(--accent) 26%, transparent),
+    0 10px 18px color-mix(in srgb, var(--shadow, #000) 40%, transparent);
+  transform: translateY(-1px);
+}
+
+.home-dock-item:hover .home-dock-badge img,
+.home-dock-item:focus-visible .home-dock-badge img {
+  transform: scale(1.06);
+}
+
+.home-dock-item:focus-visible .home-dock-badge {
+  outline: 2px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-dock-badge,
+  .home-dock-badge img {
+    transition: none;
   }
 }
