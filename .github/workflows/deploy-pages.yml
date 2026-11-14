@@ -80,8 +80,8 @@ jobs:
               f"guide_img={sum(1 for _ in Path('data/guide_img').iterdir())}",
               f"title_img={sum(1 for _ in Path('data/title_img').iterdir())}",
               f"title_thumb={sum(1 for _ in Path('data/title_thumb').iterdir())}",
-            )
-            PY
+          )
+          PY
 
       - name: Drop local scrape junk from artifact (do NOT delete image packs)
         run: |
