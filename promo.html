@@ -357,28 +357,28 @@
 
   <aside class="builder" aria-label="Дополнительно">
     <details>
-      <summary>Сделать ссылку на промокод</summary>
-      <p class="hint">Впиши код (и название, если нужно) — получишь готовую ссылку, которую можно отправить людям.</p>
+      <summary>Ссылка на промокод</summary>
+      <p class="hint">Укажите код — и при желании короткое название. Мы соберём ссылку, которую можно сразу отправить.</p>
       <div class="field">
         <label for="mkCode">Код</label>
-        <input id="mkCode" type="text" autocomplete="off" spellcheck="false" placeholder="например ABCD1234…" />
+        <input id="mkCode" type="text" autocomplete="off" spellcheck="false" placeholder="ABCD1234…" />
       </div>
       <div class="field">
-        <label for="mkName">Название (необязательно)</label>
-        <input id="mkName" type="text" autocomplete="off" placeholder="например 1000 особой наживки" />
+        <label for="mkName">Название — по желанию</label>
+        <input id="mkName" type="text" autocomplete="off" placeholder="1000 особой наживки" />
       </div>
       <div class="out-row">
         <div id="mkOut" class="out">—</div>
-        <button type="button" id="mkCopy" class="btn-quiet" disabled>Копировать ссылку</button>
+        <button type="button" id="mkCopy" class="btn-quiet" disabled>Скопировать ссылку</button>
       </div>
     </details>
 
     <details>
       <summary>Информация</summary>
       <div class="how">
-        <p>Человек открывает ссылку — на странице сразу виден промокод и, если вы указали, название.</p>
-        <p>«Скопировать» кладёт код в буфер. «Активировать на parapa.ru» открывает страницу активации в новой вкладке.</p>
-        <p>Коды на сайте не хранятся: всё берётся только из адреса ссылки. Без кода в ссылке поле пустое; без названия — названия просто нет.</p>
+        <p>По ссылке открывается эта страница: сверху — промокод, ниже — название, если вы его добавили.</p>
+        <p>Одним нажатием код копируется. Второй кнопкой — переход на parapa.ru, где его можно активировать.</p>
+        <p>Мы ничего не сохраняем. Весь смысл в самой ссылке: нет кода — пусто, нет названия — его просто не будет.</p>
       </div>
     </details>
   </aside>
@@ -511,7 +511,7 @@
           mkCopy.textContent = "Скопировано";
           mkCopy.classList.add("ok");
           setTimeout(function () {
-            mkCopy.textContent = "Копировать ссылку";
+            mkCopy.textContent = "Скопировать ссылку";
             mkCopy.classList.remove("ok");
           }, 1400);
         } catch (e) {}
