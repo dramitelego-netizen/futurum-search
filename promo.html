@@ -35,6 +35,8 @@
       min-height: 100vh;
       display: grid;
       place-items: center;
+      align-content: center;
+      gap: 0.85rem;
       padding: 1.25rem;
     }
 
@@ -215,8 +217,104 @@
     }
     .status[hidden] { display: none; }
 
+    /* тихий конструктор ссылки — не конкурирует с основным блоком */
+    .builder {
+      position: relative;
+      z-index: 1;
+      width: min(28rem, 100%);
+      color: color-mix(in srgb, var(--mute) 78%, transparent);
+      font-size: 0.82rem;
+      line-height: 1.4;
+    }
+    .builder details {
+      border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+      border-radius: 0.65rem;
+      background: color-mix(in srgb, var(--panel) 55%, transparent);
+      padding: 0.35rem 0.7rem 0.45rem;
+    }
+    .builder summary {
+      cursor: pointer;
+      list-style: none;
+      color: color-mix(in srgb, var(--mute) 85%, transparent);
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      padding: 0.35rem 0;
+      user-select: none;
+    }
+    .builder summary::-webkit-details-marker { display: none; }
+    .builder summary::before {
+      content: "▸ ";
+      opacity: 0.55;
+      font-size: 0.75em;
+    }
+    .builder details[open] summary::before { content: "▾ "; }
+    .builder .hint {
+      margin: 0 0 0.65rem;
+      opacity: 0.9;
+    }
+    .builder label {
+      display: block;
+      margin: 0 0 0.2rem;
+      opacity: 0.75;
+    }
+    .builder .field {
+      margin-bottom: 0.55rem;
+    }
+    .builder input {
+      width: 100%;
+      border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+      border-radius: 0.45rem;
+      background: color-mix(in srgb, var(--panel-solid) 70%, transparent);
+      color: color-mix(in srgb, var(--ink) 82%, var(--mute));
+      font: inherit;
+      font-size: 0.9rem;
+      padding: 0.45rem 0.55rem;
+      outline: none;
+    }
+    .builder input::placeholder {
+      color: color-mix(in srgb, var(--mute) 55%, transparent);
+    }
+    .builder input:focus {
+      border-color: color-mix(in srgb, var(--mute) 45%, var(--line));
+    }
+    .builder .out-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.4rem;
+      align-items: stretch;
+      margin-top: 0.35rem;
+    }
+    .builder .out {
+      min-height: 2.2rem;
+      padding: 0.4rem 0.5rem;
+      border-radius: 0.45rem;
+      border: 1px dashed color-mix(in srgb, var(--line) 80%, transparent);
+      word-break: break-all;
+      color: color-mix(in srgb, var(--ink) 70%, var(--mute));
+      background: transparent;
+    }
+    .builder .btn-quiet {
+      border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+      border-radius: 0.45rem;
+      background: transparent;
+      color: color-mix(in srgb, var(--mute) 95%, var(--ink));
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.4rem 0.65rem;
+      cursor: pointer;
+    }
+    .builder .btn-quiet:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .builder .btn-quiet.ok {
+      color: color-mix(in srgb, var(--accent) 55%, var(--mute));
+    }
+
     @media (max-width: 420px) {
       .actions { grid-template-columns: 1fr; }
+      .builder .out-row { grid-template-columns: 1fr; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -248,6 +346,25 @@
 
     <p id="status" class="status" hidden></p>
   </main>
+
+  <aside class="builder" aria-label="Сборка ссылки">
+    <details>
+      <summary>Собрать ссылку</summary>
+      <p class="hint">Код обязателен. Название — по желанию. Ссылка только из этих полей, на сайте ничего не хранится.</p>
+      <div class="field">
+        <label for="mkCode">Код</label>
+        <input id="mkCode" type="text" autocomplete="off" spellcheck="false" placeholder="например ABCD1234…" />
+      </div>
+      <div class="field">
+        <label for="mkName">Название (необязательно)</label>
+        <input id="mkName" type="text" autocomplete="off" placeholder="например 1000 особой наживки" />
+      </div>
+      <div class="out-row">
+        <div id="mkOut" class="out">—</div>
+        <button type="button" id="mkCopy" class="btn-quiet" disabled>Копировать ссылку</button>
+      </div>
+    </details>
+  </aside>
 
   <script>
     (function () {
@@ -323,6 +440,65 @@
       }
 
       btnCopy.addEventListener("click", copyCode);
+
+      // --- тихий конструктор ссылки ---
+      const mkCode = document.getElementById("mkCode");
+      const mkName = document.getElementById("mkName");
+      const mkOut = document.getElementById("mkOut");
+      const mkCopy = document.getElementById("mkCopy");
+      let builtUrl = "";
+
+      function buildPromoUrl() {
+        const c = String(mkCode.value || "").replace(/\s+/g, "").trim();
+        const n = String(mkName.value || "").trim();
+        if (!c) {
+          builtUrl = "";
+          mkOut.textContent = "—";
+          mkCopy.disabled = true;
+          return;
+        }
+        const u = new URL(location.pathname, location.href);
+        u.search = "";
+        u.hash = "";
+        u.searchParams.set("c", c);
+        if (n) u.searchParams.set("n", n);
+        builtUrl = u.toString();
+        mkOut.textContent = builtUrl;
+        mkCopy.disabled = false;
+      }
+
+      mkCode.addEventListener("input", buildPromoUrl);
+      mkName.addEventListener("input", buildPromoUrl);
+      if (code) {
+        mkCode.value = code;
+        if (name) mkName.value = name;
+        buildPromoUrl();
+      }
+
+      mkCopy.addEventListener("click", async function () {
+        if (!builtUrl) return;
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(builtUrl);
+          } else {
+            const ta = document.createElement("textarea");
+            ta.value = builtUrl;
+            ta.setAttribute("readonly", "");
+            ta.style.position = "fixed";
+            ta.style.left = "-9999px";
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            document.body.removeChild(ta);
+          }
+          mkCopy.textContent = "Скопировано";
+          mkCopy.classList.add("ok");
+          setTimeout(function () {
+            mkCopy.textContent = "Копировать ссылку";
+            mkCopy.classList.remove("ok");
+          }, 1400);
+        } catch (e) {}
+      });
     })();
   </script>
 </body>
