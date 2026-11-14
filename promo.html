@@ -13,8 +13,8 @@
       --ink: #e8eef7;
       --mute: #7d8a9a;
       --line: rgba(232, 238, 247, 0.1);
-      --panel: rgba(14, 18, 26, 0.88);
-      --panel-solid: rgba(10, 13, 18, 0.96);
+      --panel: rgba(14, 18, 26, 0.72);
+      --panel-solid: rgba(10, 13, 18, 0.92);
       --accent: #3dffe0;
       --accent-ink: #041512;
       --accent-dim: rgba(61, 255, 224, 0.14);
@@ -24,7 +24,7 @@
     }
 
     * { box-sizing: border-box; }
-    html, body { margin: 0; height: 100%; }
+    html, body { margin: 0; min-height: 100%; }
     html { background: var(--bg); }
     body {
       font-family: var(--font);
@@ -32,10 +32,10 @@
       letter-spacing: 0.02em;
       color: var(--ink);
       background: transparent;
-      height: 100%;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      place-items: center;
+      padding: 1.25rem;
     }
 
     .atmosphere {
@@ -88,8 +88,8 @@
         linear-gradient(var(--line) 1px, transparent 1px),
         linear-gradient(90deg, var(--line) 1px, transparent 1px);
       background-size: 48px 48px;
-      opacity: 0.18;
-      mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, #000 15%, transparent 75%);
+      opacity: 0.22;
+      mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 20%, transparent 75%);
     }
     .scanlines {
       position: absolute;
@@ -99,7 +99,7 @@
         transparent 0 2px,
         rgba(0, 0, 0, 0.12) 2px 3px
       );
-      opacity: 0.06;
+      opacity: 0.07;
     }
 
     @keyframes atm-wash-drift {
@@ -115,29 +115,23 @@
       to { transform: translate3d(-3%, -2%, 0) scale(1); }
     }
 
-    .top {
+    .card {
       position: relative;
-      z-index: 2;
-      flex: 0 0 42%;
-      min-height: 11rem;
-      max-height: 48%;
-      display: grid;
-      place-items: center;
-      padding: 1rem;
-      border-bottom: 1px solid var(--line);
+      z-index: 1;
+      width: min(28rem, 100%);
       background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      padding: 1.45rem 1.35rem 1.25rem;
+      box-shadow: 0 22px 60px var(--shadow);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
-    }
-
-    .card {
-      width: min(28rem, 100%);
     }
 
     h1 {
       margin: 0 0 1rem;
       font-family: var(--display);
-      font-size: 1.15rem;
+      font-size: 1.2rem;
       font-weight: 800;
       letter-spacing: 0.06em;
       text-transform: uppercase;
@@ -146,12 +140,12 @@
     .code-row {
       display: flex;
       align-items: center;
-      min-height: 3.1rem;
-      padding: 0.7rem 0.85rem;
+      min-height: 3.15rem;
+      padding: 0.75rem 0.9rem;
       border: 1px solid var(--line);
       border-radius: 0.7rem;
-      background: color-mix(in srgb, var(--panel-solid) 85%, transparent);
-      margin-bottom: 0.85rem;
+      background: color-mix(in srgb, var(--panel-solid) 80%, transparent);
+      margin-bottom: 1rem;
       word-break: break-all;
     }
     .code-row.empty { color: var(--mute); }
@@ -161,26 +155,26 @@
     }
     .code {
       font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
-      font-size: 1.05rem;
-      letter-spacing: 0.05em;
+      font-size: 1.08rem;
+      letter-spacing: 0.06em;
       font-weight: 700;
     }
 
     .actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.6rem;
+      gap: 0.65rem;
     }
 
     button, a.btn {
       appearance: none;
       border: 0;
       border-radius: 0.65rem;
-      padding: 0.85rem 0.7rem;
+      padding: 0.88rem 0.75rem;
       font-family: var(--font);
-      font-size: 1rem;
+      font-size: 1.02rem;
       font-weight: 700;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.04em;
       text-align: center;
       text-decoration: none;
       cursor: pointer;
@@ -195,7 +189,7 @@
     .btn-copy {
       background: var(--accent);
       color: var(--accent-ink);
-      box-shadow: 0 0 22px rgba(61, 255, 224, 0.16);
+      box-shadow: 0 0 24px rgba(61, 255, 224, 0.18);
     }
     .btn-copy.ok { background: #9bffe9; }
 
@@ -206,67 +200,13 @@
     }
 
     .status {
-      margin: 0.7rem 0 0;
-      font-size: 0.9rem;
+      margin: 0.85rem 0 0;
+      font-size: 0.95rem;
       color: var(--mute);
     }
     .status[hidden] { display: none; }
 
-    .bottom {
-      position: relative;
-      z-index: 1;
-      flex: 1 1 58%;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      background: #0a0d12;
-    }
-
-    .frame-wrap {
-      position: relative;
-      flex: 1 1 auto;
-      min-height: 0;
-    }
-
-    .frame-wrap iframe {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-      background: #fff;
-      display: none;
-    }
-    .frame-wrap.is-loaded iframe { display: block; }
-
-    .frame-gate {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      padding: 1.5rem;
-      text-align: center;
-      background: color-mix(in srgb, var(--bg) 88%, #122);
-      z-index: 2;
-    }
-    .frame-wrap.is-loaded .frame-gate { display: none; }
-
-    .frame-gate p {
-      margin: 0 0 1rem;
-      color: var(--mute);
-      max-width: 22rem;
-      line-height: 1.35;
-    }
-
-    .btn-load {
-      background: var(--accent);
-      color: var(--accent-ink);
-      padding: 0.9rem 1.2rem;
-      box-shadow: 0 0 24px rgba(61, 255, 224, 0.18);
-    }
-
-    @media (max-width: 520px) {
-      .top { flex-basis: auto; max-height: none; }
+    @media (max-width: 420px) {
       .actions { grid-template-columns: 1fr; }
     }
 
@@ -284,31 +224,20 @@
     <div class="scanlines"></div>
   </div>
 
-  <header class="top">
-    <div class="card">
-      <h1>Промокод</h1>
-      <div id="codeRow" class="code-row empty" aria-live="polite">
-        <span id="codeText" class="code">—</span>
-      </div>
-      <div class="actions">
-        <button type="button" id="btnCopy" class="btn-copy" disabled>Скопировать</button>
-        <a id="btnGame" class="btn btn-game" href="https://parapa.ru/account/promo/" target="_blank" rel="noopener noreferrer">В игру</a>
-      </div>
-      <p id="status" class="status" hidden></p>
-    </div>
-  </header>
+  <main class="card">
+    <h1>Промокод</h1>
 
-  <section class="bottom" aria-label="Сайт активации">
-    <div id="frameWrap" class="frame-wrap">
-      <div class="frame-gate">
-        <div>
-          <p>Нижняя половина — сайт игры. Загрузка только по кнопке, чтобы не ловить 429.</p>
-          <button type="button" id="btnLoad" class="btn-load">Показать сайт активации</button>
-        </div>
-      </div>
-      <iframe id="gameFrame" title="ParaPA промо" src="about:blank"></iframe>
+    <div id="codeRow" class="code-row empty" aria-live="polite">
+      <span id="codeText" class="code">—</span>
     </div>
-  </section>
+
+    <div class="actions">
+      <button type="button" id="btnCopy" class="btn-copy" disabled>Скопировать</button>
+      <a id="btnGame" class="btn btn-game" href="https://parapa.ru/account/promo/" target="_blank" rel="noopener noreferrer">В игру</a>
+    </div>
+
+    <p id="status" class="status" hidden></p>
+  </main>
 
   <script>
     (function () {
@@ -326,9 +255,6 @@
       const btnCopy = document.getElementById("btnCopy");
       const btnGame = document.getElementById("btnGame");
       const status = document.getElementById("status");
-      const frameWrap = document.getElementById("frameWrap");
-      const frame = document.getElementById("gameFrame");
-      const btnLoad = document.getElementById("btnLoad");
 
       btnGame.href = GAME_URL;
 
@@ -338,11 +264,6 @@
         codeText.textContent = code;
         btnCopy.disabled = false;
       }
-
-      btnLoad.addEventListener("click", function () {
-        frame.src = GAME_URL;
-        frameWrap.classList.add("is-loaded");
-      });
 
       async function copyCode() {
         if (!code) return;
