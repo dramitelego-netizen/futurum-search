@@ -129,13 +129,22 @@
     }
 
     h1 {
-      margin: 0 0 1rem;
+      margin: 0 0 0.35rem;
       font-family: var(--display);
       font-size: 1.2rem;
       font-weight: 800;
       letter-spacing: 0.06em;
       text-transform: uppercase;
     }
+
+    .promo-name {
+      margin: 0 0 1rem;
+      color: var(--mute);
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+    .promo-name[hidden] { display: none; }
 
     .code-row {
       display: flex;
@@ -226,6 +235,7 @@
 
   <main class="card">
     <h1>Промокод</h1>
+    <p id="promoName" class="promo-name" hidden></p>
 
     <div id="codeRow" class="code-row empty" aria-live="polite">
       <span id="codeText" class="code">—</span>
@@ -250,13 +260,32 @@
       }
       code = code.replace(/\s+/g, "");
 
+      // Название промо из ссылки: ?n= / ?name= / ?t= / ?title=
+      let name = (
+        params.get("n") ||
+        params.get("name") ||
+        params.get("t") ||
+        params.get("title") ||
+        ""
+      ).trim();
+      try {
+        name = decodeURIComponent(name.replace(/\+/g, " "));
+      } catch (e) {}
+
       const codeRow = document.getElementById("codeRow");
       const codeText = document.getElementById("codeText");
+      const promoName = document.getElementById("promoName");
       const btnCopy = document.getElementById("btnCopy");
       const btnGame = document.getElementById("btnGame");
       const status = document.getElementById("status");
 
       btnGame.href = GAME_URL;
+
+      if (name) {
+        promoName.hidden = false;
+        promoName.textContent = name;
+        document.title = name + " · Промокод";
+      }
 
       if (code) {
         codeRow.classList.remove("empty");
