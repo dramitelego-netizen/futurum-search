@@ -1,4 +1,5 @@
-# GitHub Pages: data/img + title_img + guide_img + look_img (HQ для карточки/зума).
+# GitHub Pages: data/img + title_img + title_thumb + guide_img + look_img.
+# title_thumb — лёгкие превью в списке; title_img — HQ в карточке.
 # Полный data/wiki_img (~6ГБ) в git не храним, но если папка есть в артефакте — НЕ удаляем.
 name: Deploy Pages
 
@@ -31,6 +32,7 @@ jobs:
           set -e
           test -d data/img
           test -d data/title_img
+          test -d data/title_thumb
           test -d data/guide_img
           test -d data/look_img
           python3 - <<'PY'
@@ -77,8 +79,9 @@ jobs:
               f"shop={len(shop.get('items') or [])}",
               f"guide_img={sum(1 for _ in Path('data/guide_img').iterdir())}",
               f"title_img={sum(1 for _ in Path('data/title_img').iterdir())}",
-          )
-          PY
+              f"title_thumb={sum(1 for _ in Path('data/title_thumb').iterdir())}",
+            )
+            PY
 
       - name: Drop local scrape junk from artifact (do NOT delete image packs)
         run: |
@@ -87,7 +90,7 @@ jobs:
           rm -f data/watch_catalog.log data/scrape.log || true
           rm -f data/_wiki_page_*.html data/_wiki_*.html data/_gift_*.html 2>/dev/null || true
           echo "Keeping image packs:"
-          du -sh data/img data/title_img data/guide_img data/look_img data/wiki_img 2>/dev/null || true
+          du -sh data/img data/title_img data/title_thumb data/guide_img data/look_img data/wiki_img 2>/dev/null || true
           du -sh . || true
 
       - name: Setup Pages

@@ -1359,14 +1359,27 @@ function mapWikiImgToDeployPack(rel, { hq = false } = {}) {
   return `data/guide_img/${base}`;
 }
 
+/** title_img/foo.png → список: title_thumb/foo.webp; карточка: title_img (полное качество) */
+function mapTitleImgPack(rel, { hq = false } = {}) {
+  const m = String(rel || "").match(/^data\/title_img\/(.+)$/i);
+  if (!m) return rel;
+  const base = m[1].split("/").pop() || "";
+  if (!base) return rel;
+  if (hq) return `data/title_img/${base}`;
+  const stem = base.replace(/\.[^.]+$/, "");
+  return `data/title_thumb/${stem}.webp`;
+}
+
 function localImgPath(path, opts) {
   const p = String(path || "").trim();
   if (!p) return "";
   let rel = p.replace(/^\.\//, "").replace(/^\/+/, "");
-  // Список → guide_img; карточка/зум → look_img на Pages / wiki_img локально
+  // Список → guide_img / title_thumb; карточка/зум → look_img / title_img
   const hq = Boolean(opts && opts.hq);
   if (/^data\/wiki_img\//i.test(rel)) {
     rel = mapWikiImgToDeployPack(rel, { hq });
+  } else if (/^data\/title_img\//i.test(rel)) {
+    rel = mapTitleImgPack(rel, { hq });
   } else if (hq && /^data\/guide_img\//i.test(rel) && isSlimPagesHost()) {
     // если в данных уже guide_img, для HQ берём look_img/*.webp
     const base = rel.split("/").pop() || "";
@@ -1386,10 +1399,16 @@ function localImgPath(path, opts) {
 /** Выбрать src + запасной путь (для onerror). Картинки только локальные packs. */
 function pickImgSources(localPath, remoteUrl, opts) {
   const hq = Boolean(opts && opts.hq);
+  const rawLocal = String(localPath || "").replace(/^\.\//, "").replace(/^\/+/, "");
   const local = localImgPath(localPath, { hq });
   const remote = absRemoteUrl(remoteUrl); // parapa → ""
   const light = hq ? localImgPath(localPath) : "";
-  const lightFb = light && local && light !== local ? light : "";
+  let lightFb = light && local && light !== local ? light : "";
+  // список титулов: лёгкий webp, запасной — полный title_img
+  if (!hq && /^data\/title_img\//i.test(rawLocal)) {
+    const full = localImgPath(localPath, { hq: true });
+    if (local && full && local !== full) lightFb = full;
+  }
   // Даже в режиме «вики» не уходим на parapa: remote почти всегда пуст.
   if (preferRemoteImages() && remote) {
     return {
@@ -5838,8 +5857,8 @@ function renderDetail(it) {
   const stats = detailStatsHtml(it, { isTitle: titleItem, isAch });
 
   if (titleItem) {
-    // свой скрин 800×600; общего значка в карточке нет, пока есть своя картинка
-    const ownShot = itemImgPair(it);
+    // инфоблок/карточка — полное качество title_img; список — title_thumb
+    const ownShot = itemImgPair(it, { hq: true });
     const shotPair = ownShot.src ? ownShot : { src: titleBadgeSrc(), fb: "" };
     const topImg = shotPair.src
       ? zoomImgHtml(shotPair.src, it.name, "wiki-look-img", shotPair.fb)
