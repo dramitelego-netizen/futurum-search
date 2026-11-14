@@ -8,7 +8,7 @@ const IMG_SRC_MODES = ["local", "remote"];
 const IMG_SRC_AUTO_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 /** Маленькая иконка, есть и на гиде, и на вики — для замера скорости */
 const IMG_SRC_PROBE = {
-  local: "data/guide_img/33fd5835c73f65abdcf02ad4e97823f2.png",
+  local: "data/guide_img/33fd5835c73f65abdcf02ad4e97823f2.webp",
   remote: "https://parapa.ru/wiki/images/b/b5/33fd5835c73f65abdcf02ad4e97823f2.png",
 };
 const BG_KEY = "futurum_bg";
@@ -1343,7 +1343,7 @@ function absRemoteUrl(url) {
   return u;
 }
 
-/** wiki_img/foo.png → look_img/foo.webp (или .gif), иначе guide_img */
+/** wiki_img/foo.png → список: guide_img/foo.webp; карточка: look_img (webp/gif) / wiki_img */
 function mapWikiImgToDeployPack(rel, { hq = false } = {}) {
   const m = String(rel || "").match(/^data\/wiki_img\/(.+)$/i);
   if (!m) return rel;
@@ -1352,11 +1352,14 @@ function mapWikiImgToDeployPack(rel, { hq = false } = {}) {
   const stem = base.replace(/\.[^.]+$/, "");
   const ext = (base.match(/\.[^.]+$/) || [""])[0].toLowerCase();
   if (hq) {
-    // карточка/зум: look_img (деплойный HQ WebP), локально — оригинал wiki_img
+    // карточка/зум: look_img (деплойный HQ), локально — оригинал wiki_img
     if (!isSlimPagesHost()) return `data/wiki_img/${base}`;
+    // эмоции: в паке может остаться анимированный .gif
+    if (ext === ".gif") return `data/look_img/${stem}.gif`;
     return `data/look_img/${stem}.webp`;
   }
-  return `data/guide_img/${base}`;
+  // список: всегда лёгкий статичный webp (в т.ч. вместо тяжёлых GIF)
+  return `data/guide_img/${stem}.webp`;
 }
 
 /** title_img/foo.png → список: title_thumb/foo.webp; карточка: title_img (полное качество) */
@@ -1381,10 +1384,11 @@ function localImgPath(path, opts) {
   } else if (/^data\/title_img\//i.test(rel)) {
     rel = mapTitleImgPack(rel, { hq });
   } else if (hq && /^data\/guide_img\//i.test(rel) && isSlimPagesHost()) {
-    // если в данных уже guide_img, для HQ берём look_img/*.webp
+    // если в данных уже guide_img, для HQ берём look_img
     const base = rel.split("/").pop() || "";
     const stem = base.replace(/\.[^.]+$/, "");
-    rel = `data/look_img/${stem}.webp`;
+    const ext = (base.match(/\.[^.]+$/) || [""])[0].toLowerCase();
+    rel = ext === ".gif" ? `data/look_img/${stem}.gif` : `data/look_img/${stem}.webp`;
   }
   if (isSlimPagesHost() && /^data\//i.test(rel)) {
     const enc = rel
@@ -1408,6 +1412,16 @@ function pickImgSources(localPath, remoteUrl, opts) {
   if (!hq && /^data\/title_img\//i.test(rawLocal)) {
     const full = localImgPath(localPath, { hq: true });
     if (local && full && local !== full) lightFb = full;
+  }
+  // список вики: лёгкий guide webp, запасной — HQ look/wiki
+  if (!hq && /^data\/wiki_img\//i.test(rawLocal)) {
+    const full = localImgPath(localPath, { hq: true });
+    if (local && full && local !== full) lightFb = full;
+  }
+  // карточка GIF: если look/*.gif нет — запасной look/*.webp
+  if (hq && local && /\.gif(?:\?|$)/i.test(local)) {
+    const webpAlt = local.replace(/\.gif(\?|$)/i, ".webp$1");
+    if (webpAlt !== local) lightFb = lightFb || webpAlt;
   }
   // Даже в режиме «вики» не уходим на parapa: remote почти всегда пуст.
   if (preferRemoteImages() && remote) {

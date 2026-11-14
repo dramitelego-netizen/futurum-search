@@ -1,5 +1,5 @@
 # GitHub Pages: data/img + title_img + title_thumb + guide_img + look_img.
-# title_thumb — лёгкие превью в списке; title_img — HQ в карточке.
+# title_thumb / guide_img — лёгкие webp в списке; title_img / look_img — HQ в карточке.
 # Полный data/wiki_img (~6ГБ) в git не храним, но если папка есть в артефакте — НЕ удаляем.
 name: Deploy Pages
 
@@ -66,8 +66,8 @@ jobs:
               if not img:
                   miss_guide.append(it.get("name"))
                   continue
-              base = Path(img).name
-              guide = Path("data/guide_img") / base
+              stem = Path(img).stem
+              guide = Path("data/guide_img") / f"{stem}.webp"
               if not guide.is_file():
                   miss_guide.append(f"{it.get('name')}: {guide}")
           if miss_guide:

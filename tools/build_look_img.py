@@ -71,22 +71,20 @@ def save_look(src: Path, dest: Path) -> int:
 
 
 def save_guide_thumb(src: Path, dest: Path) -> None:
+    """List preview: always static WebP (even for GIF sources)."""
+    if dest.suffix.lower() != ".webp":
+        dest = dest.with_suffix(".webp")
     if dest.is_file():
         return
     GUIDE.mkdir(parents=True, exist_ok=True)
-    ext = src.suffix.lower()
-    if ext == ".gif" and src.stat().st_size <= 400_000:
-        dest.write_bytes(src.read_bytes())
-        return
     im = Image.open(src)
     if getattr(im, "n_frames", 1) > 1:
         im.seek(0)
     im = im.convert("RGBA")
     im.thumbnail((256, 256), Image.Resampling.LANCZOS)
-    if ext == ".gif":
-        im.convert("P", palette=Image.ADAPTIVE).save(dest, "GIF", optimize=True)
-    else:
-        im.save(dest, "PNG", optimize=True)
+    if im.getextrema()[3][0] >= 250:
+        im = im.convert("RGB")
+    im.save(dest, "WEBP", quality=72, method=4)
 
 
 def main() -> int:
@@ -108,7 +106,7 @@ def main() -> int:
             else:
                 bytes_out += save_look(src, dest)
                 wrote += 1
-            guide = GUIDE / name
+            guide = GUIDE / f"{src.stem}.webp"
             if not guide.is_file():
                 save_guide_thumb(src, guide)
                 guide_added += 1
