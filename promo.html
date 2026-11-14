@@ -217,7 +217,7 @@
     }
     .status[hidden] { display: none; }
 
-    /* тихий конструктор ссылки — не конкурирует с основным блоком */
+    /* тихие доп. блоки — не конкурируют с основным */
     .builder {
       position: relative;
       z-index: 1;
@@ -225,12 +225,20 @@
       color: color-mix(in srgb, var(--mute) 78%, transparent);
       font-size: 0.82rem;
       line-height: 1.4;
+      display: grid;
+      gap: 0.45rem;
     }
     .builder details {
       border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
       border-radius: 0.65rem;
       background: color-mix(in srgb, var(--panel) 55%, transparent);
       padding: 0.35rem 0.7rem 0.45rem;
+    }
+    .builder .how p {
+      margin: 0 0 0.45rem;
+    }
+    .builder .how p:last-child {
+      margin-bottom: 0.15rem;
     }
     .builder summary {
       cursor: pointer;
@@ -347,7 +355,7 @@
     <p id="status" class="status" hidden></p>
   </main>
 
-  <aside class="builder" aria-label="Сборка ссылки">
+  <aside class="builder" aria-label="Дополнительно">
     <details>
       <summary>Сделать ссылку на промокод</summary>
       <p class="hint">Впиши код (и название, если нужно) — получишь готовую ссылку, которую можно отправить людям.</p>
@@ -362,6 +370,15 @@
       <div class="out-row">
         <div id="mkOut" class="out">—</div>
         <button type="button" id="mkCopy" class="btn-quiet" disabled>Копировать ссылку</button>
+      </div>
+    </details>
+
+    <details>
+      <summary>Как это работает</summary>
+      <div class="how">
+        <p>Человек открывает ссылку — на странице сразу виден промокод и, если вы указали, название.</p>
+        <p>«Скопировать» кладёт код в буфер. «Активировать на parapa.ru» открывает страницу активации в новой вкладке.</p>
+        <p>Коды на сайте не хранятся: всё берётся только из адреса ссылки. Без кода в ссылке поле пустое; без названия — названия просто нет.</p>
       </div>
     </details>
   </aside>
