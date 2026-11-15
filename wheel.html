@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Значки на колесе | FUTURUM Guide</title>
+  <title>Значки на колесе | FUTURUM</title>
   <meta name="theme-color" content="#07090d" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <script>
@@ -632,7 +632,7 @@
   <div class="wheel-shell">
     <header class="wheel-top">
       <div>
-        <p class="wheel-brand">FUTURUM · Guide</p>
+        <p class="wheel-brand">FUTURUM</p>
         <h1 id="pageTitle">Значки на колесе</h1>
         <p class="wheel-meta" id="pageMeta"></p>
       </div>
@@ -662,6 +662,42 @@
           .replace(/[«»“”]/g, '"')
           .replace(/\s+/g, " ")
           .trim();
+      }
+
+      // Починка «кракозябр» в ?n= (UTF-8 ошибочно прочитали как windows-1251)
+      function encodeWindows1251(str) {
+        const bytes = new Uint8Array(256);
+        for (let i = 0; i < 256; i++) bytes[i] = i;
+        const decoded = new TextDecoder("windows-1251").decode(bytes);
+        const rev = new Map();
+        for (let i = 0; i < 256; i++) rev.set(decoded[i], i);
+        const out = new Uint8Array(str.length);
+        for (let i = 0; i < str.length; i++) {
+          const ch = str[i];
+          const code = ch.charCodeAt(0);
+          if (code < 128) {
+            out[i] = code;
+            continue;
+          }
+          if (!rev.has(ch)) throw new Error("cp1251");
+          out[i] = rev.get(ch);
+        }
+        return out;
+      }
+      function looksLikeMojibake(s) {
+        return ((s.match(/Р[^\s]/g) || []).length >= 2) || ((s.match(/С[^\s]/g) || []).length >= 2);
+      }
+      function fixMojibake(s) {
+        if (!s || !looksLikeMojibake(s)) return s;
+        try {
+          const fixed = new TextDecoder("utf-8").decode(encodeWindows1251(s));
+          if (!fixed || fixed.indexOf("\uFFFD") !== -1) return s;
+          const good = (fixed.match(/[а-яА-ЯёЁ]/g) || []).length;
+          const bad = (s.match(/[а-яА-ЯёЁ]/g) || []).length;
+          if (good >= 3 && !looksLikeMojibake(fixed)) return fixed;
+          if (good > bad) return fixed;
+        } catch (e) {}
+        return s;
       }
 
       function parseIds(raw) {
@@ -877,7 +913,7 @@
         const params = new URLSearchParams(location.search);
         const resolved = resolveReport(params);
         const report = resolved.report || [];
-        const name = (params.get("n") || "").trim();
+        const name = fixMojibake((params.get("n") || "").trim());
         const date = (params.get("d") || "").trim();
         document.getElementById("pageTitle").textContent = name || "Значки на колесе";
 
