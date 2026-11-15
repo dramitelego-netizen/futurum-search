@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark" data-bg="minimal">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Значки на колесе | FUTURUM Guide</title>
+  <meta name="theme-color" content="#07090d" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <script>
+    (() => {
+      try {
+        const themes = ["dark", "light", "gray"];
+        const t = localStorage.getItem("futurum_theme");
+        document.documentElement.setAttribute("data-theme", themes.includes(t) ? t : "dark");
+      } catch {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=190" />
+  <style>
+    /* Один адаптивный V1 — ПК → планшет → телефон */
+    :root {
+      --panel-max: 1120px;
+      --board-w: 280px;
+      --tile-h: 76px;
+      --tile-w: 220px;
+      --row-h: 52px;
+      --thumb-head: 64px;
+      --thumb-tile: 56px;
+      --thumb-item: 40px;
+    }
+
+    html { overflow-x: clip; }
+    body.wheel-page {
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 0 0 max(1.25rem, env(safe-area-inset-bottom));
+      overflow-x: clip;
+    }
+
+    .wheel-shell {
+      position: relative;
+      z-index: 1;
+      width: min(var(--panel-max), calc(100% - 1.5rem));
+      margin: 0 auto;
+      padding-top: 1rem;
+      display: grid;
+      gap: 0.85rem;
+      min-width: 0;
+    }
+
+    .wheel-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 0.7rem 1rem;
+      min-width: 0;
+    }
+    .wheel-brand {
+      margin: 0 0 0.2rem;
+      font-family: var(--display);
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+    .wheel-top h1 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(1.05rem, 3vw, 1.35rem);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+    .wheel-meta {
+      margin: 0.3rem 0 0;
+      color: var(--mute);
+      font-weight: 600;
+      font-size: 0.92rem;
+    }
+    .wheel-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .wheel-actions a,
+    .wheel-actions button {
+      appearance: none;
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      color: var(--accent);
+      font: inherit;
+      font-weight: 700;
+      font-size: 0.86rem;
+      padding: 0.45rem 0.75rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      cursor: pointer;
+      min-height: 44px;
+      display: inline-grid;
+      place-items: center;
+    }
+
+    .panel {
+      display: grid;
+      grid-template-columns: var(--board-w) minmax(0, 1fr);
+      height: min(640px, calc(100dvh - 8rem));
+      min-height: 28rem;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      background:
+        linear-gradient(165deg, color-mix(in srgb, var(--accent) 7%, transparent), transparent 55%),
+        color-mix(in srgb, var(--panel-solid) 92%, transparent);
+      box-shadow: 0 18px 40px var(--shadow);
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .board {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      padding: 16px;
+      overflow: auto;
+      border-right: 1px solid var(--line);
+      min-width: 0;
+      min-height: 0;
+      scrollbar-width: thin;
+      scrollbar-color: color-mix(in srgb, var(--mute) 35%, transparent) transparent;
+    }
+    .board::-webkit-scrollbar { width: 6px; height: 6px; }
+    .board::-webkit-scrollbar-thumb {
+      background: color-mix(in srgb, var(--mute) 35%, transparent);
+      border-radius: 99px;
+    }
+
+    .tile {
+      appearance: none;
+      width: 100%;
+      height: var(--tile-h);
+      display: grid;
+      grid-template-columns: var(--thumb-tile) minmax(0, 1fr);
+      column-gap: 12px;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--panel) 50%, transparent);
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+      transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+    }
+    .tile:hover {
+      border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+    }
+    .tile.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 45%, transparent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+    .tile .meta {
+      min-width: 0;
+      max-width: 100%;
+      display: grid;
+      gap: 6px;
+      justify-items: start;
+    }
+    .tile .tname {
+      margin: 0;
+      font-size: 0.92rem;
+      font-weight: 700;
+      line-height: 1.15;
+      max-width: 100%;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      word-break: break-word;
+    }
+
+    .chip {
+      height: 22px;
+      display: inline-grid;
+      place-items: center;
+      padding: 0 8px;
+      width: max-content;
+      max-width: 100%;
+      font-family: var(--display);
+      font-size: 0.62rem;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      border: 1px solid color-mix(in srgb, var(--accent) 42%, transparent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      border-radius: 4px;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+
+    .thumb {
+      width: var(--thumb-tile);
+      height: var(--thumb-tile);
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #05070a;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .thumb.sm {
+      width: var(--thumb-item);
+      height: var(--thumb-item);
+      border-radius: 6px;
+    }
+    .thumb.lg {
+      width: var(--thumb-head);
+      height: var(--thumb-head);
+    }
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .thumb.empty::after {
+      content: "★";
+      color: var(--mute);
+    }
+
+    .sheet {
+      min-width: 0;
+      min-height: 0;
+      max-width: 100%;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 14px;
+      padding: 18px 20px;
+      overflow: hidden;
+    }
+    .sheet-head {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      column-gap: 12px;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+      min-width: 0;
+    }
+    .sheet-head .head-text {
+      min-width: 0;
+      display: grid;
+      gap: 6px;
+    }
+    .sheet-head h2 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(1.1rem, 1.8vw, 1.55rem);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      line-height: 1.15;
+      max-width: 100%;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      word-break: break-word;
+    }
+
+    .cols {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 12px 16px;
+      min-height: 0;
+      min-width: 0;
+      overflow: auto;
+      align-content: start;
+      scrollbar-width: thin;
+    }
+    .col {
+      display: grid;
+      gap: 8px;
+      align-content: start;
+      min-width: 0;
+      max-width: 100%;
+    }
+    .glabel {
+      margin: 0;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      font-family: var(--display);
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .glabel.on { color: var(--accent); }
+    .glabel.off { color: var(--mute); }
+
+    .item {
+      display: grid;
+      grid-template-columns: var(--thumb-item) minmax(0, 1fr);
+      column-gap: 12px;
+      align-items: center;
+      height: var(--row-h);
+      min-height: 44px;
+      padding: 0 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      text-decoration: none;
+      color: inherit;
+      background: color-mix(in srgb, var(--panel) 35%, transparent);
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    .item.on {
+      border-color: color-mix(in srgb, var(--accent) 38%, var(--line));
+      background: color-mix(in srgb, var(--accent) 8%, transparent);
+    }
+    .item.off { opacity: 0.72; }
+    .item .name {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1.2;
+      max-width: 100%;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      word-break: break-word;
+    }
+    .mute {
+      margin: 0;
+      color: var(--mute);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .empty {
+      padding: 2rem 1rem;
+      text-align: center;
+      color: var(--mute);
+      font-weight: 600;
+    }
+
+    /* —— Заглушка без ?i= —— */
+    .panel.is-wait {
+      grid-template-columns: minmax(0, 1fr);
+      height: auto;
+      min-height: min(520px, calc(100dvh - 8rem));
+      place-items: stretch;
+    }
+    .wait {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 1rem;
+      padding: 1.25rem 1.35rem 1.5rem;
+      min-width: 0;
+    }
+    .wait-hero {
+      display: grid;
+      gap: 0.55rem;
+      justify-items: start;
+      max-width: 36rem;
+    }
+    .wait-kicker {
+      margin: 0;
+      font-family: var(--display);
+      font-size: 0.62rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .wait-hero h2 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(1.15rem, 2.4vw, 1.55rem);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+    .wait-hero p {
+      margin: 0;
+      color: var(--mute);
+      font-weight: 600;
+      font-size: 0.98rem;
+      line-height: 1.45;
+    }
+    .wait-stage {
+      display: grid;
+      grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+      gap: 14px;
+      min-height: 0;
+      min-width: 0;
+    }
+    .wait-board,
+    .wait-sheet {
+      border: 1px dashed color-mix(in srgb, var(--line) 80%, var(--accent));
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--panel) 40%, transparent);
+      min-width: 0;
+      overflow: hidden;
+    }
+    .wait-board {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      align-content: start;
+    }
+    .wait-sheet {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+      align-content: start;
+    }
+    .ghost-tile,
+    .ghost-row,
+    .ghost-head {
+      display: grid;
+      align-items: center;
+      border-radius: 12px;
+      border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+      background: color-mix(in srgb, var(--panel) 55%, transparent);
+      position: relative;
+      overflow: hidden;
+    }
+    .ghost-tile {
+      grid-template-columns: 52px minmax(0, 1fr);
+      gap: 10px;
+      height: 70px;
+      padding: 8px;
+    }
+    .ghost-head {
+      grid-template-columns: 56px minmax(0, 1fr) 64px;
+      gap: 12px;
+      height: 72px;
+      padding: 10px;
+    }
+    .ghost-row {
+      grid-template-columns: 40px minmax(0, 1fr);
+      gap: 10px;
+      height: 48px;
+      padding: 0 8px;
+    }
+    .ghost-orb {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--accent) 28%, transparent), transparent 58%),
+        color-mix(in srgb, var(--mute) 18%, transparent);
+    }
+    .ghost-orb.has-img {
+      background: #05070a;
+      overflow: hidden;
+    }
+    .ghost-orb.has-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0.35;
+      filter: grayscale(0.4);
+      display: block;
+    }
+    .ghost-lines {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+    .ghost-line {
+      height: 10px;
+      border-radius: 99px;
+      background: color-mix(in srgb, var(--mute) 22%, transparent);
+      max-width: 100%;
+    }
+    .ghost-line.short { width: 42%; }
+    .ghost-line.mid { width: 68%; }
+    .ghost-line.long { width: 88%; }
+    .ghost-chip {
+      height: 22px;
+      width: 56px;
+      border-radius: 4px;
+      border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+      background: color-mix(in srgb, var(--accent) 8%, transparent);
+    }
+    .ghost-tile::after,
+    .ghost-row::after,
+    .ghost-head::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        105deg,
+        transparent 0%,
+        color-mix(in srgb, #fff 7%, transparent) 45%,
+        transparent 70%
+      );
+      transform: translateX(-120%);
+      animation: wait-shimmer 2.4s ease-in-out infinite;
+    }
+    .ghost-tile:nth-child(2)::after { animation-delay: 0.25s; }
+    .ghost-tile:nth-child(3)::after { animation-delay: 0.5s; }
+    .ghost-row:nth-child(2)::after { animation-delay: 0.2s; }
+    .ghost-row:nth-child(3)::after { animation-delay: 0.4s; }
+    @keyframes wait-shimmer {
+      100% { transform: translateX(120%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ghost-tile::after,
+      .ghost-row::after,
+      .ghost-head::after { animation: none; }
+    }
+    @media (max-width: 899px) {
+      .wait-stage {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .wait-board {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 8px;
+      }
+      .ghost-tile {
+        flex: 0 0 188px;
+        width: 188px;
+      }
+    }
+    @media (max-width: 599px) {
+      .wait { padding: 1rem 1rem 1.2rem; }
+      .ghost-head { grid-template-columns: 48px minmax(0, 1fr); }
+      .ghost-head .ghost-chip { display: none; }
+    }
+
+    /* —— Планшет: значки сверху горизонтально, имя+chip остаются —— */
+    @media (max-width: 899px) {
+      .wheel-shell {
+        width: calc(100% - 1rem);
+      }
+      .panel {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        height: auto;
+        min-height: 0;
+        overflow: visible;
+      }
+      .board {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        gap: 8px;
+        padding: 12px;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        overflow-x: auto;
+        overflow-y: hidden;
+        overscroll-behavior-x: contain;
+        max-width: 100%;
+        -webkit-overflow-scrolling: touch;
+      }
+      .tile {
+        flex: 0 0 var(--tile-w);
+        width: var(--tile-w);
+      }
+      .sheet {
+        overflow: visible;
+      }
+      .cols {
+        overflow: visible;
+      }
+    }
+
+    /* —— Телефон: одна колонка предметов, компактный заголовок —— */
+    @media (max-width: 599px) {
+      :root {
+        --tile-w: 188px;
+        --thumb-head: 56px;
+      }
+      .wheel-shell {
+        width: calc(100% - 0.75rem);
+        padding-top: 0.75rem;
+        gap: 0.7rem;
+      }
+      .panel {
+        border-radius: 16px;
+      }
+      .sheet {
+        padding: 14px 14px 16px;
+      }
+      .sheet-head {
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: start;
+      }
+      .sheet-head .chip-desk { display: none; }
+      .sheet-head .chip-mob { display: inline-grid; }
+      .cols {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+      }
+      .wheel-actions a,
+      .wheel-actions button {
+        font-size: 0.82rem;
+        padding: 0.4rem 0.65rem;
+      }
+    }
+
+    @media (min-width: 600px) {
+      .sheet-head .chip-mob { display: none; }
+    }
+  </style>
+</head>
+<body class="guide-page wheel-page">
+  <div class="atmosphere" aria-hidden="true">
+    <div class="atm-wash"></div>
+    <div class="atm-flow"></div>
+    <div class="atm-flow atm-flow-b"></div>
+    <div class="grid"></div>
+    <div class="scanlines"></div>
+  </div>
+
+  <div class="wheel-shell">
+    <header class="wheel-top">
+      <div>
+        <p class="wheel-brand">FUTURUM · Guide</p>
+        <h1 id="pageTitle">Значки на колесе</h1>
+        <p class="wheel-meta" id="pageMeta"></p>
+      </div>
+      <div class="wheel-actions">
+        <a href="./titles.html">Гид</a>
+        <a href="./index.html">Домой</a>
+        <button type="button" id="themeToggle">Тема</button>
+      </div>
+    </header>
+
+    <div class="panel" id="panel"></div>
+  </div>
+
+  <script src="./wheel-data.js"></script>
+  <script>
+    (function () {
+      const GUIDE = new URL("./titles.html", location.href).href;
+      const snap = window.WHEEL_SNAPSHOT || { report: [], title: "Значки на колесе" };
+      const ACH_ITEMS = window.ACH_ITEMS || [];
+      const ACH_CATALOG = window.ACH_CATALOG || [];
+      let active = 0;
+
+      function norm(s) {
+        return String(s || "")
+          .toLowerCase()
+          .replace(/ё/g, "е")
+          .replace(/[«»“”]/g, '"')
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+
+      function parseIds(raw) {
+        const out = [];
+        const seen = new Set();
+        String(raw || "")
+          .split(/[.,\s]+/)
+          .forEach((part) => {
+            const n = parseInt(part, 10);
+            if (!n || n < 1 || seen.has(n)) return;
+            seen.add(n);
+            out.push(n);
+          });
+        return out;
+      }
+
+      function sortReport(list) {
+        return list.slice().sort((a, b) => {
+          const ao = (a.items || []).filter((x) => x.on_wheel).length;
+          const bo = (b.items || []).filter((x) => x.on_wheel).length;
+          return bo - ao || String(a.badge).localeCompare(String(b.badge), "ru");
+        });
+      }
+
+      /** Собрать отчёт из ?i= — страница знает каталог, ссылка несёт только id на колесе. */
+      function reportFromIds(ids) {
+        const byId = new Map(ACH_ITEMS.map((it) => [it.id, it]));
+        const onNames = new Set();
+        const touchBadges = new Set();
+        ids.forEach((id) => {
+          const it = byId.get(id);
+          if (!it) return;
+          onNames.add(norm(it.name));
+          (it.badges || []).forEach((b) => touchBadges.add(b));
+        });
+        if (!onNames.size) return [];
+
+        const catalogByBadge = new Map(ACH_CATALOG.map((a) => [a.badge, a]));
+        const report = [];
+        touchBadges.forEach((badge) => {
+          const ach = catalogByBadge.get(badge);
+          const baseItems = ach
+            ? (ach.items || []).map((x) => ({
+                name: x.name,
+                thumb: x.thumb || "",
+              }))
+            : [];
+          const seen = new Set(baseItems.map((x) => norm(x.name)));
+          ACH_ITEMS.forEach((it) => {
+            if (!(it.badges || []).includes(badge)) return;
+            const k = norm(it.name);
+            if (seen.has(k)) return;
+            seen.add(k);
+            baseItems.push({ name: it.name, thumb: it.thumb || "" });
+          });
+          const items = baseItems.map((x) => ({
+            name: x.name,
+            thumb: x.thumb,
+            on_wheel: onNames.has(norm(x.name)),
+          }));
+          if (!items.some((x) => x.on_wheel)) return;
+          report.push({
+            badge,
+            badgeThumb: (ach && ach.badgeThumb) || "",
+            items,
+          });
+        });
+        return sortReport(report);
+      }
+
+      function resolveReport(params) {
+        const ids = parseIds(params.get("i"));
+        if (ids.length) return { mode: "live", report: reportFromIds(ids) };
+        // ?demo=1 — локальный снимок для проверки вёрстки
+        if (params.get("demo") === "1") {
+          return { mode: "live", report: sortReport(snap.report || []) };
+        }
+        return { mode: "wait", report: [] };
+      }
+
+      function ghostOrb(src) {
+        const d = document.createElement("div");
+        d.className = "ghost-orb" + (src ? " has-img" : "");
+        if (src) {
+          const img = document.createElement("img");
+          img.src = src;
+          img.alt = "";
+          img.decoding = "async";
+          img.onerror = () => {
+            d.classList.remove("has-img");
+            img.remove();
+          };
+          d.appendChild(img);
+        }
+        return d;
+      }
+
+      function renderWait(panel, reason) {
+        panel.classList.add("is-wait");
+        const wait = document.createElement("div");
+        wait.className = "wait";
+
+        const hero = document.createElement("div");
+        hero.className = "wait-hero";
+        hero.innerHTML =
+          '<p class="wait-kicker">Ожидание ссылки</p>' +
+          "<h2>" +
+          (reason === "empty"
+            ? "Сейчас на колесе пусто для значков"
+            : "Ждём актуальное колесо") +
+          "</h2>" +
+          "<p>" +
+          (reason === "empty"
+            ? "В этой ссылке нет предметов для значков. Когда появится новое колесо — бот пришлёт свежую кнопку."
+            : "Откройте страницу по кнопке «Значки на сайте» из новости о колесе — тогда здесь появятся значки и предметы.") +
+          "</p>";
+        wait.appendChild(hero);
+
+        const thumbs = ACH_CATALOG.map((a) => a.badgeThumb).filter(Boolean).slice(0, 6);
+        while (thumbs.length < 3) thumbs.push("");
+
+        const stage = document.createElement("div");
+        stage.className = "wait-stage";
+        stage.setAttribute("aria-hidden", "true");
+
+        const board = document.createElement("div");
+        board.className = "wait-board";
+        for (let i = 0; i < 3; i++) {
+          const tile = document.createElement("div");
+          tile.className = "ghost-tile";
+          tile.appendChild(ghostOrb(thumbs[i]));
+          const lines = document.createElement("div");
+          lines.className = "ghost-lines";
+          lines.innerHTML =
+            '<span class="ghost-line mid"></span><span class="ghost-line short"></span>';
+          tile.appendChild(lines);
+          board.appendChild(tile);
+        }
+
+        const sheet = document.createElement("div");
+        sheet.className = "wait-sheet";
+        const head = document.createElement("div");
+        head.className = "ghost-head";
+        head.appendChild(ghostOrb(thumbs[0]));
+        const hLines = document.createElement("div");
+        hLines.className = "ghost-lines";
+        hLines.innerHTML =
+          '<span class="ghost-line long"></span><span class="ghost-line short"></span>';
+        head.appendChild(hLines);
+        const chip = document.createElement("span");
+        chip.className = "ghost-chip";
+        head.appendChild(chip);
+        sheet.appendChild(head);
+        for (let i = 0; i < 4; i++) {
+          const row = document.createElement("div");
+          row.className = "ghost-row";
+          row.appendChild(ghostOrb(thumbs[(i + 1) % thumbs.length]));
+          const lines = document.createElement("div");
+          lines.className = "ghost-lines";
+          lines.innerHTML = '<span class="ghost-line ' + (i % 2 ? "mid" : "long") + '"></span>';
+          row.appendChild(lines);
+          sheet.appendChild(row);
+        }
+
+        stage.appendChild(board);
+        stage.appendChild(sheet);
+        wait.appendChild(stage);
+        panel.appendChild(wait);
+      }
+
+      function prog(e) {
+        const items = e.items || [];
+        return items.filter((x) => x.on_wheel).length + " из " + items.length;
+      }
+      function split(e) {
+        const items = e.items || [];
+        return {
+          on: items.filter((x) => x.on_wheel),
+          off: items.filter((x) => !x.on_wheel),
+        };
+      }
+      function thumb(src, cls) {
+        const d = document.createElement("div");
+        d.className = "thumb " + (cls || "") + (src ? "" : " empty");
+        if (src) {
+          const img = document.createElement("img");
+          img.src = src;
+          img.alt = "";
+          img.loading = "lazy";
+          img.onerror = () => {
+            d.classList.add("empty");
+            img.remove();
+          };
+          d.appendChild(img);
+        }
+        return d;
+      }
+      function itemRow(it, on) {
+        const a = document.createElement("a");
+        a.className = "item " + (on ? "on" : "off");
+        a.href = GUIDE + "?q=" + encodeURIComponent(it.name || "");
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.appendChild(thumb(it.thumb || "", "sm"));
+        const p = document.createElement("p");
+        p.className = "name";
+        p.textContent = it.name || "—";
+        a.appendChild(p);
+        return a;
+      }
+
+      function render() {
+        const params = new URLSearchParams(location.search);
+        const resolved = resolveReport(params);
+        const report = resolved.report || [];
+        const name = (params.get("n") || "").trim();
+        const date = (params.get("d") || "").trim();
+        document.getElementById("pageTitle").textContent = name || "Значки на колесе";
+
+        const panel = document.getElementById("panel");
+        panel.innerHTML = "";
+        panel.classList.remove("is-wait");
+
+        if (resolved.mode === "wait") {
+          document.getElementById("pageMeta").textContent = "ожидает ссылку из новости";
+          renderWait(panel, "wait");
+          return;
+        }
+
+        let meta = report.length ? report.length + " значков" : "пусто";
+        if (date && date.length === 4) {
+          meta += " · " + date.slice(0, 2) + "." + date.slice(2);
+        }
+        document.getElementById("pageMeta").textContent = meta;
+
+        if (!report.length) {
+          renderWait(panel, "empty");
+          return;
+        }
+        if (active >= report.length) active = 0;
+
+        const board = document.createElement("div");
+        board.className = "board";
+        report.forEach((e, i) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "tile" + (i === active ? " active" : "");
+          btn.appendChild(thumb(e.badgeThumb || ""));
+          const meta = document.createElement("div");
+          meta.className = "meta";
+          const n = document.createElement("p");
+          n.className = "tname";
+          n.textContent = e.badge;
+          meta.appendChild(n);
+          const c = document.createElement("span");
+          c.className = "chip";
+          c.textContent = prog(e);
+          meta.appendChild(c);
+          btn.appendChild(meta);
+          btn.addEventListener("click", () => {
+            active = i;
+            render();
+            // на узком экране — к деталям
+            if (window.matchMedia("(max-width: 899px)").matches) {
+              panel.querySelector(".sheet")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }
+          });
+          board.appendChild(btn);
+        });
+
+        const sheet = document.createElement("div");
+        sheet.className = "sheet";
+        const head = document.createElement("div");
+        head.className = "sheet-head";
+        head.appendChild(thumb(report[active].badgeThumb || "", "lg"));
+
+        const headText = document.createElement("div");
+        headText.className = "head-text";
+        const h = document.createElement("h2");
+        h.textContent = report[active].badge;
+        headText.appendChild(h);
+        const chipMob = document.createElement("span");
+        chipMob.className = "chip chip-mob";
+        chipMob.textContent = prog(report[active]);
+        headText.appendChild(chipMob);
+        head.appendChild(headText);
+
+        const chipDesk = document.createElement("span");
+        chipDesk.className = "chip chip-desk";
+        chipDesk.textContent = prog(report[active]);
+        head.appendChild(chipDesk);
+        sheet.appendChild(head);
+
+        const cols = document.createElement("div");
+        cols.className = "cols";
+        const { on, off } = split(report[active]);
+
+        const colOn = document.createElement("div");
+        colOn.className = "col";
+        const labOn = document.createElement("p");
+        labOn.className = "glabel on";
+        labOn.textContent = "На колесе";
+        colOn.appendChild(labOn);
+        if (on.length) on.forEach((it) => colOn.appendChild(itemRow(it, true)));
+        else {
+          const p = document.createElement("p");
+          p.className = "mute";
+          p.textContent = "Пока пусто";
+          colOn.appendChild(p);
+        }
+
+        const colOff = document.createElement("div");
+        colOff.className = "col";
+        const labOff = document.createElement("p");
+        labOff.className = "glabel off";
+        labOff.textContent = off.length ? "Ещё нет" : "Готово";
+        colOff.appendChild(labOff);
+        if (off.length) off.forEach((it) => colOff.appendChild(itemRow(it, false)));
+        else {
+          const p = document.createElement("p");
+          p.className = "mute";
+          p.textContent = "Всё на колесе";
+          colOff.appendChild(p);
+        }
+
+        cols.appendChild(colOn);
+        cols.appendChild(colOff);
+        sheet.appendChild(cols);
+        panel.appendChild(board);
+        panel.appendChild(sheet);
+      }
+
+      document.getElementById("themeToggle").addEventListener("click", () => {
+        const order = ["dark", "light", "gray"];
+        const cur = document.documentElement.getAttribute("data-theme") || "dark";
+        const next = order[(order.indexOf(cur) + 1) % order.length];
+        document.documentElement.setAttribute("data-theme", next);
+        try {
+          localStorage.setItem("futurum_theme", next);
+        } catch (_) {}
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
