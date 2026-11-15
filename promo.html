@@ -198,15 +198,57 @@
     }
 
     .btn-copy {
+      position: relative;
+      overflow: hidden;
       background: var(--accent);
       color: var(--accent-ink);
       box-shadow: 0 0 24px rgba(61, 255, 224, 0.18);
-      transition: transform 0.12s ease, opacity 0.12s ease, background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+      transition:
+        transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.15s ease,
+        background 0.22s ease,
+        color 0.22s ease,
+        box-shadow 0.22s ease;
+    }
+    .btn-copy:hover:not(:disabled):not(.ok) {
+      transform: translateY(-1px);
+      box-shadow: 0 0 28px rgba(61, 255, 224, 0.28);
+    }
+    .btn-copy:active:not(:disabled) {
+      transform: translateY(1px) scale(0.97);
     }
     .btn-copy.ok {
       background: #2ecc71;
       color: #062412;
-      box-shadow: 0 0 22px rgba(46, 204, 113, 0.35);
+      box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.45);
+      animation: copy-ok-pop 0.55s cubic-bezier(0.22, 1, 0.36, 1), copy-ok-glow 1.1s ease-out;
+    }
+    .btn-copy.ok::after {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.35) 0%, transparent 55%);
+      animation: copy-ok-flash 0.55s ease-out;
+      pointer-events: none;
+    }
+    @keyframes copy-ok-pop {
+      0% { transform: scale(0.96); }
+      45% { transform: scale(1.045); }
+      100% { transform: scale(1); }
+    }
+    @keyframes copy-ok-glow {
+      0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.5); }
+      70% { box-shadow: 0 0 28px 6px rgba(46, 204, 113, 0.28); }
+      100% { box-shadow: 0 0 18px 0 rgba(46, 204, 113, 0.22); }
+    }
+    @keyframes copy-ok-flash {
+      0% { opacity: 0.55; transform: scale(0.4); }
+      100% { opacity: 0; transform: scale(1.15); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .btn-copy.ok,
+      .btn-copy.ok::after { animation: none; }
+      .btn-copy:hover:not(:disabled):not(.ok) { transform: none; }
     }
 
     .btn-game {
@@ -483,13 +525,17 @@
             document.execCommand("copy");
             document.body.removeChild(ta);
           }
-          btnCopy.textContent = "Скопировано";
+          // перезапуск анимации при повторном клике
+          btnCopy.classList.remove("ok");
+          void btnCopy.offsetWidth;
+          btnCopy.textContent = "✓ Скопировано";
           btnCopy.classList.add("ok");
           status.hidden = true;
-          setTimeout(function () {
+          clearTimeout(btnCopy._okTimer);
+          btnCopy._okTimer = setTimeout(function () {
             btnCopy.textContent = "Скопировать";
             btnCopy.classList.remove("ok");
-          }, 1600);
+          }, 1800);
         } catch (err) {
           status.hidden = false;
           status.textContent = "Не удалось скопировать";
