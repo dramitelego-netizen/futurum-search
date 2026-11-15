@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Значки на колесе | FUTURUM</title>
+  <title>Значки | FUTURUM</title>
   <meta name="theme-color" content="#07090d" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <script>
@@ -633,7 +633,7 @@
     <header class="wheel-top">
       <div>
         <p class="wheel-brand">FUTURUM</p>
-        <h1 id="pageTitle">Значки на колесе</h1>
+        <h1 id="pageTitle" hidden></h1>
         <p class="wheel-meta" id="pageMeta"></p>
       </div>
       <div class="wheel-actions">
@@ -650,7 +650,7 @@
   <script>
     (function () {
       const GUIDE = new URL("./titles.html", location.href).href;
-      const snap = window.WHEEL_SNAPSHOT || { report: [], title: "Значки на колесе" };
+      const snap = window.WHEEL_SNAPSHOT || { report: [], title: "" };
       const ACH_ITEMS = window.ACH_ITEMS || [];
       const ACH_CATALOG = window.ACH_CATALOG || [];
       let active = 0;
@@ -802,17 +802,18 @@
 
         const hero = document.createElement("div");
         hero.className = "wait-hero";
+        const empty = reason === "empty";
         hero.innerHTML =
-          '<p class="wait-kicker">Ожидание ссылки</p>' +
+          '<p class="wait-kicker">' +
+          (empty ? "Это колесо" : "Сначала") +
+          "</p>" +
           "<h2>" +
-          (reason === "empty"
-            ? "Сейчас на колесе пусто для значков"
-            : "Ждём актуальное колесо") +
+          (empty ? "Значков нет" : "Откройте из новости") +
           "</h2>" +
           "<p>" +
-          (reason === "empty"
-            ? "В этой ссылке нет предметов для значков. Когда появится новое колесо — бот пришлёт свежую кнопку."
-            : "Откройте страницу по кнопке «Значки на сайте» из новости о колесе — тогда здесь появятся значки и предметы.") +
+          (empty
+            ? "На этом колесе нет предметов для значков — бот пришлёт новую кнопку со следующим колесом."
+            : "Нажмите «Значки на сайте» в новости о колесе — увидите значки этого колеса.") +
           "</p>";
         wait.appendChild(hero);
 
@@ -909,25 +910,43 @@
         return a;
       }
 
+      function badgesLabel(n) {
+        const mod10 = n % 10;
+        const mod100 = n % 100;
+        let word = "значков";
+        if (mod10 === 1 && mod100 !== 11) word = "значок";
+        else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) word = "значка";
+        return n + " " + word;
+      }
+
       function render() {
         const params = new URLSearchParams(location.search);
         const resolved = resolveReport(params);
         const report = resolved.report || [];
         const name = fixMojibake((params.get("n") || "").trim());
         const date = (params.get("d") || "").trim();
-        document.getElementById("pageTitle").textContent = name || "Значки на колесе";
+        const titleEl = document.getElementById("pageTitle");
+        if (name) {
+          titleEl.hidden = false;
+          titleEl.textContent = name;
+          document.title = name + " | FUTURUM";
+        } else {
+          titleEl.hidden = true;
+          titleEl.textContent = "";
+          document.title = "Значки | FUTURUM";
+        }
 
         const panel = document.getElementById("panel");
         panel.innerHTML = "";
         panel.classList.remove("is-wait");
 
         if (resolved.mode === "wait") {
-          document.getElementById("pageMeta").textContent = "ожидает ссылку из новости";
+          document.getElementById("pageMeta").textContent = "нужна ссылка из новости";
           renderWait(panel, "wait");
           return;
         }
 
-        let meta = report.length ? report.length + " значков" : "пусто";
+        let meta = report.length ? badgesLabel(report.length) : "пусто";
         if (date && date.length === 4) {
           meta += " · " + date.slice(0, 2) + "." + date.slice(2);
         }
