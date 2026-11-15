@@ -141,7 +141,7 @@
 
     .promo-name {
       margin: 0 0 1rem;
-      color: var(--mute);
+      color: #f0a85a;
       font-size: 1.05rem;
       font-weight: 600;
       line-height: 1.35;
@@ -201,8 +201,13 @@
       background: var(--accent);
       color: var(--accent-ink);
       box-shadow: 0 0 24px rgba(61, 255, 224, 0.18);
+      transition: transform 0.12s ease, opacity 0.12s ease, background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
     }
-    .btn-copy.ok { background: #9bffe9; }
+    .btn-copy.ok {
+      background: #2ecc71;
+      color: #062412;
+      box-shadow: 0 0 22px rgba(46, 204, 113, 0.35);
+    }
 
     .btn-game {
       background: color-mix(in srgb, var(--panel-solid) 88%, #fff);
