@@ -79,6 +79,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=190" />
   <link rel="stylesheet" href="catalog.css?v=174" />
+  <link rel="stylesheet" href="catalog-wait.css?v=7" />
 </head>
 <body class="catalog-page">
   <div class="atmosphere" aria-hidden="true">
@@ -176,16 +177,30 @@
           <span>найдено</span>
           <strong id="catFound">0</strong>
         </div>
-        <ul class="cat-list" id="catList" role="listbox" aria-label="Предметы"></ul>
+        <ul class="cat-list" id="catList" role="listbox" aria-busy="true" aria-label="Список загружается">
+          <li class="cw-skel"><div class="cat-row cw-skel-row" aria-hidden="true"><div class="cat-item"><span class="cw-skel-thumb"></span><span class="cat-item-main"><span class="cw-skel-line name"></span><span class="cw-skel-line price"></span></span></div><span class="cw-skel-star"></span></div></li>
+          <li class="cw-skel"><div class="cat-row cw-skel-row" aria-hidden="true"><div class="cat-item"><span class="cw-skel-thumb"></span><span class="cat-item-main"><span class="cw-skel-line name"></span><span class="cw-skel-line price"></span></span></div><span class="cw-skel-star"></span></div></li>
+          <li class="cw-skel"><div class="cat-row cw-skel-row" aria-hidden="true"><div class="cat-item"><span class="cw-skel-thumb"></span><span class="cat-item-main"><span class="cw-skel-line name"></span><span class="cw-skel-line price"></span></span></div><span class="cw-skel-star"></span></div></li>
+          <li class="cw-skel"><div class="cat-row cw-skel-row" aria-hidden="true"><div class="cat-item"><span class="cw-skel-thumb"></span><span class="cat-item-main"><span class="cw-skel-line name"></span><span class="cw-skel-line price"></span></span></div><span class="cw-skel-star"></span></div></li>
+          <li class="cw-skel"><div class="cat-row cw-skel-row" aria-hidden="true"><div class="cat-item"><span class="cw-skel-thumb"></span><span class="cat-item-main"><span class="cw-skel-line name"></span><span class="cw-skel-line price"></span></span></div><span class="cw-skel-star"></span></div></li>
+          <li class="cw-skel"><div class="cat-row cw-skel-row" aria-hidden="true"><div class="cat-item"><span class="cw-skel-thumb"></span><span class="cat-item-main"><span class="cw-skel-line name"></span><span class="cw-skel-line price"></span></span></div><span class="cw-skel-star"></span></div></li>
+          <li class="cw-skel"><div class="cat-row cw-skel-row" aria-hidden="true"><div class="cat-item"><span class="cw-skel-thumb"></span><span class="cat-item-main"><span class="cw-skel-line name"></span><span class="cw-skel-line price"></span></span></div><span class="cw-skel-star"></span></div></li>
+        </ul>
       </div>
 
       <aside class="cat-detail" id="catDetail" aria-live="polite">
-        <div class="cat-detail-empty">Выберите предмет</div>
+        <div class="cw-detail" aria-hidden="true">
+          <div class="cw-detail-shot"></div>
+          <span class="cw-skel-line name"></span>
+          <span class="cw-skel-line meta"></span>
+          <div class="cw-detail-block"></div>
+        </div>
       </aside>
     </section>
   </main>
 
+  <script src="catalog-wait.js?v=5"></script>
   <script src="fav-store.js?v=151"></script>
-  <script src="catalog.js?v=154"></script>
+  <script src="catalog.js?v=155"></script>
 </body>
 </html>

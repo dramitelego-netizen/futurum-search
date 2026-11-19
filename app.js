@@ -406,6 +406,7 @@ function setBg(mode) {
 }
 
 let bootPlayed = false;
+let catalogReady = false;
 let searchIdleTimer = 0;
 let searchBusy = false;
 
@@ -1612,6 +1613,13 @@ function render() {
     return;
   }
 
+  if (!catalogReady) {
+    if (els.resultsCount) els.resultsCount.textContent = "…";
+    window.FuturumCatalogWait?.fill("shop");
+    showPreview(null);
+    return;
+  }
+
   if (!ranked.length) {
     els.results.innerHTML = `<li><div class="result result-empty">${emptyMessage(hasQuery)}</div></li>`;
     showPreview(null);
@@ -1996,12 +2004,14 @@ async function load(isRefresh = false) {
     const [res] = await Promise.all([
       fetch("./data/items.json", { cache: "no-store" }),
       loadHistory(),
+      !isRefresh ? window.FuturumCatalogWait?.demoGate?.() : Promise.resolve(),
     ]);
     if (!res.ok) throw new Error(String(res.status));
     const data = await res.json();
     const next = data.items || [];
     const prevLen = state.items.length;
     state.items = next;
+    catalogReady = true;
     setCatalogCount(next.length, isRefresh || prevLen > 0);
     if (!isRefresh) {
       els.hint.textContent = next.length
@@ -2027,10 +2037,14 @@ async function load(isRefresh = false) {
       FuturumChanges.refresh(state.items);
     }
   } catch {
+    catalogReady = true;
     if (!isRefresh) {
       els.hint.textContent = "Не удалось загрузить каталог";
       setCatalogCount(0, false);
+      if (tokenize(state.query).length || state.linkItemId != null || browseMode()) render();
     }
+  } finally {
+    if (!isRefresh) window.FuturumCatalogWait?.release?.();
   }
 }
 

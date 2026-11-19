@@ -109,6 +109,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=190" />
+  <link rel="stylesheet" href="catalog-wait.css?v=7" />
   <link rel="stylesheet" href="edge-swap.css?v=3" />
   <script>
     (() => {
@@ -333,7 +334,15 @@
             <button type="button" class="sort-pill" data-sort="name" title="По названию">А–Я</button>
           </div>
         </div>
-        <ul class="results" id="results" role="listbox" aria-label="Результаты"></ul>
+        <ul class="results" id="results" role="listbox" aria-busy="true" aria-label="Список загружается">
+          <li class="cw-skel"><div class="result cw-skel-row" aria-hidden="true"><span class="result-main"><span class="cw-skel-line name"></span></span><span class="cw-skel-price"></span></div></li>
+          <li class="cw-skel"><div class="result cw-skel-row" aria-hidden="true"><span class="result-main"><span class="cw-skel-line name"></span></span><span class="cw-skel-price"></span></div></li>
+          <li class="cw-skel"><div class="result cw-skel-row" aria-hidden="true"><span class="result-main"><span class="cw-skel-line name"></span></span><span class="cw-skel-price"></span></div></li>
+          <li class="cw-skel"><div class="result cw-skel-row" aria-hidden="true"><span class="result-main"><span class="cw-skel-line name"></span></span><span class="cw-skel-price"></span></div></li>
+          <li class="cw-skel"><div class="result cw-skel-row" aria-hidden="true"><span class="result-main"><span class="cw-skel-line name"></span></span><span class="cw-skel-price"></span></div></li>
+          <li class="cw-skel"><div class="result cw-skel-row" aria-hidden="true"><span class="result-main"><span class="cw-skel-line name"></span></span><span class="cw-skel-price"></span></div></li>
+          <li class="cw-skel"><div class="result cw-skel-row" aria-hidden="true"><span class="result-main"><span class="cw-skel-line name"></span></span><span class="cw-skel-price"></span></div></li>
+        </ul>
       </div>
       <aside class="preview" id="preview" aria-live="polite"></aside>
     </section>
@@ -364,10 +373,11 @@
     <span class="edge-neon-label">Гид</span>
   </a>
 
+  <script src="catalog-wait.js?v=5"></script>
   <script src="fav-store.js?v=162"></script>
   <script src="particles.js?v=162"></script>
   <script src="changes.js?v=162"></script>
-  <script src="app.js?v=187"></script>
+  <script src="app.js?v=189"></script>
   <script src="edge-swap.js?v=3"></script>
 </body>
 </html>

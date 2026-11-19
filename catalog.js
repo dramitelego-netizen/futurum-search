@@ -538,7 +538,14 @@ function showDetail(item) {
   wireMediaFrames(els.catDetail);
 }
 
+let catalogReady = false;
+
 function renderList() {
+  if (!catalogReady) {
+    if (els.catFound) els.catFound.textContent = "…";
+    window.FuturumCatalogWait?.fill("catalog");
+    return;
+  }
   const list = filtered();
   state.list = list;
   if (els.catFound) els.catFound.textContent = String(list.length);
@@ -727,10 +734,12 @@ async function load() {
     const [itemsRes, histRes] = await Promise.all([
       fetch("./data/items.json", { cache: "no-store" }),
       fetch("./data/price_history.json", { cache: "no-store" }),
+      window.FuturumCatalogWait?.demoGate?.() || Promise.resolve(),
     ]);
     if (!itemsRes.ok) throw new Error(String(itemsRes.status));
     const data = await itemsRes.json();
     state.items = data.items || [];
+    catalogReady = true;
     if (histRes.ok) {
       state.history = await histRes.json();
     }
@@ -741,9 +750,15 @@ async function load() {
     }
     render();
   } catch {
+    catalogReady = true;
     if (els.catList) {
       els.catList.innerHTML = `<li class="cat-list-empty">Не удалось загрузить каталог</li>`;
     }
+    if (els.catDetail) {
+      els.catDetail.innerHTML = `<div class="cat-detail-empty">Не удалось загрузить каталог</div>`;
+    }
+  } finally {
+    window.FuturumCatalogWait?.release?.();
   }
 }
 
