@@ -5591,8 +5591,15 @@ function filterAndSort() {
   }
 }
 
+let catalogReady = false;
+
 function renderList() {
   if (!els.list) return;
+  if (!catalogReady) {
+    if (els.found) els.found.textContent = "…";
+    window.FuturumCatalogWait?.fill("guide");
+    return;
+  }
   if (!state.list.length) {
     els.list.innerHTML = `<li class="result-empty">Ничего не найдено</li>`;
     return;
@@ -6465,6 +6472,7 @@ async function loadData() {
     fetch(`./data/titles.json?v=${v}`, { cache: "default" }),
     fetch(`./data/wiki_items.json?v=${v}`, { cache: "default" }),
     fetch(`./data/items.json?v=${v}`, { cache: "default" }),
+    window.FuturumCatalogWait?.demoGate?.() || Promise.resolve(),
   ]);
   if (!titlesRes.ok) throw new Error("titles.json " + titlesRes.status);
   const titlesData = await titlesRes.json();
@@ -6487,6 +6495,7 @@ async function loadData() {
     state.shopItems = [];
   }
   buildShopIndex();
+  catalogReady = true;
 }
 
 function storedImgSrcMode() {
@@ -6517,6 +6526,8 @@ async function init() {
         String(err.message || err)
       )}</div>`;
     }
+    catalogReady = true;
+    window.FuturumCatalogWait?.release?.();
     return;
   }
 
@@ -6551,6 +6562,8 @@ async function init() {
 
   // авто-выбор источника картинок не блокирует UI; после ручного клика больше не трогаем
   void maybeAutoPickImgSrc();
+
+  window.FuturumCatalogWait?.release?.();
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {

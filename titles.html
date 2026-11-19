@@ -111,6 +111,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=190" />
   <link rel="stylesheet" href="titles.css?v=159" />
+  <link rel="stylesheet" href="catalog-wait.css?v=7" />
   <link rel="stylesheet" href="edge-swap.css?v=3" />
   <script>
     (() => {
@@ -278,7 +279,20 @@
           </button>
         </div>
         <div class="guide-side-panel is-on" id="guideSideCatalog" role="tabpanel" data-side-panel="catalog">
-          <div class="guide-tree" id="guideTree"></div>
+          <div class="guide-tree" id="guideTree">
+            <div class="cw-nav" aria-hidden="true">
+              <div class="cw-nav-seg">
+                <span class="cw-nav-tile"><i></i><b></b></span>
+                <span class="cw-nav-tile"><i></i><b></b></span>
+                <span class="cw-nav-tile"><i></i><b></b></span>
+                <span class="cw-nav-tile"><i></i><b></b></span>
+              </div>
+              <span class="cw-nav-row"><i></i><b></b><em></em></span>
+              <span class="cw-nav-row"><i></i><b></b><em></em></span>
+              <span class="cw-nav-row"><i></i><b></b><em></em></span>
+              <span class="cw-nav-row"><i></i><b></b><em></em></span>
+            </div>
+          </div>
           <p class="guide-tree-empty" id="guideTreeEmpty" hidden>Нет такого раздела</p>
         </div>
         <div class="guide-side-panel" id="guideSideFilters" role="tabpanel" data-side-panel="filters" hidden>
@@ -350,9 +364,23 @@
                 </div>
               </div>
             </div>
-            <ul class="results" id="results" role="listbox" aria-label="Результаты"></ul>
+            <ul class="results" id="results" role="listbox" aria-busy="true" aria-label="Список загружается">
+              <li class="cw-skel"><div class="result ttl-result has-img cw-skel-row" aria-hidden="true"><span class="cw-skel-thumb"></span><span class="result-main"><span class="cw-skel-line name"></span><span class="cw-skel-line meta"></span></span></div></li>
+              <li class="cw-skel"><div class="result ttl-result has-img cw-skel-row" aria-hidden="true"><span class="cw-skel-thumb"></span><span class="result-main"><span class="cw-skel-line name"></span><span class="cw-skel-line meta"></span></span></div></li>
+              <li class="cw-skel"><div class="result ttl-result has-img cw-skel-row" aria-hidden="true"><span class="cw-skel-thumb"></span><span class="result-main"><span class="cw-skel-line name"></span><span class="cw-skel-line meta"></span></span></div></li>
+              <li class="cw-skel"><div class="result ttl-result has-img cw-skel-row" aria-hidden="true"><span class="cw-skel-thumb"></span><span class="result-main"><span class="cw-skel-line name"></span><span class="cw-skel-line meta"></span></span></div></li>
+              <li class="cw-skel"><div class="result ttl-result has-img cw-skel-row" aria-hidden="true"><span class="cw-skel-thumb"></span><span class="result-main"><span class="cw-skel-line name"></span><span class="cw-skel-line meta"></span></span></div></li>
+              <li class="cw-skel"><div class="result ttl-result has-img cw-skel-row" aria-hidden="true"><span class="cw-skel-thumb"></span><span class="result-main"><span class="cw-skel-line name"></span><span class="cw-skel-line meta"></span></span></div></li>
+              <li class="cw-skel"><div class="result ttl-result has-img cw-skel-row" aria-hidden="true"><span class="cw-skel-thumb"></span><span class="result-main"><span class="cw-skel-line name"></span><span class="cw-skel-line meta"></span></span></div></li>
+            </ul>
           </div>
           <aside class="preview" id="preview" aria-live="polite">
+            <div class="cw-preview" aria-hidden="true">
+              <div class="cw-detail-shot"></div>
+              <span class="cw-skel-line name"></span>
+              <span class="cw-skel-line meta"></span>
+              <div class="cw-detail-block"></div>
+            </div>
             <div class="preview-empty">Выберите предмет</div>
           </aside>
         </section>
@@ -369,7 +397,8 @@
     <span class="edge-neon-label">Магазин</span>
   </a>
 
-  <script src="titles.js?v=159" defer></script>
+  <script src="catalog-wait.js?v=5" defer></script>
+  <script src="titles.js?v=161" defer></script>
   <script src="edge-swap.js?v=3" defer></script>
 </body>
 </html>
