@@ -726,9 +726,10 @@ function paintMobChips() {
     .join("");
 }
 
-function setMobileTab(tab, { fromClick } = {}) {
+function setMobileTab(tab, { fromClick, fromHistory } = {}) {
   if (!isGuideNarrow()) return;
   const next = ["home", "catalog", "fav"].includes(tab) ? tab : "home";
+  const prev = mobileUi.tab;
   if (next === "home" && mobileUi.tab === "home" && fromClick) {
     els.list?.closest(".results-panel")?.scrollTo?.(0, 0);
     els.list?.scrollTo?.(0, 0);
@@ -743,6 +744,9 @@ function setMobileTab(tab, { fromClick } = {}) {
   mobileUi.tab = next;
   if (next === "home" || next === "catalog") closeMobileSheet();
   paintMobileChrome();
+  if (fromHistory) return;
+  if (prev === "home" && next !== "home") pushGuideLayer("tab");
+  else if (prev !== "home" && next === "home") sealGuideLayer("tab");
 }
 
 /** Превью всех разделов свёрнутой группы (B2) — без обрезки «+N» */
@@ -874,8 +878,54 @@ function pickMobCatalogSection(section) {
   blurGuideSearch();
 }
 
+/** Шаги телефона, которые жест «назад» закрывает до ухода со страницы. */
+const guideHist = { stack: [], swallow: 0, pending: 0, timer: 0 };
+
+function pushGuideLayer(name) {
+  if (!isGuideNarrow() || !name) return;
+  if (guideHist.stack[guideHist.stack.length - 1] === name) return;
+  guideHist.stack.push(name);
+  if (guideHist.pending > 0) {
+    guideHist.pending -= 1;
+    guideHist.swallow = Math.max(0, guideHist.swallow - 1);
+    history.replaceState({ guideLayer: name }, "");
+    return;
+  }
+  history.pushState({ guideLayer: name }, "");
+}
+
+function sealGuideLayer(name) {
+  const idx = guideHist.stack.lastIndexOf(name);
+  if (idx < 0) return;
+  const drop = guideHist.stack.length - idx;
+  guideHist.stack.length = idx;
+  guideHist.swallow += drop;
+  guideHist.pending += drop;
+  clearTimeout(guideHist.timer);
+  guideHist.timer = setTimeout(() => {
+    const n = guideHist.pending;
+    guideHist.pending = 0;
+    if (n === 1) history.back();
+    else if (n > 1) history.go(-n);
+  }, 0);
+}
+
+function onGuidePopState() {
+  if (guideHist.swallow > 0) {
+    guideHist.swallow -= 1;
+    syncUrl();
+    return;
+  }
+  const name = guideHist.stack.pop();
+  if (name === "zoom") closeGuideZoom({ fromHistory: true });
+  else if (name === "peek") closeReqPeek({ fromHistory: true });
+  else if (name === "sheet") closeMobileSheet({ fromHistory: true });
+  else if (name === "tab") setMobileTab("home", { fromHistory: true });
+}
+
 function openMobileSheet() {
   if (!isGuideNarrow()) return;
+  const firstOpen = !mobileUi.sheetOpen;
   mobileUi.sheetOpen = true;
   // сразу почти на весь экран — иначе половина карточки «тёмная и обрезанная»
   mobileUi.sheetTall = true;
@@ -891,9 +941,11 @@ function openMobileSheet() {
   });
   paintSheetFavBtn();
   syncBrandHeroMode();
+  if (firstOpen) pushGuideLayer("sheet");
 }
 
-function closeMobileSheet() {
+function closeMobileSheet(opts = {}) {
+  const wasOpen = mobileUi.sheetOpen;
   mobileUi.sheetOpen = false;
   mobileUi.sheetTall = false;
   document.body.classList.remove("guide-sheet-open", "guide-sheet-tall");
@@ -902,6 +954,7 @@ function closeMobileSheet() {
     els.guideSheetDim.hidden = true;
   }
   syncBrandHeroMode();
+  if (wasOpen && !opts.fromHistory) sealGuideLayer("sheet");
 }
 
 function toggleMobileSheetTall() {
@@ -3082,7 +3135,7 @@ function renderShopOffersHtml(offers) {
   return infoSection("Магазин", `<div class="ttl-shop-list">${rows}</div>`, "ttl-info-shop");
 }
 
-function closeReqPeek() {
+function closeReqPeek(opts = {}) {
   const peek = document.getElementById("guideReqPeek");
   if (!peek) return;
   peek.classList.remove("is-on");
@@ -3091,6 +3144,7 @@ function closeReqPeek() {
   window.setTimeout(() => {
     if (!peek.classList.contains("is-on")) peek.remove();
   }, 200);
+  if (!opts.fromHistory) sealGuideLayer("peek");
 }
 
 /** Быстрый просмотр нужного предмета без ухода с достижения */
@@ -3351,6 +3405,7 @@ function openReqPeek(section, id, query, extras = {}) {
     }
     if (e.target.closest(".guide-req-peek-go")) go();
   });
+  pushGuideLayer("peek");
 }
 
 function openRequiredItem(section, id, query) {
@@ -5846,7 +5901,7 @@ function zoomImgHtml(src, name, extraClass = "", fb = "") {
   </button>`;
 }
 
-function closeGuideZoom() {
+function closeGuideZoom(opts = {}) {
   const zoom = document.getElementById("guideZoom");
   if (!zoom) return;
   zoom.classList.remove("is-on");
@@ -5855,6 +5910,7 @@ function closeGuideZoom() {
   window.setTimeout(() => {
     if (!zoom.classList.contains("is-on")) zoom.remove();
   }, 220);
+  if (!opts.fromHistory) sealGuideLayer("zoom");
 }
 
 function openGuideZoom(src, name, fb = "") {
@@ -5913,6 +5969,7 @@ function openGuideZoom(src, name, fb = "") {
   zoom.addEventListener("click", (e) => {
     if (e.target === zoom || e.target.closest(".guide-zoom-close")) closeGuideZoom();
   });
+  pushGuideLayer("zoom");
 }
 
 function renderDetail(it) {
@@ -6131,6 +6188,7 @@ function bindImgFbFallback() {
 }
 
 function bindUi() {
+  window.addEventListener("popstate", onGuidePopState);
   bindSearchFx();
   bindFilterPillFx();
   bindImgFbFallback();
