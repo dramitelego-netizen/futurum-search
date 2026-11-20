@@ -2188,6 +2188,38 @@ function reqEndingOk(after) {
   );
 }
 
+/** Фраза стоит отдельными словами: «вм» не находится внутри «вместе». */
+function findPhrasePos(text, phrase) {
+  if (!text || !phrase) return -1;
+  let from = 0;
+  while (from <= text.length) {
+    const pos = text.indexOf(phrase, from);
+    if (pos < 0) return -1;
+    const before = pos === 0 ? " " : text[pos - 1];
+    const after = text[pos + phrase.length] || " ";
+    if (!/[0-9a-zа-яё]/i.test(before) && !/[0-9a-zа-яё]/i.test(after)) return pos;
+    from = pos + 1;
+  }
+  return -1;
+}
+
+function aliasHasPhrase(alias, phrase) {
+  return findPhrasePos(alias, phrase) >= 0;
+}
+
+/**
+ * Кавычки из текста достижения → имя в каталоге.
+ * Короткое «ВМ» берём только как целое слово в конце имени или как серию,
+ * иначе оно слипается с «вместе».
+ */
+function quoteHitsAlias(alias, series, q) {
+  if (!q) return false;
+  if (series && (series === q || series === norm(q))) return true;
+  if (!aliasHasPhrase(alias, q)) return false;
+  if (q.length >= 4) return true;
+  return String(alias || "").split(" ").pop() === q;
+}
+
 /** Детская версия предмета (малыши) — не путать со взрослой в требованиях достижений */
 function isKidGuideItem(it) {
   if (!it) return false;
@@ -2244,16 +2276,14 @@ function buildReqCatalog() {
     for (const q of extractQuotedParts(it.name)) {
       pushAlias(q, entry, q.length >= 6 ? 12 : 2);
     }
-    // «Крылья X» / «Детские крылья X» → также ищем «X» если длинный
+    // «Крылья светлого и темного духа» → отдельно «крылья светлого» / «крылья темного духа».
+    // Голое «X» из «Крылья X» не ищем: оно цепляло «плащ чародея» и «лук Купидона».
     const m = /^(?:детские\s+)?крылья\s+(.+)$/i.exec(stripped);
-    if (m && morphReqText(m[1]).length >= 5) pushAlias(m[1], entry, -5);
-    // «Крылья светлого и темного духа» → отдельно «крылья светлого» / «крылья темного духа»
     if (m && /\s+и\s+/i.test(m[1])) {
       for (const bit of m[1].split(/\s+и\s+/i)) {
         const b = bit.trim();
         if (morphReqText(b).length < 5) continue;
         pushAlias(`крылья ${b}`, entry, 6);
-        pushAlias(b, entry, 0);
       }
     }
   };
@@ -2534,13 +2564,7 @@ function findAchievementRequires(description, selfName = "") {
     seenQ.add(q);
 
     const candidates = reqCatalog.aliases.filter(
-      (a) =>
-        allowEntry(a.entry) &&
-        (a.alias === q ||
-          a.alias.includes(` ${q}`) ||
-          a.alias.endsWith(q) ||
-          a.alias.includes(q) ||
-          a.entry.series === q)
+      (a) => allowEntry(a.entry) && quoteHitsAlias(a.alias, a.entry.series, q)
     );
     if (!candidates.length) continue;
     candidates.sort(
@@ -2551,7 +2575,7 @@ function findAchievementRequires(description, selfName = "") {
     );
     const best = candidates[0];
     const bestSection = best.entry.section;
-    const pos = hay.indexOf(q);
+    const pos = findPhrasePos(hay, q);
     if (pos >= 0) {
       for (let i = pos; i < pos + q.length && i < used.length; i++) used[i] = 1;
     }
@@ -2567,7 +2591,7 @@ function findAchievementRequires(description, selfName = "") {
       const key = `${c.entry.section}:${c.entry.id}`;
       if (seen.has(key)) continue;
       if (c.entry.section !== bestSection) continue;
-      if (c.entry.series !== series && !c.alias.includes(q)) continue;
+      if (c.entry.series !== series && !quoteHitsAlias(c.alias, c.entry.series, q)) continue;
       if (!allowEntry(c.entry)) continue;
       seen.add(key);
       hits.push({
