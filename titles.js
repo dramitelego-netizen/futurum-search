@@ -1497,6 +1497,73 @@ function escapeRegExp(s) {
   return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+let wikiAnchors = { t: {}, w: {}, h: {} };
+
+function normWikiKey(s) {
+  return String(s || "")
+    .replace(/\u00a0/g, " ")
+    .replace(/[«»„“”]/g, '"')
+    .replace(/ё/gi, "е")
+    .replace(/\(\s*[мж]\s*\)/gi, "")
+    .replace(/["']/g, "")
+    .replace(/\s*\/\s*/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function wikiPageTitleFromUrl(url) {
+  const raw = String(url || "").trim();
+  if (!raw) return "";
+  try {
+    const u = new URL(raw, "https://parapa.ru");
+    const fromQuery = u.searchParams.get("title");
+    if (fromQuery) return decodeURIComponent(fromQuery).replace(/_/g, " ").trim();
+    const mark = "/index.php/";
+    const at = u.pathname.indexOf(mark);
+    if (at >= 0) return decodeURIComponent(u.pathname.slice(at + mark.length)).replace(/_/g, " ").trim();
+  } catch {
+    /* ignore */
+  }
+  return "";
+}
+
+function withWikiAnchor(url, fragment) {
+  const raw = String(url || "").trim();
+  if (!raw || !fragment || raw.includes("#")) return raw;
+  return `${raw}#${fragment}`;
+}
+
+function itemWikiFragment(it, isTitle) {
+  if (!it) return "";
+  if (isTitle) return wikiAnchors.t?.[String(it.id)] || "";
+  return wikiAnchors.w?.[`${it.kind}:${it.id}`] || "";
+}
+
+function guideWikiHref(it, isTitle) {
+  const base =
+    (it && it.wiki) ||
+    (isTitle
+      ? state.titlesMeta?.source || "https://parapa.ru/wiki/index.php/%D0%A2%D0%B8%D1%82%D1%83%D0%BB"
+      : state.wikiMeta?.source || "https://parapa.ru/wiki/");
+  return withWikiAnchor(base, itemWikiFragment(it, isTitle));
+}
+
+/** Ссылка на вики, у которой текст совпадает с заголовком общей страницы. */
+function anchorizeWikiHref(href, labels) {
+  const raw = String(href || "").trim();
+  if (!raw || raw.includes("#") || !/parapa\.ru\/wiki/i.test(raw)) return raw;
+  const heads = wikiAnchors.h?.[normWikiKey(wikiPageTitleFromUrl(raw))];
+  if (!heads) return raw;
+  const page = normWikiKey(wikiPageTitleFromUrl(raw));
+  for (const label of labels || []) {
+    const key = normWikiKey(label);
+    if (!key || key === page) continue;
+    if (heads[key]) return `${raw}#${heads[key]}`;
+  }
+  return raw;
+}
+
 /** Куда ведёт ссылка вики, если это предмет из справочника. */
 function wikiLinkTarget(link) {
   if (!link || link.kind !== "item" || !link.section) return null;
@@ -1573,7 +1640,7 @@ function renderWikiLinks(plain, links, extraRanges) {
       )}" title="Открыть в справочнике">${text}</button>`;
     } else if (r.link && r.link.href) {
       html += `<a class="ttl-mark ttl-mark-link ttl-mark-ext" href="${escapeHtml(
-        r.link.href
+        anchorizeWikiHref(r.link.href, [r.link.title, r.link.text])
       )}" target="_blank" rel="noopener noreferrer" title="Открыть на вики">${text}</a>`;
     } else if (r.kind === "item" && r.req?.primary) {
       html += `<button type="button" class="ttl-mark ttl-mark-item ttl-mark-link" data-req-section="${escapeHtml(
@@ -3160,11 +3227,11 @@ function openReqPeek(section, id, query, extras = {}) {
   const isPeekTitle = section === "titles" || it?.kind === "titles";
   const isPeekAch = section === "achievements" || it?.kind === "achievements";
   const peekReqs = isPeekAch ? renderAchievementRequires(it?.description || "", it?.name || "") : { html: "", reqs: [] };
-  const peekWiki =
-    it?.wiki ||
-    (isPeekTitle
+  const peekWiki = it
+    ? guideWikiHref(it, isPeekTitle)
+    : isPeekTitle
       ? state.titlesMeta?.source || "https://parapa.ru/wiki/index.php/%D0%A2%D0%B8%D1%82%D1%83%D0%BB"
-      : "");
+      : "";
   const peekStack = itemInfoStackHtml(it, {
     isTitle: isPeekTitle,
     isAch: isPeekAch,
@@ -5850,11 +5917,7 @@ function renderDetail(it) {
   const sheetBar = sheetChromeHtml(it);
   const backBar = isGuideNarrow() ? "" : navBackHtml();
   const titleItem = isTitleItem(it);
-  const wiki =
-    it.wiki ||
-    (titleItem
-      ? state.titlesMeta?.source || "https://parapa.ru/wiki/index.php/%D0%A2%D0%B8%D1%82%D1%83%D0%BB"
-      : state.wikiMeta?.source || "https://parapa.ru/wiki/");
+  const wiki = guideWikiHref(it, titleItem);
   const isAch = !titleItem && (it.kind === "achievements" || state.section === "achievements");
   const hasColorLooks = !titleItem && !isAch && hasDistinctLookColors(it);
   const view = detailViewItem(it);
@@ -6468,10 +6531,11 @@ function bindUi() {
 async function loadData() {
   const v = DATA_CACHE_VER;
   // cache: default — браузер кэширует по ?v=, но может перепроверить; не «навечно» как force-cache
-  const [titlesRes, wikiRes, shopRes] = await Promise.all([
+  const [titlesRes, wikiRes, shopRes, anchorRes] = await Promise.all([
     fetch(`./data/titles.json?v=${v}`, { cache: "default" }),
     fetch(`./data/wiki_items.json?v=${v}`, { cache: "default" }),
     fetch(`./data/items.json?v=${v}`, { cache: "default" }),
+    fetch(`./data/wiki_anchors.json?v=1`, { cache: "default" }).catch(() => null),
     window.FuturumCatalogWait?.demoGate?.() || Promise.resolve(),
   ]);
   if (!titlesRes.ok) throw new Error("titles.json " + titlesRes.status);
@@ -6493,6 +6557,14 @@ async function loadData() {
     state.shopItems = Array.isArray(shopData.items) ? shopData.items : [];
   } else {
     state.shopItems = [];
+  }
+  if (anchorRes && anchorRes.ok) {
+    const anchorData = await anchorRes.json();
+    wikiAnchors = {
+      t: anchorData.t || {},
+      w: anchorData.w || {},
+      h: anchorData.h || {},
+    };
   }
   buildShopIndex();
   catalogReady = true;
