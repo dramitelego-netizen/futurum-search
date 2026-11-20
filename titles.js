@@ -1497,7 +1497,7 @@ function escapeRegExp(s) {
   return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-let wikiAnchors = { t: {}, w: {}, h: {} };
+let wikiAnchors = { t: {}, w: {}, h: {}, tt: {}, wt: {} };
 
 function normWikiKey(s) {
   return String(s || "")
@@ -1528,10 +1528,15 @@ function wikiPageTitleFromUrl(url) {
   return "";
 }
 
-function withWikiAnchor(url, fragment) {
+function encodeWikiTextFragment(text) {
+  return encodeURIComponent(String(text || "").trim()).replace(/-/g, "%2D");
+}
+
+function withWikiAnchor(url, fragment, text) {
   const raw = String(url || "").trim();
-  if (!raw || !fragment || raw.includes("#")) return raw;
-  return `${raw}#${fragment}`;
+  const dir = text ? `:~:text=${encodeWikiTextFragment(text)}` : "";
+  if (!raw || raw.includes("#") || (!fragment && !dir)) return raw;
+  return `${raw}#${fragment || ""}${dir}`;
 }
 
 function itemWikiFragment(it, isTitle) {
@@ -1540,13 +1545,19 @@ function itemWikiFragment(it, isTitle) {
   return wikiAnchors.w?.[`${it.kind}:${it.id}`] || "";
 }
 
+function itemWikiText(it, isTitle) {
+  if (!it) return "";
+  if (isTitle) return wikiAnchors.tt?.[String(it.id)] || "";
+  return wikiAnchors.wt?.[`${it.kind}:${it.id}`] || "";
+}
+
 function guideWikiHref(it, isTitle) {
   const base =
     (it && it.wiki) ||
     (isTitle
       ? state.titlesMeta?.source || "https://parapa.ru/wiki/index.php/%D0%A2%D0%B8%D1%82%D1%83%D0%BB"
       : state.wikiMeta?.source || "https://parapa.ru/wiki/");
-  return withWikiAnchor(base, itemWikiFragment(it, isTitle));
+  return withWikiAnchor(base, itemWikiFragment(it, isTitle), itemWikiText(it, isTitle));
 }
 
 /** Ссылка на вики, у которой текст совпадает с заголовком общей страницы. */
@@ -6535,7 +6546,7 @@ async function loadData() {
     fetch(`./data/titles.json?v=${v}`, { cache: "default" }),
     fetch(`./data/wiki_items.json?v=${v}`, { cache: "default" }),
     fetch(`./data/items.json?v=${v}`, { cache: "default" }),
-    fetch(`./data/wiki_anchors.json?v=1`, { cache: "default" }).catch(() => null),
+    fetch(`./data/wiki_anchors.json?v=2`, { cache: "default" }).catch(() => null),
     window.FuturumCatalogWait?.demoGate?.() || Promise.resolve(),
   ]);
   if (!titlesRes.ok) throw new Error("titles.json " + titlesRes.status);
@@ -6564,6 +6575,8 @@ async function loadData() {
       t: anchorData.t || {},
       w: anchorData.w || {},
       h: anchorData.h || {},
+      tt: anchorData.tt || {},
+      wt: anchorData.wt || {},
     };
   }
   buildShopIndex();

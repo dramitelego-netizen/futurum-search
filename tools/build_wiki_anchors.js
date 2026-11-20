@@ -53,6 +53,7 @@ function wikiPageTitle(url) {
 
 function indexHtml(html) {
   const headings = [];
+  const chunks = [];
   const labels = new Map();
   const stack = [];
   let current = null;
@@ -62,7 +63,14 @@ function indexHtml(html) {
   while ((m = re.exec(html))) {
     if (m[4] != null) {
       if (skip) continue;
-      const text = decodeEntities(m[4]).replace(/\s+/g, " ").trim();
+      const decoded = decodeEntities(m[4]).replace(/\s+/g, " ");
+      for (let i = stack.length - 1; i >= 0; i--) {
+        if (stack[i].collect) {
+          stack[i].text += decoded;
+          break;
+        }
+      }
+      const text = decoded.trim();
       if (!text || text.length > 140 || !current) continue;
       const parent = stack.length ? stack[stack.length - 1].name : "";
       const rank = parent === "td" || parent === "th" || parent === "b" || parent === "strong" || parent === "li" || parent === "a" ? 2 : 1;
@@ -79,6 +87,10 @@ function indexHtml(html) {
     if (closing) {
       for (let i = stack.length - 1; i >= 0; i--) {
         if (stack[i].name === name) {
+          if (stack[i].collect) {
+            const chunk = String(stack[i].text || "").replace(/\s+/g, " ").trim();
+            if (chunk) chunks.push(chunk);
+          }
           if (stack[i].skip) skip = Math.max(0, skip - 1);
           stack.length = i;
           break;
@@ -94,8 +106,12 @@ function indexHtml(html) {
       name === "style" ||
       (idAttr && idAttr[1] === "toc") ||
       (classAttr && /(^|\s)toc(\s|$)/.test(classAttr[1]));
+    const collect =
+      !isSkip &&
+      !skip &&
+      (name === "td" || name === "th" || name === "p" || name === "li" || /^h[1-6]$/.test(name));
     if (!selfClose) {
-      stack.push({ name, skip: isSkip });
+      stack.push({ name, skip: isSkip, collect, text: "" });
       if (isSkip) skip++;
     }
     if (name === "h1" && /id="firstHeading"/.test(attrs)) {
@@ -116,7 +132,21 @@ function indexHtml(html) {
   }
   const h1 = /<h1[^>]*id="firstHeading"[^>]*>([\s\S]*?)<\/h1>/.exec(html);
   const title = h1 ? decodeEntities(h1[1].replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim() : "";
-  return { title, norm: normKey(title), headings, labels };
+  return { title, norm: normKey(title), headings, labels, chunks };
+}
+
+/** Текст строки, если первое вхождение на странице — сама ячейка с названием. */
+function scrollText(page, item) {
+  const name = String(item.name || "").replace(/\s+/g, " ").trim();
+  if (!name || name.length < 2 || !page) return "";
+  const key = normKey(name);
+  if (!key || key === page.norm) return "";
+  if (page.headings.some((h) => h.norm === key)) return "";
+  for (const chunk of page.chunks || []) {
+    if (!chunk.includes(name)) continue;
+    return chunk === name ? name : "";
+  }
+  return "";
 }
 
 const COLOR_PREFIX = new Set([
@@ -220,8 +250,8 @@ function main() {
   const pages = loadPages();
   const titles = JSON.parse(fs.readFileSync(path.join(dataDir, "titles.json"), "utf8"));
   const wiki = JSON.parse(fs.readFileSync(path.join(dataDir, "wiki_items.json"), "utf8"));
-  const out = { t: {}, w: {} };
-  const stats = { name: 0, place: 0, category: 0, source: 0, own: 0, miss: 0, noPage: 0 };
+  const out = { t: {}, w: {}, tt: {}, wt: {} };
+  const stats = { name: 0, place: 0, category: 0, source: 0, own: 0, miss: 0, noPage: 0, text: 0 };
   const byKind = {};
   const missSample = [];
 
@@ -230,7 +260,7 @@ function main() {
     const page = title ? pages.get(normKey(title)) : null;
     const shared = page ? sharedPages.has(page.norm) : false;
     const kind = item.kind || "titles";
-    if (!byKind[kind]) byKind[kind] = { name: 0, place: 0, category: 0, source: 0, own: 0, miss: 0, noPage: 0 };
+    if (!byKind[kind]) byKind[kind] = { name: 0, place: 0, category: 0, source: 0, own: 0, miss: 0, noPage: 0, text: 0 };
     if (!title) {
       stats.noPage++;
       byKind[kind].noPage++;
@@ -241,6 +271,14 @@ function main() {
       byKind[kind].noPage++;
       if (missSample.length < 12) missSample.push({ kind, name: item.name, why: "no html", page: title });
       return;
+    }
+    if (shared) {
+      const text = scrollText(page, item);
+      if (text) {
+        stats.text++;
+        byKind[kind].text++;
+        (bucket === out.t ? out.tt : out.wt)[key] = text;
+      }
     }
     if (namesOf(item).some((n) => normKey(n) === page.norm)) {
       stats.own++;
