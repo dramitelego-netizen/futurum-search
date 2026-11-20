@@ -698,6 +698,7 @@ function paintMobileChrome() {
   if (tab === "catalog") renderMobCatalog();
   if (tab === "fav") renderMobFavorites();
   paintMobChips();
+  paintRecent();
   syncBrandHeroMode();
 }
 
@@ -974,6 +975,281 @@ function paintSheetFavBtn() {
   btn.textContent = on ? "★" : "☆";
 }
 
+const RECENT_KEY = "futurum_guide_recent";
+const QUERY_KEY = "futurum_guide_queries";
+
+function loadJsonList(key) {
+  try {
+    const raw = JSON.parse(localStorage.getItem(key) || "[]");
+    return Array.isArray(raw) ? raw : [];
+  } catch {
+    return [];
+  }
+}
+
+function ensureMobComfort() {
+  if (document.getElementById("guideRecent")) return;
+  const row = document.createElement("div");
+  row.id = "guideRecent";
+  row.className = "guide-recent";
+  row.hidden = true;
+  row.setAttribute("aria-label", "Недавние");
+  const chips = document.getElementById("guideMobChips");
+  const hero = els.q?.closest(".guide-hero-row");
+  if (chips) chips.before(row);
+  else hero?.after(row);
+  const box = document.createElement("div");
+  box.id = "guideQRecent";
+  box.className = "guide-q-recent";
+  box.hidden = true;
+  els.q?.closest(".search-wrap")?.append(box);
+  row.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-recent-id]");
+    if (!btn) return;
+    openRecent(btn.dataset.recentId, btn.dataset.recentSection || "");
+  });
+  box.addEventListener("pointerdown", (e) => {
+    const btn = e.target.closest("[data-q-recent]");
+    if (!btn) return;
+    e.preventDefault();
+    applySavedQuery(btn.dataset.qRecent || "");
+  });
+}
+
+function paintRecent() {
+  const host = document.getElementById("guideRecent");
+  if (!host) return;
+  const rows = loadJsonList(RECENT_KEY).filter((row) => row && row.name && findGuideItem(row.id, row.section));
+  const show = isGuideNarrow() && mobileUi.tab === "home" && rows.length > 0;
+  host.hidden = !show;
+  if (!show) {
+    host.innerHTML = "";
+    return;
+  }
+  host.innerHTML = rows
+    .slice(0, 8)
+    .map(
+      (row) =>
+        `<button type="button" class="guide-recent-btn" data-recent-id="${escapeHtml(String(row.id))}" data-recent-section="${escapeHtml(
+          row.section || ""
+        )}">${escapeHtml(row.name)}</button>`
+    )
+    .join("");
+}
+
+function rememberRecent(it) {
+  if (!isGuideNarrow() || !it) return;
+  const section = itemSectionOf(it);
+  const next = {
+    id: it.id,
+    section,
+    name: String(it.name || "").trim(),
+  };
+  if (!next.name) return;
+  const rows = loadJsonList(RECENT_KEY).filter(
+    (row) => !(Number(row.id) === Number(next.id) && String(row.section || "") === String(section || ""))
+  );
+  rows.unshift(next);
+  try {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(rows.slice(0, 8)));
+  } catch {
+    /* ignore */
+  }
+  paintRecent();
+}
+
+function openRecent(id, section) {
+  const it = findGuideItem(id, section);
+  if (!it) {
+    paintRecent();
+    return;
+  }
+  hideQueryRecent();
+  if (state.landing) leaveLanding();
+  if (isGuideNarrow() && mobileUi.tab !== "home") setMobileTab("home");
+  if (section && section !== state.section) setSection(section, { keepQuery: true });
+  selectItem(it.id, section);
+}
+
+function loadQueries() {
+  return loadJsonList(QUERY_KEY)
+    .map((q) => String(q || "").trim())
+    .filter((q) => q.length >= 2);
+}
+
+function rememberQuery(value) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  if (text.length < 2) return;
+  const rows = loadQueries().filter((q) => q.toLowerCase() !== text.toLowerCase());
+  rows.unshift(text);
+  try {
+    localStorage.setItem(QUERY_KEY, JSON.stringify(rows.slice(0, 6)));
+  } catch {
+    /* ignore */
+  }
+}
+
+function hideQueryRecent() {
+  const box = document.getElementById("guideQRecent");
+  const wrap = els.q?.closest(".search-wrap");
+  if (box) {
+    box.hidden = true;
+    box.innerHTML = "";
+  }
+  wrap?.classList.remove("is-q-open");
+}
+
+function paintQueryRecent() {
+  const box = document.getElementById("guideQRecent");
+  const wrap = els.q?.closest(".search-wrap");
+  if (!box || !wrap || !els.q) return;
+  if (!isGuideNarrow() || document.activeElement !== els.q) {
+    hideQueryRecent();
+    return;
+  }
+  const typed = els.q.value.trim().toLowerCase();
+  const rows = loadQueries()
+    .filter((q) => !typed || (q.toLowerCase().includes(typed) && q.toLowerCase() !== typed))
+    .slice(0, 5);
+  if (!rows.length) {
+    hideQueryRecent();
+    return;
+  }
+  box.hidden = false;
+  wrap.classList.add("is-q-open");
+  box.innerHTML = rows
+    .map((q) => `<button type="button" class="guide-q-recent-btn" data-q-recent="${escapeHtml(q)}">${escapeHtml(q)}</button>`)
+    .join("");
+}
+
+function applySavedQuery(value) {
+  const text = String(value || "").trim();
+  if (!els.q || !text) return;
+  els.q.value = text;
+  state.query = text;
+  rememberQuery(text);
+  syncUrl();
+  filterAndSort();
+  hideQueryRecent();
+  els.q.blur();
+}
+
+function bindQueryRecent() {
+  if (!els.q || els.q.dataset.qRecent === "1") return;
+  els.q.dataset.qRecent = "1";
+  els.q.addEventListener("focus", () => paintQueryRecent());
+  els.q.addEventListener("blur", () => {
+    rememberQuery(els.q.value);
+    window.setTimeout(() => {
+      if (document.activeElement !== els.q) hideQueryRecent();
+    }, 140);
+  });
+  els.q.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      rememberQuery(els.q.value);
+      hideQueryRecent();
+    } else if (e.key === "Escape") {
+      hideQueryRecent();
+    }
+  });
+}
+
+function shareGuideItem() {
+  const it =
+    findGuideItem(state.activeId, state.section) ||
+    state.list.find((x) => Number(x.id) === Number(state.activeId)) ||
+    null;
+  if (!it) return;
+  syncUrl();
+  const url = location.href;
+  const title = String(it.name || "FUTURUM");
+  if (navigator.share) {
+    navigator.share({ title, text: title, url }).catch((err) => {
+      if (err && err.name === "AbortError") return;
+      copyGuideLink(url);
+    });
+    return;
+  }
+  copyGuideLink(url);
+}
+
+function copyGuideLink(url) {
+  const done = () => guideToast("Ссылка скопирована");
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(url).then(done).catch(done);
+    return;
+  }
+  done();
+}
+
+let guideToastTimer = 0;
+function guideToast(text) {
+  let el = document.getElementById("guideToast");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "guideToast";
+    el.className = "guide-toast";
+    el.setAttribute("role", "status");
+    document.body.appendChild(el);
+  }
+  el.textContent = text;
+  el.classList.add("is-on");
+  clearTimeout(guideToastTimer);
+  guideToastTimer = window.setTimeout(() => el.classList.remove("is-on"), 1400);
+}
+
+function bindSheetSwipe() {
+  if (document.body.dataset.sheetSwipe === "1") return;
+  document.body.dataset.sheetSwipe = "1";
+  let drag = null;
+  const clearDrag = () => {
+    document.body.classList.remove("guide-sheet-drag", "guide-sheet-drop");
+    document.body.style.removeProperty("--sheet-drag");
+  };
+  document.addEventListener("pointerdown", (e) => {
+    if (!mobileUi.sheetOpen || !isGuideNarrow() || e.button > 0) return;
+    const chrome = e.target.closest?.(".guide-sheet-chrome");
+    if (!chrome || !els.detail?.contains(chrome)) return;
+    if (e.target.closest("button, a, input, textarea")) return;
+    drag = { id: e.pointerId, y: e.clientY, dy: 0 };
+    chrome.setPointerCapture?.(e.pointerId);
+  });
+  document.addEventListener("pointermove", (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dy = Math.max(0, e.clientY - drag.y);
+    drag.dy = dy;
+    if (dy < 6) return;
+    document.body.classList.add("guide-sheet-drag");
+    document.body.classList.remove("guide-sheet-drop");
+    document.body.style.setProperty("--sheet-drag", `${Math.round(dy)}px`);
+  });
+  const end = (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dy = drag.dy;
+    drag = null;
+    if (dy < 10) {
+      clearDrag();
+      return;
+    }
+    if (dy > 78) {
+      document.body.classList.remove("guide-sheet-drag");
+      document.body.classList.add("guide-sheet-drop");
+      document.body.style.setProperty("--sheet-drag", "108%");
+      window.setTimeout(() => {
+        clearDrag();
+        closeMobileSheet();
+      }, 190);
+      return;
+    }
+    document.body.classList.remove("guide-sheet-drag");
+    document.body.classList.add("guide-sheet-drop");
+    document.body.style.setProperty("--sheet-drag", "0px");
+    window.setTimeout(clearDrag, 200);
+  };
+  document.addEventListener("pointerup", end);
+  document.addEventListener("pointercancel", end);
+}
+
 function sheetChromeHtml(it) {
   if (!isGuideNarrow() || !it) return "";
   const sec = itemSectionOf(it);
@@ -984,6 +1260,9 @@ function sheetChromeHtml(it) {
       <span>К списку</span>
     </button>
     <span class="guide-sheet-chrome-spacer" aria-hidden="true"></span>
+    <button type="button" class="guide-sheet-share" data-sheet-share aria-label="Поделиться" title="Поделиться">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V6"/><path d="M8.2 9.2 12 5.4l3.8 3.8"/><path d="M6 13.2V18h12v-4.8"/></svg>
+    </button>
     <button type="button" class="guide-sheet-fav${on ? " on" : ""}" data-fav-toggle data-fav-section="${escapeHtml(
       sec
     )}" aria-pressed="${on ? "true" : "false"}" title="${on ? "Убрать из избранного" : "В избранное"}">${
@@ -1094,6 +1373,7 @@ function paintLandingChrome() {
     }
   }
   paintMobChips();
+  paintRecent();
   syncBrandHeroMode();
 }
 
@@ -5878,6 +6158,8 @@ function selectItem(id, section) {
   highlightActive();
   renderDetail(it);
   syncUrl();
+  if (it) rememberRecent(it);
+  hideQueryRecent();
   if (isGuideNarrow() && it) {
     if (mobileUi.tab === "fav") setMobileTab("home");
     openMobileSheet();
@@ -6189,6 +6471,9 @@ function bindImgFbFallback() {
 
 function bindUi() {
   window.addEventListener("popstate", onGuidePopState);
+  ensureMobComfort();
+  bindSheetSwipe();
+  bindQueryRecent();
   bindSearchFx();
   bindFilterPillFx();
   bindImgFbFallback();
@@ -6247,13 +6532,11 @@ function bindUi() {
     "click",
     (e) => {
       if (!mobileUi.sheetOpen || !isGuideNarrow()) return;
-      if (e.target.closest("[data-sheet-close], [data-sheet-expand], [data-fav-toggle]")) return;
+      if (e.target.closest("[data-sheet-close], [data-sheet-expand], [data-fav-toggle], [data-sheet-share]")) return;
       const t = e.target;
       const empty =
         t === els.detail ||
         t.classList?.contains("ttl-detail") ||
-        t.classList?.contains("guide-sheet-chrome") ||
-        t.classList?.contains("guide-sheet-chrome-spacer") ||
         t.classList?.contains("ttl-detail-top") ||
         t.classList?.contains("ttl-detail-aside") ||
         t.classList?.contains("ttl-detail-meta") ||
@@ -6347,6 +6630,11 @@ function bindUi() {
   });
 
   els.detail?.addEventListener("click", (e) => {
+    if (e.target.closest("[data-sheet-share]")) {
+      e.preventDefault();
+      shareGuideItem();
+      return;
+    }
     if (e.target.closest("[data-sheet-close]")) {
       e.preventDefault();
       closeMobileSheet();
@@ -6489,6 +6777,8 @@ function bindUi() {
   const onGuideLayoutChange = () => {
     syncGuideLayoutMode();
     paintMobChips();
+    paintRecent();
+    hideQueryRecent();
     paintGuideSideChrome();
     if (els.q) {
       els.q.placeholder = isGuideNarrow() ? "Название, ОП…" : "Название, описание, где взять…";
@@ -6509,6 +6799,7 @@ function bindUi() {
   let t = null;
   els.q?.addEventListener("input", () => {
     clearTimeout(t);
+    paintQueryRecent();
     t = setTimeout(() => {
       state.query = els.q.value || "";
       syncUrl();

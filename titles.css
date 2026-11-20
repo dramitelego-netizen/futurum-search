@@ -6789,6 +6789,7 @@ body.guide-page.guide-layout-mobile .preview .guide-sheet-chrome-spacer {
 }
 
 body.guide-page.guide-layout-mobile .preview .guide-sheet-fav,
+body.guide-page.guide-layout-mobile .preview .guide-sheet-share,
 body.guide-page.guide-layout-mobile .preview .guide-sheet-close {
   width: 34px;
   height: 34px;
@@ -8855,4 +8856,166 @@ body.guide-page.guide-layout-mobile #q::-webkit-search-results-decoration {
   -webkit-appearance: none !important;
   appearance: none !important;
   display: none !important;
+}
+
+body.guide-page.guide-layout-mobile .preview .guide-sheet-chrome::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  right: -10px;
+  top: -10px;
+  height: 48px;
+  pointer-events: auto;
+}
+
+body.guide-page.guide-layout-mobile .preview .guide-sheet-chrome {
+  touch-action: none;
+}
+
+body.guide-page.guide-layout-mobile .preview .guide-sheet-chrome > * {
+  position: relative;
+  z-index: 1;
+}
+
+body.guide-page.guide-layout-mobile .preview .guide-sheet-share svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+body.guide-page.guide-layout-mobile.guide-sheet-open.guide-sheet-drag .preview {
+  transform: translateY(var(--sheet-drag, 0px)) !important;
+  transition: none !important;
+}
+
+body.guide-page.guide-layout-mobile.guide-sheet-open.guide-sheet-drop .preview {
+  transform: translateY(var(--sheet-drag, 0px)) !important;
+  transition: transform 0.2s ease !important;
+}
+
+body.guide-page.guide-layout-mobile .guide-hero-row {
+  position: relative;
+  z-index: 6;
+}
+
+body.guide-page.guide-layout-mobile .search-wrap {
+  position: relative;
+}
+
+body.guide-page.guide-layout-mobile .search-wrap.is-q-open {
+  overflow: visible !important;
+  z-index: 2;
+}
+
+body.guide-page.guide-layout-mobile .guide-q-recent {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 3;
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0.28rem;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--accent, #3dffd0) 22%, transparent);
+  background: #121a24;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+body.guide-page.guide-layout-mobile .guide-q-recent[hidden] {
+  display: none !important;
+}
+
+body.guide-page.guide-layout-mobile .guide-q-recent-btn {
+  appearance: none;
+  width: 100%;
+  min-height: 34px;
+  padding: 0.35rem 0.7rem;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #eef4fb;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 650;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body.guide-page.guide-layout-mobile .guide-q-recent-btn:active {
+  background: rgba(61, 255, 208, 0.1);
+}
+
+body.guide-page.guide-layout-mobile .guide-recent {
+  display: flex;
+  gap: 0.35rem;
+  width: 100%;
+  max-width: 100%;
+  margin: 0.15rem 0 0.05rem;
+  padding: 0;
+  overflow-x: auto;
+  box-sizing: border-box;
+  scrollbar-width: none;
+}
+
+body.guide-page.guide-layout-mobile .guide-recent[hidden] {
+  display: none !important;
+}
+
+body.guide-page.guide-layout-mobile .guide-recent::-webkit-scrollbar {
+  display: none;
+}
+
+body.guide-page.guide-layout-mobile .guide-recent-btn {
+  appearance: none;
+  flex: 0 0 auto;
+  max-width: 11.5rem;
+  height: 28px;
+  padding: 0 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(90, 220, 200, 0.22);
+  background: transparent;
+  color: #c5d0dc;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 28px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body.guide-page.guide-layout-desktop .guide-recent,
+body.guide-page.guide-layout-desktop .guide-q-recent,
+body.guide-page.guide-layout-desktop .guide-toast {
+  display: none !important;
+}
+
+.guide-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--guide-bnav-space, 5rem) + 0.35rem);
+  transform: translateX(-50%);
+  z-index: 70;
+  max-width: calc(100% - 2rem);
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(90, 220, 200, 0.28);
+  background: #121a24;
+  color: #eef4fb;
+  font-size: 0.75rem;
+  font-weight: 700;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.guide-toast.is-on {
+  opacity: 1;
 }
