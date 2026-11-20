@@ -1020,7 +1020,7 @@ function paintRecent() {
   const host = document.getElementById("guideRecent");
   if (!host) return;
   const rows = loadJsonList(RECENT_KEY).filter((row) => row && row.name && findGuideItem(row.id, row.section));
-  const show = isGuideNarrow() && mobileUi.tab === "home" && rows.length > 0;
+  const show = rows.length > 0 && (!isGuideNarrow() || mobileUi.tab === "home");
   host.hidden = !show;
   if (!show) {
     host.innerHTML = "";
@@ -1038,7 +1038,7 @@ function paintRecent() {
 }
 
 function rememberRecent(it) {
-  if (!isGuideNarrow() || !it) return;
+  if (!it) return;
   const section = itemSectionOf(it);
   const next = {
     id: it.id,
@@ -1103,7 +1103,7 @@ function paintQueryRecent() {
   const box = document.getElementById("guideQRecent");
   const wrap = els.q?.closest(".search-wrap");
   if (!box || !wrap || !els.q) return;
-  if (!isGuideNarrow() || document.activeElement !== els.q) {
+  if (document.activeElement !== els.q) {
     hideQueryRecent();
     return;
   }
@@ -1154,6 +1154,16 @@ function bindQueryRecent() {
   });
 }
 
+function deskShareHtml() {
+  if (isGuideNarrow()) return "";
+  return `<button type="button" class="guide-desk-share" data-sheet-share aria-label="Поделиться" title="Скопировать ссылку"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V6"/><path d="M8.2 9.2 12 5.4l3.8 3.8"/><path d="M6 13.2V18h12v-4.8"/></svg></button>`;
+}
+
+function deskNameRow(inner) {
+  if (isGuideNarrow()) return inner;
+  return `<div class="ttl-name-row">${inner}${deskShareHtml()}</div>`;
+}
+
 function shareGuideItem() {
   const it =
     findGuideItem(state.activeId, state.section) ||
@@ -1163,7 +1173,7 @@ function shareGuideItem() {
   syncUrl();
   const url = location.href;
   const title = String(it.name || "FUTURUM");
-  if (navigator.share) {
+  if (isGuideNarrow() && navigator.share) {
     navigator.share({ title, text: title, url }).catch((err) => {
       if (err && err.name === "AbortError") return;
       copyGuideLink(url);
@@ -6309,7 +6319,9 @@ function renderDetail(it) {
         <div class="ttl-detail-top${topClass}">
           ${topImg}
           <div class="ttl-detail-aside">
-            <div class="ttl-title-preview ${opClass(it.op)}" title="Цвет оповещения по ОП">${escapeHtml(it.name)}</div>
+            ${deskNameRow(
+              `<div class="ttl-title-preview ${opClass(it.op)}" title="Цвет оповещения по ОП">${escapeHtml(it.name)}</div>`
+            )}
             ${stats}
             ${aura}
           </div>
@@ -6332,7 +6344,9 @@ function renderDetail(it) {
       ${backBar}
       <div class="ttl-detail-top has-look-colors">
         <div class="ttl-look-head">
-          <div class="wiki-name-preview" data-default-name="${escapeHtml(it.name)}">${escapeHtml(shownName)}</div>
+          ${deskNameRow(
+            `<div class="wiki-name-preview" data-default-name="${escapeHtml(it.name)}">${escapeHtml(shownName)}</div>`
+          )}
           ${stats}
         </div>
         ${topImg}
@@ -6349,7 +6363,9 @@ function renderDetail(it) {
       <div class="ttl-detail-top${topClass}">
         ${topImg}
         <div class="ttl-detail-aside">
-          <div class="wiki-name-preview" data-default-name="${escapeHtml(it.name)}">${escapeHtml(shownName)}</div>
+          ${deskNameRow(
+            `<div class="wiki-name-preview" data-default-name="${escapeHtml(it.name)}">${escapeHtml(shownName)}</div>`
+          )}
           ${stats}
         </div>
       </div>
