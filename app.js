@@ -1105,8 +1105,8 @@ function syncFilterPills(root, attr, value) {
 function itemMatchesGender(item, gender) {
   if (!gender) return true;
   const g = item.gender || null;
-  if (g === gender) return true;
-  if (g === "unisex") return true;
+  // Без пола и «для всех» остаются: фильтр прячет только чужой явный пол.
+  if (!g || g === "unisex" || g === gender) return true;
   return false;
 }
 
