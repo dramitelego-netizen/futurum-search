@@ -569,8 +569,7 @@ def main() -> int:
                     existing["imageUrl"] = new_url
                     if is_gift_icon(old_img):
                         existing["image"] = None
-                # витрина Алисы — категория фильтра
-                existing["category"] = CATEGORY
+                # Раздел остаётся с вики. Алиса читается из источника, не из категории.
                 if existing.get("source") != before_src or new_url:
                     updated += 1
             else:

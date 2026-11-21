@@ -2,6 +2,9 @@ https://dramitelego-netizen.github.io/futurum-search/
 https://dramitelego-netizen.github.io/futurum-search/shop.html
 https://dramitelego-netizen.github.io/futurum-search/catalog.html
 https://dramitelego-netizen.github.io/futurum-search/titles.html
+https://dramitelego-netizen.github.io/futurum-search/titles-m.html
+https://dramitelego-netizen.github.io/futurum-search/promo.html
+https://dramitelego-netizen.github.io/futurum-search/wheel.html
 https://dramitelego-netizen.github.io/futurum-search/updates.html
 https://dramitelego-netizen.github.io/futurum-search/para-pa-magazin.html
 https://dramitelego-netizen.github.io/futurum-search/para-pa-ceny.html

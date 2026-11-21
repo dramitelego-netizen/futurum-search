@@ -59,6 +59,7 @@ h1{font-family:Orbitron,sans-serif;font-size:clamp(1.05rem,2.8vw,1.45rem);letter
 .list .nm{font-weight:600}
 .list .pr{font-variant-numeric:tabular-nums;color:var(--accent);white-space:nowrap}
 .list .pr.sale{color:var(--accent2)}
+.list .pr.sale .old{color:var(--mute);text-decoration:line-through;margin-left:.4rem;font-size:.92rem;font-weight:600}
 .thumb{display:block;width:min(160px,40vw);height:auto;border-radius:12px;border:1px solid var(--line);margin:0 0 .85rem;background:#0a0c10}
 .sec-grid{display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 1.25rem}
 .sec-grid a{padding:.28rem .65rem;border-radius:999px;border:1px solid var(--line);font-size:.8rem;color:var(--mute)}
@@ -477,15 +478,16 @@ def build_updates_page(items: list[dict], payload: dict) -> str:
             it = by_id.get(iid) or e
             name = esc(it.get("name") or e.get("name") or f"#{iid}")
             price = e.get("price", it.get("price"))
+            price_cls = "pr sale" if kind == "sale" else "pr"
             extra = ""
             if kind == "sale" and e.get("priceOld"):
-                extra = f' <span class="pr sale">{esc(fmt_price(e.get("priceOld")))}</span>'
+                extra = f' <span class="old">{esc(fmt_price(e.get("priceOld")))}</span>'
             if kind == "move" and e.get("t"):
                 extra = f' <span class="meta">· {_fmt_day(e["t"])}</span>'
             bits.append(
                 f'<li><a class="row" href="{SITE}/item/{iid}.html">'
                 f'<span class="nm">{name}</span>'
-                f'<span class="pr">{esc(fmt_price(price))}</span>{extra}'
+                f'<span class="{price_cls}">{esc(fmt_price(price))}{extra}</span>'
                 f"</a></li>"
             )
         return '<ul class="list">' + "\n".join(bits) + "</ul>" if bits else "<p class=\"meta\">Пока пусто.</p>"
@@ -692,6 +694,9 @@ def main() -> int:
         (f"{SITE}/shop.html", catalog_last),
         (f"{SITE}/catalog.html", catalog_last),
         (f"{SITE}/titles.html", today),
+        (f"{SITE}/titles-m.html", today),
+        (f"{SITE}/promo.html", None),
+        (f"{SITE}/wheel.html", None),
     ]
 
     # посадочные «Пара па» + лента новинок/скидок

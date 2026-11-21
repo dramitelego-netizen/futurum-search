@@ -59,6 +59,19 @@
   <script>
     (() => {
       try {
+        const ui = new URLSearchParams(location.search).get("ui");
+        const ua = navigator.userAgent || "";
+        const phone =
+          /Android.+Mobile|iPhone|iPod|Windows Phone|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua) ||
+          (navigator.platform === "MacIntel" && Number(navigator.maxTouchPoints || 0) > 1) ||
+          /iPad|Android(?!.*Mobile)|Tablet/i.test(ua);
+        if (phone && ui !== "desktop" && ui !== "pc") {
+          const next = new URLSearchParams(location.search);
+          next.delete("ui");
+          const q = next.toString();
+          location.replace("./titles-m.html" + (q ? "?" + q : "") + location.hash);
+          return;
+        }
         const themes = ["dark", "light", "gray"];
         const t = localStorage.getItem("futurum_theme");
         document.documentElement.setAttribute("data-theme", themes.includes(t) ? t : "dark");
@@ -398,7 +411,7 @@
   </a>
 
   <script src="catalog-wait.js?v=5" defer></script>
-  <script src="titles.js?v=167" defer></script>
+  <script src="titles.js?v=168" defer></script>
   <script src="edge-swap.js?v=3" defer></script>
 </body>
 </html>
