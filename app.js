@@ -56,6 +56,23 @@ const state = {
   sort: loadSort(),
 };
 
+const SHOP_PAGE = 80;
+let shopWindow = SHOP_PAGE;
+let shopWindowKey = "";
+
+function shopBrowseKey() {
+  return [
+    state.query,
+    state.linkItemId ?? "",
+    state.gender,
+    state.category,
+    state.badge,
+    state.showFavs ? "1" : "0",
+    state.showSale ? "1" : "0",
+    state.sort,
+  ].join("\u0001");
+}
+
 const LINK_STOPWORDS = new Set([
   "для",
   "от",
@@ -1246,7 +1263,7 @@ function filtered() {
         .filter(passesFilters)
         .map((item) => ({ item, score: 1, fuzzy: false })),
       false
-    ).slice(0, 250);
+    );
   }
 
   return sortRanked(
@@ -1257,7 +1274,7 @@ function filtered() {
       })
       .filter((x) => x.score >= 0 && passesFilters(x.item)),
     true
-  ).slice(0, 250);
+  );
 }
 
 function isCoarsePointer() {
@@ -1568,7 +1585,12 @@ function playHeroCarSettle() {
   hero.addEventListener("animationend", done);
 }
 
-function render() {
+function render(opts = {}) {
+  const browseKey = shopBrowseKey();
+  if (browseKey !== shopWindowKey) {
+    shopWindowKey = browseKey;
+    shopWindow = SHOP_PAGE;
+  }
   const hasQuery =
     Boolean(tokenize(state.query).length) || state.linkItemId != null;
   const ranked = filtered();
@@ -1627,7 +1649,17 @@ function render() {
     return;
   }
 
-  els.results.innerHTML = ranked
+  const visible = ranked.slice(0, shopWindow);
+  const hidden = ranked.length - visible.length;
+  const more =
+    hidden > 0
+      ? `<li><button type="button" class="result-more" data-shop-more>Показать ещё ${Math.min(
+          SHOP_PAGE,
+          hidden
+        )}</button></li>`
+      : "";
+  const scrollTop = opts.keepPlace ? els.results.scrollTop : 0;
+  els.results.innerHTML = visible
     .map(({ item, fuzzy, fromLink, nearId, genderTwin, variantLabel }) => {
       const sale = itemOnSale(item);
       const gone = itemUnavailable(item);
@@ -1667,10 +1699,14 @@ function render() {
         </div>
       </li>`;
     })
-    .join("");
+    .join("") + more;
+  if (opts.keepPlace) {
+    els.results.scrollTop = scrollTop;
+    return;
+  }
 
   // прогрев первых картинок сразу после выдачи
-  ranked.slice(0, 12).forEach((x) => warmItem(x.item));
+  visible.slice(0, 12).forEach((x) => warmItem(x.item));
 
   const preferId = state.linkItemId != null ? state.linkItemId : state.activeId;
   const still =
@@ -1945,6 +1981,11 @@ function bind() {
   });
 
   els.results.addEventListener("click", (e) => {
+    if (e.target.closest("[data-shop-more]")) {
+      shopWindow += SHOP_PAGE;
+      render({ keepPlace: true });
+      return;
+    }
     const favBtn = e.target.closest("[data-fav]");
     if (favBtn) {
       e.preventDefault();

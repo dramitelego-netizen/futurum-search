@@ -6039,6 +6039,7 @@ function filterAndSort() {
 }
 
 let catalogReady = false;
+let wikiLoaded = false;
 
 function renderList() {
   if (!els.list) return;
@@ -6048,7 +6049,10 @@ function renderList() {
     return;
   }
   if (!state.list.length) {
-    els.list.innerHTML = `<li class="result-empty">Ничего не найдено</li>`;
+    const waiting = !wikiLoaded && (state.section !== "titles" || Boolean(norm(state.query)));
+    els.list.innerHTML = waiting
+      ? `<li class="result-empty">Остальные разделы ещё загружаются</li>`
+      : `<li class="result-empty">Ничего не найдено</li>`;
     return;
   }
   const globalSearch = Boolean(norm(state.query));
@@ -6928,48 +6932,100 @@ function bindUi() {
   });
 }
 
-async function loadData() {
+function paintGuide() {
+  const followUp = Boolean(paintGuide.ready);
+  applySectionPool();
+  buildCategoryPills();
+  updateSectionUi();
+  updatePillsUi();
+
+  if (!paintGuide.ready) {
+    const params = new URLSearchParams(location.search);
+    const q = params.get("q");
+    if (q && els.q) {
+      els.q.value = q;
+      state.query = q;
+    }
+    state.landing = isGuideNarrow() && !hasGuideDeepLink();
+    paintLandingChrome();
+    paintGuide.ready = true;
+  }
+
+  const keepId = state.activeId;
+  const keepScroll = followUp && state.section === "titles" && !norm(state.query);
+  const savedLimit = listRenderLimit;
+  const savedTop = els.list ? els.list.scrollTop : 0;
+  filterAndSort();
+  if (keepScroll) {
+    listRenderLimit = Math.max(savedLimit, LIST_RENDER_PAGE);
+    renderList();
+    if (els.list) els.list.scrollTop = savedTop;
+  }
+  const id = Number(new URLSearchParams(location.search).get("id"));
+  const want = keepId || (Number.isFinite(id) && id > 0 ? id : null);
+  if (
+    !state.landing &&
+    want &&
+    state.activeId !== want &&
+    state.items.some((it) => it.id === want)
+  ) {
+    selectItem(want);
+  }
+  window.FuturumCatalogWait?.release?.();
+}
+
+async function loadData(onTitles) {
   const v = DATA_CACHE_VER;
-  // cache: default — браузер кэширует по ?v=, но может перепроверить; не «навечно» как force-cache
-  const [titlesRes, wikiRes, shopRes, anchorRes] = await Promise.all([
-    fetch(`./data/titles.json?v=${v}`, { cache: "default" }),
-    fetch(`./data/wiki_items.json?v=${v}`, { cache: "default" }),
-    fetch(`./data/items.json?v=${v}`, { cache: "default" }),
-    fetch(`./data/wiki_anchors.json?v=2`, { cache: "default" }).catch(() => null),
-    window.FuturumCatalogWait?.demoGate?.() || Promise.resolve(),
-  ]);
+  const titlesP = fetch(`./data/titles.json?v=${v}`, { cache: "default" });
+  const wikiP = fetch(`./data/wiki_items.json?v=${v}`, { cache: "default" });
+  const shopP = fetch(`./data/items.json?v=${v}`, { cache: "default" });
+  const anchorP = fetch(`./data/wiki_anchors.json?v=2`, { cache: "default" }).catch(() => null);
+  const gateP = window.FuturumCatalogWait?.demoGate?.() || Promise.resolve();
+
+  const titlesRes = await titlesP;
+  await gateP;
   if (!titlesRes.ok) throw new Error("titles.json " + titlesRes.status);
   const titlesData = await titlesRes.json();
   state.titlesMeta = titlesData;
   state.titles = Array.isArray(titlesData.items) ? titlesData.items : [];
-
-  if (wikiRes.ok) {
-    const wikiData = await wikiRes.json();
-    state.wikiMeta = wikiData;
-    state.wiki = Array.isArray(wikiData.items) ? wikiData.items : [];
-  } else {
-    state.wikiMeta = { byKind: {}, kinds: [] };
-    state.wiki = [];
-  }
-
-  if (shopRes.ok) {
-    const shopData = await shopRes.json();
-    state.shopItems = Array.isArray(shopData.items) ? shopData.items : [];
-  } else {
-    state.shopItems = [];
-  }
-  if (anchorRes && anchorRes.ok) {
-    const anchorData = await anchorRes.json();
-    wikiAnchors = {
-      t: anchorData.t || {},
-      w: anchorData.w || {},
-      h: anchorData.h || {},
-      tt: anchorData.tt || {},
-      wt: anchorData.wt || {},
-    };
-  }
-  buildShopIndex();
+  if (!Array.isArray(state.wiki)) state.wiki = [];
+  if (!state.wikiMeta) state.wikiMeta = { byKind: {}, kinds: [] };
+  if (!Array.isArray(state.shopItems)) state.shopItems = [];
   catalogReady = true;
+  if (onTitles) onTitles();
+
+  try {
+    const [wikiRes, shopRes, anchorRes] = await Promise.all([wikiP, shopP, anchorP]);
+    if (wikiRes.ok) {
+      const wikiData = await wikiRes.json();
+      state.wikiMeta = wikiData;
+      state.wiki = Array.isArray(wikiData.items) ? wikiData.items : [];
+    } else {
+      state.wikiMeta = { byKind: {}, kinds: [] };
+      state.wiki = [];
+    }
+    if (shopRes.ok) {
+      const shopData = await shopRes.json();
+      state.shopItems = Array.isArray(shopData.items) ? shopData.items : [];
+    } else {
+      state.shopItems = [];
+    }
+    if (anchorRes && anchorRes.ok) {
+      const anchorData = await anchorRes.json();
+      wikiAnchors = {
+        t: anchorData.t || {},
+        w: anchorData.w || {},
+        h: anchorData.h || {},
+        tt: anchorData.tt || {},
+        wt: anchorData.wt || {},
+      };
+    }
+    buildShopIndex();
+  } catch {
+    /* титулы уже на экране, большой справочник догрузится в следующий заход */
+  } finally {
+    wikiLoaded = true;
+  }
 }
 
 function storedImgSrcMode() {
@@ -6993,7 +7049,7 @@ async function init() {
   }
   bindUi();
   try {
-    await loadData();
+    await loadData(paintGuide);
   } catch (err) {
     if (els.detail) {
       els.detail.innerHTML = `<div class="preview-empty">Не удалось загрузить данные.<br>${escapeHtml(
@@ -7001,29 +7057,12 @@ async function init() {
       )}</div>`;
     }
     catalogReady = true;
+    wikiLoaded = true;
     window.FuturumCatalogWait?.release?.();
     return;
   }
 
-  applySectionPool();
-  buildCategoryPills();
-  updateSectionUi();
-  updatePillsUi();
-
-  const params = new URLSearchParams(location.search);
-  const q = params.get("q");
-  if (q && els.q) {
-    els.q.value = q;
-    state.query = q;
-  }
-  const id = Number(params.get("id"));
-  // пустой «только поиск» — только на телефоне; на ПК сразу полный гид с каталогом
-  state.landing = isGuideNarrow() && !hasGuideDeepLink();
-  paintLandingChrome();
-  filterAndSort();
-  if (!state.landing && Number.isFinite(id) && id > 0 && state.items.some((it) => it.id === id)) {
-    selectItem(id);
-  }
+  paintGuide();
 
   // телефон: не открывать клавиатуру при заходе на гид
   if (isGuideNarrow()) {

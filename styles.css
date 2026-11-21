@@ -3448,6 +3448,25 @@ body.is-stage .seo-kicker {
   box-shadow: none;
 }
 
+.result-more {
+  display: block;
+  width: 100%;
+  margin: 0.35rem 0 0.2rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.result-more:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
 .result-main {
   display: inline-flex;
   align-items: baseline;
