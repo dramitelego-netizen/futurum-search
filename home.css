@@ -200,25 +200,38 @@ body.is-portal-dive .home-gate:focus-visible .home-gate-3d {
   will-change: opacity;
 }
 
-/* Живой idle всегда под клипами — растворение без скачка кадра */
+/* Idle под клипами; два буфера кроссфейдятся на петле без рывка */
 .home-gate-media-anim .home-gate-anim-idle {
+  opacity: 0;
+  z-index: 1;
+  transition:
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.9s cubic-bezier(0.33, 0.1, 0.2, 1);
+}
+
+.home-gate-media-anim .home-gate-anim-idle.is-live {
   opacity: 1;
+  z-index: 2;
+}
+
+.home-gate-media-anim .home-gate-anim-idle.is-fading {
+  opacity: 0;
   z-index: 1;
 }
 
 .home-gate-media-anim .home-gate-anim-clip {
   opacity: 0;
-  z-index: 2;
+  z-index: 3;
 }
 
 .home-gate-media-anim .home-gate-anim-clip.is-active {
   opacity: 1;
-  z-index: 4;
+  z-index: 5;
 }
 
 .home-gate-media-anim .home-gate-anim-clip.is-fading {
   opacity: 0;
-  z-index: 3;
+  z-index: 4;
 }
 
 .home-gate:hover .home-gate-media img,

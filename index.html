@@ -86,7 +86,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=190" />
-  <link rel="stylesheet" href="home.css?v=37" />
+  <link rel="stylesheet" href="home.css?v=38" />
   <link rel="stylesheet" href="edge-swap.css?v=3" />
 </head>
 <body class="home-page">
@@ -133,13 +133,20 @@
           <span class="home-gate-face home-gate-face-front">
             <span class="home-gate-media home-gate-media-anim" aria-hidden="true">
               <video
-                class="home-gate-anim-idle"
-                src="./hub-shop-idle-loop.mp4?v=6"
+                class="home-gate-anim-idle is-live"
+                src="./hub-shop-idle-loop.mp4?v=9"
                 poster="./hub-shop-closed.jpg"
                 muted
                 playsinline
-                loop
-                autoplay
+                preload="auto"
+                width="640"
+                height="640"
+              ></video>
+              <video
+                class="home-gate-anim-idle"
+                src="./hub-shop-idle-loop.mp4?v=9"
+                muted
+                playsinline
                 preload="auto"
                 width="640"
                 height="640"
@@ -164,13 +171,20 @@
             <span class="home-gate-face home-gate-face-front">
               <span class="home-gate-media home-gate-media-anim" aria-hidden="true">
                 <video
-                  class="home-gate-anim-idle"
-                  src="./hub-guide-pc-idle-loop.mp4?v=6"
+                  class="home-gate-anim-idle is-live"
+                  src="./hub-guide-pc-idle-loop.mp4?v=9"
                   poster="./hub-guide-pc-idle.jpg"
                   muted
                   playsinline
-                  loop
-                  autoplay
+                  preload="auto"
+                  width="640"
+                  height="640"
+                ></video>
+                <video
+                  class="home-gate-anim-idle"
+                  src="./hub-guide-pc-idle-loop.mp4?v=9"
+                  muted
+                  playsinline
                   preload="auto"
                   width="640"
                   height="640"
@@ -197,13 +211,20 @@
             <span class="home-gate-face home-gate-face-front">
               <span class="home-gate-media home-gate-media-anim" aria-hidden="true">
                 <video
-                  class="home-gate-anim-idle"
-                  src="./hub-guide-m-idle-loop.mp4?v=7"
+                  class="home-gate-anim-idle is-live"
+                  src="./hub-guide-m-idle-loop.mp4?v=9"
                   poster="./hub-guide-m-idle.jpg"
                   muted
                   playsinline
-                  loop
-                  autoplay
+                  preload="auto"
+                  width="640"
+                  height="640"
+                ></video>
+                <video
+                  class="home-gate-anim-idle"
+                  src="./hub-guide-m-idle-loop.mp4?v=9"
+                  muted
+                  playsinline
                   preload="auto"
                   width="640"
                   height="640"
@@ -249,6 +270,6 @@
       } catch {}
     })();
   </script>
-  <script src="home.js?v=41"></script>
+  <script src="home.js?v=42"></script>
 </body>
 </html>

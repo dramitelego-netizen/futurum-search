@@ -88,6 +88,8 @@
     if (reduce) return;
 
     const FADE_MS = 650;
+    const IDLE_FADE_MS = 900;
+    const IDLE_LEAD = 0.95;
     const ENTER_DELAY = 280;
 
     const playSafe = (video) => {
@@ -99,18 +101,22 @@
       const media = gate.querySelector(".home-gate-media-anim");
       if (!media) return;
 
-      const idleV = media.querySelector(".home-gate-anim-idle");
+      const idles = Array.from(media.querySelectorAll(".home-gate-anim-idle"));
       const openV = media.querySelector(".home-gate-anim-open");
       const floatV = media.querySelector(".home-gate-anim-float");
       const closeV = media.querySelector(".home-gate-anim-close");
-      if (!idleV || !openV || !floatV || !closeV) return;
+      if (!idles.length || !openV || !floatV || !closeV) return;
 
+      const idleA = idles[0];
+      const idleB = idles[1] || null;
       const clips = [openV, floatV, closeV];
       let want = false;
       let phase = "idle"; // idle | armed | opening | floating | closing
       let active = null;
+      let idleLive = idleA;
       let enterTimer = 0;
       let hideTimer = 0;
+      let idleLooping = false;
 
       const clearEnter = () => {
         if (enterTimer) window.clearTimeout(enterTimer);
@@ -251,12 +257,82 @@
         if (!gate.contains(e.relatedTarget)) onLeave();
       });
 
-      idleV.loop = true;
-      playSafe(idleV);
+      const softLoopIdle = (from) => {
+        if (idleLooping || !idleB) {
+          if (!idleB) {
+            fromStart(from);
+            playSafe(from);
+          }
+          return;
+        }
+        idleLooping = true;
+        const next = from === idleA ? idleB : idleA;
+
+        const arm = () => {
+          next.classList.remove("is-fading");
+          void next.offsetWidth;
+          next.classList.add("is-live");
+          playSafe(next);
+
+          from.classList.remove("is-live");
+          from.classList.add("is-fading");
+          idleLive = next;
+
+          window.setTimeout(() => {
+            from.classList.remove("is-fading");
+            from.pause();
+            fromStart(from);
+            idleLooping = false;
+          }, IDLE_FADE_MS);
+        };
+
+        try {
+          next.pause();
+          fromStart(next);
+          const onSeeked = () => {
+            next.removeEventListener("seeked", onSeeked);
+            arm();
+          };
+          if (next.readyState >= 2 && (next.currentTime || 0) < 0.08) {
+            arm();
+          } else {
+            next.addEventListener("seeked", onSeeked);
+            window.setTimeout(() => {
+              next.removeEventListener("seeked", onSeeked);
+              arm();
+            }, 400);
+          }
+        } catch {
+          idleLooping = false;
+          fromStart(from);
+          playSafe(from);
+        }
+      };
+
+      const wireIdle = (video) => {
+        video.loop = false;
+        video.addEventListener("timeupdate", () => {
+          if (video !== idleLive || idleLooping) return;
+          const d = video.duration;
+          if (!d || !isFinite(d)) return;
+          if (d - video.currentTime > IDLE_LEAD) return;
+          softLoopIdle(video);
+        });
+        video.addEventListener("ended", () => {
+          if (video !== idleLive) return;
+          softLoopIdle(video);
+        });
+      };
+
+      idles.forEach(wireIdle);
+      idleA.classList.add("is-live");
+      idleLive = idleA;
+      playSafe(idleA);
+
       document.addEventListener(
         "visibilitychange",
         () => {
-          if (!document.hidden) playSafe(idleV);
+          if (!document.hidden) playSafe(idleLive);
         },
         { passive: true }
       );
