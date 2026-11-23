@@ -261,7 +261,7 @@ body.is-portal-dive .home-gate:focus-visible .home-gate-3d {
 
 .home-gate-copy {
   position: relative;
-  z-index: 1;
+  z-index: 5;
   display: grid;
   gap: 0.2rem;
   padding: 1rem 1rem 1.05rem;
@@ -592,7 +592,7 @@ body.is-portal-dive .atmosphere {
   position: absolute;
   right: 0.75rem;
   top: 0.65rem;
-  z-index: 1;
+  z-index: 5;
   width: clamp(3rem, 10.5vw, 3.7rem);
   height: clamp(3rem, 10.5vw, 3.7rem);
   display: grid;
@@ -928,6 +928,46 @@ body.is-portal-dive .atmosphere {
   50% { opacity: 0.7; transform: translateX(-50%) scale(1.04); }
 }
 
+/* Стекло / окно поверх картины: кромка, холодный тон, блик */
+.home-gate-face-front::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 3;
+  background:
+    linear-gradient(
+      148deg,
+      color-mix(in srgb, #e8f6ff 18%, transparent) 0%,
+      color-mix(in srgb, #9ec9d8 6%, transparent) 22%,
+      transparent 46%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, #cfe8f5 8%, transparent) 0%,
+      transparent 28%,
+      color-mix(in srgb, #05070a 10%, transparent) 100%
+    ),
+    radial-gradient(
+      130% 110% at 50% 40%,
+      transparent 52%,
+      color-mix(in srgb, #7eb8c8 9%, transparent) 100%
+    );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, #fff 16%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 32%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, #fff 6%, transparent),
+    inset 0 22px 40px color-mix(in srgb, #d7eef8 7%, transparent),
+    inset 0 -18px 34px color-mix(in srgb, #000 22%, transparent);
+  transition: opacity 0.45s ease, filter 0.45s ease;
+}
+
+.home-gate:hover .home-gate-face-front::before,
+.home-gate:focus-visible .home-gate-face-front::before {
+  filter: brightness(1.08);
+}
+
 .home-gate-face-front::after {
   content: "";
   position: absolute;
@@ -935,29 +975,34 @@ body.is-portal-dive .atmosphere {
   border-radius: inherit;
   pointer-events: none;
   z-index: 4;
-  background: linear-gradient(
-    115deg,
-    transparent 35%,
-    color-mix(in srgb, #fff 16%, transparent) 48%,
-    transparent 62%
-  );
-  background-size: 220% 100%;
-  animation: home-fx-tile-sweep 7s ease-in-out infinite;
+  background:
+    linear-gradient(
+      118deg,
+      transparent 28%,
+      color-mix(in srgb, #fff 10%, transparent) 42%,
+      color-mix(in srgb, #e8f7ff 26%, transparent) 48%,
+      color-mix(in srgb, #9fd4ef 8%, transparent) 54%,
+      transparent 68%
+    );
+  background-size: 240% 100%;
+  animation: home-fx-tile-sweep 8.5s ease-in-out infinite;
   mix-blend-mode: soft-light;
-  opacity: 0.7;
+  opacity: 0.85;
 }
 
 .home-gate-mini-pc .home-gate-face-front::after {
-  animation-delay: 0.7s;
+  animation-delay: 0.9s;
 }
 
 .home-gate-mini-mob .home-gate-face-front::after {
-  animation-delay: 1.4s;
+  animation-delay: 1.8s;
 }
 
 @keyframes home-fx-tile-sweep {
-  0%, 60% { background-position: 140% 0; }
-  85%, 100% { background-position: -40% 0; }
+  0%, 58% { background-position: 145% 0; opacity: 0; }
+  64% { opacity: 0.9; }
+  82% { background-position: -45% 0; opacity: 0.85; }
+  90%, 100% { background-position: -55% 0; opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -976,5 +1021,10 @@ body.is-portal-dive .atmosphere {
   .home-gate-face-front::after,
   .home-brand .brand-main::after {
     display: none;
+  }
+
+  .home-gate-face-front::after {
+    opacity: 0.35;
+    background-position: 40% 0;
   }
 }
