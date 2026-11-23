@@ -126,9 +126,27 @@ body {
   height: 100%;
   object-fit: cover;
   object-position: center;
-  opacity: 0.72;
-  filter: saturate(0.92) brightness(0.78) contrast(1.04);
-  transform: scale(1.04);
+  opacity: 0;
+  filter: saturate(1.08) brightness(0.95) contrast(1.06) blur(3px);
+  transform: scale(1.06);
+  transition: opacity 1.1s cubic-bezier(0.33, 0.1, 0.2, 1);
+  will-change: opacity;
+}
+
+.home-bg-video.is-live {
+  opacity: 0.92;
+  z-index: 1;
+}
+
+.home-bg-video.is-fading {
+  opacity: 0;
+  z-index: 0;
+}
+
+.shop-page .home-bg-video.is-live,
+.guide-page .home-bg-video.is-live,
+.catalog-page .home-bg-video.is-live {
+  opacity: 0.92;
 }
 
 .home-bg-veil {
@@ -136,19 +154,21 @@ body {
   inset: 0;
   z-index: 1;
   pointer-events: none;
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
   background:
     radial-gradient(
-      ellipse 72% 62% at 50% 42%,
-      transparent 12%,
-      color-mix(in srgb, #05070a 28%, transparent) 68%,
-      color-mix(in srgb, #05070a 72%, transparent) 100%
+      ellipse 78% 70% at 50% 42%,
+      transparent 28%,
+      color-mix(in srgb, #05070a 18%, transparent) 72%,
+      color-mix(in srgb, #05070a 55%, transparent) 100%
     ),
     linear-gradient(
       180deg,
-      color-mix(in srgb, #05070a 40%, transparent) 0%,
-      transparent 30%,
-      color-mix(in srgb, #05070a 22%, transparent) 70%,
-      color-mix(in srgb, #05070a 62%, transparent) 100%
+      color-mix(in srgb, #05070a 28%, transparent) 0%,
+      transparent 24%,
+      transparent 62%,
+      color-mix(in srgb, #05070a 42%, transparent) 100%
     );
 }
 
@@ -158,12 +178,16 @@ body {
 
 .atmosphere:has(.home-bg) .atm-wash {
   z-index: 2;
-  opacity: 0.12;
+  opacity: 0.04;
 }
 
 .atmosphere:has(.home-bg) .atm-flow,
 .atmosphere:has(.home-bg) .atm-flow-b,
-.atmosphere:has(.home-bg) .atm-flow-c,
+.atmosphere:has(.home-bg) .atm-flow-c {
+  z-index: 2;
+  opacity: 0.22;
+}
+
 .atmosphere:has(.home-bg) .glow,
 .atmosphere:has(.home-bg) .grid,
 .atmosphere:has(.home-bg) .scanlines,
@@ -171,30 +195,29 @@ body {
   z-index: 2;
 }
 
-/* На страницах с текстом чуть тише, чтобы не мешать чтению */
 .shop-page .home-bg-video,
 .guide-page .home-bg-video,
 .catalog-page .home-bg-video {
-  opacity: 0.48;
-  filter: saturate(0.88) brightness(0.68) contrast(1.04);
+  filter: saturate(1.08) brightness(0.95) contrast(1.06) blur(3px);
 }
 
 .shop-page .home-bg-veil,
 .guide-page .home-bg-veil,
 .catalog-page .home-bg-veil {
+  /* как на хабе — без лишнего затемнения по центру */
   background:
     radial-gradient(
-      ellipse 78% 68% at 50% 40%,
-      transparent 6%,
-      color-mix(in srgb, #05070a 38%, transparent) 64%,
-      color-mix(in srgb, #05070a 82%, transparent) 100%
+      ellipse 78% 70% at 50% 42%,
+      transparent 28%,
+      color-mix(in srgb, #05070a 18%, transparent) 72%,
+      color-mix(in srgb, #05070a 55%, transparent) 100%
     ),
     linear-gradient(
       180deg,
-      color-mix(in srgb, #05070a 48%, transparent) 0%,
-      transparent 26%,
-      color-mix(in srgb, #05070a 30%, transparent) 68%,
-      color-mix(in srgb, #05070a 72%, transparent) 100%
+      color-mix(in srgb, #05070a 28%, transparent) 0%,
+      transparent 24%,
+      transparent 62%,
+      color-mix(in srgb, #05070a 42%, transparent) 100%
     );
 }
 
@@ -217,8 +240,8 @@ html[data-theme="gray"] .atmosphere:has(.home-bg) .atm-wash {
 
   .home-bg {
     background: url("./home-bg-still.jpg") center / cover no-repeat;
-    opacity: 0.42;
-    filter: saturate(0.88) brightness(0.62);
+    opacity: 0.78;
+    filter: saturate(1.05) brightness(0.9);
   }
 }
 
