@@ -108,7 +108,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=190" />
+  <link rel="stylesheet" href="styles.css?v=192" />
   <link rel="stylesheet" href="titles.css?v=161" />
   <link rel="stylesheet" href="catalog-wait.css?v=7" />
   <link rel="stylesheet" href="edge-swap.css?v=3" />
@@ -132,6 +132,19 @@
 </head>
 <body class="guide-page is-stage guide-layout-mobile guide-landing guide-brand-hero-on">
   <div class="atmosphere" aria-hidden="true">
+    <div class="home-bg">
+      <video
+        class="home-bg-video"
+        src="./home-bg-ambient.mp4?v=1"
+        poster="./home-bg-still.jpg"
+        muted
+        playsinline
+        loop
+        autoplay
+        preload="auto"
+      ></video>
+    </div>
+    <div class="home-bg-veil"></div>
     <div class="atm-wash"></div>
     <div class="atm-flow"></div>
     <div class="atm-flow atm-flow-b"></div>
@@ -469,6 +482,7 @@
     <span class="edge-neon-label">Магазин</span>
   </a>
 
+  <script src="ambient-bg.js?v=1" defer></script>
   <script src="catalog-wait.js?v=5" defer></script>
   <script src="titles.js?v=169" defer></script>
   <script src="edge-swap.js?v=3" defer></script>

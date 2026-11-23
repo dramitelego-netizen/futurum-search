@@ -111,6 +111,117 @@ body {
   transition: background 0.45s ease;
 }
 
+/* Спокойный анимированный задник (хаб / магазин / гид) */
+.home-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.home-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.72;
+  filter: saturate(0.92) brightness(0.78) contrast(1.04);
+  transform: scale(1.04);
+}
+
+.home-bg-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 72% 62% at 50% 42%,
+      transparent 12%,
+      color-mix(in srgb, #05070a 28%, transparent) 68%,
+      color-mix(in srgb, #05070a 72%, transparent) 100%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, #05070a 40%, transparent) 0%,
+      transparent 30%,
+      color-mix(in srgb, #05070a 22%, transparent) 70%,
+      color-mix(in srgb, #05070a 62%, transparent) 100%
+    );
+}
+
+.atmosphere:has(.home-bg) {
+  background: #05070a;
+}
+
+.atmosphere:has(.home-bg) .atm-wash {
+  z-index: 2;
+  opacity: 0.12;
+}
+
+.atmosphere:has(.home-bg) .atm-flow,
+.atmosphere:has(.home-bg) .atm-flow-b,
+.atmosphere:has(.home-bg) .atm-flow-c,
+.atmosphere:has(.home-bg) .glow,
+.atmosphere:has(.home-bg) .grid,
+.atmosphere:has(.home-bg) .scanlines,
+.atmosphere:has(.home-bg) .particle-field {
+  z-index: 2;
+}
+
+/* На страницах с текстом чуть тише, чтобы не мешать чтению */
+.shop-page .home-bg-video,
+.guide-page .home-bg-video,
+.catalog-page .home-bg-video {
+  opacity: 0.48;
+  filter: saturate(0.88) brightness(0.68) contrast(1.04);
+}
+
+.shop-page .home-bg-veil,
+.guide-page .home-bg-veil,
+.catalog-page .home-bg-veil {
+  background:
+    radial-gradient(
+      ellipse 78% 68% at 50% 40%,
+      transparent 6%,
+      color-mix(in srgb, #05070a 38%, transparent) 64%,
+      color-mix(in srgb, #05070a 82%, transparent) 100%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, #05070a 48%, transparent) 0%,
+      transparent 26%,
+      color-mix(in srgb, #05070a 30%, transparent) 68%,
+      color-mix(in srgb, #05070a 72%, transparent) 100%
+    );
+}
+
+html[data-theme="light"] .home-bg,
+html[data-theme="light"] .home-bg-veil,
+html[data-theme="gray"] .home-bg,
+html[data-theme="gray"] .home-bg-veil {
+  display: none;
+}
+
+html[data-theme="light"] .atmosphere:has(.home-bg) .atm-wash,
+html[data-theme="gray"] .atmosphere:has(.home-bg) .atm-wash {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-bg-video {
+    display: none;
+  }
+
+  .home-bg {
+    background: url("./home-bg-still.jpg") center / cover no-repeat;
+    opacity: 0.42;
+    filter: saturate(0.88) brightness(0.62);
+  }
+}
+
 /* живой градиент — заметен, но не бьёт по глазам */
 .atm-wash {
   position: absolute;

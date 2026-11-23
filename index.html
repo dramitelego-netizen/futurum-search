@@ -85,12 +85,25 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=190" />
-  <link rel="stylesheet" href="home.css?v=39" />
+  <link rel="stylesheet" href="styles.css?v=192" />
+  <link rel="stylesheet" href="home.css?v=42" />
   <link rel="stylesheet" href="edge-swap.css?v=3" />
 </head>
 <body class="home-page">
   <div class="atmosphere" aria-hidden="true">
+    <div class="home-bg">
+      <video
+        class="home-bg-video"
+        src="./home-bg-ambient.mp4?v=1"
+        poster="./home-bg-still.jpg"
+        muted
+        playsinline
+        loop
+        autoplay
+        preload="auto"
+      ></video>
+    </div>
+    <div class="home-bg-veil"></div>
     <div class="atm-wash"></div>
     <div class="atm-flow"></div>
     <div class="atm-flow atm-flow-b"></div>
@@ -270,6 +283,7 @@
       } catch {}
     })();
   </script>
-  <script src="home.js?v=42"></script>
+  <script src="ambient-bg.js?v=1"></script>
+  <script src="home.js?v=44"></script>
 </body>
 </html>
