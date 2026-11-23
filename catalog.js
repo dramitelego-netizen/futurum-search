@@ -631,10 +631,6 @@ function bind() {
     true
   );
 
-  els.themeToggle?.addEventListener("click", () => {
-    setTheme(nextTheme(currentTheme()));
-  });
-
   els.categoryPills?.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-category]");
     if (!btn) return;
@@ -785,7 +781,7 @@ function playBootGlitch() {
   setTimeout(pulse, 9000 + Math.random() * 4000);
 }
 
-setTheme(currentTheme());
+setTheme("dark");
 bind();
 load().then(() => {
   requestAnimationFrame(() => {

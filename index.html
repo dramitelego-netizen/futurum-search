@@ -64,12 +64,8 @@
   <script>
     (() => {
       try {
-        const themes = ["dark", "light", "gray"];
-        const t = localStorage.getItem("futurum_theme");
-        document.documentElement.setAttribute("data-theme", themes.includes(t) ? t : "dark");
-        const bgs = ["vitrine", "aurora", "minimal", "signal"];
-        const b = localStorage.getItem("futurum_bg");
-        document.documentElement.setAttribute("data-bg", bgs.includes(b) ? b : "minimal");
+        document.documentElement.setAttribute("data-theme", "dark");
+        document.documentElement.setAttribute("data-bg", "minimal");
       } catch {
         document.documentElement.setAttribute("data-theme", "dark");
         document.documentElement.setAttribute("data-bg", "minimal");

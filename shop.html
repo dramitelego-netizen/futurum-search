@@ -87,12 +87,8 @@
   <script>
     (() => {
       try {
-        const themes = ["dark", "light", "gray"];
-        const t = localStorage.getItem("futurum_theme");
-        document.documentElement.setAttribute("data-theme", themes.includes(t) ? t : "dark");
-        const bgs = ["vitrine", "aurora", "minimal", "signal"];
-        const b = localStorage.getItem("futurum_bg");
-        document.documentElement.setAttribute("data-bg", bgs.includes(b) ? b : "minimal");
+        document.documentElement.setAttribute("data-theme", "dark");
+        document.documentElement.setAttribute("data-bg", "minimal");
       } catch {
         document.documentElement.setAttribute("data-theme", "dark");
         document.documentElement.setAttribute("data-bg", "minimal");
@@ -177,52 +173,6 @@
         <span class="side-menu-brand">SHOP</span>
         <button type="button" class="side-menu-close" id="menuClose" aria-label="Закрыть меню">✕</button>
       </header>
-
-      <div class="side-menu-block side-menu-row">
-        <span class="side-menu-label">Тема</span>
-        <button type="button" class="theme-switch" id="themeToggle" role="switch" aria-checked="true" aria-label="Сменить тему" title="Тёмная → серая → светлая">
-          <span class="theme-switch-track" aria-hidden="true">
-            <span class="theme-switch-icon theme-icon-moon">☾</span>
-            <span class="theme-switch-icon theme-icon-gray">●</span>
-            <span class="theme-switch-icon theme-icon-sun">☀</span>
-            <span class="theme-switch-knob"></span>
-          </span>
-        </button>
-      </div>
-
-      <div class="side-menu-block">
-        <span class="side-menu-label">Фон</span>
-        <div class="bg-picks" id="bgPicks" role="radiogroup" aria-label="Фон">
-          <button type="button" class="bg-pick" data-bg="minimal" aria-pressed="false" title="Минимал — почти чистый фон">
-            <span class="bg-pick-swatch bg-swatch-minimal" aria-hidden="true"></span>
-            <span class="bg-pick-text">
-              <span class="bg-pick-title">Минимал</span>
-              <span class="bg-pick-desc">почти чистый фон</span>
-            </span>
-          </button>
-          <button type="button" class="bg-pick" data-bg="vitrine" aria-pressed="false" title="Витрина — глубина и мягкий свет">
-            <span class="bg-pick-swatch bg-swatch-vitrine" aria-hidden="true"></span>
-            <span class="bg-pick-text">
-              <span class="bg-pick-title">Витрина</span>
-              <span class="bg-pick-desc">глубина и мягкий свет</span>
-            </span>
-          </button>
-          <button type="button" class="bg-pick" data-bg="aurora" aria-pressed="false" title="Аврора — живые цветные пятна">
-            <span class="bg-pick-swatch bg-swatch-aurora" aria-hidden="true"></span>
-            <span class="bg-pick-text">
-              <span class="bg-pick-title">Аврора</span>
-              <span class="bg-pick-desc">живые цветные пятна</span>
-            </span>
-          </button>
-          <button type="button" class="bg-pick" data-bg="signal" aria-pressed="false" title="Сигнал — сильный бирюзовый акцент">
-            <span class="bg-pick-swatch bg-swatch-signal" aria-hidden="true"></span>
-            <span class="bg-pick-text">
-              <span class="bg-pick-title">Сигнал</span>
-              <span class="bg-pick-desc">сильный бирюзовый акцент</span>
-            </span>
-          </button>
-        </div>
-      </div>
 
       <div class="side-menu-block">
         <div class="filters side-filters">
@@ -391,7 +341,7 @@
   <script src="fav-store.js?v=162"></script>
   <script src="particles.js?v=162"></script>
   <script src="changes.js?v=162"></script>
-  <script src="app.js?v=191"></script>
+  <script src="app.js?v=192"></script>
   <script src="edge-swap.js?v=3"></script>
 </body>
 </html>

@@ -1785,16 +1785,6 @@ function bind() {
     true
   );
 
-  els.themeToggle?.addEventListener("click", () => {
-    setTheme(nextTheme(currentTheme()));
-  });
-
-  els.bgPicks?.addEventListener("click", (e) => {
-    const btn = e.target.closest("[data-bg]");
-    if (!btn) return;
-    setBg(btn.dataset.bg);
-  });
-
   els.favsToggle?.addEventListener("click", () => {
     state.showFavs = !state.showFavs;
     render();
@@ -2107,8 +2097,8 @@ function openChangeItem(id) {
 
 window.__futurumOpenChangeItem = openChangeItem;
 
-setTheme(currentTheme());
-setBg(currentBg());
+setTheme("dark");
+setBg("minimal");
 updateFiltersUi();
 bind();
 

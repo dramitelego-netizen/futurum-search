@@ -6521,12 +6521,6 @@ function bindUi() {
   bindSearchFx();
   bindFilterPillFx();
   bindImgFbFallback();
-  els.themeToggle?.addEventListener("click", () => {
-    applyTheme(nextTheme(currentTheme()));
-  });
-  els.imgSrcToggle?.addEventListener("click", () => {
-    applyImgSrcMode(preferRemoteImages() ? "local" : "remote", { refresh: true, manual: true });
-  });
   els.itemsView?.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-items-view]");
     if (!btn || !els.itemsView.contains(btn)) return;
@@ -7038,8 +7032,14 @@ function storedImgSrcMode() {
 }
 
 async function init() {
-  applyTheme(currentTheme());
-  applyImgSrcMode(storedImgSrcMode(), { persist: false });
+  applyTheme("dark");
+  try {
+    localStorage.removeItem(IMG_SRC_MANUAL_KEY);
+  } catch {
+    /* ignore */
+  }
+  document.documentElement.setAttribute("data-img-src-manual", "0");
+  applyImgSrcMode("local", { persist: true });
   applyItemsView(storedItemsView(), { persist: false });
   syncGuideLayoutMode();
   // сразу, до загрузки данных — иначе на телефоне успевает вылезти клавиатура

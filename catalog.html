@@ -56,12 +56,8 @@
   <script>
     (() => {
       try {
-        const themes = ["dark", "light", "gray"];
-        const t = localStorage.getItem("futurum_theme");
-        document.documentElement.setAttribute("data-theme", themes.includes(t) ? t : "dark");
-        const bgs = ["vitrine", "aurora", "minimal", "signal"];
-        const b = localStorage.getItem("futurum_bg");
-        document.documentElement.setAttribute("data-bg", bgs.includes(b) ? b : "minimal");
+        document.documentElement.setAttribute("data-theme", "dark");
+        document.documentElement.setAttribute("data-bg", "minimal");
       } catch {
         document.documentElement.setAttribute("data-theme", "dark");
         document.documentElement.setAttribute("data-bg", "minimal");
@@ -112,14 +108,6 @@
       </h1>
       <span class="cat-total" id="catTotal">0</span>
     </div>
-    <button type="button" class="theme-switch" id="themeToggle" role="switch" aria-checked="true" aria-label="Сменить тему" title="Тёмная → серая → светлая">
-      <span class="theme-switch-track" aria-hidden="true">
-        <span class="theme-switch-icon theme-icon-moon">☾</span>
-        <span class="theme-switch-icon theme-icon-gray">●</span>
-        <span class="theme-switch-icon theme-icon-sun">☀</span>
-        <span class="theme-switch-knob"></span>
-      </span>
-    </button>
   </header>
 
   <main class="cat-shell">
@@ -215,6 +203,6 @@
   <script src="ambient-bg.js?v=1"></script>
   <script src="catalog-wait.js?v=5"></script>
   <script src="fav-store.js?v=151"></script>
-  <script src="catalog.js?v=156"></script>
+  <script src="catalog.js?v=157"></script>
 </body>
 </html>

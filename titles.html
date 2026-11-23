@@ -72,26 +72,14 @@
           location.replace("./titles-m.html" + (q ? "?" + q : "") + location.hash);
           return;
         }
-        const themes = ["dark", "light", "gray"];
-        const t = localStorage.getItem("futurum_theme");
-        document.documentElement.setAttribute("data-theme", themes.includes(t) ? t : "dark");
-        const bgs = ["vitrine", "aurora", "minimal", "signal"];
-        const b = localStorage.getItem("futurum_bg");
-        document.documentElement.setAttribute("data-bg", bgs.includes(b) ? b : "minimal");
-        const imgs = ["local", "remote"];
-        const im = localStorage.getItem("futurum_img_src");
-        const manual = localStorage.getItem("futurum_img_src_manual") === "1";
-        const onPages = /\.github\.io$/i.test(location.hostname) || /\.pages\.dev$/i.test(location.hostname);
-        // На Pages wiki_img нет, parapa hotlink часто мёртв — всегда стартуем с «гид» (локальные файлы)
-        const imgMode = onPages ? "local" : manual && imgs.includes(im) ? im : imgs.includes(im) ? im : "local";
-        document.documentElement.setAttribute("data-img-src", imgMode);
-        document.documentElement.setAttribute("data-img-src-manual", onPages ? "0" : manual ? "1" : "0");
-        if (onPages) {
-          try {
-            localStorage.setItem("futurum_img_src", "local");
-            localStorage.removeItem("futurum_img_src_manual");
-          } catch (_) {}
-        }
+        document.documentElement.setAttribute("data-theme", "dark");
+        document.documentElement.setAttribute("data-bg", "minimal");
+        document.documentElement.setAttribute("data-img-src", "local");
+        document.documentElement.setAttribute("data-img-src-manual", "0");
+        try {
+          localStorage.setItem("futurum_img_src", "local");
+          localStorage.removeItem("futurum_img_src_manual");
+        } catch (_) {}
         // titles.html = только ПК-версия
         document.documentElement.setAttribute("data-guide-force", "desktop");
         document.documentElement.setAttribute("data-guide-layout", "desktop");
@@ -191,30 +179,6 @@
         <span class="side-menu-brand">GUIDE</span>
         <button type="button" class="side-menu-close" id="menuClose" aria-label="Закрыть меню">✕</button>
       </header>
-
-      <div class="side-menu-block side-menu-controls">
-        <div class="side-menu-row">
-          <span class="side-menu-label">Тема</span>
-          <button type="button" class="theme-switch" id="themeToggle" role="switch" aria-checked="true" aria-label="Сменить тему" title="Тёмная → серая → светлая">
-            <span class="theme-switch-track" aria-hidden="true">
-              <span class="theme-switch-icon theme-icon-moon">☾</span>
-              <span class="theme-switch-icon theme-icon-gray">●</span>
-              <span class="theme-switch-icon theme-icon-sun">☀</span>
-              <span class="theme-switch-knob"></span>
-            </span>
-          </button>
-        </div>
-        <div class="side-menu-row">
-          <span class="side-menu-label">Картинки <span class="img-src-mode-hint" id="imgSrcHint">авто</span></span>
-          <button type="button" class="img-src-switch" id="imgSrcToggle" role="switch" aria-checked="false" aria-label="Источник картинок авто: сайт" title="Авто: сайт · нажми — выбрать вручную">
-            <span class="img-src-switch-track" aria-hidden="true">
-              <span class="img-src-switch-label img-src-local">сайт</span>
-              <span class="img-src-switch-label img-src-remote">вики</span>
-              <span class="img-src-switch-knob"></span>
-            </span>
-          </button>
-        </div>
-      </div>
 
       <div class="side-menu-block">
         <span class="side-menu-label">Разделы</span>
@@ -425,7 +389,7 @@
 
   <script src="ambient-bg.js?v=1" defer></script>
   <script src="catalog-wait.js?v=5" defer></script>
-  <script src="titles.js?v=169" defer></script>
+  <script src="titles.js?v=170" defer></script>
   <script src="edge-swap.js?v=3" defer></script>
 </body>
 </html>
