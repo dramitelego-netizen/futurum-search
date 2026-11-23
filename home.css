@@ -169,7 +169,8 @@ body.is-portal-dive .home-gate:focus-visible .home-gate-3d {
   z-index: 0;
 }
 
-.home-gate-media img {
+.home-gate-media img,
+.home-gate-media video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -178,8 +179,52 @@ body.is-portal-dive .home-gate:focus-visible .home-gate-3d {
   transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.home-gate-media video {
+  display: block;
+  pointer-events: none;
+}
+
+.home-gate-media-anim .home-gate-anim-idle,
+.home-gate-media-anim .home-gate-anim-clip {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.04);
+  transition:
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.65s cubic-bezier(0.33, 0.1, 0.2, 1);
+  pointer-events: none;
+  will-change: opacity;
+}
+
+/* Живой idle всегда под клипами — растворение без скачка кадра */
+.home-gate-media-anim .home-gate-anim-idle {
+  opacity: 1;
+  z-index: 1;
+}
+
+.home-gate-media-anim .home-gate-anim-clip {
+  opacity: 0;
+  z-index: 2;
+}
+
+.home-gate-media-anim .home-gate-anim-clip.is-active {
+  opacity: 1;
+  z-index: 4;
+}
+
+.home-gate-media-anim .home-gate-anim-clip.is-fading {
+  opacity: 0;
+  z-index: 3;
+}
+
 .home-gate:hover .home-gate-media img,
-.home-gate:focus-visible .home-gate-media img {
+.home-gate:hover .home-gate-media video,
+.home-gate:focus-visible .home-gate-media img,
+.home-gate:focus-visible .home-gate-media video {
   transform: scale(1.1);
 }
 
@@ -535,32 +580,38 @@ body.is-portal-dive .atmosphere {
   right: 0.75rem;
   top: 0.65rem;
   z-index: 1;
-  width: clamp(2.6rem, 9vw, 3.4rem);
-  height: clamp(2.6rem, 9vw, 3.4rem);
+  width: clamp(3rem, 10.5vw, 3.7rem);
+  height: clamp(3rem, 10.5vw, 3.7rem);
   display: grid;
   place-items: center;
   border-radius: 14px;
   pointer-events: none;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .home-gate-device svg {
-  width: 70%;
-  height: 70%;
+  width: 72%;
+  height: 72%;
   display: block;
 }
 
 .home-gate-mini-pc .home-gate-device {
   color: var(--accent, #3dffd0);
-  background: color-mix(in srgb, var(--accent, #3dffd0) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent, #3dffd0) 40%, transparent);
-  box-shadow: 0 0 22px color-mix(in srgb, var(--accent, #3dffd0) 18%, transparent);
+  background: color-mix(in srgb, #041512 55%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--accent, #3dffd0) 75%, transparent);
+  box-shadow:
+    0 8px 20px color-mix(in srgb, #000 45%, transparent),
+    0 0 26px color-mix(in srgb, var(--accent, #3dffd0) 30%, transparent);
 }
 
 .home-gate-mini-mob .home-gate-device {
-  color: #d4b8ff;
-  background: color-mix(in srgb, #b57cff 16%, transparent);
-  border: 1px solid color-mix(in srgb, #b57cff 42%, transparent);
-  box-shadow: 0 0 22px color-mix(in srgb, #b57cff 18%, transparent);
+  color: var(--accent, #3dffd0);
+  background: color-mix(in srgb, #041512 55%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--accent, #3dffd0) 70%, transparent);
+  box-shadow:
+    0 8px 20px color-mix(in srgb, #000 45%, transparent),
+    0 0 26px color-mix(in srgb, var(--accent, #3dffd0) 30%, transparent);
 }
 
 .home-gate-mini-pc .home-gate-face-front {
@@ -568,7 +619,7 @@ body.is-portal-dive .atmosphere {
 }
 
 .home-gate-mini-mob .home-gate-face-front {
-  border-color: color-mix(in srgb, #b57cff 42%, var(--line));
+  border-color: color-mix(in srgb, var(--accent, #3dffd0) 40%, var(--line));
 }
 
 .home-gate-mini-pc:hover .home-gate-face-front,
@@ -582,11 +633,11 @@ body.is-portal-dive .atmosphere {
 
 .home-gate-mini-mob:hover .home-gate-face-front,
 .home-gate-mini-mob:focus-visible .home-gate-face-front {
-  border-color: color-mix(in srgb, #b57cff 65%, transparent);
+  border-color: color-mix(in srgb, var(--accent, #3dffd0) 65%, transparent);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, #b57cff 28%, transparent) inset,
+    0 0 0 1px color-mix(in srgb, var(--accent, #3dffd0) 28%, transparent) inset,
     0 18px 40px color-mix(in srgb, #000 42%, transparent),
-    0 0 36px color-mix(in srgb, #b57cff 22%, transparent);
+    0 0 36px color-mix(in srgb, var(--accent, #3dffd0) 22%, transparent);
 }
 
 .home-gate-mini .home-gate-title {
@@ -596,15 +647,16 @@ body.is-portal-dive .atmosphere {
 }
 
 .home-gate-mini-mob .home-gate-title {
-  color: #ead9ff;
-  text-shadow: 0 0 18px rgba(181, 124, 255, 0.35);
+  color: color-mix(in srgb, #e8fffa 88%, var(--text));
+  text-shadow: 0 0 18px color-mix(in srgb, var(--accent, #3dffd0) 35%, transparent);
 }
 
 .home-gate-mini-mob .home-gate-kicker {
-  color: color-mix(in srgb, #d4b8ff 80%, var(--mute));
+  color: color-mix(in srgb, var(--accent, #3dffd0) 72%, var(--mute));
 }
 
-.home-gate-mini .home-gate-media img {
+.home-gate-mini .home-gate-media img,
+.home-gate-mini .home-gate-media video {
   object-position: center;
 }
 
@@ -624,134 +676,54 @@ body.is-portal-dive .atmosphere {
   }
 }
 
-/* ——— док промо под плитками ——— */
+/* ——— промо под плитками: нить, иконка, подпись ——— */
 .home-dock {
-  --dock-shelf-top: color-mix(in srgb, var(--accent) 16%, transparent);
-  --dock-shelf-mid: color-mix(in srgb, var(--panel-solid, #0a0d12) 72%, transparent);
-  --dock-shelf-edge: color-mix(in srgb, var(--accent) 34%, var(--line));
-  --dock-shelf-shine: color-mix(in srgb, #fff 14%, transparent);
-  --dock-glow: color-mix(in srgb, var(--accent) 20%, transparent);
-  --dock-badge-ring: color-mix(in srgb, var(--accent) 42%, var(--line));
-
   position: relative;
-  width: min(6.6rem, 90%);
-  margin: 0.5rem auto 0;
-  min-height: 3.75rem;
+  width: min(16rem, 90%);
+  margin: 0.35rem auto 0;
   display: flex;
   justify-content: center;
-  align-items: flex-end;
-  gap: 0.55rem;
-  padding: 0 1.1rem 0 1.1rem;
   animation: home-rise 0.85s ease-out 0.4s both;
-}
-
-html[data-theme="light"] .home-dock {
-  --dock-shelf-top: color-mix(in srgb, var(--accent) 12%, #fff);
-  --dock-shelf-mid: color-mix(in srgb, #ffffff 88%, var(--panel));
-  --dock-shelf-edge: color-mix(in srgb, var(--accent) 28%, var(--line));
-  --dock-shelf-shine: color-mix(in srgb, #fff 70%, transparent);
-  --dock-glow: color-mix(in srgb, var(--accent) 14%, transparent);
-  --dock-badge-ring: color-mix(in srgb, var(--accent) 36%, var(--line));
-}
-
-html[data-theme="gray"] .home-dock {
-  --dock-shelf-top: color-mix(in srgb, var(--accent) 14%, transparent);
-  --dock-shelf-mid: color-mix(in srgb, var(--panel-solid, #4a4e56) 88%, transparent);
-  --dock-shelf-edge: color-mix(in srgb, var(--accent) 30%, var(--line));
-  --dock-shelf-shine: color-mix(in srgb, #fff 10%, transparent);
-  --dock-glow: color-mix(in srgb, var(--accent) 16%, transparent);
-}
-
-.home-dock::after {
-  content: "";
-  position: absolute;
-  left: 10%;
-  right: 10%;
-  bottom: -0.4rem;
-  height: 1rem;
-  background: radial-gradient(ellipse 70% 100% at 50% 0%, var(--dock-glow), transparent 72%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.home-dock-shelf {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1.12rem;
-  z-index: 1;
-  border-radius: 0 0 16px 16px;
-  background: linear-gradient(
-    180deg,
-    var(--dock-shelf-top) 0%,
-    var(--dock-shelf-mid) 42%,
-    color-mix(in srgb, var(--bg) 55%, var(--dock-shelf-mid)) 100%
-  );
-  border: 1px solid var(--dock-shelf-edge);
-  border-top-color: color-mix(in srgb, var(--accent) 45%, var(--dock-shelf-shine));
-  box-shadow:
-    inset 0 1px 0 var(--dock-shelf-shine),
-    0 0 0 1px color-mix(in srgb, var(--ink) 8%, transparent) inset,
-    0 12px 24px color-mix(in srgb, var(--shadow, #000) 55%, transparent);
-  clip-path: polygon(4.5% 0, 95.5% 0, 100% 100%, 0 100%);
-  pointer-events: none;
-}
-
-.home-dock-rail {
-  position: absolute;
-  left: 8%;
-  right: 8%;
-  bottom: 1.1rem;
-  height: 1px;
-  z-index: 2;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    color-mix(in srgb, var(--accent) 50%, transparent) 24%,
-    color-mix(in srgb, var(--accent-2, #ff4d6d) 22%, transparent) 50%,
-    color-mix(in srgb, var(--accent) 50%, transparent) 76%,
-    transparent 100%
-  );
-  opacity: 0.7;
-  pointer-events: none;
-}
-
-html[data-theme="light"] .home-dock-rail {
-  opacity: 0.55;
 }
 
 .home-dock-item {
   position: relative;
-  z-index: 3;
   display: grid;
-  place-items: center;
+  justify-items: center;
+  gap: 0.45rem;
+  padding-top: 0.35rem;
   text-decoration: none;
   color: inherit;
   outline: none;
-  transform: translateY(-0.58rem);
+}
+
+.home-dock-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 2.35rem;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--accent) 70%, transparent),
+    transparent
+  );
+  pointer-events: none;
 }
 
 .home-dock-badge {
-  width: clamp(2.7rem, 9vw, 3.2rem);
-  height: clamp(2.7rem, 9vw, 3.2rem);
-  border-radius: 15px;
+  position: relative;
+  z-index: 1;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
   overflow: hidden;
-  border: 1px solid var(--dock-badge-ring);
-  background: color-mix(in srgb, var(--panel-solid, #0a0d12) 80%, #000);
+  background: #071014;
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--ink) 8%, transparent) inset,
-    0 0 22px var(--dock-glow),
-    0 8px 16px color-mix(in srgb, var(--shadow, #000) 40%, transparent);
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
-}
-
-html[data-theme="light"] .home-dock-badge {
-  background: #fff;
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--ink) 6%, transparent) inset,
-    0 0 18px var(--dock-glow),
-    0 8px 14px color-mix(in srgb, var(--shadow) 55%, transparent);
+    0 0 0 2px var(--accent),
+    0 0 18px color-mix(in srgb, var(--accent) 55%, transparent);
+  transition: box-shadow 0.18s ease;
 }
 
 .home-dock-badge img {
@@ -759,23 +731,26 @@ html[data-theme="light"] .home-dock-badge {
   height: 100%;
   object-fit: cover;
   display: block;
-  transform: scale(1.02);
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.home-dock-name {
+  font-family: Orbitron, sans-serif;
+  letter-spacing: 0.12em;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.home-dock-item:hover .home-dock-name,
+.home-dock-item:focus-visible .home-dock-name {
+  color: var(--accent);
 }
 
 .home-dock-item:hover .home-dock-badge,
 .home-dock-item:focus-visible .home-dock-badge {
-  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--accent) 16%, transparent) inset,
-    0 0 26px color-mix(in srgb, var(--accent) 26%, transparent),
-    0 10px 18px color-mix(in srgb, var(--shadow, #000) 40%, transparent);
-  transform: translateY(-1px);
-}
-
-.home-dock-item:hover .home-dock-badge img,
-.home-dock-item:focus-visible .home-dock-badge img {
-  transform: scale(1.06);
+    0 0 0 2px var(--accent),
+    0 0 26px color-mix(in srgb, var(--accent) 70%, transparent);
 }
 
 .home-dock-item:focus-visible .home-dock-badge {
@@ -784,8 +759,209 @@ html[data-theme="light"] .home-dock-badge {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .home-dock-badge,
-  .home-dock-badge img {
+  .home-dock-badge {
     transition: none;
+  }
+}
+
+/* ——— лёгкие эффекты главной ——— */
+.home-fx-dust {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.home-fx-dust i {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 80%, #fff);
+  opacity: 0;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 55%, transparent);
+  animation: home-fx-dust-float var(--d, 9s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes home-fx-dust-float {
+  0% { opacity: 0; transform: translate3d(0, 12px, 0) scale(0.6); }
+  18% { opacity: 0.7; }
+  55% { opacity: 0.35; }
+  100% { opacity: 0; transform: translate3d(var(--x, 18px), -46px, 0) scale(1); }
+}
+
+.home-brand .brand-main {
+  isolation: isolate;
+}
+
+.home-brand .brand-main::after {
+  content: "FUTURUM";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-indent: inherit;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 3;
+  background-image: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.85) 50%,
+    transparent 60%
+  );
+  background-size: 260% 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  mix-blend-mode: soft-light;
+  opacity: 0;
+  animation: home-fx-brand-shine 5.8s ease-in-out infinite;
+}
+
+@keyframes home-fx-brand-shine {
+  0%, 60% { background-position: 140% 0; opacity: 0; }
+  64% { opacity: 0.95; }
+  78% { background-position: -40% 0; opacity: 0.95; }
+  84%, 100% { background-position: -50% 0; opacity: 0; }
+}
+
+.home-gate-face-front {
+  animation: home-fx-gate-breathe 4.8s ease-in-out infinite;
+}
+
+.home-gate-mini-mob .home-gate-face-front {
+  animation-name: home-fx-gate-breathe-m;
+}
+
+@keyframes home-fx-gate-breathe {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--ink) 20%, transparent) inset,
+      0 18px 40px color-mix(in srgb, #000 35%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent) inset,
+      0 18px 40px color-mix(in srgb, #000 35%, transparent),
+      0 0 28px color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+}
+
+@keyframes home-fx-gate-breathe-m {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--ink) 20%, transparent) inset,
+      0 18px 40px color-mix(in srgb, #000 35%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #b57cff 28%, transparent) inset,
+      0 18px 40px color-mix(in srgb, #000 35%, transparent),
+      0 0 28px color-mix(in srgb, #b57cff 18%, transparent);
+  }
+}
+
+.home-dock-line {
+  animation: home-fx-line-pulse 3.2s ease-in-out infinite;
+}
+
+.home-dock-badge {
+  animation: home-fx-badge-soft 3.2s ease-in-out infinite;
+}
+
+@keyframes home-fx-line-pulse {
+  0%, 100% { opacity: 0.55; filter: brightness(1); }
+  50% { opacity: 1; filter: brightness(1.35); }
+}
+
+@keyframes home-fx-badge-soft {
+  0%, 100% {
+    box-shadow:
+      0 0 0 2px var(--accent),
+      0 0 14px color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px var(--accent),
+      0 0 26px color-mix(in srgb, var(--accent) 70%, transparent);
+  }
+}
+
+.home-fx-beam {
+  position: fixed;
+  left: 50%;
+  top: -8%;
+  width: min(42rem, 120%);
+  height: 42%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(
+    ellipse 55% 70% at 50% 0%,
+    color-mix(in srgb, var(--accent) 16%, transparent),
+    transparent 72%
+  );
+  animation: home-fx-beam-breathe 7s ease-in-out infinite;
+}
+
+@keyframes home-fx-beam-breathe {
+  0%, 100% { opacity: 0.35; transform: translateX(-50%) scale(1); }
+  50% { opacity: 0.7; transform: translateX(-50%) scale(1.04); }
+}
+
+.home-gate-face-front::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 4;
+  background: linear-gradient(
+    115deg,
+    transparent 35%,
+    color-mix(in srgb, #fff 16%, transparent) 48%,
+    transparent 62%
+  );
+  background-size: 220% 100%;
+  animation: home-fx-tile-sweep 7s ease-in-out infinite;
+  mix-blend-mode: soft-light;
+  opacity: 0.7;
+}
+
+.home-gate-mini-pc .home-gate-face-front::after {
+  animation-delay: 0.7s;
+}
+
+.home-gate-mini-mob .home-gate-face-front::after {
+  animation-delay: 1.4s;
+}
+
+@keyframes home-fx-tile-sweep {
+  0%, 60% { background-position: 140% 0; }
+  85%, 100% { background-position: -40% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-fx-dust i,
+  .home-brand .brand-main::after,
+  .home-gate-face-front,
+  .home-dock-line,
+  .home-dock-badge,
+  .home-fx-beam,
+  .home-gate-face-front::after {
+    animation: none !important;
+  }
+
+  .home-fx-dust,
+  .home-fx-beam,
+  .home-gate-face-front::after,
+  .home-brand .brand-main::after {
+    display: none;
   }
 }

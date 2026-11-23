@@ -86,7 +86,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=190" />
-  <link rel="stylesheet" href="home.css?v=22" />
+  <link rel="stylesheet" href="home.css?v=37" />
   <link rel="stylesheet" href="edge-swap.css?v=3" />
 </head>
 <body class="home-page">
@@ -99,6 +99,19 @@
     <div class="glow glow-a"></div>
     <div class="glow glow-b"></div>
     <div class="scanlines"></div>
+  </div>
+  <div class="home-fx-beam" aria-hidden="true"></div>
+  <div class="home-fx-dust" aria-hidden="true">
+    <i style="left:12%;top:68%;--x:18px;--d:8s;--delay:0s"></i>
+    <i style="left:22%;top:40%;--x:-14px;--d:9s;--delay:0.7s"></i>
+    <i style="left:35%;top:78%;--x:22px;--d:7s;--delay:1.4s"></i>
+    <i style="left:48%;top:28%;--x:-18px;--d:10s;--delay:2.1s"></i>
+    <i style="left:58%;top:62%;--x:16px;--d:8s;--delay:2.8s"></i>
+    <i style="left:67%;top:36%;--x:-20px;--d:9s;--delay:3.5s"></i>
+    <i style="left:78%;top:72%;--x:14px;--d:7s;--delay:4.2s"></i>
+    <i style="left:86%;top:24%;--x:-12px;--d:10s;--delay:4.9s"></i>
+    <i style="left:18%;top:18%;--x:20px;--d:8s;--delay:1.1s"></i>
+    <i style="left:72%;top:52%;--x:-16px;--d:9s;--delay:3.2s"></i>
   </div>
 
   <main class="home-shell">
@@ -118,8 +131,22 @@
       >
         <span class="home-gate-3d">
           <span class="home-gate-face home-gate-face-front">
-            <span class="home-gate-media" aria-hidden="true">
-              <img src="./hub-shop.jpg" alt="" width="640" height="640" decoding="async" fetchpriority="high" />
+            <span class="home-gate-media home-gate-media-anim" aria-hidden="true">
+              <video
+                class="home-gate-anim-idle"
+                src="./hub-shop-idle-loop.mp4?v=6"
+                poster="./hub-shop-closed.jpg"
+                muted
+                playsinline
+                loop
+                autoplay
+                preload="auto"
+                width="640"
+                height="640"
+              ></video>
+              <video class="home-gate-anim-clip home-gate-anim-open" src="./hub-shop-open-in.mp4?v=5" muted playsinline preload="auto" width="640" height="640"></video>
+              <video class="home-gate-anim-clip home-gate-anim-float" src="./hub-shop-float-loop.mp4?v=5" muted playsinline loop preload="auto" width="640" height="640"></video>
+              <video class="home-gate-anim-clip home-gate-anim-close" src="./hub-shop-close-out.mp4?v=5" muted playsinline preload="auto" width="640" height="640"></video>
               <span class="home-gate-wash"></span>
             </span>
             <span class="home-gate-copy">
@@ -135,12 +162,26 @@
         <a class="home-gate home-gate-mini home-gate-mini-pc" href="./titles.html?ui=desktop" data-gate="titles-pc">
           <span class="home-gate-3d">
             <span class="home-gate-face home-gate-face-front">
-              <span class="home-gate-media" aria-hidden="true">
-                <img src="./hub-titles-pc.jpg?v=1" alt="" width="640" height="640" decoding="async" fetchpriority="high" />
+              <span class="home-gate-media home-gate-media-anim" aria-hidden="true">
+                <video
+                  class="home-gate-anim-idle"
+                  src="./hub-guide-pc-idle-loop.mp4?v=6"
+                  poster="./hub-guide-pc-idle.jpg"
+                  muted
+                  playsinline
+                  loop
+                  autoplay
+                  preload="auto"
+                  width="640"
+                  height="640"
+                ></video>
+                <video class="home-gate-anim-clip home-gate-anim-open" src="./hub-guide-pc-open-in.mp4?v=5" muted playsinline preload="auto" width="640" height="640"></video>
+                <video class="home-gate-anim-clip home-gate-anim-float" src="./hub-guide-pc-float-loop.mp4?v=5" muted playsinline loop preload="auto" width="640" height="640"></video>
+                <video class="home-gate-anim-clip home-gate-anim-close" src="./hub-guide-pc-close-out.mp4?v=5" muted playsinline preload="auto" width="640" height="640"></video>
                 <span class="home-gate-wash"></span>
               </span>
               <span class="home-gate-device" aria-hidden="true">
-                <svg viewBox="0 0 48 48"><rect x="4" y="8" width="40" height="26" rx="3" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M16 40h16M24 34v6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+                <svg viewBox="0 0 48 48" fill="none"><rect x="3.5" y="7" width="41" height="27" rx="4" stroke="currentColor" stroke-width="2.4"/><rect x="8" y="11.5" width="32" height="18" rx="2" fill="currentColor" opacity="0.18"/><path d="M10 15.5h10M10 19h16M10 22.5h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.9"/><path d="M14 40h20M24 34v6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><rect x="20" y="38.5" width="8" height="2.2" rx="1" fill="currentColor"/></svg>
               </span>
               <span class="home-gate-copy">
                 <span class="home-gate-kicker">Гид</span>
@@ -154,12 +195,26 @@
         <a class="home-gate home-gate-mini home-gate-mini-mob" href="./titles-m.html" data-gate="titles-m">
           <span class="home-gate-3d">
             <span class="home-gate-face home-gate-face-front">
-              <span class="home-gate-media" aria-hidden="true">
-                <img src="./hub-titles-m.jpg?v=1" alt="" width="640" height="640" decoding="async" />
+              <span class="home-gate-media home-gate-media-anim" aria-hidden="true">
+                <video
+                  class="home-gate-anim-idle"
+                  src="./hub-guide-m-idle-loop.mp4?v=7"
+                  poster="./hub-guide-m-idle.jpg"
+                  muted
+                  playsinline
+                  loop
+                  autoplay
+                  preload="auto"
+                  width="640"
+                  height="640"
+                ></video>
+                <video class="home-gate-anim-clip home-gate-anim-open" src="./hub-guide-m-open-in.mp4?v=5" muted playsinline preload="auto" width="640" height="640"></video>
+                <video class="home-gate-anim-clip home-gate-anim-float" src="./hub-guide-m-float-loop.mp4?v=5" muted playsinline loop preload="auto" width="640" height="640"></video>
+                <video class="home-gate-anim-clip home-gate-anim-close" src="./hub-guide-m-close-out.mp4?v=5" muted playsinline preload="auto" width="640" height="640"></video>
                 <span class="home-gate-wash"></span>
               </span>
               <span class="home-gate-device" aria-hidden="true">
-                <svg viewBox="0 0 48 48"><rect x="14" y="4" width="20" height="40" rx="4" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="24" cy="36" r="1.6" fill="currentColor"/></svg>
+                <svg viewBox="0 0 48 48" fill="none"><rect x="13" y="3.5" width="22" height="41" rx="5" stroke="currentColor" stroke-width="2.4"/><rect x="16.5" y="8.5" width="15" height="26" rx="2" fill="currentColor" opacity="0.18"/><path d="M19 12h10M19 16h8M19 20h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" opacity="0.9"/><rect x="20.5" y="5.6" width="7" height="1.8" rx="0.9" fill="currentColor"/><circle cx="24" cy="38.5" r="2.1" fill="currentColor"/></svg>
               </span>
               <span class="home-gate-copy">
                 <span class="home-gate-kicker">Гид</span>
@@ -173,12 +228,12 @@
     </nav>
 
     <nav class="home-dock" aria-label="Дополнительно">
-      <span class="home-dock-shelf" aria-hidden="true"></span>
-      <span class="home-dock-rail" aria-hidden="true"></span>
       <a class="home-dock-item" href="./promo.html" aria-label="Промо" title="Промо">
+        <span class="home-dock-line" aria-hidden="true"></span>
         <span class="home-dock-badge">
-          <img src="./assets/promo-icon-ticket.jpg" alt="" width="128" height="128" decoding="async" />
+          <img src="./assets/promo-icon-key.jpg" alt="" width="128" height="128" decoding="async" />
         </span>
+        <span class="home-dock-name">Промо</span>
       </a>
     </nav>
 
@@ -194,6 +249,6 @@
       } catch {}
     })();
   </script>
-  <script src="home.js?v=22"></script>
+  <script src="home.js?v=41"></script>
 </body>
 </html>
