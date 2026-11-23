@@ -82,191 +82,52 @@
     document.body.classList.remove("is-home-fade-out");
   });
 
-  /* Плитки: idle всегда играет. Наведение — открытие, затем родной loop парения, уход — закрытие.
-     Без перемоток внутри ролика: каждый клип только с начала и до конца. */
+  /* Плитки: одно длинное цикл-видео на гейт, мягкий dual-buffer loop без рывка. */
   (() => {
     if (reduce) return;
 
-    const FADE_MS = 650;
-    const IDLE_FADE_MS = 900;
-    const IDLE_LEAD = 0.95;
-    const ENTER_DELAY = 280;
+    const FADE_MS = 1100;
+    const LEAD = 1.15;
 
     const playSafe = (video) => {
       const p = video.play();
       if (p && typeof p.catch === "function") p.catch(() => {});
     };
 
+    const fromStart = (video) => {
+      try {
+        video.currentTime = 0;
+      } catch {
+        /* ignore */
+      }
+    };
+
     const bindGateAnim = (gate) => {
       const media = gate.querySelector(".home-gate-media-anim");
       if (!media) return;
 
-      const idles = Array.from(media.querySelectorAll(".home-gate-anim-idle"));
-      const openV = media.querySelector(".home-gate-anim-open");
-      const floatV = media.querySelector(".home-gate-anim-float");
-      const closeV = media.querySelector(".home-gate-anim-close");
-      if (!idles.length || !openV || !floatV || !closeV) return;
+      let loops = Array.from(media.querySelectorAll(".home-gate-anim-loop"));
+      if (!loops.length) return;
 
-      const idleA = idles[0];
-      const idleB = idles[1] || null;
-      const clips = [openV, floatV, closeV];
-      let want = false;
-      let phase = "idle"; // idle | armed | opening | floating | closing
-      let active = null;
-      let idleLive = idleA;
-      let enterTimer = 0;
-      let hideTimer = 0;
-      let idleLooping = false;
+      if (loops.length < 2) {
+        const clone = loops[0].cloneNode(true);
+        clone.classList.remove("is-live");
+        clone.removeAttribute("autoplay");
+        clone.loop = false;
+        media.insertBefore(clone, loops[0].nextSibling);
+        loops = Array.from(media.querySelectorAll(".home-gate-anim-loop"));
+      }
 
-      const clearEnter = () => {
-        if (enterTimer) window.clearTimeout(enterTimer);
-        enterTimer = 0;
-      };
+      const [a, b] = loops;
+      a.loop = false;
+      b.loop = false;
+      let live = a;
+      let fading = false;
 
-      const fromStart = (video) => {
-        try {
-          video.currentTime = 0;
-        } catch {
-          /* ignore */
-        }
-      };
-
-      const show = (video) => {
-        if (hideTimer) {
-          window.clearTimeout(hideTimer);
-          hideTimer = 0;
-        }
-        clips.forEach((v) => {
-          if (v === video) return;
-          if (v.classList.contains("is-active")) {
-            v.classList.remove("is-active");
-            v.classList.add("is-fading");
-            const dying = v;
-            window.setTimeout(() => {
-              if (active === dying) return;
-              dying.pause();
-              dying.classList.remove("is-fading");
-              fromStart(dying);
-            }, FADE_MS);
-          }
-        });
-        video.classList.remove("is-fading");
-        void video.offsetWidth;
-        video.classList.add("is-active");
-        active = video;
-        playSafe(video);
-      };
-
-      const goIdle = () => {
-        phase = "idle";
-        active = null;
-        clips.forEach((v) => {
-          v.classList.remove("is-active");
-          v.classList.add("is-fading");
-        });
-        hideTimer = window.setTimeout(() => {
-          hideTimer = 0;
-          clips.forEach((v) => {
-            v.pause();
-            v.classList.remove("is-fading", "is-active");
-            fromStart(v);
-          });
-        }, FADE_MS);
-      };
-
-      const startOpen = () => {
-        phase = "opening";
-        floatV.pause();
-        closeV.pause();
-        fromStart(openV);
-        show(openV);
-      };
-
-      const startFloat = () => {
-        phase = "floating";
-        fromStart(floatV);
-        floatV.loop = true;
-        show(floatV);
-      };
-
-      const startClose = () => {
-        if (phase === "closing") return;
-        phase = "closing";
-        floatV.loop = false;
-        fromStart(closeV);
-        show(closeV);
-      };
-
-      const onEnter = () => {
-        want = true;
-        if (phase === "opening" || phase === "floating" || phase === "armed") {
-          if (phase === "floating") floatV.loop = true;
-          return;
-        }
-        if (phase === "closing") return; // доиграем закрытие, потом откроем снова
-        phase = "armed";
-        clearEnter();
-        enterTimer = window.setTimeout(() => {
-          enterTimer = 0;
-          if (!want || phase !== "armed") {
-            if (phase === "armed") phase = "idle";
-            return;
-          }
-          startOpen();
-        }, ENTER_DELAY);
-      };
-
-      const onLeave = () => {
-        want = false;
-        if (phase === "armed") {
-          clearEnter();
-          phase = "idle";
-          return;
-        }
-        // Не режем кадр: парение доигрывает круг до исходной позы, потом закрытие
-        if (phase === "floating") floatV.loop = false;
-      };
-
-      openV.addEventListener("ended", () => {
-        if (phase !== "opening") return;
-        if (want) startFloat();
-        else startClose();
-      });
-
-      floatV.addEventListener("ended", () => {
-        if (phase !== "floating") return;
-        if (want) {
-          floatV.loop = true;
-          fromStart(floatV);
-          playSafe(floatV);
-          return;
-        }
-        startClose();
-      });
-
-      closeV.addEventListener("ended", () => {
-        if (phase !== "closing") return;
-        if (want) startOpen();
-        else goIdle();
-      });
-
-      gate.addEventListener("pointerenter", onEnter);
-      gate.addEventListener("pointerleave", onLeave);
-      gate.addEventListener("focusin", onEnter);
-      gate.addEventListener("focusout", (e) => {
-        if (!gate.contains(e.relatedTarget)) onLeave();
-      });
-
-      const softLoopIdle = (from) => {
-        if (idleLooping || !idleB) {
-          if (!idleB) {
-            fromStart(from);
-            playSafe(from);
-          }
-          return;
-        }
-        idleLooping = true;
-        const next = from === idleA ? idleB : idleA;
+      const softLoop = (from) => {
+        if (fading || from !== live) return;
+        fading = true;
+        const next = from === a ? b : a;
 
         const arm = () => {
           next.classList.remove("is-fading");
@@ -276,14 +137,14 @@
 
           from.classList.remove("is-live");
           from.classList.add("is-fading");
-          idleLive = next;
+          live = next;
 
           window.setTimeout(() => {
             from.classList.remove("is-fading");
             from.pause();
             fromStart(from);
-            idleLooping = false;
-          }, IDLE_FADE_MS);
+            fading = false;
+          }, FADE_MS);
         };
 
         try {
@@ -300,39 +161,38 @@
             window.setTimeout(() => {
               next.removeEventListener("seeked", onSeeked);
               arm();
-            }, 400);
+            }, 500);
           }
         } catch {
-          idleLooping = false;
+          fading = false;
           fromStart(from);
           playSafe(from);
         }
       };
 
-      const wireIdle = (video) => {
-        video.loop = false;
+      const wire = (video) => {
         video.addEventListener("timeupdate", () => {
-          if (video !== idleLive || idleLooping) return;
+          if (video !== live || fading) return;
           const d = video.duration;
           if (!d || !isFinite(d)) return;
-          if (d - video.currentTime > IDLE_LEAD) return;
-          softLoopIdle(video);
+          if (d - video.currentTime > LEAD) return;
+          softLoop(video);
         });
         video.addEventListener("ended", () => {
-          if (video !== idleLive) return;
-          softLoopIdle(video);
+          if (video !== live) return;
+          softLoop(video);
         });
       };
 
-      idles.forEach(wireIdle);
-      idleA.classList.add("is-live");
-      idleLive = idleA;
-      playSafe(idleA);
+      loops.forEach(wire);
+      a.classList.add("is-live");
+      live = a;
+      playSafe(a);
 
       document.addEventListener(
         "visibilitychange",
         () => {
-          if (!document.hidden) playSafe(idleLive);
+          if (!document.hidden) playSafe(live);
         },
         { passive: true }
       );
