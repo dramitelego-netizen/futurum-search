@@ -56,6 +56,7 @@ PAGES: list[tuple[str, str, str]] = [
     ("Аксессуары", "accessories", "Аксессуары"),
     ("Прически", "hairstyles", "Прически"),
     ("Прически_с_событий", "hairstyles", "Прически"),
+    ("Детские_прически", "hairstyles", "Прически"),
     ("Интерактивные_предметы", "interactive", "Интерактив"),
     ("Жезлы", "wands", "Жезлы"),
     ("Зонты", "umbrellas", "Зонты"),
@@ -65,12 +66,14 @@ PAGES: list[tuple[str, str, str]] = [
     ("Украшения_(рука)", "hand_decor", "Украшения"),
     ("Игрушки_на_плечо", "toys", "Игрушки"),
     ("Игрушки_на_ногу", "toys", "Игрушки"),
+    ("Детские_игрушки", "toys", "Игрушки"),
     ("Интерактивная_обувь", "shoes", "Обувь"),
     ("Детские_маски", "kids_masks", "Маски"),
     ("Букеты", "bouquets", "Букеты"),
     ("Лук", "bows", "Лук"),
     ("Развлечения", "amusements", "Развлечения"),
     ("Облик", "forms", "Облики"),
+    ("Детские_облики", "forms", "Облики"),
     ("Камни", "gems", "Камни"),
     ("Интерактивы", "emotes", "Интерактивы"),
     ("Фон_для_визитки", "card_bg", "Фоны визитки"),
@@ -623,12 +626,19 @@ def parse_standard_table(html: str, kind: str, kind_label: str, wiki_page: str) 
                 if rest and len(rest) < 180:
                     note = (note + " · " if note else "") + "Варианты: " + rest
             if kind == "toys":
-                if "плечо" in wiki_page.lower():
+                if "детские" in wiki_page.lower():
+                    category = "Детские"
+                elif "плечо" in wiki_page.lower():
                     category = "На плечо"
                 elif "ногу" in wiki_page.lower():
                     category = "На ногу"
-            elif kind == "hairstyles" and "событий" in wiki_page.lower():
-                category = "С событий"
+            elif kind == "hairstyles":
+                if "детские" in wiki_page.lower():
+                    category = "Детские"
+                elif "событий" in wiki_page.lower():
+                    category = "С событий"
+            elif kind == "forms" and "детские" in wiki_page.lower():
+                category = "Детские"
             elif kind == "backpacks" and "гитар" in wiki_page.lower():
                 category = "Гитара на спину"
 
@@ -2858,7 +2868,17 @@ def _parse_kind_pages(
         print(f"  parsed {lab}/{wiki_title}: {len(part)}", flush=True)
     if kind in GENDER_LOOK_KINDS:
         chunk = finalize_look_items(chunk)
-    return chunk, label
+    seen: set[str] = set()
+    uniq: list[dict] = []
+    for it in chunk:
+        key = _item_dedupe_key(it)
+        if key in seen:
+            continue
+        seen.add(key)
+        uniq.append(it)
+    if len(uniq) != len(chunk):
+        print(f"  dedupe {len(chunk)} → {len(uniq)}", flush=True)
+    return uniq, label
 
 
 def refresh_kinds(kind_set: set[str], from_cache: bool, skip_download: bool) -> int:

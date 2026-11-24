@@ -31,7 +31,7 @@ const THUMB_CAROUSEL_MS = 2800;
 const THUMB_CAROUSEL_MAX = 6;
 let thumbCarouselTimer = null;
 /** Версия JSON-паков — ОБЯЗАТЕЛЬНО бамп при выкладке data/*.json (иначе браузер держит старый кэш) */
-const DATA_CACHE_VER = "16";
+const DATA_CACHE_VER = "18";
 const LIST_RENDER_PAGE = 240;
 let listRenderLimit = LIST_RENDER_PAGE;
 let achIndexReady = false;
@@ -5086,8 +5086,21 @@ function isLeakedAchievementItem(it) {
   if (!it || it.kind === "achievements") return false;
   const note = String(it.note || "");
   const desc = String(it.description || "");
-  if (/можно\s+носить/i.test(note)) return true;
-  if (/чтобы получить/i.test(desc) && (it.kind === "wings" || it.kind === "transport")) {
+  // вики пишет и «Можно носить», и «Нельзя носить» в примечании значка
+  if (/(?:можно|нельзя)\s+носить/i.test(note)) return true;
+  if (
+    /чтобы получить/i.test(desc) &&
+    /значок|достижен/i.test(desc) &&
+    (it.kind === "wings" || it.kind === "transport")
+  ) {
+    return true;
+  }
+  // имя совпадает с достижением и нет нормального описания предмета
+  if (
+    (it.kind === "wings" || it.kind === "transport") &&
+    !String(it.description || "").trim() &&
+    /Аура:\s*\[?\s*(?:можно|нельзя)\s+носить/i.test(note)
+  ) {
     return true;
   }
   return false;
