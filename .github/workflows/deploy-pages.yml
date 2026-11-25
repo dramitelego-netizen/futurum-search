@@ -90,8 +90,9 @@ jobs:
           rm -f home-bg-ambient.mp4 || true
           # Черновики / лабы / зеркала
           rm -f *-pick.html *-lab.html hub-opts.html 2>/dev/null || true
-          rm -rf hub-opts public tools bg-drafts vk-brand gacha-api assets 2>/dev/null || true
+          rm -rf hub-opts public tools bg-drafts vk-brand gacha-api 2>/dev/null || true
           rm -f _*.py _*.js _*.md 2>/dev/null || true
+          # assets/ оставляем: иконка промо на главной (promo-icon-key.jpg)
 
           # title_img ~400MB: на Pages берём title_thumb (см. mapTitleImgPack)
           rm -rf data/title_img
