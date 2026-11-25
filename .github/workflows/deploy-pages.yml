@@ -13,16 +13,14 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: read
 
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -39,11 +37,6 @@ jobs:
           python3 - <<'PY'
           import json, sys
           from pathlib import Path
-
-          def must_file(p: Path, label: str):
-              if not p.is_file():
-                  print(f"MISSING {label}: {p}", file=sys.stderr)
-                  sys.exit(1)
 
           shop = json.loads(Path("data/items.json").read_text(encoding="utf-8"))
           miss_icon = []
@@ -99,7 +92,6 @@ jobs:
           rm -f *-pick.html *-lab.html hub-opts.html 2>/dev/null || true
           rm -rf hub-opts public tools bg-drafts vk-brand gacha-api assets 2>/dev/null || true
           rm -f _*.py _*.js _*.md 2>/dev/null || true
-          # не трогаем .github — иначе иногда ломается поиск pages-артефакта
 
           # title_img ~400MB: на Pages берём title_thumb (см. mapTitleImgPack)
           rm -rf data/title_img
@@ -118,10 +110,14 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
-          name: github-pages
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          artifact_name: github-pages
