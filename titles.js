@@ -31,7 +31,7 @@ const THUMB_CAROUSEL_MS = 2800;
 const THUMB_CAROUSEL_MAX = 6;
 let thumbCarouselTimer = null;
 /** Версия JSON-паков — ОБЯЗАТЕЛЬНО бамп при выкладке data/*.json (иначе браузер держит старый кэш) */
-const DATA_CACHE_VER = "24";
+const DATA_CACHE_VER = "25";
 const LIST_RENDER_PAGE = 240;
 let listRenderLimit = LIST_RENDER_PAGE;
 let achIndexReady = false;

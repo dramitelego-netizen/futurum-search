@@ -139638,7 +139638,7 @@
       "name": "Девушка сверху",
       "description": "50 мнт",
       "source": "Парные",
-      "note": "Сокр.: 50 мнт",
+      "note": "Сокр.: 50 мнт; Картинка-заглушка (на вики нет изображения).",
       "category": "Парные",
       "imageUrl": "",
       "wiki": "https://parapa.ru/wiki/index.php/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D0%B2%D1%8B",
@@ -139650,7 +139650,8 @@
           "title": "Валюта",
           "kind": "other"
         }
-      ]
+      ],
+      "image": "data/wiki_img/placeholder_3067.png"
     },
     {
       "kind": "emotes",
@@ -139658,7 +139659,7 @@
       "name": "Парень сверху",
       "description": "50 мнт",
       "source": "Парные",
-      "note": "Сокр.: 50 мнт",
+      "note": "Сокр.: 50 мнт; Картинка-заглушка (на вики нет изображения).",
       "category": "Парные",
       "imageUrl": "",
       "wiki": "https://parapa.ru/wiki/index.php/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D0%B2%D1%8B",
@@ -139670,7 +139671,8 @@
           "title": "Валюта",
           "kind": "other"
         }
-      ]
+      ],
+      "image": "data/wiki_img/placeholder_3068.png"
     },
     {
       "kind": "emotes",
@@ -139678,7 +139680,7 @@
       "name": "Миссионер",
       "description": "60 мнт",
       "source": "Парные",
-      "note": "Сокр.: 60 мнт",
+      "note": "Сокр.: 60 мнт; Картинка-заглушка (на вики нет изображения).",
       "category": "Парные",
       "imageUrl": "",
       "wiki": "https://parapa.ru/wiki/index.php/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D0%B2%D1%8B",
@@ -139690,7 +139692,8 @@
           "title": "Валюта",
           "kind": "other"
         }
-      ]
+      ],
+      "image": "data/wiki_img/placeholder_3069.png"
     },
     {
       "kind": "emotes",
@@ -139698,7 +139701,7 @@
       "name": "Скачки",
       "description": "60 мнт",
       "source": "Парные",
-      "note": "Сокр.: 60 мнт",
+      "note": "Сокр.: 60 мнт; Картинка-заглушка (на вики нет изображения).",
       "category": "Парные",
       "imageUrl": "",
       "wiki": "https://parapa.ru/wiki/index.php/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D0%B2%D1%8B",
@@ -139710,7 +139713,8 @@
           "title": "Валюта",
           "kind": "other"
         }
-      ]
+      ],
+      "image": "data/wiki_img/placeholder_3070.png"
     },
     {
       "kind": "emotes",
@@ -145652,7 +145656,7 @@
       "name": "Город грез",
       "description": "Город грез - здесь сбываются самые сокровенные мечты.",
       "source": "Событие \"Будь с нами\"",
-      "note": "",
+      "note": "Картинка-заглушка (на вики нет изображения).",
       "imageUrl": "",
       "wiki": "https://parapa.ru/wiki/index.php/%D0%A0%D0%B0%D0%BC%D0%BA%D0%B0_%D0%B4%D0%BB%D1%8F_%D0%B2%D0%B8%D0%B7%D0%B8%D1%82%D0%BA%D0%B8",
       "lookImageUrl": "https://parapa.ru/wiki/images/2/25/01a8305a68.png",
@@ -145665,7 +145669,8 @@
           "title": "Старый Новый год в Пара Па",
           "kind": "event"
         }
-      ]
+      ],
+      "image": "data/wiki_img/placeholder_3313.png"
     },
     {
       "kind": "card_frame",
@@ -177836,12 +177841,13 @@
       "name": "Плащ чародейки",
       "description": "",
       "source": "",
-      "note": "Нужен, чтобы получить значок \"На крыльях любви\".",
+      "note": "Нужен, чтобы получить значок \"На крыльях любви\".; Картинка-заглушка (на вики нет изображения).",
       "category": "С достижений",
       "imageUrl": "",
       "wiki": "https://parapa.ru/wiki/index.php/%D0%9F%D0%BB%D0%B0%D1%89_%D1%87%D0%B0%D1%80%D0%BE%D0%B4%D0%B5%D0%B9%D0%BA%D0%B8",
       "id": 5453,
-      "hasAchievement": true
+      "hasAchievement": true,
+      "image": "data/wiki_img/placeholder_5453.png"
     },
     {
       "kind": "accessories",
@@ -177849,12 +177855,13 @@
       "name": "Плащ чародея",
       "description": "",
       "source": "",
-      "note": "Нужен, чтобы получить значок \"На крыльях любви\".",
+      "note": "Нужен, чтобы получить значок \"На крыльях любви\".; Картинка-заглушка (на вики нет изображения).",
       "category": "С достижений",
       "imageUrl": "",
       "wiki": "https://parapa.ru/wiki/index.php/%D0%9F%D0%BB%D0%B0%D1%89_%D1%87%D0%B0%D1%80%D0%BE%D0%B4%D0%B5%D1%8F",
       "id": 5454,
-      "hasAchievement": true
+      "hasAchievement": true,
+      "image": "data/wiki_img/placeholder_5454.png"
     },
     {
       "kind": "hand_decor",
