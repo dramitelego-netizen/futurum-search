@@ -31,7 +31,7 @@ const THUMB_CAROUSEL_MS = 2800;
 const THUMB_CAROUSEL_MAX = 6;
 let thumbCarouselTimer = null;
 /** Версия JSON-паков — ОБЯЗАТЕЛЬНО бамп при выкладке data/*.json (иначе браузер держит старый кэш) */
-const DATA_CACHE_VER = "22";
+const DATA_CACHE_VER = "23";
 const LIST_RENDER_PAGE = 240;
 let listRenderLimit = LIST_RENDER_PAGE;
 let achIndexReady = false;
@@ -1705,14 +1705,15 @@ function mapWikiImgToDeployPack(rel, { hq = false } = {}) {
   return `data/guide_img/${stem}.webp`;
 }
 
-/** title_img/foo.png → список: title_thumb/foo.webp; карточка: title_img (полное качество) */
+/** title_img/foo.png → список: title_thumb/foo.webp; карточка: title_img (локально) / title_thumb (Pages). */
 function mapTitleImgPack(rel, { hq = false } = {}) {
   const m = String(rel || "").match(/^data\/title_img\/(.+)$/i);
   if (!m) return rel;
   const base = m[1].split("/").pop() || "";
   if (!base) return rel;
-  if (hq) return `data/title_img/${base}`;
   const stem = base.replace(/\.[^.]+$/, "");
+  // Pages artifact не кладёт title_img (~400MB) — на slim хосте всегда thumb.
+  if (hq && !isSlimPagesHost()) return `data/title_img/${base}`;
   return `data/title_thumb/${stem}.webp`;
 }
 

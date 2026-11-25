@@ -1,6 +1,7 @@
-# GitHub Pages: data/img + title_img + title_thumb + guide_img + look_img.
-# title_thumb / guide_img — лёгкие webp в списке; title_img / look_img — HQ в карточке.
-# Полный data/wiki_img (~6ГБ) в git не храним, но если папка есть в артефакте — НЕ удаляем.
+# GitHub Pages: data/img + title_thumb + guide_img + look_img (+ hub/ambient videos).
+# title_thumb / guide_img — список; look_img — HQ в карточке гайда.
+# title_img (~400MB) в артефакт не кладём — на Pages карточки титулов берут title_thumb.
+# wiki_img / старые hub-loop / pick-lab в артефакт не кладём (лимит Pages 1GB).
 name: Deploy Pages
 
 on:
@@ -83,14 +84,30 @@ jobs:
           )
           PY
 
-      - name: Drop local scrape junk from artifact (do NOT delete image packs)
+      - name: Drop unused / oversized files from Pages artifact
         run: |
           set -e
-          # Раньше тут удаляли data/wiki_img — больше не трогаем картиночные паки.
+          # Скрейп/логи
           rm -f data/watch_catalog.log data/scrape.log || true
           rm -f data/_wiki_page_*.html data/_wiki_*.html data/_gift_*.html 2>/dev/null || true
-          echo "Keeping image packs:"
-          du -sh data/img data/title_img data/title_thumb data/guide_img data/look_img data/wiki_img 2>/dev/null || true
+
+          # Старые hub-ролики: сайт использует только *-cycle.mp4
+          rm -f hub-*-idle-loop.mp4 hub-*-float-loop.mp4 hub-*-open-in.mp4 hub-*-close-out.mp4 || true
+          # Старый ambient (живой — home-bg-ambient-b.mp4)
+          rm -f home-bg-ambient.mp4 || true
+          # Черновики / лабы / зеркала
+          rm -f *-pick.html *-lab.html hub-opts.html 2>/dev/null || true
+          rm -rf hub-opts public tools bg-drafts vk-brand gacha-api assets .github 2>/dev/null || true
+          rm -f _*.py _*.js _*.md *.py 2>/dev/null || true
+
+          # title_img ~400MB: на Pages берём title_thumb (см. mapTitleImgPack)
+          rm -rf data/title_img
+          # wiki_img в git обычно нет; на всякий случай не тащим
+          rm -rf data/wiki_img 2>/dev/null || true
+
+          echo "Artifact footprint:"
+          du -sh data/img data/title_thumb data/guide_img data/look_img 2>/dev/null || true
+          du -sh hub-*-cycle.mp4 home-bg-ambient-b.mp4 2>/dev/null || true
           du -sh . || true
 
       - name: Setup Pages
