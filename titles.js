@@ -31,7 +31,7 @@ const THUMB_CAROUSEL_MS = 2800;
 const THUMB_CAROUSEL_MAX = 6;
 let thumbCarouselTimer = null;
 /** Версия JSON-паков — ОБЯЗАТЕЛЬНО бамп при выкладке data/*.json (иначе браузер держит старый кэш) */
-const DATA_CACHE_VER = "18";
+const DATA_CACHE_VER = "22";
 const LIST_RENDER_PAGE = 240;
 let listRenderLimit = LIST_RENDER_PAGE;
 let achIndexReady = false;
@@ -2080,6 +2080,24 @@ const REQ_GENERIC = new Set([
   "цвет",
   "цвета",
 ]);
+/** Стеммы тех же общих слов: «крылья» → «крыл», голое «крыл» не ищем */
+const REQ_GENERIC_STEM = new Set([
+  "крыл",
+  "титул",
+  "костюм",
+  "наряд",
+  "плащ",
+  "мотоцикл",
+  "спорткар",
+  "суперкар",
+  "джип",
+  "карт",
+  "комплект",
+  "транспорт",
+  "цвет",
+  "автомобил",
+  "авто",
+]);
 const REQ_COLORS =
   "белый|белая|белое|белые|черный|черная|черное|черные|красный|красная|красное|красные|синий|синяя|синее|синие|зеленый|зеленая|зеленое|зеленые|желтый|желтая|желтое|желтые|розовый|розовая|розовое|розовые|фиолетовый|фиолетовая|фиолетовое|фиолетовые|оранжевый|оранжевая|оранжевое|оранжевые|голубой|голубая|голубое|голубые|серый|серая|серое|серые|золотой|золотая|золотое|золотые|серебряный|серебряная|серебряное|серебряные|багряный|багряная|багряные|лазурный|лазурная|лазурные|лиловый|лиловая|лиловые|пестрый|пестрая|пестрые|разноцветный|разноцветная|разноцветные|коричневый|коричневая|коричневые";
 
@@ -2116,32 +2134,92 @@ function seriesKeyFromName(name) {
   return norm(base);
 }
 
-/** Сводим падежи к форме каталога: «орлиных крыльев» → «орлиные крылья» */
+/**
+ * Падеж / число → общий стемм, чтобы «крылатые единороги» совпали с «Крылатый единорог»,
+ * «трехколесного велосипеда» — с «Трехколесный велосипед», «ковра-самолета» — с «Ковер-самолет».
+ * «крылатый» не схлопываем в «крылья».
+ */
 function morphReqWord(word) {
-  const w = String(word || "");
+  let w = String(word || "");
+  if (!w) return w;
+  if (w.includes("-")) {
+    return w
+      .split("-")
+      .map((p) => morphReqWord(p))
+      .filter(Boolean)
+      .join("-");
+  }
   if (w.length < 4) return w;
-  if (/^крыл/.test(w)) return "крылья";
+  if (
+    /^(?:есть|этот|эта|это|эти|быть|надо|нужно|чтобы|тебя|тебе|если|либо|только|также|один|одна|одни|все|всех|для|или|еще|уже|его|ее|них|было|была|были|будет|можно|нельзя)$/.test(
+      w
+    )
+  )
+    return w;
   if (/^титул/.test(w)) return "титул";
-  // прилагательные / причастия в род. и т.п. → им. мн. (орлиных→орлиные, черных→черные)
-  if (/(ыми|ими)$/.test(w)) return w.replace(/(ыми|ими)$/, (m) => (m === "ими" ? "ие" : "ые"));
-  if (/ых$/.test(w)) return w.replace(/ых$/, "ые");
-  if (/их$/.test(w)) return w.replace(/их$/, "ие");
-  // ед.ч. согласование с «крыло» почти не встречается; ого/его — для «цвета»
-  if (/ого$/.test(w) && w.length >= 6) return w.replace(/ого$/, "ый");
-  if (/его$/.test(w) && w.length >= 6) return w.replace(/его$/, "ий");
-  // тв.п. ед.: «световым трициклом» → «световой трицикл»
-  if (/овым$/.test(w) && w.length >= 6) return w.replace(/овым$/, "овой");
-  if (/евым$/.test(w) && w.length >= 6) return w.replace(/евым$/, "евой");
-  if (/ым$/.test(w) && w.length >= 5) return w.replace(/ым$/, "ый");
-  if (/им$/.test(w) && w.length >= 5) return w.replace(/им$/, "ий");
-  return w;
+  const suffixes = [
+    "иями",
+    "ами",
+    "ями",
+    "ого",
+    "его",
+    "ому",
+    "ему",
+    "ыми",
+    "ими",
+    "ою",
+    "ею",
+    "ах",
+    "ях",
+    "ов",
+    "ев",
+    "ей",
+    "ам",
+    "ям",
+    "ий",
+    "ый",
+    "ая",
+    "ое",
+    "ее",
+    "ые",
+    "ие",
+    "ом",
+    "ем",
+    "ую",
+    "юю",
+    "ой",
+    "ым",
+    "им",
+    "ых",
+    "их",
+    "а",
+    "я",
+    "у",
+    "ю",
+    "ы",
+    "и",
+    "е",
+    "о",
+    "й",
+  ];
+  for (const suf of suffixes) {
+    const minStem = suf.length === 1 ? (suf === "а" || suf === "я" || suf === "у" || suf === "ю" ? 3 : 4) : 3;
+    if (w.endsWith(suf) && w.length - suf.length >= minStem) {
+      w = w.slice(0, -suf.length);
+      break;
+    }
+  }
+  return w.replace(/[ьъ]$/u, "");
 }
 
 function morphReqText(s) {
   return String(s || "")
     .toLowerCase()
     .replace(/ё/g, "е")
+    .replace(/э/g, "е")
     .replace(/[«»""„‟']/g, " ")
+    .replace(/спорт-кар/g, "спорткар")
+    .replace(/ковра|ковром|ковру|ковре|ковры|ковров|коврами/g, "ковер")
     .replace(/крыльями|крыльев|крыльях|крыльям|крылу|крылом/g, "крылья")
     .replace(/трона|троном|троне/g, "трон")
     .replace(/титула|титулом|титулу|титулы|титулов/g, "титул")
@@ -2171,6 +2249,11 @@ function morphReqText(s) {
     .replace(/рояля/g, "рояль")
     .replace(/трициклом|трицикла|трицикле|трициклу/g, "трицикл")
     .replace(/универсума|универсумом|универсуме/g, "универсум")
+    // «белый и черный крылатые единороги» → «крылатый единорог»
+    .replace(/крылатые|крылатых|крылатым|крылатыми|крылатого|крылатому|крылатой/g, "крылатый")
+    .replace(/единороги|единорогов|единорогами|единорогам|единороге|единорога|единорогом/g, "единорог")
+    .replace(/свинюши|свинюшу|свинюшей/g, "свинюша")
+    .replace(/поросюши|поросюшу|поросюшей/g, "поросюша")
     .replace(/[!?.,;:…]+/g, " ")
     .replace(/\s+/g, " ")
     .trim()
@@ -2220,14 +2303,27 @@ function quoteHitsAlias(alias, series, q) {
   return String(alias || "").split(" ").pop() === q;
 }
 
+/** Титулы вида «, ты любовь всей жизни.» — не ловить по вложенной цитате. */
+function isCommaPrefixTitle(entry, q) {
+  if (!entry || entry.section !== "titles") return false;
+  const n = String(entry.name || "").trim();
+  if (!n.startsWith(",")) return false;
+  const rest = morphReqText(n.replace(/^,\s*/, ""));
+  return rest !== q;
+}
+
 /** Детская версия предмета (малыши) — не путать со взрослой в требованиях достижений */
 function isKidGuideItem(it) {
   if (!it) return false;
   const name = String(it.name || "");
   const wiki = String(it.wiki || "");
   if (/^детск/i.test(name) || /\bдетск(?:ие|ая|ий|ое|их)\b/i.test(name)) return true;
+  if (/^игрушечн/i.test(name) || /\bигрушечн(?:ый|ая|ое|ые|ого|ому|ыми)\b/i.test(name)) return true;
   // wiki: …/Детские_… или percent-encoded Детские
   if (/Детск/i.test(wiki) || /%D0%94%D0%B5%D1%82%D1%81%D0%BA/i.test(wiki)) return true;
+  if (/для[_\s]детей|%D0%B4%D0%BB%D1%8F_%D0%B4%D0%B5%D1%82%D0%B5%D0%B9/i.test(wiki)) return true;
+  // `\w` не ест кириллицу — только [а-я]
+  if (/детск[а-яё]*\s+транспорт/i.test(String(it.note || ""))) return true;
   const gender =
     (Array.isArray(it.characteristics)
       ? it.characteristics.find((c) => /пол/i.test(String(c.label || "")))?.value
@@ -2250,7 +2346,9 @@ function buildReqCatalog() {
   const aliases = [];
   const pushAlias = (alias, entry, weightBoost = 0) => {
     const a = morphReqText(alias);
-    if (a.length < 4 || REQ_GENERIC.has(a)) return;
+    if (!a || (a.length < 4 && a !== "нло")) return;
+    const aParts = a.split(/[\s-]+/).filter(Boolean);
+    if (!aParts.length || aParts.every((p) => REQ_GENERIC.has(p) || REQ_GENERIC_STEM.has(p))) return;
     aliases.push({
       alias: a,
       len: a.length,
@@ -2273,6 +2371,10 @@ function buildReqCatalog() {
     pushAlias(it.name, entry, 8);
     const stripped = stripReqParens(it.name);
     if (stripped && stripped !== it.name) pushAlias(stripped, entry, 4);
+    // вики достижения «Версия 2.0» пишет «край света», титул в каталоге — «край земли»
+    if (/край земли/i.test(stripped)) {
+      pushAlias(stripped.replace(/земли/gi, "света"), entry, 8);
+    }
     for (const q of extractQuotedParts(it.name)) {
       pushAlias(q, entry, q.length >= 6 ? 12 : 2);
     }
@@ -2284,6 +2386,18 @@ function buildReqCatalog() {
         const b = bit.trim();
         if (morphReqText(b).length < 5) continue;
         pushAlias(`крылья ${b}`, entry, 6);
+      }
+    }
+    // «Крылья посланника света/тьмы» → отдельно «… света» и «… тьмы»
+    if (stripped.includes("/")) {
+      const bits = stripped
+        .split(/\s*\/\s*/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (bits.length === 2 && bits[0].includes(" ")) {
+        const head = bits[0].replace(/\S+$/u, "").trim();
+        pushAlias(bits[0], entry, 6);
+        if (head && bits[1].length >= 2) pushAlias(`${head} ${bits[1]}`, entry, 6);
       }
     }
   };
@@ -2334,7 +2448,7 @@ function linkItemsFromBadgeNotes(map, achs) {
     const n = morphReqText(ach.name);
     if (n.length >= 3) byName.set(n, ach);
   }
-  const noteRe = /значок\s+[«"«]?([^»"».,;:]+)/gi;
+  const noteRe = /значок(?:а|у|ом)?\s+[«"„“"]([^»"“”"]+)[»"“”"]/gi;
   const pool = [...(state.titles || []), ...(state.wiki || [])];
   for (const it of pool) {
     if (!it || it.kind === "achievements") continue;
@@ -2486,6 +2600,7 @@ function quoteContextBoost(raw, quoteText, section) {
     return 70;
   if (/(мотоцик|спорткар|суперкар|джип|авто|транспорт|болид|чоппер)/.test(window) && section === "transport")
     return 70;
+  if (/кроват/.test(window) && section === "amusements") return 90;
   if (/(интерактив|предмет)/.test(window) && (section === "interactive" || section === "amusements"))
     return 60;
   return 0;
@@ -2519,21 +2634,68 @@ function findAchievementRequires(description, selfName = "") {
 
   const tryMark = (pos, len, aliasObj) => {
     if (!allowEntry(aliasObj.entry)) return false;
-    for (let i = pos; i < pos + len; i++) if (used[i]) return false;
+    let blocked = false;
+    for (let i = pos; i < pos + len; i++) if (used[i]) blocked = true;
     const before = pos === 0 ? " " : hay[pos - 1];
     const after = hay.slice(pos + len);
-    if (/[a-zа-я0-9]/i.test(before)) return false;
+    if (/[a-zа-я0-9-]/i.test(before)) return false;
+    if (after.startsWith("-")) return false;
     if (!reqEndingOk(after)) return false;
-    // «собрать оркестр» ≠ предмет «Оркестр»; «владельцем трона Амура» — да
+    const aliasParts = aliasObj.alias.split(" ");
+    const prevWord = hay.slice(0, pos).trim().split(/\s+/).pop() || "";
+    // «стать аристократом» — не костюм «Аристократ»
+    if (aliasObj.alias === "аристократ" && !/^(костюм|наряд|комплект)/.test(prevWord)) return false;
+    // «праздновать день рождения» — не шляпа «День рождения»
+    if (aliasObj.alias === "ден рождени" && !/^(шляп|аксессуар)/.test(prevWord)) return false;
+    const near = hay.slice(Math.max(0, pos - 36), pos + Math.min(len, 24));
+    if (/\bспорткар/.test(near) && /суперкар/i.test(aliasObj.entry.name) && !/спорткар/i.test(aliasObj.entry.name))
+      return false;
+    if (/\bсуперкар/.test(near) && /спорткар/i.test(aliasObj.entry.name) && !/суперкар/i.test(aliasObj.entry.name))
+      return false;
+    // «стрела Купидона» — не питомец «Купидон», если в имени предмета нет этого слова
+    if (aliasParts.length === 1 && /^(стрел|лук)$/.test(prevWord)) {
+      const full = morphReqText(aliasObj.entry.name);
+      if (!full.split(/[\s-]+/).includes(prevWord)) return false;
+    }
+    // «мистических крыльев Велиара» — не предмет «Мистические крылья»
+    if (aliasParts[aliasParts.length - 1] === "крыл") {
+      const nxt = (after.trim().split(/\s+/)[0] || "").replace(/^[^a-zа-я0-9]+/i, "");
+      if (
+        nxt.length >= 3 &&
+        !/^(двух|трех|четырех|друг|цвет|люб|тво|сво|для|или|либо|высш|ранг|пар|одн|втор|черн|бел|золот|красн|син|зелен|желт|розов|фиолет|оранж|голуб|серебр|багрян|лазурн|пестр|разноцвет|радужн|коричнев|пол|персонаж|соответств|вариант|цветн)/.test(
+          nxt
+        )
+      )
+        return false;
+    }
+    // «собрать оркестр» ≠ предмет «Оркестр»; «если у тебя есть …» и «владельцем …» — да
     if (selfNorm && morphReqText(aliasObj.entry.name) === selfNorm) {
-      const prev = hay.slice(Math.max(0, pos - 42), pos);
-      const owned = /(владельц|обладател|обзавест|нужен|нужна|нужно\s+быть|иметь)/.test(prev);
+      const prev = hay.slice(Math.max(0, pos - 96), pos);
+      const owned = /(владельц|обладател|обзавест|нужн|иметь|есть|разблокир|ездов)/.test(prev);
       if (!owned) return false;
     }
     const score =
       aliasObj.weight +
       contextKindBoost(hay, pos, aliasObj.entry.section) +
       aliasObj.len;
+    if (blocked) {
+      // тот же стемм уже занят — оставляем близнеца (НЛО и НЛО 2), чужой предмет нет
+      const sibling = hits.some(
+        (h) => h.pos === pos && h.alias === aliasObj.alias && h.entry.section === aliasObj.entry.section
+      );
+      if (!sibling) return false;
+      if (
+        hits.some(
+          (h) =>
+            h.pos === pos &&
+            h.entry.id === aliasObj.entry.id &&
+            h.entry.section === aliasObj.entry.section
+        )
+      )
+        return false;
+      hits.push({ score, entry: aliasObj.entry, alias: aliasObj.alias, pos });
+      return true;
+    }
     for (let i = pos; i < pos + len; i++) used[i] = 1;
     hits.push({ score, entry: aliasObj.entry, alias: aliasObj.alias, pos });
     return true;
@@ -2546,6 +2708,20 @@ function findAchievementRequires(description, selfName = "") {
       if (pos < 0) break;
       tryMark(pos, a.alias.length, a);
       from = pos + 1;
+    }
+  }
+
+  // «крыльев фантастических миражей» / «крыльев Великой Лирианы» — одно слово между «крыл» и именем
+  for (const a of reqCatalog.aliases) {
+    const parts = a.alias.split(" ");
+    if (parts.length !== 2 || parts[0] !== "крыл" || parts[1].length < 4) continue;
+    if (!hay.includes(parts[0]) || !hay.includes(parts[1])) continue;
+    const tail = parts[1].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(`${parts[0]}(?:\\s+\\S+){0,1}\\s+${tail}`, "g");
+    let rm;
+    while ((rm = re.exec(hay))) {
+      tryMark(rm.index, rm[0].length, a);
+      if (rm.index === re.lastIndex) re.lastIndex += 1;
     }
   }
 
@@ -2563,9 +2739,17 @@ function findAchievementRequires(description, selfName = "") {
     if (q.length < 2 || REQ_GENERIC.has(q) || seenQ.has(q)) continue;
     seenQ.add(q);
 
-    const candidates = reqCatalog.aliases.filter(
-      (a) => allowEntry(a.entry) && quoteHitsAlias(a.alias, a.entry.series, q)
-    );
+    const rawLow = raw.toLowerCase();
+    const candidates = reqCatalog.aliases.filter((a) => {
+      if (!allowEntry(a.entry)) return false;
+      if (!quoteHitsAlias(a.alias, a.entry.series, q)) return false;
+      if (isCommaPrefixTitle(a.entry, q)) return false;
+      if (/спорткар/i.test(rawLow) && /суперкар/i.test(a.entry.name) && !/спорткар/i.test(a.entry.name))
+        return false;
+      if (/суперкар/i.test(rawLow) && /спорткар/i.test(a.entry.name) && !/суперкар/i.test(a.entry.name))
+        return false;
+      return true;
+    });
     if (!candidates.length) continue;
     candidates.sort(
       (a, b) =>
@@ -2898,8 +3082,125 @@ function highlightAchievementDescription(description, reqs, links) {
   return renderWikiLinks(description, links, collectAchHighlightRanges(description, reqs));
 }
 
-function renderAchievementRequires(description, selfName = "") {
-  const reqs = findAchievementRequires(description, selfName);
+/** Добавить в reqs то, что вики уже связала через descriptionLinks, а текст не поймал. */
+function mergeAchDescriptionLinkReqs(reqs, achItem) {
+  const list = Array.isArray(reqs) ? [...reqs] : [];
+  const links = achItem?.descriptionLinks || [];
+  if (!links.length) return list;
+  const seen = new Set(
+    list.flatMap((r) => (r.items || []).map((e) => `${r.section}:${e.id}`))
+  );
+  for (const L of links) {
+    if (L?.kind !== "item" || L.itemId == null || !L.section) continue;
+    if (L.section === "achievements" || L.section === "titles") {
+      // титулы тоже показываем, если текст их не вытащил
+    }
+    const key = `${L.section}:${Number(L.itemId)}`;
+    if (seen.has(key)) continue;
+    const full =
+      L.section === "titles"
+        ? state.titles?.find((x) => Number(x.id) === Number(L.itemId))
+        : state.wiki?.find(
+            (x) => x.kind === L.section && Number(x.id) === Number(L.itemId)
+          );
+    if (!full) continue;
+    seen.add(key);
+    const kindLabel =
+      L.section === "titles"
+        ? "Титул"
+        : full.kindLabel || SECTION_TITLE[L.section] || L.section;
+    list.push({
+      section: L.section,
+      kindLabel,
+      label: full.name,
+      meta: "",
+      searchQuery: full.name,
+      primary: {
+        id: full.id,
+        section: L.section,
+        kindLabel,
+        name: full.name,
+        image: full.image || "",
+        imageUrl: full.imageUrl || "",
+      },
+      items: [
+        {
+          id: full.id,
+          section: L.section,
+          kindLabel,
+          name: full.name,
+          image: full.image || "",
+          imageUrl: full.imageUrl || "",
+        },
+      ],
+    });
+  }
+  return list;
+}
+
+/** Предметы с note «нужен, чтобы получить значок "X"» — на карточку значка X. */
+function mergeAchReverseNoteReqs(reqs, achItem) {
+  const list = Array.isArray(reqs) ? [...reqs] : [];
+  if (!achItem) return list;
+  const selfNorm = morphReqText(achItem.name);
+  if (selfNorm.length < 3) return list;
+  const seen = new Set(list.flatMap((r) => (r.items || []).map((e) => `${r.section}:${e.id}`)));
+  const noteRe = /значок(?:а|у|ом)?\s+[«"„“"]([^»"“”"]+)[»"“”"]/gi;
+  const pool = [...(state.titles || []), ...(state.wiki || [])];
+  const wantsKids = achTextWantsKids(achItem.description || "", "");
+  for (const it of pool) {
+    if (!it || it.kind === "achievements") continue;
+    const blob = String(it.note || "");
+    if (!/значок/i.test(blob)) continue;
+    noteRe.lastIndex = 0;
+    let m;
+    let hit = false;
+    while ((m = noteRe.exec(blob))) {
+      if (morphReqText(m[1]) === selfNorm) {
+        hit = true;
+        break;
+      }
+    }
+    if (!hit) continue;
+    if (isKidGuideItem(it) && !wantsKids) continue;
+    const section = itemSectionOf(it);
+    const key = `${section}:${Number(it.id)}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const kindLabel = section === "titles" ? "Титул" : it.kindLabel || SECTION_TITLE[section] || section;
+    list.push({
+      section,
+      kindLabel,
+      label: it.name,
+      meta: "",
+      searchQuery: it.name,
+      primary: {
+        id: it.id,
+        section,
+        kindLabel,
+        name: it.name,
+        image: it.image || "",
+        imageUrl: it.imageUrl || "",
+      },
+      items: [
+        {
+          id: it.id,
+          section,
+          kindLabel,
+          name: it.name,
+          image: it.image || "",
+          imageUrl: it.imageUrl || "",
+        },
+      ],
+    });
+  }
+  return list;
+}
+
+function renderAchievementRequires(description, selfName = "", achItem = null) {
+  let reqs = findAchievementRequires(description, selfName);
+  reqs = mergeAchDescriptionLinkReqs(reqs, achItem);
+  reqs = mergeAchReverseNoteReqs(reqs, achItem);
   if (!reqs.length) return { html: "", reqs: [] };
   const cards = reqs
     .map((r) => {
@@ -3605,7 +3906,9 @@ function openReqPeek(section, id, query, extras = {}) {
   const facts = reqItemFacts(it, extras.achDescription || "", name);
   const isPeekTitle = section === "titles" || it?.kind === "titles";
   const isPeekAch = section === "achievements" || it?.kind === "achievements";
-  const peekReqs = isPeekAch ? renderAchievementRequires(it?.description || "", it?.name || "") : { html: "", reqs: [] };
+  const peekReqs = isPeekAch
+    ? renderAchievementRequires(it?.description || "", it?.name || "", it)
+    : { html: "", reqs: [] };
   const peekWiki = it
     ? guideWikiHref(it, isPeekTitle)
     : isPeekTitle
@@ -6323,7 +6626,9 @@ function renderDetail(it) {
   const hasColorLooks = !titleItem && !isAch && hasDistinctLookColors(it);
   const view = detailViewItem(it);
   const shownName = (it.genderNames && it.genderNames[preferredGender(it)]) || it.name;
-  const reqPack = isAch ? renderAchievementRequires(it.description, it.name) : { html: "", reqs: [] };
+  const reqPack = isAch
+    ? renderAchievementRequires(it.description, it.name, it)
+    : { html: "", reqs: [] };
   const stack = itemInfoStackHtml(view, {
     isTitle: titleItem,
     isAch,
