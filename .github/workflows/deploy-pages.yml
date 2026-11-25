@@ -54,23 +54,30 @@ jobs:
           wiki = json.loads(Path("data/wiki_items.json").read_text(encoding="utf-8"))
           miss_guide = []
           for it in wiki.get("items") or []:
-              if it.get("kind") != "achievements":
-                  continue
               img = str(it.get("image") or "").lstrip("./")
               if not img:
-                  miss_guide.append(it.get("name"))
+                  # stubs without wiki art (empty pages) — skip
                   continue
               stem = Path(img).stem
               guide = Path("data/guide_img") / f"{stem}.webp"
-              if not guide.is_file():
-                  miss_guide.append(f"{it.get('name')}: {guide}")
+              if not guide.is_file() or guide.stat().st_size < 100:
+                  miss_guide.append(f"{it.get('kind')}:{it.get('name')}: {guide.name}")
           if miss_guide:
-              print("Achievement badges missing:", *miss_guide[:20], sep="\n", file=sys.stderr)
+              print("Guide thumbs missing:", *miss_guide[:30], sep="\n", file=sys.stderr)
               sys.exit(1)
+
+          # dock icons used on home
+          for p in (
+              Path("assets/promo-icon-key.jpg"),
+          ):
+              if not p.is_file():
+                  print(f"MISSING dock icon: {p}", file=sys.stderr)
+                  sys.exit(1)
 
           print(
               "ok images:",
               f"shop={len(shop.get('items') or [])}",
+              f"wiki={len(wiki.get('items') or [])}",
               f"guide_img={sum(1 for _ in Path('data/guide_img').iterdir())}",
               f"title_img={sum(1 for _ in Path('data/title_img').iterdir())}",
               f"title_thumb={sum(1 for _ in Path('data/title_thumb').iterdir())}",
