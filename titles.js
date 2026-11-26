@@ -4103,8 +4103,9 @@ function expandGuideToken(token) {
 
 /** Общий значок титула в игре (одинаковый у всех) */
 function titleBadgeSrc() {
+  // Pages artifact без title_img — только title_thumb.
   return isSlimPagesHost()
-    ? `${location.origin}${siteRootPrefix()}data/title_img/3d077203ce.png`
+    ? `${location.origin}${siteRootPrefix()}data/title_thumb/3d077203ce.webp`
     : "./data/title_img/3d077203ce.png";
 }
 

@@ -53,17 +53,42 @@ jobs:
 
           wiki = json.loads(Path("data/wiki_items.json").read_text(encoding="utf-8"))
           miss_guide = []
-          for it in wiki.get("items") or []:
-              img = str(it.get("image") or "").lstrip("./")
-              if not img:
-                  # stubs without wiki art (empty pages) — skip
-                  continue
-              stem = Path(img).stem
+          miss_look = []
+
+          def check_stem(stem, label):
+              if not stem:
+                  return
               guide = Path("data/guide_img") / f"{stem}.webp"
+              look = Path("data/look_img") / f"{stem}.webp"
+              look_gif = Path("data/look_img") / f"{stem}.gif"
               if not guide.is_file() or guide.stat().st_size < 100:
-                  miss_guide.append(f"{it.get('kind')}:{it.get('name')}: {guide.name}")
+                  miss_guide.append(f"{label}: {guide.name}")
+              if (not look.is_file() or look.stat().st_size < 100) and (
+                  not look_gif.is_file() or look_gif.stat().st_size < 100
+              ):
+                  miss_look.append(f"{label}: {stem}")
+
+          for it in wiki.get("items") or []:
+              kind = it.get("kind") or "?"
+              name = it.get("name") or "?"
+              img = str(it.get("image") or "").lstrip("./")
+              if img:
+                  check_stem(Path(img).stem, f"{kind}:{name}:image")
+              look = str(it.get("lookImage") or "").lstrip("./")
+              if look:
+                  check_stem(Path(look).stem, f"{kind}:{name}:look")
+              for v in it.get("lookVariants") or []:
+                  if isinstance(v, dict):
+                      vp = str(v.get("image") or v.get("lookLocal") or "").lstrip("./")
+                  else:
+                      vp = str(v or "").lstrip("./")
+                  if vp:
+                      check_stem(Path(vp).stem, f"{kind}:{name}:variant")
           if miss_guide:
               print("Guide thumbs missing:", *miss_guide[:30], sep="\n", file=sys.stderr)
+              sys.exit(1)
+          if miss_look:
+              print("Look imgs missing:", *miss_look[:30], sep="\n", file=sys.stderr)
               sys.exit(1)
 
           # dock icons used on home
