@@ -1,6 +1,6 @@
 {
   "source": "vk_news_bot4/wheel_achievements_cache.json",
-  "ts": 1795856165.5930178,
+  "ts": 1795856847.9196906,
   "title": "Колесо · для значков",
   "report": [
     {
@@ -94,15 +94,17 @@
       "items": [
         {
           "name": "Костюм \"Валентино\"",
-          "on_wheel": false,
-          "uncertain": true,
+          "on_wheel": true,
+          "uncertain": false,
           "ambiguous": false,
           "ambiguous_wheel": [],
-          "wheel_names": [],
-          "categories": [],
-          "uncertain_gifts": [
+          "wheel_names": [
             "Подарок с костюмом «Валентино» (8 цветов на выбор)"
           ],
+          "categories": [
+            "Суперприз"
+          ],
+          "uncertain_gifts": [],
           "thumb": "data/guide_img/81e285b61c.webp"
         },
         {
@@ -117,12 +119,7 @@
           "thumb": "data/guide_img/D745acea79.webp"
         }
       ],
-      "related_gifts": [
-        {
-          "name": "Подарок с костюмом «Валентино» (8 цветов на выбор)",
-          "category": "Суперприз"
-        }
-      ],
+      "related_gifts": [],
       "require": "all",
       "sets": [],
       "set_labels": [],
@@ -134,50 +131,51 @@
       "items": [
         {
           "name": "Черные крылья Астрея",
-          "on_wheel": false,
-          "uncertain": true,
+          "on_wheel": true,
+          "uncertain": false,
           "ambiguous": false,
           "ambiguous_wheel": [],
-          "wheel_names": [],
-          "categories": [],
-          "uncertain_gifts": [
+          "wheel_names": [
             "Подарок «Перья Астрея»"
           ],
+          "categories": [
+            "Обычный приз"
+          ],
+          "uncertain_gifts": [],
           "thumb": "data/guide_img/ЗначокКрыльяАстрея.webp"
         },
         {
           "name": "Белые крылья Астрея",
-          "on_wheel": false,
-          "uncertain": true,
+          "on_wheel": true,
+          "uncertain": false,
           "ambiguous": false,
           "ambiguous_wheel": [],
-          "wheel_names": [],
-          "categories": [],
-          "uncertain_gifts": [
+          "wheel_names": [
             "Подарок «Перья Астрея»"
           ],
+          "categories": [
+            "Обычный приз"
+          ],
+          "uncertain_gifts": [],
           "thumb": "data/guide_img/ЗначокКрыльяАстрея.webp"
         },
         {
           "name": "Золотые крылья Астрея",
-          "on_wheel": false,
-          "uncertain": true,
+          "on_wheel": true,
+          "uncertain": false,
           "ambiguous": false,
           "ambiguous_wheel": [],
-          "wheel_names": [],
-          "categories": [],
-          "uncertain_gifts": [
+          "wheel_names": [
             "Подарок «Перья Астрея»"
           ],
+          "categories": [
+            "Обычный приз"
+          ],
+          "uncertain_gifts": [],
           "thumb": "data/guide_img/ЗначокКрыльяАстрея.webp"
         }
       ],
-      "related_gifts": [
-        {
-          "name": "Подарок «Перья Астрея»",
-          "category": "Обычный приз"
-        }
-      ],
+      "related_gifts": [],
       "require": "all",
       "sets": [],
       "set_labels": [],
@@ -287,37 +285,36 @@
         },
         {
           "name": "Золотые крылья Амура",
-          "on_wheel": false,
-          "uncertain": true,
+          "on_wheel": true,
+          "uncertain": false,
           "ambiguous": false,
           "ambiguous_wheel": [],
-          "wheel_names": [],
-          "categories": [],
-          "uncertain_gifts": [
+          "wheel_names": [
             "Подарок с крыльями Амура"
           ],
+          "categories": [
+            "Суперприз"
+          ],
+          "uncertain_gifts": [],
           "thumb": "data/guide_img/Ad5b8bfed601.webp"
         },
         {
           "name": "Черные крылья Амура",
-          "on_wheel": false,
-          "uncertain": true,
+          "on_wheel": true,
+          "uncertain": false,
           "ambiguous": false,
           "ambiguous_wheel": [],
-          "wheel_names": [],
-          "categories": [],
-          "uncertain_gifts": [
+          "wheel_names": [
             "Подарок с крыльями Амура"
           ],
+          "categories": [
+            "Суперприз"
+          ],
+          "uncertain_gifts": [],
           "thumb": "data/guide_img/Ad5b8bfed601.webp"
         }
       ],
-      "related_gifts": [
-        {
-          "name": "Подарок с крыльями Амура",
-          "category": "Суперприз"
-        }
-      ],
+      "related_gifts": [],
       "require": "all",
       "sets": [],
       "set_labels": [],
@@ -325,7 +322,7 @@
       "badgeThumb": "data/guide_img/684d52caa4a5d4907ee10064f1ed902e.webp"
     }
   ],
-  "demo_i": "6.184.185.186.187.106.145",
+  "demo_i": "6.184.185.186.187.43.71.72.73.106.145.146.147",
   "demo_a": "107",
-  "demo_u": "43.71.72.73.146.147"
+  "demo_u": ""
 }
