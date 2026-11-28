@@ -309,6 +309,10 @@
     .glabel.off { color: var(--mute); }
     .glabel.warn { color: #d4a017; margin-top: 4px; }
     .glabel.maybe { color: #7a9ec7; margin-top: 4px; }
+    .item.warn-variant {
+      border-color: rgba(212, 160, 23, 0.4);
+    }
+    .item.warn-variant .warn-note { color: #d4a017; }
 
     .item {
       display: grid;
@@ -667,7 +671,7 @@
     <div class="panel" id="panel"></div>
   </div>
 
-  <script src="./wheel-data.js?v=181"></script>
+  <script src="./wheel-data.js?v=182"></script>
   <script>
     (function () {
       const GUIDE = new URL("./titles.html", location.href).href;
@@ -743,6 +747,114 @@
         });
       }
 
+      const COLOR_RE =
+        /^(?:бел\w*|чёрн\w*|черн\w*|розов\w*|красн\w*|золот\w*|золотист\w*|жёлт\w*|желт\w*|зелён\w*|зелен\w*|син(?:ий|яя|ее|ие|его|ему|им|ей|юю)?|фиолетов\w*|лазурн\w*|алы\w*|алый|алая|алое|алые|коричнев\w*|разноцветн\w*|серебр\w*|оранжев\w*|голуб\w*|малинов\w*|бирюзов\w*|изумрудн\w*|пурпурн\w*|бордов\w*|радужн\w*|пестр\w*)$/i;
+      const PAREN_NOISE_RE =
+        /^(?:жен\.?|муж\.?|ж|м|взросл\.?|детск\.?|\d+\s*цв(?:ет|ета|етов)?(?:\s+на\s+выбор)?|на\s+выбор)$/i;
+
+      function parenVariants(name) {
+        const out = [];
+        String(name || "").replace(/\(([^)]+)\)/g, (_, raw) => {
+          const detail = String(raw || "").trim();
+          if (!detail || PAREN_NOISE_RE.test(detail)) return "";
+          if (/выбор/i.test(detail)) return "";
+          out.push(detail);
+          return "";
+        });
+        return out;
+      }
+
+      function tokens(s) {
+        return norm(s)
+          .split(/[\s\-]+/)
+          .filter(Boolean);
+      }
+
+      function sameStem(a, b) {
+        a = String(a || "");
+        b = String(b || "");
+        if (a.length < 4 || b.length < 4) return false;
+        let n = 0;
+        for (let i = 0; i < Math.min(a.length, b.length); i++) {
+          if (a[i] !== b[i]) break;
+          n++;
+        }
+        return n >= (Math.min(a.length, b.length) >= 6 ? 5 : 4);
+      }
+
+      function wheelMentionsDetail(wheelName, detail) {
+        const wk = norm(wheelName);
+        const dk = norm(detail);
+        if (!wk || !dk) return false;
+        if (wk.includes(dk)) return true;
+        const parts = dk.split(/[\s\-]+/).filter((t) => t.length >= 4);
+        if (!parts.length) return false;
+        const wtoks = tokens(wheelName);
+        return parts.every((tok) =>
+          wtoks.some((wt) => sameStem(tok, wt) || wt.includes(tok) || tok.includes(wt))
+        );
+      }
+
+      function wheelMentionsColor(wheelName, colorTok) {
+        const ct = norm(colorTok);
+        if (!ct) return false;
+        return tokens(wheelName).some(
+          (wt) => sameStem(ct, wt) || wt.includes(ct) || ct.includes(wt)
+        );
+      }
+
+      function isGiftOrChoice(wheelName) {
+        const low = String(wheelName || "").toLowerCase().replace(/ё/g, "е");
+        return /цвет\w*\s+на\s+выбор|на\s+выбор|^подарок\b|\bподарок\s*[«"„]/.test(low);
+      }
+
+      /** Предупреждение: для значка нужен конкретный цвет/вариант. */
+      function variantNote(catalogName, wheelNames) {
+        const labels = (wheelNames || []).map((w) => String(w || "").trim()).filter(Boolean);
+        if (!catalogName || !labels.length) return "";
+
+        for (const detail of parenVariants(catalogName)) {
+          if (!labels.some((w) => wheelMentionsDetail(w, detail))) {
+            return "для значка нужен вариант «" + detail + "»";
+          }
+        }
+
+        const baseToks = tokens(String(catalogName || "").replace(/\([^)]*\)/g, " "));
+        const catColors = baseToks.filter((t) => COLOR_RE.test(t));
+        if (catColors.length) {
+          const missing = catColors.filter(
+            (ct) => !labels.some((w) => wheelMentionsColor(w, ct))
+          );
+          if (missing.length) {
+            const rawParts = String(catalogName || "").split(/[\s\-]+/);
+            let colorLabel = missing[0];
+            for (const part of rawParts) {
+              if (missing.includes(norm(part))) {
+                colorLabel = part;
+                break;
+              }
+            }
+            if (labels.some(isGiftOrChoice)) {
+              return (
+                "для значка нужен цвет «" +
+                colorLabel +
+                "» (в призе цвет выбирается)"
+              );
+            }
+            return "для значка нужен цвет «" + colorLabel + "»";
+          }
+        }
+
+        if (
+          labels.some((w) =>
+            /цвет\w*\s+на\s+выбор/i.test(String(w || "").toLowerCase().replace(/ё/g, "е"))
+          )
+        ) {
+          return "в призе выбирается цвет — проверьте, какой нужен для значка";
+        }
+        return "";
+      }
+
       /** Собрать отчёт из ?i= (точно), ?a= (тёзки), ?u= (возможно в подарке). */
       function reportFromIds(ids, warnIds, uncIds) {
         const byId = new Map(ACH_ITEMS.map((it) => [it.id, it]));
@@ -777,9 +889,11 @@
         });
         if (!onNames.size && !warnNames.size && !uncNames.size) return [];
 
-        // имена подарков из снимка (если бот уже сматчил)
+        // имена подарков / призов из снимка (если бот уже сматчил)
         const snapGiftByItem = new Map();
         const snapGiftByBadge = new Map();
+        const snapWheelsByItem = new Map();
+        const snapVariantByItem = new Map();
         (snap.report || []).forEach((e) => {
           const gifts = (e.related_gifts || [])
             .map((g) => (typeof g === "string" ? g : g && g.name) || "")
@@ -789,6 +903,8 @@
             const k = norm(it.name);
             const ug = (it.uncertain_gifts || [])[0];
             if (ug) snapGiftByItem.set(k, ug);
+            if ((it.wheel_names || []).length) snapWheelsByItem.set(k, it.wheel_names);
+            if (it.variant_note) snapVariantByItem.set(k, it.variant_note);
           });
         });
 
@@ -819,6 +935,18 @@
               snapGiftByItem.get(k) ||
               snapGiftByBadge.get(badge) ||
               "подарок на колесе";
+            const wheels = on ? snapWheelsByItem.get(k) || [] : [];
+            let vNote = "";
+            if (on) {
+              vNote = snapVariantByItem.get(k) || "";
+              if (!vNote && wheels.length) vNote = variantNote(x.name, wheels);
+              if (!vNote) {
+                const details = parenVariants(x.name);
+                if (details.length) {
+                  vNote = "для значка нужен вариант «" + details[0] + "»";
+                }
+              }
+            }
             return {
               name: x.name,
               thumb: x.thumb,
@@ -827,6 +955,8 @@
               uncertain,
               ambiguous_wheel: ambiguous ? [warnTwins.get(k) || "одноимённый приз"] : [],
               uncertain_gifts: uncertain ? [gift] : [],
+              wheel_names: wheels,
+              variant_note: vNote || "",
             };
           });
           if (!items.some((x) => x.on_wheel || x.ambiguous || x.uncertain)) return;
@@ -981,7 +1111,10 @@
       }
       function itemRow(it, on, warn, maybe) {
         const a = document.createElement("a");
-        a.className = "item " + (on ? "on" : warn ? "warn" : maybe ? "maybe" : "off");
+        const hasVariant = on && !!(it.variant_note || "").trim();
+        a.className =
+          "item " +
+          (on ? (hasVariant ? "on warn-variant" : "on") : warn ? "warn" : maybe ? "maybe" : "off");
         const q = encodeURIComponent(it.name || "");
         a.href = GUIDE + "?q=" + q;
         a.target = "_blank";
@@ -1006,6 +1139,11 @@
           note.className = "warn-note";
           note.textContent =
             "Может быть внутри «" + gift + "» — содержимое подарка неизвестно";
+          box.appendChild(note);
+        } else if (hasVariant) {
+          const note = document.createElement("p");
+          note.className = "warn-note";
+          note.textContent = it.variant_note;
           box.appendChild(note);
         }
         a.appendChild(box);
