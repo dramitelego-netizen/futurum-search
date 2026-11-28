@@ -308,6 +308,7 @@
     .glabel.on { color: var(--accent); }
     .glabel.off { color: var(--mute); }
     .glabel.warn { color: #d4a017; margin-top: 4px; }
+    .glabel.maybe { color: #7a9ec7; margin-top: 4px; }
 
     .item {
       display: grid;
@@ -331,6 +332,9 @@
       background: color-mix(in srgb, var(--accent) 8%, transparent);
     }
     .item.off { opacity: 0.72; }
+    .item.maybe {
+      border-color: rgba(122, 158, 199, 0.45);
+    }
     .item.warn {
       height: auto;
       min-height: var(--row-h);
@@ -663,7 +667,7 @@
     <div class="panel" id="panel"></div>
   </div>
 
-  <script src="./wheel-data.js"></script>
+  <script src="./wheel-data.js?v=180"></script>
   <script>
     (function () {
       const GUIDE = new URL("./titles.html", location.href).href;
@@ -739,12 +743,14 @@
         });
       }
 
-      /** Собрать отчёт из ?i= (на колесе) и ?a= (тёзки / спорные). */
-      function reportFromIds(ids, warnIds) {
+      /** Собрать отчёт из ?i= (точно), ?a= (тёзки), ?u= (возможно в подарке). */
+      function reportFromIds(ids, warnIds, uncIds) {
         const byId = new Map(ACH_ITEMS.map((it) => [it.id, it]));
         const onNames = new Set();
         const warnNames = new Set();
+        const uncNames = new Set();
         const warnTwins = new Map();
+        const uncGifts = new Map();
         const touchBadges = new Set();
         (ids || []).forEach((id) => {
           const it = byId.get(id);
@@ -762,7 +768,30 @@
           warnTwins.set(k, twin);
           (it.badges || []).forEach((b) => touchBadges.add(b));
         });
-        if (!onNames.size && !warnNames.size) return [];
+        (uncIds || []).forEach((id) => {
+          const it = byId.get(id);
+          if (!it) return;
+          const k = norm(it.name);
+          if (onNames.has(k) || warnNames.has(k)) return;
+          uncNames.add(k);
+          (it.badges || []).forEach((b) => touchBadges.add(b));
+        });
+        if (!onNames.size && !warnNames.size && !uncNames.size) return [];
+
+        // имена подарков из снимка (если бот уже сматчил)
+        const snapGiftByItem = new Map();
+        const snapGiftByBadge = new Map();
+        (snap.report || []).forEach((e) => {
+          const gifts = (e.related_gifts || [])
+            .map((g) => (typeof g === "string" ? g : g && g.name) || "")
+            .filter(Boolean);
+          if (gifts.length) snapGiftByBadge.set(e.badge, gifts[0]);
+          (e.items || []).forEach((it) => {
+            const k = norm(it.name);
+            const ug = (it.uncertain_gifts || [])[0];
+            if (ug) snapGiftByItem.set(k, ug);
+          });
+        });
 
         const catalogByBadge = new Map(ACH_CATALOG.map((a) => [a.badge, a]));
         const report = [];
@@ -786,15 +815,22 @@
             const k = norm(x.name);
             const on = onNames.has(k);
             const ambiguous = !on && warnNames.has(k);
+            const uncertain = !on && !ambiguous && uncNames.has(k);
+            const gift =
+              snapGiftByItem.get(k) ||
+              snapGiftByBadge.get(badge) ||
+              "подарок на колесе";
             return {
               name: x.name,
               thumb: x.thumb,
               on_wheel: on,
               ambiguous,
+              uncertain,
               ambiguous_wheel: ambiguous ? [warnTwins.get(k) || "одноимённый приз"] : [],
+              uncertain_gifts: uncertain ? [gift] : [],
             };
           });
-          if (!items.some((x) => x.on_wheel || x.ambiguous)) return;
+          if (!items.some((x) => x.on_wheel || x.ambiguous || x.uncertain)) return;
           report.push({
             badge,
             badgeThumb: (ach && ach.badgeThumb) || "",
@@ -807,11 +843,18 @@
       function resolveReport(params) {
         const ids = parseIds(params.get("i"));
         const warnIds = parseIds(params.get("a"));
-        if (ids.length || warnIds.length) {
-          return { mode: "live", report: reportFromIds(ids, warnIds) };
+        const uncIds = parseIds(params.get("u"));
+        if (ids.length || warnIds.length || uncIds.length) {
+          return { mode: "live", report: reportFromIds(ids, warnIds, uncIds) };
         }
-        // ?demo=1 — локальный снимок для проверки вёрстки
+        // ?demo=1 — как живая ссылка из снимка (i/a/u), иначе весь report
         if (params.get("demo") === "1") {
+          const di = parseIds(snap.demo_i);
+          const da = parseIds(snap.demo_a);
+          const du = parseIds(snap.demo_u);
+          if (di.length || da.length || du.length) {
+            return { mode: "live", report: reportFromIds(di, da, du) };
+          }
           return { mode: "live", report: sortReport(snap.report || []) };
         }
         return { mode: "wait", report: [] };
@@ -917,7 +960,8 @@
         return {
           on: items.filter((x) => x.on_wheel),
           warn: items.filter((x) => !x.on_wheel && x.ambiguous),
-          off: items.filter((x) => !x.on_wheel && !x.ambiguous),
+          maybe: items.filter((x) => !x.on_wheel && !x.ambiguous && x.uncertain),
+          off: items.filter((x) => !x.on_wheel && !x.ambiguous && !x.uncertain),
         };
       }
       function thumb(src, cls) {
@@ -936,9 +980,9 @@
         }
         return d;
       }
-      function itemRow(it, on, warn) {
+      function itemRow(it, on, warn, maybe) {
         const a = document.createElement("a");
-        a.className = "item " + (on ? "on" : warn ? "warn" : "off");
+        a.className = "item " + (on ? "on" : warn ? "warn" : maybe ? "maybe" : "off");
         const q = encodeURIComponent(it.name || "");
         a.href = GUIDE + "?q=" + q;
         a.target = "_blank";
@@ -956,6 +1000,13 @@
           note.className = "warn-note";
           note.textContent =
             "В призах есть «" + twin + "», но для значка нужен другой предмет";
+          box.appendChild(note);
+        } else if (maybe) {
+          const gift = (it.uncertain_gifts && it.uncertain_gifts[0]) || "подарок";
+          const note = document.createElement("p");
+          note.className = "warn-note";
+          note.textContent =
+            "Может быть внутри «" + gift + "» — содержимое подарка неизвестно";
           box.appendChild(note);
         }
         a.appendChild(box);
@@ -1064,7 +1115,7 @@
 
         const cols = document.createElement("div");
         cols.className = "cols";
-        const { on, warn, off } = split(report[active]);
+        const { on, warn, maybe, off } = split(report[active]);
 
         const colOn = document.createElement("div");
         colOn.className = "col";
@@ -1072,7 +1123,7 @@
         labOn.className = "glabel on";
         labOn.textContent = "Точно в призах";
         colOn.appendChild(labOn);
-        if (on.length) on.forEach((it) => colOn.appendChild(itemRow(it, true, false)));
+        if (on.length) on.forEach((it) => colOn.appendChild(itemRow(it, true, false, false)));
         else {
           const p = document.createElement("p");
           p.className = "mute";
@@ -1087,11 +1138,18 @@
           labWarn.className = "glabel warn";
           labWarn.textContent = "Спорно";
           colOff.appendChild(labWarn);
-          warn.forEach((it) => colOff.appendChild(itemRow(it, false, true)));
+          warn.forEach((it) => colOff.appendChild(itemRow(it, false, true, false)));
+        }
+        if (maybe.length) {
+          const labMaybe = document.createElement("p");
+          labMaybe.className = "glabel maybe";
+          labMaybe.textContent = "Возможно в подарке";
+          colOff.appendChild(labMaybe);
+          maybe.forEach((it) => colOff.appendChild(itemRow(it, false, false, true)));
         }
         const labOff = document.createElement("p");
         labOff.className = "glabel off";
-        if (!off.length && !warn.length) {
+        if (!off.length && !warn.length && !maybe.length) {
           labOff.textContent = "Готово";
           colOff.appendChild(labOff);
           const p = document.createElement("p");
@@ -1101,8 +1159,8 @@
         } else {
           labOff.textContent = "Нет в призах";
           colOff.appendChild(labOff);
-          if (off.length) off.forEach((it) => colOff.appendChild(itemRow(it, false, false)));
-          else if (!warn.length) {
+          if (off.length) off.forEach((it) => colOff.appendChild(itemRow(it, false, false, false)));
+          else if (!warn.length && !maybe.length) {
             const p = document.createElement("p");
             p.className = "mute";
             p.textContent = "Пусто";

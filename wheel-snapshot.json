@@ -1,6 +1,6 @@
 {
   "source": "vk_news_bot4/wheel_achievements_cache.json",
-  "ts": 1795855414.032276,
+  "ts": 1795856165.5930178,
   "title": "Колесо · для значков",
   "report": [
     {
@@ -211,12 +211,16 @@
         },
         {
           "name": "Двухместный самолет (серебристо-серый)",
-          "on_wheel": false,
+          "on_wheel": true,
           "uncertain": false,
           "ambiguous": false,
           "ambiguous_wheel": [],
-          "wheel_names": [],
-          "categories": [],
+          "wheel_names": [
+            "Двухместный самолет"
+          ],
+          "categories": [
+            "Суперприз"
+          ],
           "uncertain_gifts": [],
           "thumb": "data/guide_img/8206ba1a3714.webp"
         },
@@ -321,5 +325,7 @@
       "badgeThumb": "data/guide_img/684d52caa4a5d4907ee10064f1ed902e.webp"
     }
   ],
-  "demo_i": "6.184.185.186.187.145"
+  "demo_i": "6.184.185.186.187.106.145",
+  "demo_a": "107",
+  "demo_u": "43.71.72.73.146.147"
 }

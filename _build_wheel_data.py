@@ -221,13 +221,23 @@ for key, badges in badge_of.items():
         row["thumb"] = row.get("thumb") or find_thumb(row["name"])
 
 on_ids = []
+amb_ids = []
+unc_ids = []
 for entry in report:
     for it in entry.get("items") or []:
-        if not it.get("on_wheel"):
-            continue
         key = norm(it.get("name"))
-        if key in seen and seen[key] not in on_ids:
-            on_ids.append(seen[key])
+        iid = seen.get(key)
+        if not iid:
+            continue
+        if it.get("on_wheel"):
+            if iid not in on_ids:
+                on_ids.append(iid)
+        elif it.get("ambiguous"):
+            if iid not in amb_ids and iid not in on_ids:
+                amb_ids.append(iid)
+        elif it.get("uncertain"):
+            if iid not in unc_ids and iid not in on_ids and iid not in amb_ids:
+                unc_ids.append(iid)
 
 snap = {
     "source": "vk_news_bot4/wheel_achievements_cache.json",
@@ -235,6 +245,8 @@ snap = {
     "title": "Колесо · для значков",
     "report": report,
     "demo_i": ".".join(str(i) for i in on_ids),
+    "demo_a": ".".join(str(i) for i in amb_ids),
+    "demo_u": ".".join(str(i) for i in unc_ids),
 }
 
 # каталог: предметы из json + всё, что привязано к значку (краски и т.п.)
