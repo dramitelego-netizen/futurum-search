@@ -954,7 +954,8 @@
           const twin = (it.ambiguous_wheel && it.ambiguous_wheel[0]) || "одноимённый приз";
           const note = document.createElement("p");
           note.className = "warn-note";
-          note.textContent = "На колесе «" + twin + "» — возможно другой предмет";
+          note.textContent =
+            "В призах есть «" + twin + "», но для значка нужен другой предмет";
           box.appendChild(note);
         }
         a.appendChild(box);
@@ -1069,35 +1070,44 @@
         colOn.className = "col";
         const labOn = document.createElement("p");
         labOn.className = "glabel on";
-        labOn.textContent = "На колесе";
+        labOn.textContent = "Точно в призах";
         colOn.appendChild(labOn);
         if (on.length) on.forEach((it) => colOn.appendChild(itemRow(it, true, false)));
         else {
           const p = document.createElement("p");
           p.className = "mute";
-          p.textContent = "Пока пусто";
+          p.textContent = "Пока нет";
           colOn.appendChild(p);
         }
 
         const colOff = document.createElement("div");
         colOff.className = "col";
-        const labOff = document.createElement("p");
-        labOff.className = "glabel off";
-        labOff.textContent = off.length || warn.length ? "Ещё нет" : "Готово";
-        colOff.appendChild(labOff);
         if (warn.length) {
           const labWarn = document.createElement("p");
           labWarn.className = "glabel warn";
-          labWarn.textContent = "Проверьте";
+          labWarn.textContent = "Спорно";
           colOff.appendChild(labWarn);
           warn.forEach((it) => colOff.appendChild(itemRow(it, false, true)));
         }
-        if (off.length) off.forEach((it) => colOff.appendChild(itemRow(it, false, false)));
+        const labOff = document.createElement("p");
+        labOff.className = "glabel off";
         if (!off.length && !warn.length) {
+          labOff.textContent = "Готово";
+          colOff.appendChild(labOff);
           const p = document.createElement("p");
           p.className = "mute";
-          p.textContent = "Всё на колесе";
+          p.textContent = "Все нужные предметы уже в призах";
           colOff.appendChild(p);
+        } else {
+          labOff.textContent = "Нет в призах";
+          colOff.appendChild(labOff);
+          if (off.length) off.forEach((it) => colOff.appendChild(itemRow(it, false, false)));
+          else if (!warn.length) {
+            const p = document.createElement("p");
+            p.className = "mute";
+            p.textContent = "Пусто";
+            colOff.appendChild(p);
+          }
         }
 
         cols.appendChild(colOn);
