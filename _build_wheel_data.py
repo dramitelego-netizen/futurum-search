@@ -256,6 +256,47 @@ for it in ach_items:
     for b in it.get("badges") or []:
         items_by_badge.setdefault(b, []).append(it)
 
+def unlock_meta(description, item_names):
+    d = norm(description)
+    interactives = ("интерактив" in d) and (
+        "разблокир" in d or "все интерактив" in d or "интерактив" in d and "цвет" in d
+    )
+    # не путать с «предмет для интерактивов»
+    if "предмет для интерактив" in d and "разблокир" not in d:
+        interactives = False
+    all_colors = (
+        "все цвета" in d
+        or "всех цвет" in d
+        or ("разблокир" in d and "цвет" in d)
+    )
+    has_paints = any(re.search(r"краск|красител", n or "", re.I) for n in item_names)
+    if has_paints:
+        all_colors = False  # цвета уже отдельными строками
+    targets = []
+    for q in re.findall(r'[«"„]([^»"“]{2,80})[»"“]', description or ""):
+        qk = norm(q).replace('"', "")
+        for n in item_names:
+            if re.search(r"краск|красител", n or "", re.I):
+                continue
+            nk = norm(n).replace('"', "")
+            if qk and (qk == nk or qk in nk or nk in qk):
+                if n not in targets:
+                    targets.append(n)
+    if interactives and not targets:
+        targets = [
+            n
+            for n in item_names
+            if n and not re.search(r"краск|красител", n or "", re.I)
+        ]
+    if not interactives and not all_colors:
+        return {}
+    return {
+        "interactives": bool(interactives),
+        "allColors": bool(all_colors),
+        "targets": targets,
+    }
+
+
 for ach in cat.get("achievements") or []:
     badge = ach.get("badge") or ""
     names = []
@@ -272,17 +313,20 @@ for ach in cat.get("achievements") or []:
             continue
         seen_n.add(k)
         names.append(it["name"])
-    ach_out.append(
-        {
-            "badge": badge,
-            "badgeThumb": find_thumb(badge),
-            "require": ach.get("require") or "all",
-            "items": [{"name": n, "thumb": find_thumb(n)} for n in names],
-            "sets": ach.get("sets") or [],
-            "set_labels": ach.get("set_labels") or [],
-            "also": ach.get("also") or [],
-        }
-    )
+    row = {
+        "badge": badge,
+        "badgeThumb": find_thumb(badge),
+        "require": ach.get("require") or "all",
+        "items": [{"name": n, "thumb": find_thumb(n)} for n in names],
+        "sets": ach.get("sets") or [],
+        "set_labels": ach.get("set_labels") or [],
+        "also": ach.get("also") or [],
+        "description": ach.get("description") or "",
+    }
+    u = unlock_meta(ach.get("description") or "", names)
+    if u:
+        row["unlock"] = u
+    ach_out.append(row)
 
 thumbed = sum(1 for it in ach_items if it.get("thumb"))
 rep_thumbs = sum(1 for e in report for it in e["items"] if it.get("thumb"))

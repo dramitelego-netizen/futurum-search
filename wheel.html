@@ -686,7 +686,7 @@
     <div class="panel" id="panel"></div>
   </div>
 
-  <script src="./wheel-data.js?v=185"></script>
+  <script src="./wheel-data.js?v=186"></script>
   <script>
     (function () {
       const GUIDE = new URL("./titles.html", location.href).href;
@@ -919,7 +919,9 @@
             const ug = (it.uncertain_gifts || [])[0];
             if (ug) snapGiftByItem.set(k, ug);
             if ((it.wheel_names || []).length) snapWheelsByItem.set(k, it.wheel_names);
-            if (it.variant_note) snapVariantByItem.set(k, it.variant_note);
+            const notes = (it.variant_notes || []).filter(Boolean);
+            if (notes.length) snapVariantByItem.set(k, notes);
+            else if (it.variant_note) snapVariantByItem.set(k, [it.variant_note]);
           });
         });
 
@@ -951,14 +953,39 @@
               snapGiftByBadge.get(badge) ||
               "подарок в призах";
             const wheels = on ? snapWheelsByItem.get(k) || [] : [];
-            let vNote = "";
+            let vNotes = [];
             if (on) {
-              vNote = snapVariantByItem.get(k) || "";
-              if (!vNote && wheels.length) vNote = variantNote(x.name, wheels);
-              if (!vNote) {
+              const fromSnap = snapVariantByItem.get(k);
+              if (Array.isArray(fromSnap)) vNotes = fromSnap.slice();
+              else if (fromSnap) vNotes = [fromSnap];
+              if (!vNotes.length && wheels.length) {
+                const one = variantNote(x.name, wheels);
+                if (one) vNotes.push(one);
+              }
+              if (!vNotes.length) {
                 const details = parenVariants(x.name);
                 if (details.length) {
-                  vNote = "для значка нужен вариант «" + details[0] + "»";
+                  vNotes.push("для значка нужен вариант «" + details[0] + "»");
+                }
+              }
+              // интерактивы / все цвета из каталога (описание значка)
+              const unlock = (ach && ach.unlock) || {};
+              const isPaint = /краск|красител/i.test(x.name || "");
+              if (!isPaint) {
+                const targets = (unlock.targets || []).map(bareKey);
+                const isTarget =
+                  targets.length > 0 &&
+                  (targets.includes(bareKey(x.name)) ||
+                    targets.some(
+                      (t) => bareKey(x.name).includes(t) || t.includes(bareKey(x.name))
+                    ));
+                if (isTarget && unlock.interactives) {
+                  const msg = "для значка нужны все интерактивы этого предмета";
+                  if (!vNotes.includes(msg)) vNotes.push(msg);
+                }
+                if (isTarget && unlock.allColors) {
+                  const msg = "для значка нужны все цвета этого предмета";
+                  if (!vNotes.includes(msg)) vNotes.push(msg);
                 }
               }
             }
@@ -971,7 +998,8 @@
               ambiguous_wheel: ambiguous ? [warnTwins.get(k) || "одноимённый приз"] : [],
               uncertain_gifts: uncertain ? [gift] : [],
               wheel_names: wheels,
-              variant_note: vNote || "",
+              variant_note: vNotes[0] || "",
+              variant_notes: vNotes,
             };
           });
           if (!items.some((x) => x.on_wheel || x.ambiguous || x.uncertain)) return;
@@ -1153,7 +1181,11 @@
       function itemRow(it, on, warn, maybe) {
         const a = document.createElement("a");
         const sources = on ? sourceLabels(it) : [];
-        const hasVariant = on && !!(it.variant_note || "").trim();
+        const vNotes = (
+          it.variant_notes ||
+          (it.variant_note ? [it.variant_note] : [])
+        ).filter((n) => String(n || "").trim());
+        const hasVariant = on && vNotes.length > 0;
         const hasSource = sources.length > 0;
         a.className =
           "item " +
@@ -1198,12 +1230,12 @@
             note.textContent = "можно получить из: " + src;
             box.appendChild(note);
           });
-          if (hasVariant) {
+          vNotes.forEach((text) => {
             const note = document.createElement("p");
             note.className = "warn-note";
-            note.textContent = it.variant_note;
+            note.textContent = text;
             box.appendChild(note);
-          }
+          });
         }
         a.appendChild(box);
         return a;
