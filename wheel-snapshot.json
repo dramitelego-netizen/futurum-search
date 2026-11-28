@@ -1,6 +1,6 @@
 {
-  "source": "vk_news_bot2/wheel_achievements_cache.json",
-  "ts": 1794739851.252521,
+  "source": "vk_news_bot4/wheel_achievements_cache.json",
+  "ts": 1795855414.032276,
   "title": "Колесо · для значков",
   "report": [
     {
@@ -10,6 +10,8 @@
           "name": "Трюмо \"Бовуар\"",
           "on_wheel": true,
           "uncertain": false,
+          "ambiguous": false,
+          "ambiguous_wheel": [],
           "wheel_names": [
             "Трюмо «Бовуар»"
           ],
@@ -23,6 +25,8 @@
           "name": "Розовая краска Бовуар",
           "on_wheel": true,
           "uncertain": false,
+          "ambiguous": false,
+          "ambiguous_wheel": [],
           "wheel_names": [
             "Розовая краска «Бовуар»"
           ],
@@ -34,19 +38,31 @@
         },
         {
           "name": "Белая краска Бовуар",
-          "on_wheel": false,
+          "on_wheel": true,
           "uncertain": false,
-          "wheel_names": [],
-          "categories": [],
+          "ambiguous": false,
+          "ambiguous_wheel": [],
+          "wheel_names": [
+            "Белая краска «Бовуар»"
+          ],
+          "categories": [
+            "Отличный приз"
+          ],
           "uncertain_gifts": [],
           "thumb": "data/guide_img/2f8cd5e78e4a0d252cbbb505a482e7a3.webp"
         },
         {
           "name": "Голубая краска Бовуар",
-          "on_wheel": false,
+          "on_wheel": true,
           "uncertain": false,
-          "wheel_names": [],
-          "categories": [],
+          "ambiguous": false,
+          "ambiguous_wheel": [],
+          "wheel_names": [
+            "Голубая краска «Бовуар»"
+          ],
+          "categories": [
+            "Отличный приз"
+          ],
           "uncertain_gifts": [],
           "thumb": "data/guide_img/2f8cd5e78e4a0d252cbbb505a482e7a3.webp"
         },
@@ -54,6 +70,8 @@
           "name": "Желтая краска Бовуар",
           "on_wheel": true,
           "uncertain": false,
+          "ambiguous": false,
+          "ambiguous_wheel": [],
           "wheel_names": [
             "Желтая краска «Бовуар»"
           ],
@@ -72,56 +90,148 @@
       "badgeThumb": "data/guide_img/2f8cd5e78e4a0d252cbbb505a482e7a3.webp"
     },
     {
-      "badge": "В гостях у сказки",
+      "badge": "День влюбленных",
       "items": [
         {
-          "name": "Алый лотос",
+          "name": "Костюм \"Валентино\"",
           "on_wheel": false,
-          "uncertain": false,
+          "uncertain": true,
+          "ambiguous": false,
+          "ambiguous_wheel": [],
           "wheel_names": [],
           "categories": [],
-          "uncertain_gifts": [],
-          "thumb": "data/guide_img/F9745a2cd114.webp"
-        },
-        {
-          "name": "Лазурный ковер-самолет",
-          "on_wheel": false,
-          "uncertain": false,
-          "wheel_names": [],
-          "categories": [],
-          "uncertain_gifts": [],
-          "thumb": "data/guide_img/1278BD41.webp"
-        },
-        {
-          "name": "Велосипед",
-          "on_wheel": false,
-          "uncertain": false,
-          "wheel_names": [],
-          "categories": [],
-          "uncertain_gifts": [],
-          "thumb": "data/guide_img/97e90fe868.webp"
-        },
-        {
-          "name": "Трехколесный велосипед",
-          "on_wheel": false,
-          "uncertain": false,
-          "wheel_names": [],
-          "categories": [],
-          "uncertain_gifts": [],
-          "thumb": "data/guide_img/96164e8511.webp"
-        },
-        {
-          "name": "Волшебная метла",
-          "on_wheel": true,
-          "uncertain": false,
-          "wheel_names": [
-            "Волшебная метла"
+          "uncertain_gifts": [
+            "Подарок с костюмом «Валентино» (8 цветов на выбор)"
           ],
-          "categories": [
-            "Отличный приз"
-          ],
+          "thumb": "data/guide_img/81e285b61c.webp"
+        },
+        {
+          "name": "Качели \"Неземная любовь\"",
+          "on_wheel": false,
+          "uncertain": false,
+          "ambiguous": false,
+          "ambiguous_wheel": [],
+          "wheel_names": [],
+          "categories": [],
           "uncertain_gifts": [],
-          "thumb": "data/guide_img/F413a99fa4.webp"
+          "thumb": "data/guide_img/D745acea79.webp"
+        }
+      ],
+      "related_gifts": [
+        {
+          "name": "Подарок с костюмом «Валентино» (8 цветов на выбор)",
+          "category": "Суперприз"
+        }
+      ],
+      "require": "all",
+      "sets": [],
+      "set_labels": [],
+      "also": [],
+      "badgeThumb": "data/guide_img/Eaca39a542bf680160ee02de98e54ec1.webp"
+    },
+    {
+      "badge": "Крылья Астрея",
+      "items": [
+        {
+          "name": "Черные крылья Астрея",
+          "on_wheel": false,
+          "uncertain": true,
+          "ambiguous": false,
+          "ambiguous_wheel": [],
+          "wheel_names": [],
+          "categories": [],
+          "uncertain_gifts": [
+            "Подарок «Перья Астрея»"
+          ],
+          "thumb": "data/guide_img/ЗначокКрыльяАстрея.webp"
+        },
+        {
+          "name": "Белые крылья Астрея",
+          "on_wheel": false,
+          "uncertain": true,
+          "ambiguous": false,
+          "ambiguous_wheel": [],
+          "wheel_names": [],
+          "categories": [],
+          "uncertain_gifts": [
+            "Подарок «Перья Астрея»"
+          ],
+          "thumb": "data/guide_img/ЗначокКрыльяАстрея.webp"
+        },
+        {
+          "name": "Золотые крылья Астрея",
+          "on_wheel": false,
+          "uncertain": true,
+          "ambiguous": false,
+          "ambiguous_wheel": [],
+          "wheel_names": [],
+          "categories": [],
+          "uncertain_gifts": [
+            "Подарок «Перья Астрея»"
+          ],
+          "thumb": "data/guide_img/ЗначокКрыльяАстрея.webp"
+        }
+      ],
+      "related_gifts": [
+        {
+          "name": "Подарок «Перья Астрея»",
+          "category": "Обычный приз"
+        }
+      ],
+      "require": "all",
+      "sets": [],
+      "set_labels": [],
+      "also": [],
+      "badgeThumb": "data/guide_img/ЗначокКрыльяАстрея.webp"
+    },
+    {
+      "badge": "Мне бы в небо",
+      "items": [
+        {
+          "name": "Черный ястреб",
+          "on_wheel": false,
+          "uncertain": false,
+          "ambiguous": false,
+          "ambiguous_wheel": [],
+          "wheel_names": [],
+          "categories": [],
+          "uncertain_gifts": [],
+          "thumb": "data/guide_img/8d901c89b5.webp"
+        },
+        {
+          "name": "Воздушный шар",
+          "on_wheel": false,
+          "uncertain": false,
+          "ambiguous": false,
+          "ambiguous_wheel": [],
+          "wheel_names": [],
+          "categories": [],
+          "uncertain_gifts": [],
+          "thumb": "data/guide_img/6d19b4b422.webp"
+        },
+        {
+          "name": "Двухместный самолет (серебристо-серый)",
+          "on_wheel": false,
+          "uncertain": false,
+          "ambiguous": false,
+          "ambiguous_wheel": [],
+          "wheel_names": [],
+          "categories": [],
+          "uncertain_gifts": [],
+          "thumb": "data/guide_img/8206ba1a3714.webp"
+        },
+        {
+          "name": "НЛО 2",
+          "on_wheel": false,
+          "uncertain": true,
+          "ambiguous": true,
+          "ambiguous_wheel": [
+            "НЛО"
+          ],
+          "wheel_names": [],
+          "categories": [],
+          "uncertain_gifts": [],
+          "thumb": "data/guide_img/90d7a75c46.webp"
         }
       ],
       "related_gifts": [],
@@ -129,116 +239,7 @@
       "sets": [],
       "set_labels": [],
       "also": [],
-      "badgeThumb": "data/guide_img/E7bea5a205.webp"
-    },
-    {
-      "badge": "Крылья феникса",
-      "items": [
-        {
-          "name": "Крылья феникса",
-          "on_wheel": true,
-          "uncertain": false,
-          "wheel_names": [
-            "Фиолетовые крылья феникса (жен.)",
-            "Фиолетовые крылья феникса (муж.)"
-          ],
-          "categories": [
-            "Суперприз"
-          ],
-          "uncertain_gifts": [],
-          "thumb": "data/guide_img/Df43713cef9f6a5fca91e5899249cf22.webp"
-        }
-      ],
-      "related_gifts": [],
-      "require": "all",
-      "sets": [],
-      "set_labels": [],
-      "also": [],
-      "badgeThumb": "data/guide_img/Df43713cef9f6a5fca91e5899249cf22.webp"
-    },
-    {
-      "badge": "Леди и джентльмены",
-      "items": [
-        {
-          "name": "Автомобиль \"Леди\"",
-          "on_wheel": false,
-          "uncertain": false,
-          "wheel_names": [],
-          "categories": [],
-          "uncertain_gifts": [],
-          "thumb": "data/guide_img/09a20c8da0.webp"
-        },
-        {
-          "name": "Автомобиль \"Джентльмен\"",
-          "on_wheel": false,
-          "uncertain": false,
-          "wheel_names": [],
-          "categories": [],
-          "uncertain_gifts": [],
-          "thumb": "data/guide_img/Cd7252a542.webp"
-        },
-        {
-          "name": "Туфелька",
-          "on_wheel": false,
-          "uncertain": false,
-          "wheel_names": [],
-          "categories": [],
-          "uncertain_gifts": [],
-          "thumb": "data/guide_img/24b80fe994.webp"
-        },
-        {
-          "name": "Черный краситель для туфельки",
-          "on_wheel": true,
-          "uncertain": false,
-          "wheel_names": [
-            "Черный краситель для «Туфельки»"
-          ],
-          "categories": [
-            "Суперприз"
-          ],
-          "uncertain_gifts": [],
-          "thumb": "data/guide_img/wheel_dye_shoe_black.webp"
-        },
-        {
-          "name": "Желтый краситель для туфельки",
-          "on_wheel": false,
-          "uncertain": false,
-          "wheel_names": [],
-          "categories": [],
-          "uncertain_gifts": [],
-          "thumb": "data/guide_img/wheel_dye_shoe_yellow.webp"
-        },
-        {
-          "name": "Розовый краситель для туфельки",
-          "on_wheel": false,
-          "uncertain": false,
-          "wheel_names": [],
-          "categories": [],
-          "uncertain_gifts": [],
-          "thumb": "data/guide_img/wheel_dye_shoe_pink.webp"
-        }
-      ],
-      "related_gifts": [],
-      "require": "any_set",
-      "sets": [
-        [
-          "Автомобиль \"Леди\""
-        ],
-        [
-          "Автомобиль \"Джентльмен\""
-        ]
-      ],
-      "set_labels": [
-        "Авто «Леди»",
-        "Авто «Джентльмен»"
-      ],
-      "also": [
-        "Туфелька",
-        "Черный краситель для туфельки",
-        "Желтый краситель для туфельки",
-        "Розовый краситель для туфельки"
-      ],
-      "badgeThumb": "data/guide_img/650a2205779357209fe876478dd47543.webp"
+      "badgeThumb": "data/guide_img/6c551f749ee89cc0dc61012cc197d696.webp"
     },
     {
       "badge": "Трон Амура",
@@ -247,6 +248,8 @@
           "name": "Трон Амура",
           "on_wheel": false,
           "uncertain": false,
+          "ambiguous": false,
+          "ambiguous_wheel": [],
           "wheel_names": [],
           "categories": [],
           "uncertain_gifts": [],
@@ -254,14 +257,12 @@
         },
         {
           "name": "Любуюсь тобой",
-          "on_wheel": true,
+          "on_wheel": false,
           "uncertain": false,
-          "wheel_names": [
-            "Титул «Любуюсь тобой»"
-          ],
-          "categories": [
-            "Суперприз"
-          ],
+          "ambiguous": false,
+          "ambiguous_wheel": [],
+          "wheel_names": [],
+          "categories": [],
           "uncertain_gifts": [],
           "thumb": "data/title_thumb/Cfdbfc6bf8.webp"
         },
@@ -269,6 +270,8 @@
           "name": "Не отводи взгляд",
           "on_wheel": true,
           "uncertain": false,
+          "ambiguous": false,
+          "ambiguous_wheel": [],
           "wheel_names": [
             "Титул «Не отводи взгляд»"
           ],
@@ -281,23 +284,36 @@
         {
           "name": "Золотые крылья Амура",
           "on_wheel": false,
-          "uncertain": false,
+          "uncertain": true,
+          "ambiguous": false,
+          "ambiguous_wheel": [],
           "wheel_names": [],
           "categories": [],
-          "uncertain_gifts": [],
+          "uncertain_gifts": [
+            "Подарок с крыльями Амура"
+          ],
           "thumb": "data/guide_img/Ad5b8bfed601.webp"
         },
         {
           "name": "Черные крылья Амура",
           "on_wheel": false,
-          "uncertain": false,
+          "uncertain": true,
+          "ambiguous": false,
+          "ambiguous_wheel": [],
           "wheel_names": [],
           "categories": [],
-          "uncertain_gifts": [],
+          "uncertain_gifts": [
+            "Подарок с крыльями Амура"
+          ],
           "thumb": "data/guide_img/Ad5b8bfed601.webp"
         }
       ],
-      "related_gifts": [],
+      "related_gifts": [
+        {
+          "name": "Подарок с крыльями Амура",
+          "category": "Суперприз"
+        }
+      ],
       "require": "all",
       "sets": [],
       "set_labels": [],
@@ -305,5 +321,5 @@
       "badgeThumb": "data/guide_img/684d52caa4a5d4907ee10064f1ed902e.webp"
     }
   ],
-  "demo_i": "6.184.187.14.82.188.144.145"
+  "demo_i": "6.184.185.186.187.145"
 }

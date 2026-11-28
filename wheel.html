@@ -307,6 +307,7 @@
     }
     .glabel.on { color: var(--accent); }
     .glabel.off { color: var(--mute); }
+    .glabel.warn { color: #d4a017; margin-top: 4px; }
 
     .item {
       display: grid;
@@ -330,6 +331,15 @@
       background: color-mix(in srgb, var(--accent) 8%, transparent);
     }
     .item.off { opacity: 0.72; }
+    .item.warn {
+      height: auto;
+      min-height: var(--row-h);
+      padding: 8px;
+      align-items: start;
+      border-color: color-mix(in srgb, #d4a017 45%, var(--line));
+      background: color-mix(in srgb, #d4a017 10%, transparent);
+    }
+    .item-text { min-width: 0; }
     .item .name {
       margin: 0;
       font-size: 0.9rem;
@@ -341,6 +351,13 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
       word-break: break-word;
+    }
+    .item .warn-note {
+      margin: 4px 0 0;
+      font-size: 0.72rem;
+      font-weight: 600;
+      line-height: 1.25;
+      color: #d4a017;
     }
     .mute {
       margin: 0;
@@ -722,18 +739,30 @@
         });
       }
 
-      /** Собрать отчёт из ?i= — страница знает каталог, ссылка несёт только id на колесе. */
-      function reportFromIds(ids) {
+      /** Собрать отчёт из ?i= (на колесе) и ?a= (тёзки / спорные). */
+      function reportFromIds(ids, warnIds) {
         const byId = new Map(ACH_ITEMS.map((it) => [it.id, it]));
         const onNames = new Set();
+        const warnNames = new Set();
+        const warnTwins = new Map();
         const touchBadges = new Set();
-        ids.forEach((id) => {
+        (ids || []).forEach((id) => {
           const it = byId.get(id);
           if (!it) return;
           onNames.add(norm(it.name));
           (it.badges || []).forEach((b) => touchBadges.add(b));
         });
-        if (!onNames.size) return [];
+        (warnIds || []).forEach((id) => {
+          const it = byId.get(id);
+          if (!it) return;
+          const k = norm(it.name);
+          warnNames.add(k);
+          // короткое имя без « 2» — что обычно пишет колесо
+          const twin = String(it.name || "").replace(/\s+\d+\s*$/, "").trim() || "одноимённый приз";
+          warnTwins.set(k, twin);
+          (it.badges || []).forEach((b) => touchBadges.add(b));
+        });
+        if (!onNames.size && !warnNames.size) return [];
 
         const catalogByBadge = new Map(ACH_CATALOG.map((a) => [a.badge, a]));
         const report = [];
@@ -753,12 +782,19 @@
             seen.add(k);
             baseItems.push({ name: it.name, thumb: it.thumb || "" });
           });
-          const items = baseItems.map((x) => ({
-            name: x.name,
-            thumb: x.thumb,
-            on_wheel: onNames.has(norm(x.name)),
-          }));
-          if (!items.some((x) => x.on_wheel)) return;
+          const items = baseItems.map((x) => {
+            const k = norm(x.name);
+            const on = onNames.has(k);
+            const ambiguous = !on && warnNames.has(k);
+            return {
+              name: x.name,
+              thumb: x.thumb,
+              on_wheel: on,
+              ambiguous,
+              ambiguous_wheel: ambiguous ? [warnTwins.get(k) || "одноимённый приз"] : [],
+            };
+          });
+          if (!items.some((x) => x.on_wheel || x.ambiguous)) return;
           report.push({
             badge,
             badgeThumb: (ach && ach.badgeThumb) || "",
@@ -770,7 +806,10 @@
 
       function resolveReport(params) {
         const ids = parseIds(params.get("i"));
-        if (ids.length) return { mode: "live", report: reportFromIds(ids) };
+        const warnIds = parseIds(params.get("a"));
+        if (ids.length || warnIds.length) {
+          return { mode: "live", report: reportFromIds(ids, warnIds) };
+        }
         // ?demo=1 — локальный снимок для проверки вёрстки
         if (params.get("demo") === "1") {
           return { mode: "live", report: sortReport(snap.report || []) };
@@ -877,7 +916,8 @@
         const items = e.items || [];
         return {
           on: items.filter((x) => x.on_wheel),
-          off: items.filter((x) => !x.on_wheel),
+          warn: items.filter((x) => !x.on_wheel && x.ambiguous),
+          off: items.filter((x) => !x.on_wheel && !x.ambiguous),
         };
       }
       function thumb(src, cls) {
@@ -896,17 +936,28 @@
         }
         return d;
       }
-      function itemRow(it, on) {
+      function itemRow(it, on, warn) {
         const a = document.createElement("a");
-        a.className = "item " + (on ? "on" : "off");
-        a.href = GUIDE + "?q=" + encodeURIComponent(it.name || "");
+        a.className = "item " + (on ? "on" : warn ? "warn" : "off");
+        const q = encodeURIComponent(it.name || "");
+        a.href = GUIDE + "?q=" + q;
         a.target = "_blank";
         a.rel = "noopener noreferrer";
         a.appendChild(thumb(it.thumb || "", "sm"));
+        const box = document.createElement("div");
+        box.className = "item-text";
         const p = document.createElement("p");
         p.className = "name";
         p.textContent = it.name || "—";
-        a.appendChild(p);
+        box.appendChild(p);
+        if (warn) {
+          const twin = (it.ambiguous_wheel && it.ambiguous_wheel[0]) || "одноимённый приз";
+          const note = document.createElement("p");
+          note.className = "warn-note";
+          note.textContent = "На колесе «" + twin + "» — возможно другой предмет";
+          box.appendChild(note);
+        }
+        a.appendChild(box);
         return a;
       }
 
@@ -1012,7 +1063,7 @@
 
         const cols = document.createElement("div");
         cols.className = "cols";
-        const { on, off } = split(report[active]);
+        const { on, warn, off } = split(report[active]);
 
         const colOn = document.createElement("div");
         colOn.className = "col";
@@ -1020,7 +1071,7 @@
         labOn.className = "glabel on";
         labOn.textContent = "На колесе";
         colOn.appendChild(labOn);
-        if (on.length) on.forEach((it) => colOn.appendChild(itemRow(it, true)));
+        if (on.length) on.forEach((it) => colOn.appendChild(itemRow(it, true, false)));
         else {
           const p = document.createElement("p");
           p.className = "mute";
@@ -1032,10 +1083,17 @@
         colOff.className = "col";
         const labOff = document.createElement("p");
         labOff.className = "glabel off";
-        labOff.textContent = off.length ? "Ещё нет" : "Готово";
+        labOff.textContent = off.length || warn.length ? "Ещё нет" : "Готово";
         colOff.appendChild(labOff);
-        if (off.length) off.forEach((it) => colOff.appendChild(itemRow(it, false)));
-        else {
+        if (warn.length) {
+          const labWarn = document.createElement("p");
+          labWarn.className = "glabel warn";
+          labWarn.textContent = "Проверьте";
+          colOff.appendChild(labWarn);
+          warn.forEach((it) => colOff.appendChild(itemRow(it, false, true)));
+        }
+        if (off.length) off.forEach((it) => colOff.appendChild(itemRow(it, false, false)));
+        if (!off.length && !warn.length) {
           const p = document.createElement("p");
           p.className = "mute";
           p.textContent = "Всё на колесе";
