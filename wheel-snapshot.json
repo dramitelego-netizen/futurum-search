@@ -1,6 +1,6 @@
 {
   "source": "vk_news_bot4/wheel_achievements_cache.json",
-  "ts": 1795859047.2902331,
+  "ts": 1795859921.7068813,
   "title": "Колесо · для значков",
   "report": [
     {
@@ -23,9 +23,6 @@
           "variant_notes": [
             "для значка нужны все интерактивы этого предмета"
           ],
-          "unlock_notes": [
-            "для значка нужны все интерактивы этого предмета"
-          ],
           "thumb": "data/guide_img/17-12-2017_01-14-54.webp"
         },
         {
@@ -43,7 +40,6 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "unlock_notes": [],
           "thumb": "data/guide_img/2f8cd5e78e4a0d252cbbb505a482e7a3.webp"
         },
         {
@@ -61,7 +57,6 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "unlock_notes": [],
           "thumb": "data/guide_img/2f8cd5e78e4a0d252cbbb505a482e7a3.webp"
         },
         {
@@ -79,7 +74,6 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "unlock_notes": [],
           "thumb": "data/guide_img/2f8cd5e78e4a0d252cbbb505a482e7a3.webp"
         },
         {
@@ -97,7 +91,6 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "unlock_notes": [],
           "thumb": "data/guide_img/2f8cd5e78e4a0d252cbbb505a482e7a3.webp"
         }
       ],
@@ -125,12 +118,8 @@
             "Суперприз"
           ],
           "uncertain_gifts": [],
-          "variant_note": "в призе выбирается цвет — проверьте, какой нужен для значка",
+          "variant_note": "для значка нужны все цвета этого предмета",
           "variant_notes": [
-            "в призе выбирается цвет — проверьте, какой нужен для значка",
-            "для значка нужны все цвета этого предмета"
-          ],
-          "unlock_notes": [
             "для значка нужны все цвета этого предмета"
           ],
           "thumb": "data/guide_img/81e285b61c.webp"
@@ -146,7 +135,6 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "unlock_notes": [],
           "thumb": "data/guide_img/D745acea79.webp"
         }
       ],
@@ -178,7 +166,6 @@
           "variant_notes": [
             "для значка нужен цвет «Черные» (в призе цвет выбирается)"
           ],
-          "unlock_notes": [],
           "thumb": "data/guide_img/ЗначокКрыльяАстрея.webp"
         },
         {
@@ -198,7 +185,6 @@
           "variant_notes": [
             "для значка нужен цвет «Белые» (в призе цвет выбирается)"
           ],
-          "unlock_notes": [],
           "thumb": "data/guide_img/ЗначокКрыльяАстрея.webp"
         },
         {
@@ -218,7 +204,6 @@
           "variant_notes": [
             "для значка нужен цвет «Золотые» (в призе цвет выбирается)"
           ],
-          "unlock_notes": [],
           "thumb": "data/guide_img/ЗначокКрыльяАстрея.webp"
         }
       ],
@@ -244,7 +229,6 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "unlock_notes": [],
           "thumb": "data/guide_img/8d901c89b5.webp"
         },
         {
@@ -258,7 +242,6 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "unlock_notes": [],
           "thumb": "data/guide_img/6d19b4b422.webp"
         },
         {
@@ -278,7 +261,6 @@
           "variant_notes": [
             "для значка нужен вариант «серебристо-серый»"
           ],
-          "unlock_notes": [],
           "thumb": "data/guide_img/8206ba1a3714.webp"
         },
         {
@@ -294,7 +276,6 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "unlock_notes": [],
           "thumb": "data/guide_img/90d7a75c46.webp"
         }
       ],
@@ -320,7 +301,6 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "unlock_notes": [],
           "thumb": "data/guide_img/684d52caa4a5d4907ee10064f1ed902e.webp"
         },
         {
@@ -334,7 +314,6 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "unlock_notes": [],
           "thumb": "data/title_thumb/Cfdbfc6bf8.webp"
         },
         {
@@ -352,7 +331,6 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "unlock_notes": [],
           "thumb": "data/title_thumb/05d6e0037e.webp"
         },
         {
@@ -372,7 +350,6 @@
           "variant_notes": [
             "для значка нужен цвет «Золотые» (в призе цвет выбирается)"
           ],
-          "unlock_notes": [],
           "thumb": "data/guide_img/Ad5b8bfed601.webp"
         },
         {
@@ -392,7 +369,6 @@
           "variant_notes": [
             "для значка нужен цвет «Черные» (в призе цвет выбирается)"
           ],
-          "unlock_notes": [],
           "thumb": "data/guide_img/Ad5b8bfed601.webp"
         }
       ],
