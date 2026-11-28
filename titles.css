@@ -4011,15 +4011,80 @@ body.guide-req-peek-open {
     grid-template-rows: auto minmax(0, 1fr) !important;
   }
 
-  /* компактная карточка только если ещё нет mobile-E sheet */
+  /*
+    ПК-гид на узком экране: деталь сверху (order из styles.css) без потолка
+    съедала сцену (height:auto / max-height:none / overflow:visible), список
+    в 1fr сжимался или оказывался за overflow:hidden. Mobile-E (.guide-layout-mobile)
+    не трогаем — у него свой sheet.
+  */
+  body.guide-page:not(.guide-layout-mobile).is-stage .shell {
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
+
+  body.guide-page:not(.guide-layout-mobile).is-stage .hero {
+    flex: 0 0 auto;
+  }
+
+  body.guide-page:not(.guide-layout-mobile).is-stage .guide-split {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  body.guide-page:not(.guide-layout-mobile).is-stage .guide-main {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  body.guide-page:not(.guide-layout-mobile) .stage {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    grid-template-rows: minmax(0, auto) minmax(0, 1fr) !important;
+  }
+
   body.guide-page:not(.guide-layout-mobile) .preview {
     height: auto !important;
     min-height: 0 !important;
-    max-height: none !important;
+    max-height: min(34dvh, 18rem) !important;
     padding: 0.4rem 0.5rem !important;
     border-radius: 12px;
-    overflow: visible;
-    flex: 0 0 auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    flex: 0 1 auto;
+  }
+
+  body.guide-page:not(.guide-layout-mobile) .preview:has(.preview-empty) {
+    max-height: 4.25rem !important;
+    overflow: hidden;
+  }
+
+  body.guide-page:not(.guide-layout-mobile) .ttl-detail {
+    min-height: 0;
+  }
+
+  body.guide-page:not(.guide-layout-mobile) .results-panel {
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    max-height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body.guide-page:not(.guide-layout-mobile) .results {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
   }
 
   .guide-page .preview-empty {
@@ -4105,6 +4170,20 @@ body.guide-req-peek-open {
   .guide-page .ttl-detail-top.has-look .wiki-look-img.is-wide {
     width: 100% !important;
     max-height: min(24vh, 160px) !important;
+  }
+
+  body.guide-page:not(.guide-layout-mobile) .ttl-look-stage {
+    min-height: 0 !important;
+    max-height: min(18dvh, 9rem) !important;
+  }
+
+  body.guide-page:not(.guide-layout-mobile) .ttl-detail-top.has-look .wiki-look-img,
+  body.guide-page:not(.guide-layout-mobile) .ttl-detail-top.has-look-colors .wiki-look-img {
+    max-height: min(16dvh, 8rem) !important;
+  }
+
+  body.guide-page:not(.guide-layout-mobile) .ttl-detail-top.has-look .wiki-look-img.is-wide {
+    max-height: min(12dvh, 6.5rem) !important;
   }
 
   .guide-page .ttl-detail-top:not(.has-look):not(.has-look-colors) .ttl-zoom-hint {
