@@ -1120,14 +1120,19 @@
         return /(^|\b)подарок\b/.test(low);
       }
 
+      function bareKey(s) {
+        return norm(s).replace(/"/g, "").replace(/\s+/g, " ").trim();
+      }
+
       function sourceLabels(it) {
-        const nameKey = norm(it.name);
+        const nameKey = bareKey(it.name);
         const out = [];
         const seen = new Set();
         (it.wheel_names || []).forEach((w) => {
           const label = String(w || "").trim().replace(/\.+$/, "");
           if (!label) return;
-          const k = norm(label);
+          const k = bareKey(label);
+          // то же имя (кавычки не считаем) и не подарок — подпись не нужна
           if (k === nameKey && !isGiftLabel(label)) return;
           if (seen.has(k)) return;
           seen.add(k);
