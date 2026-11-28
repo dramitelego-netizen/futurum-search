@@ -23,7 +23,9 @@
           "variant_notes": [
             "для значка нужны все интерактивы этого предмета"
           ],
-          "thumb": "data/guide_img/17-12-2017_01-14-54.webp"
+          "thumb": "data/guide_img/17-12-2017_01-14-54.webp",
+          "guideSection": "amusements",
+          "guideId": 2671
         },
         {
           "name": "Розовая краска Бовуар",
@@ -40,7 +42,8 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "thumb": "data/guide_img/2f8cd5e78e4a0d252cbbb505a482e7a3.webp"
+          "thumb": "https://parapa.ru/pictures/image/mall/show/771px-4967b6f.png",
+          "guideSection": "clothes"
         },
         {
           "name": "Белая краска Бовуар",
@@ -57,7 +60,8 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "thumb": "data/guide_img/2f8cd5e78e4a0d252cbbb505a482e7a3.webp"
+          "thumb": "https://parapa.ru/pictures/image/iconn/481131.png",
+          "guideSection": "clothes"
         },
         {
           "name": "Голубая краска Бовуар",
@@ -74,7 +78,9 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "thumb": "data/guide_img/2f8cd5e78e4a0d252cbbb505a482e7a3.webp"
+          "thumb": "https://parapa.ru/pictures/image/mall/show/3e139d919d11c52e781b214dd584a0ce.png",
+          "guideSection": "clothes",
+          "guideId": 1860
         },
         {
           "name": "Желтая краска Бовуар",
@@ -91,7 +97,8 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "thumb": "data/guide_img/2f8cd5e78e4a0d252cbbb505a482e7a3.webp"
+          "thumb": "data/guide_img/B6936d021e958aa71d720a3b2880420c.webp",
+          "guideSection": "clothes"
         }
       ],
       "related_gifts": [],
@@ -100,7 +107,8 @@
       "set_labels": [],
       "also": [],
       "description": "Этот значок можно получить, разблокировав все цвета и интерактивы для трюмо \"Бовуар\" .",
-      "badgeThumb": "data/guide_img/2f8cd5e78e4a0d252cbbb505a482e7a3.webp"
+      "badgeThumb": "data/guide_img/2f8cd5e78e4a0d252cbbb505a482e7a3.webp",
+      "badgeId": 352
     },
     {
       "badge": "День влюбленных",
@@ -122,7 +130,9 @@
           "variant_notes": [
             "для значка нужны все цвета этого предмета"
           ],
-          "thumb": "data/guide_img/81e285b61c.webp"
+          "thumb": "data/guide_img/81e285b61c.webp",
+          "guideSection": "event_clothes",
+          "guideId": 3649
         },
         {
           "name": "Качели \"Неземная любовь\"",
@@ -135,7 +145,9 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "thumb": "data/guide_img/D745acea79.webp"
+          "thumb": "data/guide_img/D745acea79.webp",
+          "guideSection": "amusements",
+          "guideId": 2640
         }
       ],
       "related_gifts": [],
@@ -144,7 +156,8 @@
       "set_labels": [],
       "also": [],
       "description": "Чтобы получить этот значок, тебе надо собрать все цвета костюма \"Валентино\" и качели \"Неземная любовь\" .",
-      "badgeThumb": "data/guide_img/Eaca39a542bf680160ee02de98e54ec1.webp"
+      "badgeThumb": "data/guide_img/Eaca39a542bf680160ee02de98e54ec1.webp",
+      "badgeId": 326
     },
     {
       "badge": "Крылья Астрея",
@@ -166,7 +179,9 @@
           "variant_notes": [
             "для значка нужен цвет «Черные» (в призе цвет выбирается)"
           ],
-          "thumb": "data/guide_img/ЗначокКрыльяАстрея.webp"
+          "thumb": "data/guide_img/460110402.webp",
+          "guideSection": "wings",
+          "guideId": 426
         },
         {
           "name": "Белые крылья Астрея",
@@ -185,7 +200,9 @@
           "variant_notes": [
             "для значка нужен цвет «Белые» (в призе цвет выбирается)"
           ],
-          "thumb": "data/guide_img/ЗначокКрыльяАстрея.webp"
+          "thumb": "data/guide_img/460110402.webp",
+          "guideSection": "wings",
+          "guideId": 426
         },
         {
           "name": "Золотые крылья Астрея",
@@ -204,7 +221,9 @@
           "variant_notes": [
             "для значка нужен цвет «Золотые» (в призе цвет выбирается)"
           ],
-          "thumb": "data/guide_img/ЗначокКрыльяАстрея.webp"
+          "thumb": "data/guide_img/460110402.webp",
+          "guideSection": "wings",
+          "guideId": 426
         }
       ],
       "related_gifts": [],
@@ -213,7 +232,8 @@
       "set_labels": [],
       "also": [],
       "description": "Чтобы получить этот значок, необходимо быть владельцем черных, белых и золотых крыльев Астрея .",
-      "badgeThumb": "data/guide_img/ЗначокКрыльяАстрея.webp"
+      "badgeThumb": "data/guide_img/ЗначокКрыльяАстрея.webp",
+      "badgeId": 315
     },
     {
       "badge": "Мне бы в небо",
@@ -229,7 +249,9 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "thumb": "data/guide_img/8d901c89b5.webp"
+          "thumb": "data/guide_img/8d901c89b5.webp",
+          "guideSection": "transport",
+          "guideId": 901
         },
         {
           "name": "Воздушный шар",
@@ -242,7 +264,9 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "thumb": "data/guide_img/6d19b4b422.webp"
+          "thumb": "data/guide_img/6d19b4b422.webp",
+          "guideSection": "transport",
+          "guideId": 747
         },
         {
           "name": "Двухместный самолет (серебристо-серый)",
@@ -261,7 +285,9 @@
           "variant_notes": [
             "для значка нужен вариант «серебристо-серый»"
           ],
-          "thumb": "data/guide_img/8206ba1a3714.webp"
+          "thumb": "data/guide_img/8206ba1a3714.webp",
+          "guideSection": "transport",
+          "guideId": 757
         },
         {
           "name": "НЛО 2",
@@ -276,7 +302,9 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "thumb": "data/guide_img/90d7a75c46.webp"
+          "thumb": "",
+          "guideSection": "transport",
+          "guideId": 822
         }
       ],
       "related_gifts": [],
@@ -285,7 +313,8 @@
       "set_labels": [],
       "also": [],
       "description": "Значок для обладателя черного ястреба , воздушного шара , двухместного самолета (серебристо-серый) и НЛО .",
-      "badgeThumb": "data/guide_img/6c551f749ee89cc0dc61012cc197d696.webp"
+      "badgeThumb": "data/guide_img/6c551f749ee89cc0dc61012cc197d696.webp",
+      "badgeId": 332
     },
     {
       "badge": "Трон Амура",
@@ -301,7 +330,9 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "thumb": "data/guide_img/684d52caa4a5d4907ee10064f1ed902e.webp"
+          "thumb": "data/guide_img/348222c982.webp",
+          "guideSection": "amusements",
+          "guideId": 2670
         },
         {
           "name": "Любуюсь тобой",
@@ -314,7 +345,9 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "thumb": "data/title_thumb/Cfdbfc6bf8.webp"
+          "thumb": "data/title_thumb/Cfdbfc6bf8.webp",
+          "guideSection": "titles",
+          "guideId": 308
         },
         {
           "name": "Не отводи взгляд",
@@ -331,7 +364,9 @@
           "uncertain_gifts": [],
           "variant_note": "",
           "variant_notes": [],
-          "thumb": "data/title_thumb/05d6e0037e.webp"
+          "thumb": "data/title_thumb/05d6e0037e.webp",
+          "guideSection": "titles",
+          "guideId": 309
         },
         {
           "name": "Золотые крылья Амура",
@@ -350,7 +385,9 @@
           "variant_notes": [
             "для значка нужен цвет «Золотые» (в призе цвет выбирается)"
           ],
-          "thumb": "data/guide_img/Ad5b8bfed601.webp"
+          "thumb": "data/guide_img/Ad5b8bfed601.webp",
+          "guideSection": "wings",
+          "guideId": 423
         },
         {
           "name": "Черные крылья Амура",
@@ -369,7 +406,9 @@
           "variant_notes": [
             "для значка нужен цвет «Черные» (в призе цвет выбирается)"
           ],
-          "thumb": "data/guide_img/Ad5b8bfed601.webp"
+          "thumb": "data/guide_img/Ad5b8bfed601.webp",
+          "guideSection": "wings",
+          "guideId": 423
         }
       ],
       "related_gifts": [],
@@ -378,10 +417,11 @@
       "set_labels": [],
       "also": [],
       "description": "Чтобы получить этот значок, нужно быть владельцем трона Амура , собрать титулы \"Любуюсь тобой\" и \"Не отводи взгляд\" , а также обзавестись золотыми и черными крыльями Амура (для своего пола).",
-      "badgeThumb": "data/guide_img/684d52caa4a5d4907ee10064f1ed902e.webp"
+      "badgeThumb": "data/guide_img/684d52caa4a5d4907ee10064f1ed902e.webp",
+      "badgeId": 370
     }
   ],
-  "demo_i": "6.184.185.186.187.43.71.72.73.106.145.146.147",
-  "demo_a": "107",
+  "demo_i": "6.7.8.9.10.47.75.76.77.110.149.150.151",
+  "demo_a": "111",
   "demo_u": ""
 }

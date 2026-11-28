@@ -3086,7 +3086,8 @@ function highlightAchievementDescription(description, reqs, links) {
 /** Добавить в reqs то, что вики уже связала через descriptionLinks, а текст не поймал. */
 function mergeAchDescriptionLinkReqs(reqs, achItem) {
   const list = Array.isArray(reqs) ? [...reqs] : [];
-  const links = achItem?.descriptionLinks || [];
+  if (!achItem || achItem.kind !== "achievements") return list;
+  const links = achItem.descriptionLinks || [];
   if (!links.length) return list;
   const seen = new Set(
     list.flatMap((r) => (r.items || []).map((e) => `${r.section}:${e.id}`))
@@ -3142,7 +3143,9 @@ function mergeAchDescriptionLinkReqs(reqs, achItem) {
 /** Предметы с note «нужен, чтобы получить значок "X"» — на карточку значка X. */
 function mergeAchReverseNoteReqs(reqs, achItem) {
   const list = Array.isArray(reqs) ? [...reqs] : [];
-  if (!achItem) return list;
+  // только для настоящих достижений — иначе предмет с тем же именем
+  // (напр. развлечение «Трон Амура») подтянет крылья и сам себя
+  if (!achItem || achItem.kind !== "achievements") return list;
   const selfNorm = morphReqText(achItem.name);
   if (selfNorm.length < 3) return list;
   const seen = new Set(list.flatMap((r) => (r.items || []).map((e) => `${r.section}:${e.id}`)));
@@ -3880,9 +3883,9 @@ function goNavBack() {
 
   const numId = Number(back.id);
   if (Number.isFinite(numId) && state.items.some((x) => x.id === numId)) {
-    selectItem(numId);
+    selectItem(numId, back.section);
   } else if (state.list[0]) {
-    selectItem(state.list[0].id);
+    selectItem(state.list[0].id, itemSectionOf(state.list[0]));
   }
   els.detail?.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
@@ -3893,6 +3896,10 @@ function openReqPeek(section, id, query, extras = {}) {
   closeGuideZoom();
 
   const it = findItemBySectionId(section, id);
+  // peek часто открывают до idle-сборки индекса — иначе нет блока «В достижениях»
+  if (it && itemSectionOf(it) !== "titles" && it.kind !== "achievements") {
+    ensureAchIndex();
+  }
   const kindLabel =
     extras.kindLabel ||
     it?.kindLabel ||
@@ -3905,8 +3912,8 @@ function openReqPeek(section, id, query, extras = {}) {
   const colors = Array.isArray(extras.colors) ? extras.colors.filter(Boolean) : [];
   const shopOffers = findShopOffers(name, colors, it?.kind || section || "");
   const facts = reqItemFacts(it, extras.achDescription || "", name);
-  const isPeekTitle = section === "titles" || it?.kind === "titles";
-  const isPeekAch = section === "achievements" || it?.kind === "achievements";
+  const isPeekTitle = it ? itemSectionOf(it) === "titles" : section === "titles";
+  const isPeekAch = it ? it.kind === "achievements" : section === "achievements";
   const peekReqs = isPeekAch
     ? renderAchievementRequires(it?.description || "", it?.name || "", it)
     : { html: "", reqs: [] };
@@ -6502,11 +6509,21 @@ function findGuideItem(id, section) {
 }
 
 function selectItem(id, section) {
-  state.activeId = id;
-  const it =
+  let it =
     findGuideItem(id, section) ||
     state.list.find((x) => Number(x.id) === Number(id)) ||
     null;
+  const wantSec = (section && String(section)) || (it ? itemSectionOf(it) : "");
+  // поиск/избранное могут открыть предмет другого раздела — иначе
+  // state.section=achievements + isAch по разделу ломает карточку
+  if (it && wantSec && wantSec !== state.section) {
+    setSection(wantSec, { keepQuery: true, keepNavBack: true });
+    it =
+      findGuideItem(id, wantSec) ||
+      state.list.find((x) => Number(x.id) === Number(id)) ||
+      it;
+  }
+  state.activeId = id;
   // клик по карточке — можно дособрать индекс синхронно; список этого не делает
   if (it && itemSectionOf(it) !== "titles") {
     ensureAchIndex();
@@ -6624,7 +6641,8 @@ function renderDetail(it) {
   const backBar = isGuideNarrow() ? "" : navBackHtml();
   const titleItem = isTitleItem(it);
   const wiki = guideWikiHref(it, titleItem);
-  const isAch = !titleItem && (it.kind === "achievements" || state.section === "achievements");
+  // только по kind предмета — не по state.section (поиск/peek чужого раздела)
+  const isAch = !titleItem && it.kind === "achievements";
   const hasColorLooks = !titleItem && !isAch && hasDistinctLookColors(it);
   const view = detailViewItem(it);
   const shownName = (it.genderNames && it.genderNames[preferredGender(it)]) || it.name;

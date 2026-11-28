@@ -250,12 +250,26 @@
     }
     .sheet-head {
       display: grid;
-      grid-template-columns: auto minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr) auto;
       column-gap: 12px;
       align-items: center;
       padding-bottom: 12px;
       border-bottom: 1px solid var(--line);
       min-width: 0;
+    }
+    .sheet-head .badge-link,
+    .sheet-head .badge-static {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      column-gap: 12px;
+      align-items: center;
+      min-width: 0;
+      color: inherit;
+      text-decoration: none;
+    }
+    .sheet-head .badge-link:hover h2 {
+      text-decoration: underline;
+      text-underline-offset: 3px;
     }
     .sheet-head .head-text {
       min-width: 0;
@@ -686,7 +700,7 @@
     <div class="panel" id="panel"></div>
   </div>
 
-  <script src="./wheel-data.js?v=186"></script>
+  <script src="./wheel-data.js?v=187"></script>
   <script>
     (function () {
       const GUIDE = new URL("./titles.html", location.href).href;
@@ -694,6 +708,34 @@
       const ACH_ITEMS = window.ACH_ITEMS || [];
       const ACH_CATALOG = window.ACH_CATALOG || [];
       let active = 0;
+
+      function guideItemHref(it) {
+        const u = new URL(GUIDE);
+        const name = it?.name || "";
+        if (it?.guideSection && it?.guideId) {
+          u.searchParams.set("section", it.guideSection);
+          u.searchParams.set("id", String(it.guideId));
+        } else if (name) {
+          u.searchParams.set("q", name);
+          if (it?.guideSection) u.searchParams.set("section", it.guideSection);
+        }
+        return u.href;
+      }
+
+      function guideBadgeHref(entry) {
+        const u = new URL(GUIDE);
+        const badge = entry?.badge || "";
+        if (entry?.badgeId) {
+          u.searchParams.set("section", "achievements");
+          u.searchParams.set("id", String(entry.badgeId));
+        } else if (badge) {
+          u.searchParams.set("section", "achievements");
+          u.searchParams.set("q", badge);
+        } else {
+          return "";
+        }
+        return u.href;
+      }
 
       function norm(s) {
         return String(s || "")
@@ -933,6 +975,8 @@
             ? (ach.items || []).map((x) => ({
                 name: x.name,
                 thumb: x.thumb || "",
+                guideSection: x.guideSection || "",
+                guideId: x.guideId || null,
               }))
             : [];
           const seen = new Set(baseItems.map((x) => norm(x.name)));
@@ -941,7 +985,12 @@
             const k = norm(it.name);
             if (seen.has(k)) return;
             seen.add(k);
-            baseItems.push({ name: it.name, thumb: it.thumb || "" });
+            baseItems.push({
+              name: it.name,
+              thumb: it.thumb || "",
+              guideSection: it.guideSection || "",
+              guideId: it.guideId || null,
+            });
           });
           const items = baseItems.map((x) => {
             const k = norm(x.name);
@@ -992,6 +1041,8 @@
             return {
               name: x.name,
               thumb: x.thumb,
+              guideSection: x.guideSection || "",
+              guideId: x.guideId || null,
               on_wheel: on,
               ambiguous,
               uncertain,
@@ -1005,6 +1056,7 @@
           if (!items.some((x) => x.on_wheel || x.ambiguous || x.uncertain)) return;
           report.push({
             badge,
+            badgeId: (ach && ach.badgeId) || null,
             badgeThumb: (ach && ach.badgeThumb) || "",
             items,
           });
@@ -1198,8 +1250,7 @@
               : maybe
                 ? "maybe"
                 : "off");
-        const q = encodeURIComponent(it.name || "");
-        a.href = GUIDE + "?q=" + q;
+        a.href = guideItemHref(it);
         a.target = "_blank";
         a.rel = "noopener noreferrer";
         a.appendChild(thumb(it.thumb || "", "sm"));
@@ -1322,8 +1373,18 @@
         sheet.className = "sheet";
         const head = document.createElement("div");
         head.className = "sheet-head";
-        head.appendChild(thumb(report[active].badgeThumb || "", "lg"));
-
+        const badgeHref = guideBadgeHref(report[active]);
+        const headInner = badgeHref
+          ? Object.assign(document.createElement("a"), {
+              className: "badge-link",
+              href: badgeHref,
+              target: "_blank",
+              rel: "noopener noreferrer",
+              title: "Открыть достижение в гиде",
+            })
+          : document.createElement("div");
+        if (!badgeHref) headInner.className = "badge-static";
+        headInner.appendChild(thumb(report[active].badgeThumb || "", "lg"));
         const headText = document.createElement("div");
         headText.className = "head-text";
         const h = document.createElement("h2");
@@ -1333,7 +1394,8 @@
         chipMob.className = "chip chip-mob";
         chipMob.textContent = prog(report[active]);
         headText.appendChild(chipMob);
-        head.appendChild(headText);
+        headInner.appendChild(headText);
+        head.appendChild(headInner);
 
         const chipDesk = document.createElement("span");
         chipDesk.className = "chip chip-desk";
