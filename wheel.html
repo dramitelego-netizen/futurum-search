@@ -309,25 +309,14 @@
     .glabel.off { color: var(--mute); }
     .glabel.warn { color: #d4a017; margin-top: 4px; }
     .glabel.maybe { color: #7a9ec7; margin-top: 4px; }
-    .item.warn-variant {
-      border-color: rgba(212, 160, 23, 0.4);
-    }
-    .item .source-note {
-      margin: 4px 0 0;
-      font-size: 0.82rem;
-      line-height: 1.35;
-      color: #8eb6a4;
-    }
-    .item.warn-variant .warn-note { color: #d4a017; }
-
     .item {
       display: grid;
       grid-template-columns: var(--thumb-item) minmax(0, 1fr);
-      column-gap: 12px;
+      column-gap: 10px;
       align-items: center;
       height: var(--row-h);
       min-height: 44px;
-      padding: 0 8px;
+      padding: 0 10px;
       border: 1px solid var(--line);
       border-radius: 8px;
       text-decoration: none;
@@ -336,6 +325,7 @@
       min-width: 0;
       max-width: 100%;
       box-sizing: border-box;
+      overflow: hidden;
     }
     .item.on {
       border-color: color-mix(in srgb, var(--accent) 38%, var(--line));
@@ -345,33 +335,52 @@
     .item.maybe {
       border-color: rgba(122, 158, 199, 0.45);
     }
-    .item.warn {
+    .item.warn-variant {
+      border-color: rgba(212, 160, 23, 0.4);
+    }
+    /* Карточки с подписями — высота по контенту, текст не вылезает */
+    .item.warn,
+    .item.maybe,
+    .item.warn-variant {
       height: auto;
       min-height: var(--row-h);
-      padding: 8px;
+      padding: 8px 10px;
       align-items: start;
+    }
+    .item.warn {
       border-color: color-mix(in srgb, #d4a017 45%, var(--line));
       background: color-mix(in srgb, #d4a017 10%, transparent);
     }
-    .item-text { min-width: 0; }
+    .item-text {
+      min-width: 0;
+      max-width: 100%;
+      display: grid;
+      gap: 3px;
+      align-content: start;
+    }
     .item .name {
       margin: 0;
       font-size: 0.9rem;
       font-weight: 700;
-      line-height: 1.2;
+      line-height: 1.25;
       max-width: 100%;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+      overflow-wrap: anywhere;
       word-break: break-word;
     }
+    .item .source-note,
     .item .warn-note {
-      margin: 4px 0 0;
+      margin: 0;
       font-size: 0.72rem;
       font-weight: 600;
-      line-height: 1.25;
-      color: #d4a017;
+      line-height: 1.35;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .item .source-note { color: #8eb6a4; }
+    .item .warn-note { color: #d4a017; }
+    .item.warn-variant .thumb {
+      margin-top: 1px;
     }
     .mute {
       margin: 0;
@@ -677,7 +686,7 @@
     <div class="panel" id="panel"></div>
   </div>
 
-  <script src="./wheel-data.js?v=184"></script>
+  <script src="./wheel-data.js?v=185"></script>
   <script>
     (function () {
       const GUIDE = new URL("./titles.html", location.href).href;
