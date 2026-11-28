@@ -312,6 +312,12 @@
     .item.warn-variant {
       border-color: rgba(212, 160, 23, 0.4);
     }
+    .item .source-note {
+      margin: 4px 0 0;
+      font-size: 0.82rem;
+      line-height: 1.35;
+      color: #8eb6a4;
+    }
     .item.warn-variant .warn-note { color: #d4a017; }
 
     .item {
@@ -671,7 +677,7 @@
     <div class="panel" id="panel"></div>
   </div>
 
-  <script src="./wheel-data.js?v=183"></script>
+  <script src="./wheel-data.js?v=184"></script>
   <script>
     (function () {
       const GUIDE = new URL("./titles.html", location.href).href;
@@ -1109,12 +1115,43 @@
         }
         return d;
       }
+      function isGiftLabel(s) {
+        const low = String(s || "").toLowerCase().replace(/ё/g, "е");
+        return /(^|\b)подарок\b/.test(low);
+      }
+
+      function sourceLabels(it) {
+        const nameKey = norm(it.name);
+        const out = [];
+        const seen = new Set();
+        (it.wheel_names || []).forEach((w) => {
+          const label = String(w || "").trim().replace(/\.+$/, "");
+          if (!label) return;
+          const k = norm(label);
+          if (k === nameKey && !isGiftLabel(label)) return;
+          if (seen.has(k)) return;
+          seen.add(k);
+          out.push(label);
+        });
+        return out;
+      }
+
       function itemRow(it, on, warn, maybe) {
         const a = document.createElement("a");
+        const sources = on ? sourceLabels(it) : [];
         const hasVariant = on && !!(it.variant_note || "").trim();
+        const hasSource = sources.length > 0;
         a.className =
           "item " +
-          (on ? (hasVariant ? "on warn-variant" : "on") : warn ? "warn" : maybe ? "maybe" : "off");
+          (on
+            ? hasVariant || hasSource
+              ? "on warn-variant"
+              : "on"
+            : warn
+              ? "warn"
+              : maybe
+                ? "maybe"
+                : "off");
         const q = encodeURIComponent(it.name || "");
         a.href = GUIDE + "?q=" + q;
         a.target = "_blank";
@@ -1140,11 +1177,19 @@
           note.textContent =
             "Может быть внутри «" + gift + "» — содержимое подарка неизвестно";
           box.appendChild(note);
-        } else if (hasVariant) {
-          const note = document.createElement("p");
-          note.className = "warn-note";
-          note.textContent = it.variant_note;
-          box.appendChild(note);
+        } else if (on) {
+          sources.forEach((src) => {
+            const note = document.createElement("p");
+            note.className = "source-note";
+            note.textContent = "можно получить из: " + src;
+            box.appendChild(note);
+          });
+          if (hasVariant) {
+            const note = document.createElement("p");
+            note.className = "warn-note";
+            note.textContent = it.variant_note;
+            box.appendChild(note);
+          }
         }
         a.appendChild(box);
         return a;
